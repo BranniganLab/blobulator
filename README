@@ -1,0 +1,31 @@
+Tools for identfying blobs in seqeunce
+
+For running from terminal:
+
+python3 blobulation.py and then go to a web browser and type http://127.0.0.1:5000
+
+Code description:
+
+key scripts
+
+
+blobulation.py - This is the backbone script of the tool. 
+The script uses flask and wtforms module. 
+It first reads the user inputed seqeunce or uniprot id. 
+If the user inputs uniprot id, it further makes following calls
+1] https://www.ebi.ac.uk/proteins/api/features - to get the seqeunce of the protein from uniprot id
+2] https://www.ebi.ac.uk/proteins/api/variation - to get the disease causing missense SNPs in the given sequence
+3] http://d2p2.pro/ - to get the disorder score for each amino acid in the seqeunce  
+
+Then it calls compute_blobs.py with the seqeunce and its features (when present) to blobulate the protein.
+The output of compute_blobs.py (dataframe of blobulated seqeunce) is then passed to index.html for ploting with d3. 
+
+The api function for the tool is also written here. For eg you can go to your browser and run "http://127.0.0.1:5000//api/query?my_seq=MDVFMKGLSKAKEGVVAAAEKTKQGVAEAAGKTKEGVLYVGSKTKEGVVHGVATVAEKTKEQVTNVGGAVVTGVTAVAQKTVEGAGSIAAATGFVKKDQLGKNEEGAPQEGILEDMPVDPDNEAYEMPSEEGYQDYEPEA&domain_threshold=24&cutoff=0.5&my_disorder=2,3" , this will output the blobulated protein as a json file.
+
+compute_blobs.py - This script takes the amino acid sequence as input and outputs the blob properties for each residue. It also contains function for plotting the downloadable version of the plot.
+
+index.html - This script uses javascript to interact with the html elements and draws and updates the blobulated protein. Each time the user changes the input values (moves the slider) the script makes a call to its own api function written in blobulation.py. The api function calls compute_blobs.py with updated input parameters.
+
+tabs.html - HTML layout of the blobulator page including documentation and tabs.
+
+

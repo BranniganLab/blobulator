@@ -1,0 +1,147 @@
+<!--This is the html script for the output page of the tool. This is implemented using the bootstrap library for layout purposes. Bootstrap utilizes rows and columns for spacial organization. The visualizations are written using the d3 library package. The contents of the page from top to bottoms are:
+1) Header that contains title, protein name, uniprot ID, and Gene
+2) Sliders: 
+  a) Hydropathy cutoff slider with textbox entry underneath that responds to the slider 
+  and the visualizations
+  b) Minimum blob size slider that responds to the visualizations
+3) Mean Hydropathy plot. Blue line adjusts the cutoff on this plot via the hydropathy cutoff slider.
+Default is 0.4. To the right is a tool tip that explains the plot when the user hovers over it
+4) Blobulation visualization with the Das & Pappu color schena. Tooltip and color key is provided.
+5) Blobulation visualization with NCPR color gradient. Tooltip and color bar is provided 
+(color bar is just a jpg image)
+6) Order and disorder plots (not related to blobulation plots)
+
+4-6 contains SNPs mapped along the sequence from the ClinVar database. User can hover over the SNP,
+the SNP will turn red and if the user chooses to click on the SNP the ClinVar data will be open in a new tab 
+
+-->
+<html>
+
+<head>
+    <!--The blobulation annotations are generated using the D3 visualization library-->
+    <script src="https://d3js.org/d3.v4.js"></script>
+    <script type="text/javascript"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{{ protein_name }} </title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+
+<style>
+/*CSS styling for the blue i tooltip */
+.tooltip {
+    position: absolute;
+    text-align: center;
+    width: 100px;
+    height: 20px;
+    padding: 2px;
+    font: 12px sans-serif;
+    background: lightsteelblue;
+    border: 0px;
+    border-radius: 8px;
+}
+
+.rangeslider {
+    width: 90%;
+    padding: 10px;
+}
+
+/*CSS styling for the top slider*/
+.myslider1 {
+    -webkit-appearance: none;
+    /* Override default CSS styles */
+    appearance: none;
+    width: 30%;
+    /* Full-width */
+    height: 20px;
+    /* Specified height */
+    background: #d3d3d3;
+    /* Grey background */
+    outline: none;
+    /* Remove outline */
+    opacity: 0.7;
+    /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s;
+    /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+
+}
+
+/*CSS styling for the top slider button*/
+.myslider1::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    cursor: pointer;
+    background: #007BFF;
+    border-radius: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+.myslider1:hover {
+    opacity: 2.0;
+}
+
+/*CSS styling for the bottom slider*/
+.myslider2 {
+    -webkit-appearance: none;
+    /* Override default CSS styles */
+    appearance: none;
+    width: 30%;
+    /* Full-width */
+    height: 20px;
+    /* Specified height */
+    background: #d3d3d3;
+    /* Grey background */
+    outline: none;
+    /* Remove outline */
+    opacity: 0.7;
+    /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s;
+    /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+
+}
+
+
+/*CSS styling for the bottom slider button*/
+.myslider2::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    cursor: pointer;
+    background: #007BFF;
+    border-radius: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+.myslider2:hover {
+    opacity: 2.0;
+}
+</style>
+
+<body>
+    <!--Header that contains Title, protein name, Uni ID, and Gene. 
+  Other information can be placed here too? -->
+    <div class="text-center">
+        <h1> The Protein Blobulator </h1>
+    </div>
+
+<div class="container">
+    <div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">{{ title }}</h4>
+    <p>{{ message }}</p>
+</div>
+</div>
+
+<!--footer for the page-->
+<footer>
+    <div class="container">
+        <p>Protein Blobulator - &copy; Brannigan Lab 2019</p>
+    </div>
+</footer>
+</body>
+
+</html>
+​
