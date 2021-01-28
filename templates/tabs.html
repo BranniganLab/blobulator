@@ -1,0 +1,161 @@
+<!--This is the html script for the opening page of the tool. This is implemented using the bootstrap library.
+  Bootstrap utilizes rows and columns for spacial organization.
+The opening page contains three tabs: Home, About, and Documentation.-->
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Blobulator &copy;</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    ​
+    ​
+    <style>
+        .bs-example{
+        margin: 20px; }
+    
+img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+</head>
+
+<body>
+    <!--This is a row that contains the header with two images of the BDNF illustrations
+  on each side of the text-->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xs-6-4">
+                <img src="/static/IDP_decor1.png" width="120" height="125">
+            </div>
+            <div class="col-xs-6">
+                <h2>The Protein Blobulator</h2>
+            </div>
+            <div class="col-xs-6">
+                <img src="/static/IDP_decor2.png" width="84" height="125">
+            </div>
+        </div>
+    </div>
+    <!--This creates a row to display the clickable toggling tabs for Home, About, and Documentation-->
+    <div class="bs-example">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a href="#home" class="nav-link" data-toggle="tab">Home</a>
+            </li>
+            <li class="nav-item">
+                <a href="#about" class="nav-link" data-toggle="tab">About</a>
+            </li>
+            <li class="nav-item">
+                <a href="#documentation" class="nav-link" data-toggle="tab">Documentation</a>
+            </li>
+        </ul>
+        ​
+        <div class="tab-content">
+            ​
+            <!--About Page Contents-->
+            <div class="tab-pane fade" id="about">
+                <h4 class="mt-2">Welcome to the Protein Blobulator</h4>
+                <p>The Protein Blobulator is an online resource developed at The<a href="https://branniganlab.wordpress.com/news-2/" target="_blank"> Brannigan Lab</a> at Rutgers-Camden Center for Computational and Integrative Biology. The goal of the Protein Blobulator is to annotate and illustrate subdomains of proteins that have distinct physical properties from each other, and make predictions about how these distinctions have functional effects. <br> <br> The information provided on this website spans any protein sequence or Uniprot ID, but it is especially useful for Intrinsically Disordered Proteins. This website also provides information about Disease-associated SNPs that have been obtained from the <a href="https://www.ncbi.nlm.nih.gov/clinvar/" target="_blank">Clin Var</a> database.</p>
+                <br><br> For bug reports, feature requests, or anything else please contact at grace.brannigan@rutgers. edu.</p>
+                <br>Citing Blobulator<br> <p>A manuscript is currently in preparation. For now, please cite analysis done with Blobulator using the abstract from the Biophysical Society meetingas follows: Article (Lohia2020) Lohia, R.; Bassi, K.; Hansen, M. & Brannigan, G. (2020). Disease Associated Mutations in Intrinsically Disordered Proteins Show Evidence of Enrichment in Hydrophobic Blobs. Biophysical Journal, Elsevier BV,118, 215a.</p>
+
+            </div>
+            <!--Example Page Contents-->
+            <div class="tab-pane fade" id="documentation">
+                <h4 class="mt-2">A Quick Overview</h4>
+                <p> User first should obtain the Uniprot ID for their protein of choice or any amino acid sequence given in one-letter notation. Here we will view an example for &#x3B1-synuclein. We will use its Uniprot ID <a href="https://www.uniprot.org/uniprot/P37840" target="_blank">P37840</a>. It is a 140-residue amino acid that is the hallmark Intrinsically Disordered Protein for Parkinson's Disease. We simply press Compute and the blobulation happens. </p>
+                <br><br>
+                <p> Let's take a look at what we find as our output. First you will see some user adjustable sliders that we will explain, but let's first look at the first graph, which is a mapping of the entire protein, residues 1-140. Each amino acid is accounted for as one grey bar and assigned a "Mean Hydropathy" value. This value tells you how hydrophobic each residue is or how "sticky" it is. Now let's take a look at the first slider "hydropathy cutoff". The default value for hydropathy cutoff upon first outputting our blobulation is 0.4, but we can make this value bigger or smaller. By changing this, we are deciding how hydrophobic each amino acid must be to be considered part of a hydrophobic blob. Now let us take a look at the slider "Minimum blob size". As we adjust this slider, we are able to choose how many residues clumped together that must be within the hydropathy cutoff to be considered a hydrophobic blob. </p>
+                <img src="/static/graph_1example.png" alt="graph1" class="img-fluid"> <br> <br>
+                <p> Now let's view the next two graphs. These graphs show us where the blobs are on our protein. The groups of tall bars stacked together are going to be our hydrophobic blobs that we have selected for. These graphs change as we adjust the sliders. </p>
+                <img src="/static/graph_23example.png" alt="graph2" class="img-fluid">
+                <br> <br>
+                <p> But what do the different colors mean? The coloring on our second graph is derived from the <a href="https://www.pnas.org/content/110/33/13392" target="_blank">Das-Pappu phase diagram</a> that colors regions of proteins based on globular tendency. You will find the color key for this next to the graph. The coloring on our third graph is based on the net charge per residue value or NCPR for short. This is any value from -1 to 1 and is colored according to the color gradient key you will also find ajacent to the graph. </p>
+            </div>
+            ​
+            ​
+            <!--Home Page Contents-->
+            <div class="tab-pane container active" id="home">
+                <h5 class="text-center">Enter any Uniprot ID or Sequence and watch the blobulation happen!</h5>
+                <br>
+                <br>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <!--form-->
+                            <div class="form-group">
+                                <form class="navbar-form navbar-top" method=post target="_blank" action="">
+                                    <label> {{form.uniprot_id.label }}</label>
+                                    <p> The UniProtKB accession number is the unique alphanumeric identifier of each entry in UniProtKB. </p>
+                                    <!--form.uniprot_id calls the Uniprot ID field in model_2.py -->
+                                    <p> {{ form.uniprot_id(class_="form-control", rows="1")}}</p>
+                                    <p><input type=submit name="action_u" class="btn btn-primary" value="Compute"></p>
+                                    <p>
+                                        {% if result != None %}
+                                        {% endif %}
+                                    </p>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 align-self-center">
+                            <div class="text-center">
+                                <h2>Or</h2>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-group">
+                                <form class="navbar-form navbar-top" method=post target="_blank" action="">
+                                    <label> {{form.aa_sequence.label }}</label>
+                                    <p> Input any sequence of your choosing. </p>
+                                    <p> {{ form.aa_sequence(class_="form-control", rows="5")}}</p>
+                                    <label> {{form.seq_name.label }}</label>
+                                    <p> Enter any name for your sequence of choice. </p>
+                                    <p> {{ form.seq_name(class_="form-control", rows="1")}} </p>
+                                    <p><input type=submit name="action_s" class="btn btn-primary" value="Compute"></p>
+                                    <p>
+                                        {% if result != None %}
+                                        {% endif %}
+                                    </p>
+                            </div>
+                        </div>
+                        ​
+                    </div>
+</body>
+​
+​
+​
+<!--a function that disables the enter key from adding new lines to the textarea-->
+<script type="text/javascript">
+$(document).ready(function() {
+
+    $('p').keypress(function(event) {
+
+        if (event.keyCode == 13) {
+            event.preventDefault()
+        }
+    });
+});
+</script>
+​
+​
+​
+<br>
+<br>
+<br>
+​
+<!--footer for the page-->
+<footer>
+    <div class="container">
+        <p>Protein Blobulator - &copy; Brannigan Lab 2019</p>
+    </div>
+</footer>
+​
+
+</html>
