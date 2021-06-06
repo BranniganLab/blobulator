@@ -1,18 +1,19 @@
-#Protein Blobulator
+# Protein Blobulator
 
 
 
-##Steps for running protein blobulation:
+## Steps for running protein blobulation:
 
 ### Using common line:
 
+Blobulating default sequence with default blobulation parameters of hydropathy cutoff and minimum blob length:
 ```
-Blobulating default sequence with default blobulation parameters of hydropathy cutoff and minimum blob length
 python3 blobulation.py
 The blobulation parameters can be changed with “compute” function in blobulation.py
 compute(seq=“input_seqeunce”, cutoff=0.4, domain_threshold=4)
-
+```
 Output:
+```
 The blobulated sequence “blobulated.csv” is saved in current working directory
 ```
 ### Using web interface 
