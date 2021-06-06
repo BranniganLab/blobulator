@@ -110,7 +110,7 @@ def index():
             window = 3 
             session['sequence'] = str(my_seq) #set the current sequence variable
             my_initial_df = compute(
-                str(my_seq), float(0.4), domain_threshold=4, window=window, disorder_residues=disorder_residues
+                str(my_seq), float(0.4), 4, window=window, disorder_residues=disorder_residues
             )
             df = my_initial_df
             chart_data = df.round(3).to_dict(orient="records")
@@ -158,7 +158,7 @@ def index():
             # do the blobulation
             window = 3
             my_initial_df = compute(
-                str(my_seq), float(0.4), domain_threshold=4, window=window
+                str(my_seq), float(0.4), 4, window=window
             )  # blobulation
             df = my_initial_df
             chart_data = df.round(3).to_dict(orient="records")
@@ -196,7 +196,7 @@ def api_id():
     my_initial_df = compute(
         str(my_seq),
         float(cutoff),
-        domain_threshold=float(domain_threshold),
+        float(domain_threshold),
         window=window,
         disorder_residues = list(my_disorder)
     )  # blobulation
@@ -219,7 +219,7 @@ def get_post():
     my_initial_df = compute(
         str(my_seq),
         float(cutoff),
-        domain_threshold=float(domain_threshold),
+        float(domain_threshold),
         window=window,
         disorder_residues = list(my_disorder)
     )  # blobulation
@@ -245,7 +245,7 @@ def calc_json():
     my_initial_df = compute(
         str(my_seq),
         float(cutoff),
-        domain_threshold=float(domain_threshold),
+        float(domain_threshold),
         window=window,
         disorder_residues = list(my_disorder)
     )  # blobulation
@@ -284,7 +284,7 @@ def calc_plot():
         fig = compute(
             str(my_seq),
             float(cutoff),
-            domain_threshold=float(domain_threshold),
+            float(domain_threshold),
             window=window, my_plot =True,disorder_residues = list(my_disorder)
         )  # blobulation
         output = io.BytesIO()
@@ -301,7 +301,7 @@ def calc_plot():
         fig = compute(
             str(my_seq),
             float(cutoff),
-            domain_threshold=float(domain_threshold),
+            float(domain_threshold),
             window=window, my_plot =True,disorder_residues = list(my_disorder)
         )  # blobulation
         output = io.BytesIO()

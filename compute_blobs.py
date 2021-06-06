@@ -41,7 +41,7 @@ cval = scalarMap.to_rgba(0)
 
 
 def compute(
-    seq, cutoff, domain_threshold=4, window=3, my_plot=False, disorder_residues=[]):
+    seq, cutoff, domain_threshold, window=3, my_plot=False, disorder_residues=[]):
     window_factor = int((window - 1) / 2)
     seq_start = 1  # starting resid for the seq
     resid_range = range(seq_start, len(seq) + 1 + seq_start)
@@ -470,7 +470,7 @@ def compute(
 
 
 if __name__ == "__main__":
-        df = compute("MDVFMKGLSKAKEGVVAAAEKTKQGVAEAAGKTKEGVLYVGSKTKEGVVHGVATV", 0.4, domain_threshold=4)
+        df = compute("MDVFMKGLSKAKEGVVAAAEKTKQGVAEAAGKTKEGVLYVGSKTKEGVVHGVATV", 0.4, 4)
         df = df.rename(columns={'seq_name': 'res_name', 'm_cutoff': 'hydrophobicity_cutoff', 'domain_threshold':'minimum_blob_length', 'blobtype':'blob_hydrophobicty_class', 'N':'blob_length'})
         print ("Writing output file")
         df[['res_name', 'hydrophobicity_cutoff', 'minimum_blob_length', 'blob_hydrophobicty_class', 'blob_charge_class','blob_length']].to_csv("./blobulated.csv", index=False)
