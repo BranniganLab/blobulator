@@ -12,7 +12,7 @@ python3 compute_blobs.py
 ```
 The blobulation parameters can be changed with “compute” function in blobulation.py:
 ```
-compute(seq, hydrophobicity_cutoff, domain_threshold=4)
+compute(seq, hydrophobicity_cutoff, minimum_blob_length)
 ```
 
 Output:
