@@ -10,9 +10,14 @@ Blobulating default sequence with default blobulation parameters of hydropathy c
 ```
 python3 compute_blobs.py
 ```
-The blobulation parameters can be changed with “compute” function in blobulation.py:
+The protein seqeunce and blobulation parameters can be changed with “compute” function in blobulation.py:
 ```
 compute(seq, hydrophobicity_cutoff, minimum_blob_length)
+```
+Current defaluts for compute function
+
+```
+compute("MDVFMKGLSKAKEGVVAAAEKTKQGVAEAAGKTKEGVLYVGSKTKEGVVHGVATV", 0.4, 4)
 ```
 
 Output:
