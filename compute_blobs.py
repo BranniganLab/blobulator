@@ -222,6 +222,41 @@ def compute(
                 "Found inaccessible region of phase diagram. Numerical error"
             )
 
+
+    def phase_diagram_class(x):
+        fcr = x[1]
+        ncpr = x[0]
+        fp = x[2]
+        fn = x[3]
+
+        # if we're in region 1
+        if fcr < 0.25:
+            return "1"
+
+            # if we're in region 2
+        elif fcr >= 0.25 and fcr <= 0.35:
+            return "2"
+
+            # if we're in region 3
+        elif fcr > 0.35 and abs(ncpr) < 0.35:
+            return "3"
+
+            # if we're in region 4 or 5
+        elif fp > 0.35:
+            if fn > 0.35:
+                raise SequenceException(
+                    "Algorithm bug when coping with phase plot regions"
+                )
+            return "5"
+
+        elif fn > 0.35:
+            return "4"
+
+        else:  # This case is impossible but here for completeness\
+            raise SequenceException(
+                "Found inaccessible region of phase diagram. Numerical error"
+            )
+
     # ..........................Define phase diagram.........................................................#
     def uversky_diagram(x):
         h = x[1]*1.0
@@ -271,6 +306,9 @@ def compute(
     df["P_diagram"] = df[["NCPR", "fcr", "fp", "f-"]].apply(
         lambda x: phase_diagram(x), axis=1
     )
+    df["blob_charge_class"] = df[["NCPR", "fcr", "fp", "f-"]].apply(
+            lambda x: phase_diagram_class(x), axis=1
+        )
     df["U_diagram"] = df[["NCPR", "H"]].apply(
         lambda x: uversky_diagram(x), axis=1
     )
@@ -334,6 +372,7 @@ def compute(
         df["P_diagram"] = df[["NCPR", "fcr", "fp", "f-"]].apply(
             lambda x: phase_diagram_plot(x), axis=1
         )
+
         df["NCPR_color"] = df[["NCPR", "fcr"]].apply(
             lambda x: NCPR_color_plot(x), axis=1
         )   
@@ -431,4 +470,9 @@ def compute(
 
 
 if __name__ == "__main__":
-        df = compute("MMMMMMMMMMMMMMMMMMMMM", 0.37)
+        df = compute("MDVFMKGLSKAKEGVVAAAEKTKQGVAEAAGKTKEGVLYVGSKTKEGVVHGVATV", 0.4, domain_threshold=4)
+        df = df.rename(columns={'seq_name': 'res_name', 'm_cutoff': 'hydrophobicity_cutoff', 'domain_threshold':'minimum_blob_length', 'blobtype':'blob_hydrophobicty_class', 'N':'blob_length'})
+        print ("Writing output file")
+        df[['res_name', 'hydrophobicity_cutoff', 'minimum_blob_length', 'blob_hydrophobicty_class', 'blob_charge_class','blob_length']].to_csv("./blobulated.csv", index=False)
+
+
