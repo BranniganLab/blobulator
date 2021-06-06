@@ -43,10 +43,8 @@ If the user inputs uniprot id, it further makes following calls
   - https://www.ebi.ac.uk/proteins/api/variation - to get the disease causing missense SNPs in the given sequence
   - http://d2p2.pro/ - to get the disorder score for each amino acid in the sequence 
 
-**compute_blobs.py** is called with the sequence and its features (when present) to blobulate the protein.
+**compute_blobs.py** is called from blobulation.py with the sequence and its features (when present) to blobulate the protein. This script takes the amino acid sequence as input and outputs the blob properties for each residue. It also contains function for plotting the downloadable version of the plot.
 The output of compute_blobs.py (dataframe of blobulated sequence) is then passed to index.html for plotting with d3. 
-
-**compute_blobs.py** - This script takes the amino acid sequence as input and outputs the blob properties for each residue. It also contains function for plotting the downloadable version of the plot.
 
 **index.html** - This script uses javascript to interact with the html elements and draws and updates the blobulated protein. Each time the user changes the input values (moves the slider) the script makes a call to its own api function written in blobulation.py. The api function calls compute_blobs.py with updated input parameters.
 
