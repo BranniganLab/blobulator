@@ -8,16 +8,16 @@
 
 Blobulating default sequence with default blobulation parameters of hydropathy cutoff and minimum blob length:
 ```
-python3 blobulation.py
+python3 compute_blobs.py
 ```
 The blobulation parameters can be changed with “compute” function in blobulation.py:
 ```
-compute(seq=“input_seqeunce”, cutoff=0.4, domain_threshold=4)
+compute(seq, hydrophobicity_cutoff, domain_threshold=4)
 ```
 
 Output:
 ```
-The blobulated sequence “blobulated.csv” is saved in current working directory
+The blobulated sequence “blobulated.csv” is written in current working directory
 ```
 ### Using web interface 
 
