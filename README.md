@@ -44,7 +44,7 @@ Go to your browser and run "http://127.0.0.1:5000//api/query?my_seq=MDVFMKGLSKAK
 The script uses the flask and wtforms modules. 
 It first reads the user inputed sequence or uniprot id. 
 If the user inputs uniprot id, it further makes following calls
-  - https://www.ebi.ac.uk/proteins/api/features - to get the sequence of the protein from uniprot id
+  - https://www.ebi.ac.uk/proteins/api/features - to get the sequence of the protein from a uniprot id
   - https://www.ebi.ac.uk/proteins/api/variation - to get the disease causing missense SNPs in the given sequence
   - http://d2p2.pro/ - to get the disorder score for each amino acid in the sequence 
 
