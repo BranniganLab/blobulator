@@ -4,7 +4,7 @@
 
 ## Steps for running protein blobulation:
 
-### Using common line:
+### Using command line:
 
 Blobulating default sequence with default blobulation parameters of hydropathy cutoff and minimum blob length:
 ```
