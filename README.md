@@ -41,7 +41,7 @@ Go to your browser and run "http://127.0.0.1:5000//api/query?my_seq=MDVFMKGLSKAK
 ### Tool Code description:
 
 **blobulation.py** - This is the backbone script of the tool. 
-The script uses flask and wtforms module. 
+The script uses the flask and wtforms modules. 
 It first reads the user inputed sequence or uniprot id. 
 If the user inputs uniprot id, it further makes following calls
   - https://www.ebi.ac.uk/proteins/api/features - to get the sequence of the protein from uniprot id
