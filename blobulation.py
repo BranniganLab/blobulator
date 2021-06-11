@@ -290,7 +290,7 @@ def calc_plot():
         output = io.BytesIO()
         FigureCanvasSVG(fig).print_svg(output)
         return Response(output, mimetype="image/svg+xml", headers={"Content-disposition":
-                   "attachment; filename=plot.svg"})
+                   "attachment; filename=plot.svg", "Cache-Control": "no-store"})
     else:
         #my_seq  = request.form['my_seq']
         my_seq = session.get('sequence')
@@ -307,7 +307,7 @@ def calc_plot():
         output = io.BytesIO()
         FigureCanvasSVG(fig).print_svg(output)
         return Response(output.getvalue(), mimetype="image/svg+xml", headers={"Content-disposition":
-                   "attachment; filename=plot.svg"})
+                   "attachment; filename=plot.svg", "Cache-Control": "no-store"})
 
 if __name__ == "__main__":
     app.run(debug=True)
