@@ -74,17 +74,24 @@ def index():
                     Please try again later.""")
             seq_file = get_sequence.json()
 
+            if 'errorMessage' in seq_file:
+                return render_template("error.html",
+                    title="UniProt server returned an error",
+                    message=f"""The UniProt server said: {', '.join(seq_file['errorMessage'])}""")
 
             get_snp = requests.get(
                 REQUEST_URL_snp,
                 params=uniprot_params,
                 headers={"Accept": "application/json"},
             )
+            # HTTP status code 200 means the request was successful
+            if get_snp.status_code != 200:
+                return render_template("error.html",
+                    title="Error getting SNP from UniProt",
+                    message="""There was an error retrieving SNP data from UniProt""")
+
             seq_file_snp = get_snp.json()
-            if len(seq_file_snp) == 0:
-                snps_json = {}
-            else:
-                snps_json = pathogenic_snps (seq_file_snp[0]["features"]) #filters the disease causing SNPs
+            snps_json = pathogenic_snps (seq_file_snp[0]["features"]) #filters the disease causing SNPs
             my_seq = seq_file[0]["sequence"]
 
             if (
