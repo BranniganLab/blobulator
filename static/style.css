@@ -87,3 +87,9 @@
 .myslider2:hover {
     opacity: 2.0;
 }
+
+/* Suppress certain elements of the page when printing */
+@media print {
+    .myslider1, .myslider2, .info-hover, button { display: none }
+
+}

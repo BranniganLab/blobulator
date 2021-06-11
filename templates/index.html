@@ -22,6 +22,7 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
     <script src="https://d3js.org/d3.v4.js"></script>
     <script type="text/javascript"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="static/style.css">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>{{ protein_name }} </title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -307,7 +308,7 @@ function chart(chartID, title) {
             svg.append("text").attr("x", width + 50).attr("y", margin.top + 105).text("5: Positively charged strong polyelectrolyte").style("font-size", "15px").attr("alignment-baseline", "middle")
 
             //Blue i tool tip to the right of globular tendency plot
-            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle")
+            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
 
                 .on("mouseover", function(d) {
                     d3.select(this)
@@ -336,7 +337,7 @@ function chart(chartID, title) {
 
 
             //Blue i tool tip to the right of the NCPR plot
-            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle")
+            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
                 .on("mouseover", function(d) {
                     d3.select(this)
                     //.style("fill", "black");
@@ -364,7 +365,7 @@ function chart(chartID, title) {
 
 
             //Blue i tool tip to the right of the NCPR plot
-            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle")
+            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
                 .on("mouseover", function(d) {
                     d3.select(this)
                     //.style("fill", "black");
@@ -393,7 +394,7 @@ function chart(chartID, title) {
 
 
             //Blue i tool tip to the right of the NCPR plot
-            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle")
+            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
                 .on("mouseover", function(d) {
                     d3.select(this)
                     //.style("fill", "black");
@@ -424,7 +425,7 @@ function chart(chartID, title) {
             .attr("transform", "rotate(-90)")
             .text("Mean Hydropathy");
         //Adding the information tooltip
-        svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle")
+        svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
             .on("mouseover", function(d) {
                 d3.select(this)
                 //.style("fill", "black");
