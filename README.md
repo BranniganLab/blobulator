@@ -26,7 +26,7 @@ The blobulated sequence “blobulated.csv” is written in current working direc
 ```
 ### Using web interface 
 
-https://www.blobulator.branniganlab.org/
+https://www.blobulator.branniganlab.org/ (Beta version)
 
 ### Running web tool from command line
 
