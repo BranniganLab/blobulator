@@ -6,13 +6,13 @@
 
 ### Using command line:
 
-Blobulating default sequence with default blobulation parameters of hydropathy cutoff and minimum blob length:
+Blobulating default sequence with default blobulation parameters of hydrophobicity threshold and minimum blob length:
 ```
 python3 compute_blobs.py
 ```
 The protein seqeunce and blobulation parameters can be changed with “compute” function in blobulation.py:
 ```
-compute(seq, hydrophobicity_cutoff, minimum_blob_length)
+compute(seq, hydrophobicity_threshold, minimum_blob_length)
 ```
 Current defaluts for compute function
 
