@@ -45,3 +45,26 @@ The blobulated sequence “blobulated.csv” is written in current working direc
 ### Using web interface 
 
 https://www.blobulator.branniganlab.org/ (Beta version)
+
+## Instructions for use:
+
+Run the compute function for any desired user amino acid sequence, hydrophobicity_threshold and minimum_blob_length:
+
+eg. For running blobulation for 'Small muscular protein (UNIPROT: Q9UHP9)' with hydrophobicity_threshold='0.4' and minimum_blob_length='4'
+
+Obtain the amino acid sequence of Small muscular protein: MNMSKQPVSNVRAIQANINIPMGAFRPGAGQPPRRKECTPEVEEGVPPTSDEEKKPIPGAKKLPGPAVNLSEIQNIKSELKYVPKAEQ
+
+Change the input value of compute function in compute_blobs.py:
+
+```
+compute("MNMSKQPVSNVRAIQANINIPMGAFRPGAGQPPRRKECTPEVEEGVPPTSDEEKKPIPGAKKLPGPAVNLSEIQNIKSELKYVPKAEQ", 0.4, 4)
+```
+Run compute_blobs.py with new inputs
+
+```
+cd blobulator
+python3 compute_blobs.py
+```
+
+
+
