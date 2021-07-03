@@ -1,4 +1,5 @@
 # Protein Blobulator
+For any given protein sequece, this tool identifies contigous stretchs of hydrophobic segments. Each residue is assigned to h blobs (hydophobic), p blob (polar) or s (seperator) residues.
 
 ## Software requirements:
 
