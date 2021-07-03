@@ -3,8 +3,7 @@
 ### Software requirements:
 
 ```
-Python 3.0+
-
+Python 3+
 ```
 # Python dependencies:
 
@@ -12,7 +11,6 @@ Python 3.0+
 numpy
 pandas
 matplotlib
-
 ```
 
 ### Installation guide:
@@ -21,7 +19,6 @@ Download from github:
 
 ```
 git clone https://github.com/BranniganLab/blobulator
-
 ```
 ## Demo:
 
