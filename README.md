@@ -28,7 +28,7 @@ Blobulating default sequence with default blobulation parameters of hydrophobici
 cd blobulator
 python3 compute_blobs.py
 ```
-The protein seqeunce and blobulation parameters can be changed with “compute” function in blobulation.py:
+The protein seqeunce and blobulation parameters can be changed with “compute” function in compute_blobs.py:
 ```
 compute(seq, hydrophobicity_threshold, minimum_blob_length)
 ```
