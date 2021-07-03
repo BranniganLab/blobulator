@@ -1,11 +1,11 @@
 # Protein Blobulator
 
-### Software requirements:
+## Software requirements:
 
 ```
 Python 3+
 ```
-# Python dependencies:
+## Python dependencies:
 
 ```
 numpy
@@ -13,7 +13,7 @@ pandas
 matplotlib
 ```
 
-### Installation guide:
+## Installation guide:
 
 Download from github:
 
@@ -21,8 +21,6 @@ Download from github:
 git clone https://github.com/BranniganLab/blobulator
 ```
 ## Demo:
-
-### Using command line:
 
 Blobulating default sequence with default blobulation parameters of hydrophobicity threshold and minimum blob length:
 ```
