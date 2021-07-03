@@ -1,9 +1,9 @@
 # Protein Blobulator
 
-###Software requirements:
+### Software requirements:
 Python 3.0+
 
-###Installation guide:
+### Installation guide:
 
 Download from github:
 
