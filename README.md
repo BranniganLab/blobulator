@@ -1,13 +1,23 @@
 # Protein Blobulator
 
+###Software requirements:
+Python 3.0+
 
+###Installation guide:
 
-## Steps for running protein blobulation:
+Download from github:
+
+```
+git clone https://https://github.com/BranniganLab/blobulator
+
+```
+## Demo:
 
 ### Using command line:
 
 Blobulating default sequence with default blobulation parameters of hydrophobicity threshold and minimum blob length:
 ```
+cd blobulator
 python3 compute_blobs.py
 ```
 The protein seqeunce and blobulation parameters can be changed with “compute” function in blobulation.py:
