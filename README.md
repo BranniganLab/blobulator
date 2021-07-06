@@ -28,7 +28,7 @@ Blobulating default sequence with default blobulation parameters of hydrophobici
 cd blobulator
 python3 compute_blobs.py
 ```
-The protein seqeunce and blobulation parameters can be changed with “compute” function in compute_blobs.py:
+The protein seqeunce and blobulation parameters can be changed with “compute” function in compute_blobs.py (line #473)
 ```
 compute(seq, hydrophobicity_threshold, minimum_blob_length)
 ```
@@ -54,7 +54,7 @@ eg. For running blobulation for 'Small muscular protein (UNIPROT: Q9UHP9)' with 
 
 Obtain the amino acid sequence of Small muscular protein: MNMSKQPVSNVRAIQANINIPMGAFRPGAGQPPRRKECTPEVEEGVPPTSDEEKKPIPGAKKLPGPAVNLSEIQNIKSELKYVPKAEQ
 
-Change the input value of compute function in compute_blobs.py:
+Change the input value of compute function in compute_blobs.py at line #473:
 
 ```
 compute("MNMSKQPVSNVRAIQANINIPMGAFRPGAGQPPRRKECTPEVEEGVPPTSDEEKKPIPGAKKLPGPAVNLSEIQNIKSELKYVPKAEQ", 0.4, 4)
