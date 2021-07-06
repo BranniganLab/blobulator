@@ -44,11 +44,7 @@ Output:
 The blobulated sequence “blobulated.csv” is written in current working directory
 ```
 
-## Web Interface
-
-A web interface for this tool is currently under active development. The beta version can be found at https://www.blobulator.branniganlab.org/
-
-###Instructions for use:
+## Instructions for use:
 
 Run the compute function for any desired user amino acid sequence, hydrophobicity_threshold and minimum_blob_length:
 
@@ -68,5 +64,8 @@ cd blobulator
 python3 compute_blobs.py
 ```
 
+## Web Interface
+
+A web interface for this tool is currently under active development. The beta version can be found at https://www.blobulator.branniganlab.org/
 
 
