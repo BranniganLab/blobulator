@@ -43,11 +43,12 @@ Output:
 ```
 The blobulated sequence “blobulated.csv” is written in current working directory
 ```
-### Using web interface 
 
-https://www.blobulator.branniganlab.org/ (Beta version)
+## Web Interface
 
-## Instructions for use:
+A web interface for this tool is currently under active development. The beta version can be found at https://www.blobulator.branniganlab.org/
+
+###Instructions for use:
 
 Run the compute function for any desired user amino acid sequence, hydrophobicity_threshold and minimum_blob_length:
 
