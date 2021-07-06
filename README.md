@@ -1,5 +1,6 @@
 # Protein Blobulator
-This tool identifies contigous stretches of hydrophobic segments within a protein sequence. Each residue is assigned to h blobs (hydophobic), p blob (polar) or s (separator) residues.
+This tool identifies contiguous stretches of hydrophobic residues within a protein sequence. Any sequence of contiguous hydrophobic residues that is at least as long as the minimum blob length is considered an hydrophobic or h "blob". Any remaining segments that are at least as long as the minimum length are considered polar or p "blobs," while those that are shorter than the minimum blob length are considered separator or "s" residues.  Separator residues are very short stretches of non-hydrophobic residues that may b found between two h blobs.
+
 
 ## Software requirements:
 
@@ -23,7 +24,7 @@ git clone https://github.com/BranniganLab/blobulator
 ```
 ## Demo:
 
-Blobulating default sequence with default blobulation parameters of hydrophobicity threshold and minimum blob length:
+To blobulate default sequence with default blobulation parameters of hydrophobicity threshold and minimum blob length:
 ```
 cd blobulator
 python3 compute_blobs.py
