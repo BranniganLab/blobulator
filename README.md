@@ -1,5 +1,6 @@
 # Protein Blobulator
-For any given protein sequece, this tool identifies contigous stretchs of hydrophobic segments. Each residue is assigned to h blobs (hydophobic), p blob (polar) or s (seperator) residues.
+This tool identifies contiguous stretches of hydrophobic residues within a protein sequence. Any sequence of contiguous hydrophobic residues that is at least as long as the minimum blob length is considered an hydrophobic or h "blob". Any remaining segments that are at least as long as the minimum length are considered polar or p "blobs," while those that are shorter than the minimum blob length are considered separator or "s" residues.  Separator residues are very short stretches of non-hydrophobic residues that may be found between two h blobs.
+
 
 ## Software requirements:
 
@@ -23,12 +24,12 @@ git clone https://github.com/BranniganLab/blobulator
 ```
 ## Demo:
 
-Blobulating default sequence with default blobulation parameters of hydrophobicity threshold and minimum blob length:
+To blobulate default sequence with default blobulation parameters of hydrophobicity threshold and minimum blob length:
 ```
 cd blobulator
 python3 compute_blobs.py
 ```
-The protein seqeunce and blobulation parameters can be changed with “compute” function in compute_blobs.py:
+The protein seqeunce and blobulation parameters can be changed with “compute” function in compute_blobs.py (line #473)
 ```
 compute(seq, hydrophobicity_threshold, minimum_blob_length)
 ```
@@ -42,9 +43,6 @@ Output:
 ```
 The blobulated sequence “blobulated.csv” is written in current working directory
 ```
-### Using web interface 
-
-https://www.blobulator.branniganlab.org/ (Beta version)
 
 ## Instructions for use:
 
@@ -54,7 +52,7 @@ eg. For running blobulation for 'Small muscular protein (UNIPROT: Q9UHP9)' with 
 
 Obtain the amino acid sequence of Small muscular protein: MNMSKQPVSNVRAIQANINIPMGAFRPGAGQPPRRKECTPEVEEGVPPTSDEEKKPIPGAKKLPGPAVNLSEIQNIKSELKYVPKAEQ
 
-Change the input value of compute function in compute_blobs.py:
+Change the input value of compute function in compute_blobs.py at line #473:
 
 ```
 compute("MNMSKQPVSNVRAIQANINIPMGAFRPGAGQPPRRKECTPEVEEGVPPTSDEEKKPIPGAKKLPGPAVNLSEIQNIKSELKYVPKAEQ", 0.4, 4)
@@ -66,5 +64,8 @@ cd blobulator
 python3 compute_blobs.py
 ```
 
+## Web Interface
+
+A web interface for this tool is currently under active development. The beta version can be found at https://www.blobulator.branniganlab.org/
 
 
