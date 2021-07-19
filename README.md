@@ -13,6 +13,8 @@ Python 3+
 numpy
 pandas
 matplotlib
+svglib
+reportlab
 ```
 
 ## Installation guide:
