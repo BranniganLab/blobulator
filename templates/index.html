@@ -765,8 +765,17 @@ function draw(data) {
     d3.selectAll("#mutatebox,#snp_id,#residue_type").on("change", do_update);
 
     //download_data
-    d3.select('#download_data_link').on('click', function(){ 
-            $.ajax({
+    d3.select('#download_data_link').on('click', function(){
+        // If the box is check, I mutate the amino acid
+        // TODO: This code should not be duplicated
+        var my_seq = {{ my_seq | safe }};
+        if(d3.select("#mutatebox").property("checked")){
+            var snp_id = document.getElementById("snp_id").value;
+            var amino_acid = document.getElementById("residue_type").value;
+            my_seq =  my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
+        }
+
+        $.ajax({
                 url: "/json",
                 type: "post",
                 data: {my_seq: my_seq, domain_threshold: d3.select("#domain_threshold_user").text(), cutoff: d3.select("#cutoff_user").text(), my_disorder:my_disorder},
