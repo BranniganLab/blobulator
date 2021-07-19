@@ -15,6 +15,9 @@ from flask_cors import CORS
 from flask_session import Session
 import requests
 
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPDF
+
 
 app = Flask(__name__)
 
@@ -312,10 +315,16 @@ def calc_plot():
             float(domain_threshold),
             window=window, my_plot =True,disorder_residues = list(my_disorder)
         )  # blobulation
-        output = io.BytesIO()
-        FigureCanvasSVG(fig).print_svg(output)
-        return Response(output.getvalue(), mimetype="image/svg+xml", headers={"Content-disposition":
-                   "attachment; filename=plot.svg", "Cache-Control": "no-store"})
+        output_svg = io.BytesIO()
+        FigureCanvasSVG(fig).print_svg(output_svg)
+        # Must seek to beginning of file or svg2rlg will try to read past end of file and produce null output
+        output_svg.seek(0)
+        drawing = svg2rlg(output_svg)
+        output_pdf = io.BytesIO()
+        renderPDF.drawToFile(drawing, output_pdf)
+
+        return Response(output_pdf.getvalue(), mimetype="image/pdf", headers={"Content-disposition":
+                   "attachment; filename=plot.pdf", "Cache-Control": "no-store"})
 
 if __name__ == "__main__":
     app.run(debug=True)
