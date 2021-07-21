@@ -33,6 +33,7 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
 
 
 <body>
+    <div class="container">
     <!--Header that contains Title, protein name, Uni ID, and Gene. 
   Other information can be placed here too? -->
     <div class="text-center">
@@ -48,7 +49,9 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
              <span id="cutoff_user"></span>
             </label>
             <input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001>
+            
             <input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001>
+
             
         </div>
         <div class="rangeslider">
@@ -59,6 +62,42 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
             <input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider2" step=1>
         </div>
 
+        <div>
+            <input type="checkbox" class="checkbox" id="mutatebox" value="True"> <label for="mutatebox">Mutate residue</label>
+            <!-- my_seq includes single quotes in the string so we have to do this subscripting here -->
+            <select id="snp_id">
+            {% for residue in my_seq[1:-1] %}
+            <option value="{{ loop.index0 + 1 }}"> {{ loop.index0 + 1 }} ({{ residue }})</option>
+            {% endfor %}
+            </select>
+            to
+            <select id="residue_type">
+             <option value="A">A</option>
+             <option value="R">R</option>
+             <option value="N">N</option>
+             <option value="D">D</option>
+             <option value="C">C</option>
+             <option value="Q">Q</option>
+             <option value="E">E</option>
+             <option value="G">G</option>
+             <option value="H">H</option>
+             <option value="I">I</option>
+             <option value="L">L</option>
+             <option value="K">K</option>
+             <option value="M">M</option>
+             <option value="F">F</option>
+             <option value="P">P</option>
+             <option value="S">S</option>
+             <option value="T">T</option>
+             <option value="W">W</option>
+             <option value="Y">Y</option>
+             <option value="V">V</option>                
+            </select>
+        </div>
+
+
+
+
         <div class="text-left">
         <label style = "opacity: 0.0; display: none; position: relative;"> </label>
         <button type="button" id="download_plot_link">Download plots!</button>
@@ -67,7 +106,7 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
     </div>
       
 
-
+</div>
 </body>
 <style>
 /*CSS styling for the blue i tooltip */
@@ -317,6 +356,7 @@ function chart(chartID, title) {
                         .style("opacity", 1);
                     Tooltip.html(
                         "<p>The Das-Pappu phase diagram provides a means to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. </p> <img src=\"/static/daspapu_graph.png\" width=\"200\" height=\"200\"> <p> <i> Das RK, Papu RV (2013) Conformations of intrinsically disordered proteins are influenced by linear sequence distributions of oppositely charged residues PNAS 110(33):13392–13397.</i> </p>")
+
                         .style("left", (d3.mouse(this)[0] + 70) + "px")
                         .style("top", (d3.mouse(this)[1] + (margin.top) + 500) + "px");
                 })
@@ -455,6 +495,7 @@ var uni_id = {{ my_uni_id | safe }}
 var uni_id_str = '["' + uni_id + '"]'
 var my_seq = {{ my_seq | safe }}
 var my_data = {{ data.chart_data | safe }}
+console.log(my_seq)
 
 
 var my_cut = {{ my_cut | safe }}
@@ -688,71 +729,54 @@ function draw(data) {
            }
         }
 
-    //LISTEN cutoff SLIDER 
-    d3.select("#cutoff_user_slider").on("change", function(d) {
-        selectedValue = this.value
-        var d_value = d3.select("#domain_threshold_user").text()
-        console.log("domain_value")
-        console.log(d_value)
-        var m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, my_disorder:my_disorder}
-    $.post( "/postmethod", m_str , "json")
-     .then(function(data) {
-            var data_tmp = data.chart_data
-            var tt = JSON.stringify(eval("(" + data_tmp + ")"));
-            var data_obj = JSON.parse(tt)
-            updateChart(selectedValue, data_obj)
-        });
-    })
+    // Update the output when parameters are changed
+    function do_update() {
+        // If the box is check, I mutate the amino acid
+        if(d3.select("#mutatebox").property("checked")){
+            
+            var snp_id = document.getElementById("snp_id").value;
+            var my_seq = {{ my_seq | safe }};
+            var amino_acid = document.getElementById("residue_type").value;
+            var my_seq =  my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
 
-    //LISTEN cutoff BOX
-    d3.select("#cutoff_user_box").on("change", function(d) {
-        selectedValue = this.value
-        var d_value = d3.select("#domain_threshold_user").text()
-        var m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, my_disorder:my_disorder}
-    $.post( "/postmethod", m_str , "json")
-     .then(function(data) {
-            var data_tmp = data.chart_data
-            var tt = JSON.stringify(eval("(" + data_tmp + ")"));
-            var data_obj = JSON.parse(tt)
-            updateChart(selectedValue, data_obj)
-        });
-    })
+        // Otherwise I revert back to wild sequence initially uploaded
+        } else {
+            var my_seq = {{ my_seq | safe }};
+        }
 
-    //LISTEN domain threshold SLIDER
-    d3.select("#domain_threshold_user_slider").on("change", function(d) {
-        d_value = this.value
+        var d_value = d3.select("#domain_threshold_user").text()
         var selectedValue = d3.select("#cutoff_user").text()
         var m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, my_disorder:my_disorder}
 
-    $.post( "/postmethod", m_str , "json")
-     .then(function(data) {
-            console.log("inside_d3")
-            var data_tmp = data.chart_data
+        $.post( "/postmethod", m_str , "json")
+        .then(function(data) {
+            var data_tmp = data.chart_data;
             var tt = JSON.stringify(eval("(" + data_tmp + ")"));
-            var data_obj = JSON.parse(tt)
-            updateChart(selectedValue, data_obj)
+            var data_obj = JSON.parse(tt);
+            updateChart(selectedValue, data_obj);
         });
-    })
+    }
     
-    //LISTEN domain threshold BOX
-    d3.select("#domain_threshold_user_box").on("change", function(d) {
-        d_value = this.value
-        var selectedValue = d3.select("#cutoff_user").text()
-        var m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, my_disorder:my_disorder}
-
-    $.post( "/postmethod", m_str , "json")
-     .then(function(data) {
-            console.log("inside_d3")
-            var data_tmp = data.chart_data
-            var tt = JSON.stringify(eval("(" + data_tmp + ")"));
-            var data_obj = JSON.parse(tt)
-            updateChart(selectedValue, data_obj)
-        });
-    })
+    // Set up UI element change handlers
+    d3.selectAll(".checkbox").on("change", do_update)
+    d3.select("#cutoff_user_slider").on("change", do_update);
+    d3.select("#cutoff_user_box").on("change", do_update);
+    d3.select("#domain_threshold_user_slider").on("change", do_update);
+    d3.select("#domain_threshold_user_box").on("change", do_update);
+    d3.selectAll("#mutatebox,#snp_id,#residue_type").on("change", do_update);
 
     //download_data
-    d3.select('#download_data_link').on('click', function(){ 
-            $.ajax({
+    d3.select('#download_data_link').on('click', function(){
+        // If the box is check, I mutate the amino acid
+        // TODO: This code should not be duplicated
+        var my_seq = {{ my_seq | safe }};
+        if(d3.select("#mutatebox").property("checked")){
+            var snp_id = document.getElementById("snp_id").value;
+            var amino_acid = document.getElementById("residue_type").value;
+            my_seq =  my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
+        }
+
+        $.ajax({
                 url: "/json",
                 type: "post",
                 data: {my_seq: my_seq, domain_threshold: d3.select("#domain_threshold_user").text(), cutoff: d3.select("#cutoff_user").text(), my_disorder:my_disorder},
