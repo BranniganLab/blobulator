@@ -228,7 +228,7 @@ var Tooltip = d3.select("body")
     .style("padding", "5px")
     .style("padding", "5px")
     .style("width", "400px")
-    .style("height", "425px")
+    .style("height", "610px")
     .style("font-size", "18px")
     .style("text-align", "justify")
 
@@ -355,7 +355,7 @@ function chart(chartID, title) {
                         .duration(100)
                         .style("opacity", 1);
                     Tooltip.html(
-                        "<p>The Das-Pappu phase diagram provides a means to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. </p> <img src=\"/static/daspappu_graph.png\" width=\"200\" height=\"200\"> <p> <i> Das RK, Papu RV (2013) Conformations of intrinsically disordered proteins are influenced by linear sequence distributions of oppositely charged residues PNAS 110(33):13392–13397.</i> </p>")
+                        "<p>The Das-Pappu phase diagram provides a means to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. </p> <img src=\"/static/daspappu_graph.png\" width=\"200\" height=\"200\"> <p> <i> <b> The original figure can be found in the article: </b> Das RK, Papu RV (2013) Conformations of intrinsically disordered proteins are influenced by linear sequence distributions of oppositely charged residues PNAS 110(33):13392–13397.</i> <b> This figure was developed for: </b> Lohia R, Salari R, Brannigan G (2019) Sequence specificity despite intrinsic disorder: How a disease-associated Val/Met polymorphism rearranges tertiary interactions in a long disordered protein. PLoS Comput Biol 15(10): e1007390. https://doi.org/10.1371/journal.pcbi.1007390. </p>")
 
                         .style("left", (d3.mouse(this)[0] + 70) + "px")
                         .style("top", (d3.mouse(this)[1] + (margin.top) + 500) + "px");
