@@ -274,7 +274,7 @@ function chart(chartID, title) {
         .text("Residue")
 
 
-    if (chartID == "plot2" || chartID == "plot3"|| chartID == "plot4" || chartID == "plot5") {
+    if (chartID == "plot2" || chartID == "plot3"|| chartID == "plot4" || chartID == "plot5" || chartID == "plot6") {
         //Creates the "Mean Hydropathy" y-axis label for Smoothed hydropathy per residue
         //"p" blob y-axis label for globular tendency plot
         svg.append("text")
@@ -366,6 +366,36 @@ function chart(chartID, title) {
                         .duration(500)
                         .style("opacity", 0);
                 })
+            } else if (chartID == "plot6") {
+            //Color bar key to the right of the NCPR plot. It appends a png image.
+            var colorbar = svg.append('image')
+                .attr('xlink:href', '/static/gradient_key_enich.png')
+                .attr('width', 51)
+                .attr('height', 107)
+                .attr("x", width + 30)
+                .attr("y", margin.top + 15)
+
+
+            //Blue i tool tip to the right of the NCPR plot
+            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
+                .on("mouseover", function(d) {
+                    d3.select(this)
+                    //.style("fill", "black");
+                    Tooltip.transition()
+                        .duration(100)
+                        .style("opacity", 1);
+                    Tooltip.html(
+                            "<p>Enrichment values for h blobs")
+                        .style("left", (d3.mouse(this)[0] + 70) + "px")
+                        .style("top", (d3.mouse(this)[1] + (margin.top) + 700) + "px");
+                })
+                .on("mouseout", function(d, i) {
+                    d3.select(this)
+                    Tooltip.transition()
+                        .duration(500)
+                        .style("opacity", 0);
+                })
+
         } else if (chartID == "plot5") {
             var colorbar = svg.append('image')
                 .attr('xlink:href', '/static/uv_disorder_key.png')
@@ -488,16 +518,17 @@ function draw(data) {
     var svg2 = chart("plot2", "Blobs colored according to globular tendency")
     var svg3 = chart("plot3", "Blobs colored according to net charge per residue")
     var svg5 = chart("plot5", "Blobs colored according to uversky diagram")
+    var svg6 = chart("plot6", "Blobs colored according to enrichments")
 
     if (my_disorder == "0") {
-        var plot_list = [svg1, svg2, svg3, svg5]
+        var plot_list = [svg1, svg2, svg3, svg5, svg6]
         console.log("my_disorder2")
         console.log(my_disorder)
 
 
     } else {
         var svg4 = chart("plot4", "Blobs colored according to fraction of disordered residue")
-        var plot_list = [svg1, svg2, svg3, svg4, svg5] 
+        var plot_list = [svg1, svg2, svg3, svg4, svg5, svg6] 
 
     }
     var domain_bar, domain_bar_disorder,domain_bar_ncpr, domain_bar_u;
@@ -528,6 +559,10 @@ function draw(data) {
         } else if (svg==svg3) {
             data.forEach(function(d) {
             d.var = d.NCPR_color
+        })
+        } else if (svg==svg6) {
+            data.forEach(function(d) {
+            d.var = d.h_blob_enrichment
         })
         } else if  (svg==svg4) {
             data.forEach(function(d) {
@@ -668,6 +703,10 @@ function draw(data) {
             } else if (svg==svg3) {
                 data_updated.forEach(function(d) {
                 d.var = d.NCPR_color
+            })
+            } else if (svg==svg6) {
+                data_updated.forEach(function(d) {
+                d.var = d.h_blob_enrichment
             })
             } else if  (svg==svg4) {
                 data_updated.forEach(function(d) {
