@@ -24,6 +24,8 @@ counter_s = 0  # this is global variable used for annotating domains in f3
 counter_p = 0  #
 counter_h = 0
 
+s_counter = 0 # this is global variable used for annotating domains in f4
+
 # character naming of domain names
 ch = "a"
 counter_domain_naming = ord(ch)

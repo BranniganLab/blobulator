@@ -73,6 +73,8 @@ def index():
                     If the UniProt server is down then this service won't work either.
                     Please try again later.""")
             seq_file = get_sequence.json()
+            print ("seq_file")
+            print (seq_file)
 
             if 'errorMessage' in seq_file:
                 return render_template("error.html",
@@ -91,7 +93,11 @@ def index():
                     message="""There was an error retrieving SNP data from UniProt""")
 
             seq_file_snp = get_snp.json()
-            snps_json = pathogenic_snps (seq_file_snp[0]["features"]) #filters the disease causing SNPs
+            print (seq_file_snp)
+            if seq_file_snp:
+                snps_json = pathogenic_snps (seq_file_snp[0]["features"]) #filters the disease causing SNPs
+            else:
+                snps_json = "[]"
             my_seq = seq_file[0]["sequence"]
 
             if (
