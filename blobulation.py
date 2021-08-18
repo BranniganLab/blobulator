@@ -15,9 +15,6 @@ from flask_cors import CORS
 from flask_session import Session
 import requests
 
-from svglib.svglib import svg2rlg
-from reportlab.graphics import renderPDF
-
 
 app = Flask(__name__)
 
@@ -77,28 +74,17 @@ def index():
                     Please try again later.""")
             seq_file = get_sequence.json()
 
-            if 'errorMessage' in seq_file:
-                return render_template("error.html",
-                    title="UniProt server returned an error",
-                    message=f"""The UniProt server said: {', '.join(seq_file['errorMessage'])}""")
 
             get_snp = requests.get(
                 REQUEST_URL_snp,
                 params=uniprot_params,
                 headers={"Accept": "application/json"},
             )
-            # HTTP status code 200 means the request was successful
-            if get_snp.status_code != 200:
-                return render_template("error.html",
-                    title="Error getting SNP from UniProt",
-                    message="""There was an error retrieving SNP data from UniProt""")
-
             seq_file_snp = get_snp.json()
-
-            if seq_file_snp:
-                snps_json = pathogenic_snps (seq_file_snp[0]["features"]) #filters the disease causing SNPs
+            if len(seq_file_snp) == 0:
+                snps_json = {}
             else:
-                snps_json = "[]"
+                snps_json = pathogenic_snps (seq_file_snp[0]["features"]) #filters the disease causing SNPs
             my_seq = seq_file[0]["sequence"]
 
             if (
@@ -264,13 +250,12 @@ def calc_json():
         disorder_residues = list(my_disorder)
     )  # blobulation
     df = my_initial_df
-    #print (df.head)
     #df = df.drop(range(0, 1))
     del df['domain_pre']
     del df['N']
     del df['NCPR_color']
     del df["P_diagram"]
-    del df["uversky_color"]
+    del df["u_color"]
     del df["disorder_color"]
     del df["hydropathy_3_window_mean"] 
     del df["hydropathy_digitized"] 
@@ -305,7 +290,7 @@ def calc_plot():
         output = io.BytesIO()
         FigureCanvasSVG(fig).print_svg(output)
         return Response(output, mimetype="image/svg+xml", headers={"Content-disposition":
-                   "attachment; filename=plot.svg", "Cache-Control": "no-store"})
+                   "attachment; filename=plot.svg"})
     else:
         #my_seq  = request.form['my_seq']
         my_seq = session.get('sequence')
@@ -319,16 +304,10 @@ def calc_plot():
             float(domain_threshold),
             window=window, my_plot =True,disorder_residues = list(my_disorder)
         )  # blobulation
-        output_svg = io.BytesIO()
-        FigureCanvasSVG(fig).print_svg(output_svg)
-        # Must seek to beginning of file or svg2rlg will try to read past end of file and produce null output
-        output_svg.seek(0)
-        drawing = svg2rlg(output_svg)
-        output_pdf = io.BytesIO()
-        renderPDF.drawToFile(drawing, output_pdf)
-
-        return Response(output_pdf.getvalue(), mimetype="image/pdf", headers={"Content-disposition":
-                   "attachment; filename=plot.pdf", "Cache-Control": "no-store"})
+        output = io.BytesIO()
+        FigureCanvasSVG(fig).print_svg(output)
+        return Response(output.getvalue(), mimetype="image/svg+xml", headers={"Content-disposition":
+                   "attachment; filename=plot.svg"})
 
 if __name__ == "__main__":
     app.run(debug=True)
