@@ -255,7 +255,7 @@ def calc_json():
     del df['N']
     del df['NCPR_color']
     del df["P_diagram"]
-    del df["uversky_color"]
+    del df["u_color"]
     del df["disorder_color"]
     del df["hydropathy_3_window_mean"] 
     del df["hydropathy_digitized"] 
