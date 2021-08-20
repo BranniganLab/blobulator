@@ -315,8 +315,8 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
       Unique id string
       optional arguments: cq1, cmid, cq3 which define the colors at 25%, 50%, and 75% respectively.d
     Returns: 
-        svg with newly appended colorbar
-  */
+        none - svg is passed "by reference"
+*/
 function add_colorbar({svg, width, height, min, med, max, xpos, ypos, ctop, cq1, cmid, cq3, cend, id}={}) {
     svg = add_linearGradient({svg, ctop, cq1, cmid, cq3, cend, id: id})
 
@@ -346,8 +346,6 @@ function add_colorbar({svg, width, height, min, med, max, xpos, ypos, ctop, cq1,
         .attr("x", xpos+width+width+6)
         .attr("y", ypos+6)
         .text(min)
-
-    return svg
 }
 
 /* add_linearGradient:
@@ -407,8 +405,51 @@ function add_linearGradient({svg, ctop, cq1, cmid, cq3, cend, id}={}) {
 }
 
 
+/* add_tooltip
+FUNCTION: add_tooltip
+SHORT DESCRIPTION: add a small i that provides information to the user in a tooltip
+INPUTS:
+	svg - a container for a graph (modified by the function directly)
+RETURNS:
+	none
+*/
+function add_tooltip({svg, xpos, ypos}={}) {
+	tooltip = svg.append("text")
+		.attr("x", xpos - 3)
+		.attr("y", ypos - 28)
+		.text("i")
+		.style("font-size", "20px")
+		.style("font-weight", "bold")
+		.style("font-family", "zapfino")
+		.style("fill", "1E59FC")
+		.attr("alignment-baseline", "middle")
+		.attr("class", "info-hover")
+		
+	tooltip.on("mouseover", function(d) {
+			d3.select(this)
+			//.style("fill", "black");
+			Tooltip.transition()
+				.duration(100)
+				.style("opacity", 1);
+			Tooltip.html(
+				"<p>The Das-Pappu phase diagram provides a means to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. </p> <img src=\"/static/daspappu_graph.png\" width=\"350\" height=\"350\"> <p> <i> <b> Figure adapted from: </b> <a href=\"https://www.pnas.org/content/early/2013/07/29/1304749110\" target=\"_blank\"> Das RK, Papu RV (2013) Conformations of intrinsically disordered proteins are influenced by linear sequence distributions of oppositely charged residues PNAS 110(33):13392–13397.</i> </p>")
 
-/*
+				.style("left", (d3.mouse(this)[0] + 70) + "px")
+				.style("top", (d3.mouse(this)[1] + (margin.top) + 500) + "px");
+		})
+	
+	tooltip.on("mouseout", function(d, i) {
+			d3.select(this)
+			Tooltip.transition()
+				.duration(500)
+				.style("opacity", 0);
+		})
+}
+
+
+
+
+/* add_phSNP_ylabel
 FUNCTION: add_phSNP_ylabel
 SHORT DESCRIPTION: add an s h SNP text y label to the svg object
 INPUTS:
@@ -443,12 +484,11 @@ function add_phSNP_ylabel(svg) {
 		.attr("y", margin.left - 80)
 		.attr("transform", "rotate(-90)")
 		.text("SNPs");
+		
+	return svg
 }
 
-
-
-
-/*
+/* add_GlobularLegend
 FUNCTION: add_GlobularLegend
 SHORT DESCRIPTION: add the discrete legend for the globular tendencies graph
 INPUTS:
@@ -557,33 +597,15 @@ function chart(chartID, title) {
 
     if (chartID == "globsPlot" || chartID == "ncprPlot"|| chartID == "disorderPlot" || chartID == "uverskyPlot" || chartID == "richPlot") {
         //Creates the "Mean Hydropathy" y-axis label for Smoothed hydropathy per residue
-		add_phSNP_ylabel(svg)
+		svg = add_phSNP_ylabel(svg)
 
         if (chartID == "globsPlot") {
 			// Add Legend for globular plot:
 			add_GlobularLegend(svg)
 			
             //Blue i tool tip to the right of globular tendency plot
-            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-
-                .on("mouseover", function(d) {
-                    d3.select(this)
-                    //.style("fill", "black");
-                    Tooltip.transition()
-                        .duration(100)
-                        .style("opacity", 1);
-                    Tooltip.html(
-                        "<p>The Das-Pappu phase diagram provides a means to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. </p> <img src=\"/static/daspappu_graph.png\" width=\"350\" height=\"350\"> <p> <i> <b> Figure adapted from: </b> <a href=\"https://www.pnas.org/content/early/2013/07/29/1304749110\" target=\"_blank\"> Das RK, Papu RV (2013) Conformations of intrinsically disordered proteins are influenced by linear sequence distributions of oppositely charged residues PNAS 110(33):13392–13397.</i> </p>")
-
-                        .style("left", (d3.mouse(this)[0] + 70) + "px")
-                        .style("top", (d3.mouse(this)[1] + (margin.top) + 500) + "px");
-                })
-                .on("mouseout", function(d, i) {
-                    d3.select(this)
-                    Tooltip.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-                })
+			add_tooltip({svg: svg, xpos: width, ypos: margin.top})
+			
         } else if (chartID == "disorderPlot") {
             add_colorbar({
                 svg: svg, 
