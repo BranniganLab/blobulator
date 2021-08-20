@@ -303,6 +303,111 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
 
 //FUNCTION DECLARATIONS
 
+
+/* add_colorbar
+    Function to create linear color bars for graphs. Adapted from: https://www.visualcinnamon.com/2016/05/smooth-color-legend-d3-svg-gradient/
+    Inputs: 
+      svg container, 
+      width and height of the colorbar in px
+      min and max values
+      x and y position of the upper left corner
+      ctop and cend for the first and last colors of the gradient
+      Unique id string
+      optional arguments: cq1, cmid, cq3 which define the colors at 25%, 50%, and 75% respectively.d
+    Returns: 
+        svg with newly appended colorbar
+  */
+function add_colorbar({svg, width, height, min, med, max, xpos, ypos, ctop, cq1, cmid, cq3, cend, id}={}) {
+    svg = add_linearGradient({svg, ctop, cq1, cmid, cq3, cend, id: id})
+
+    //Draw the rectangle and fill with the gradient
+    svg.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("x", xpos+width) //offset by one width
+        .attr("y", ypos-height) //align tops
+        .style("fill", "url(#"+id+")");
+
+
+    //Add labels
+    svg.append("text")
+        .attr("x", xpos+width+width+6)
+        .attr("y", ypos-height+6)
+        .text(max)
+
+    if (med){
+        svg.append("text")
+            .attr("x", xpos+width+width+6)
+            .attr("y", (2*ypos-height+12)/2)
+            .text(med)
+    }
+
+    svg.append("text")
+        .attr("x", xpos+width+width+6)
+        .attr("y", ypos+6)
+        .text(min)
+
+    return svg
+}
+
+/* add_linearGradient:
+        Function to create linear color bars for graphs. Adapted from: https://www.visualcinnamon.com/2016/05/smooth-color-legend-d3-svg-gradient/
+    Inputs: 
+        svg container, 
+        ctop and cend for the first and last colors of the gradient
+        an id string
+        optional arguments: cq1, cmid, cq3 which define the colors at 25%, 50%, and 75% respectively.d
+    Returns:
+        The svg with a linear gradient with the given id
+*/
+function add_linearGradient({svg, ctop, cq1, cmid, cq3, cend, id}={}) {
+    var defs = svg.append("defs");
+
+    //Append a linearGradient element to the defs and give it a unique id
+    var linearGradient = defs.append("linearGradient")
+        .attr("id", id)
+        .attr("x1", "0%")
+        .attr("y1", "0%")
+        .attr("x2", "0%")
+        .attr("y2", "100%");
+
+    //Define the gradient
+        //Set the color for the start (0%)
+    linearGradient.append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", ctop)
+
+    if (cq1){
+        //Set the color for the end (25%)
+        linearGradient.append("stop")
+            .attr("offset", "25%")
+            .attr("stop-color", cq1)
+        }
+
+    if (cmid){
+        //Set the color for the end (50%)
+        linearGradient.append("stop")
+            .attr("offset", "50%")
+            .attr("stop-color", cmid)
+        }
+
+    if (cq3){
+        //Set the color for the end (75%)
+        linearGradient.append("stop")
+            .attr("offset", "75%")
+            .attr("stop-color", cq3)
+        }
+    
+        //Set the color for the end (100%)
+    linearGradient.append("stop")
+        .attr("offset", "100%")
+        .attr("stop-color", cend)
+
+    return svg
+}
+
+
+
 /*
 FUNCTION: add_phSNP_ylabel
 SHORT DESCRIPTION: add an s h SNP text y label to the svg object
@@ -480,12 +585,19 @@ function chart(chartID, title) {
                         .style("opacity", 0);
                 })
         } else if (chartID == "disorderPlot") {
-            var colorbar = svg.append('image')
-                .attr('xlink:href', '/static/disorder_key1.png')
-                .attr('width', 51)
-                .attr('height', 107)
-                .attr("x", width + 30)
-                .attr("y", margin.top + 15)
+            add_colorbar({
+                svg: svg, 
+                width: 20, 
+                height: 80, 
+                min: 0, 
+                max: 1,
+                xpos: width,
+                ypos: height,
+                cend: '#7f3b08',
+                cq3: '#ee9d3c', 
+                cmid: '#f6f6f7',
+                ctop: '#2d004b',
+                id: 'disorder_colorbar'})
 
 
             //Blue i tool tip to the right of the NCPR plot
@@ -509,12 +621,19 @@ function chart(chartID, title) {
                 })
             } else if (chartID == "richPlot") {
             //Color bar key to the right of the NCPR plot. It appends a png image.
-            var colorbar = svg.append('image')
-                .attr('xlink:href', '/static/gradient_key_enich.png')
-                .attr('width', 51)
-                .attr('height', 107)
-                .attr("x", width + 30)
-                .attr("y", margin.top + 15)
+            add_colorbar({
+                svg: svg, 
+                width: 20, 
+                height: 80, 
+                min: '0', 
+                med: '1',
+                max: '2',
+                xpos: width,
+                ypos: height,
+                cend: '#ff0000',
+                cmid: '#f4f4ff',
+                ctop: '#0000ff',
+                id: 'NCPR_colorbar'})
 
 
             //Blue i tool tip to the right of the NCPR plot
@@ -538,12 +657,19 @@ function chart(chartID, title) {
                 })
 
         } else if (chartID == "uverskyPlot") {
-            var colorbar = svg.append('image')
-                .attr('xlink:href', '/static/uv_disorder_key.png')
-                .attr('width', 51)
-                .attr('height', 107)
-                .attr("x", width + 30)
-                .attr("y", margin.top + 15)
+            add_colorbar({
+                svg: svg, 
+                width: 20, 
+                height: 80, 
+                min: '-0.3', 
+                max: '0.3',
+                xpos: width,
+                ypos: height,
+                cend: '#7f3b08',
+                cq3: '#ee9d3c', 
+                cmid: '#f6f6f7',
+                ctop: '#2d004b',
+                id: 'uversky_colorbar'})
 
 
             //Blue i tool tip to the right of the NCPR plot
@@ -567,12 +693,19 @@ function chart(chartID, title) {
                 })
         } else {
             //Color bar key to the right of the NCPR plot. It appends a png image.
-            var colorbar = svg.append('image')
-                .attr('xlink:href', '/static/gradient_key.png')
-                .attr('width', 51)
-                .attr('height', 107)
-                .attr("x", width + 30)
-                .attr("y", margin.top + 15)
+            svg = add_colorbar({
+                svg: svg, 
+                width: 20, 
+                height: 80, 
+                min: '-1', 
+                med: '0',
+                max: '+1',
+                xpos: width,
+                ypos: height,
+                cend: '#ff0000',
+                cmid: '#f4f4ff',
+                ctop: '#0000ff',
+                id: 'NCPR_colorbar'})
 
 
             //Blue i tool tip to the right of the NCPR plot
