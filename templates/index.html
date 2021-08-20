@@ -271,6 +271,8 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
 	var my_disorder = {{ my_disorder | tojson| safe }}
 	var domain_threshold_max = {{ domain_threshold_max | safe }}
 
+
+//EVENT HANDLERS
 	domain_threshold_value.innerHTML = domain_threshold_slider.value;
 	cutoff_slider_value.innerHTML = cutoff_slider.value;
 	cutoff_slider.oninput = function() {
@@ -665,7 +667,7 @@ function updateChart(given_cutoff, data_updated, cut_line, x, y, plot_list, plot
 		}
 
 		if (svg.attr("id")!="pathyPlot") {
-			svg.selectAll("rect")
+			d3.select("#"+"barChart"+svg.attr("id")).selectAll("rect")
 				.data(data_updated)
 			plot_variable[index]
 				.enter()
@@ -736,7 +738,7 @@ function draw(data) {
 	
 	
 	
-	
+
     var richSVG = chart("richPlot", "Blobs colored according to enrichments")
 
     if (my_disorder == "0") {
@@ -839,6 +841,7 @@ function draw(data) {
                 });
         } else {
 			var barChart = svg.append("g")
+			barChart.attr("id", "barChart"+svg.attr("id"))
             plot_variable[index] = barChart.selectAll("rect")
                 .data(data)
                 .enter()
