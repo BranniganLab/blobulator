@@ -123,7 +123,7 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
 }
 
 .tooltip {
-    position: absolute;
+    position: fixed;
     text-align: center;
     width: 100px;
     height: 20px;
@@ -225,6 +225,7 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
 		.attr("class", "tooltip")
 		.style("opacity", 0);
 
+/*
 	//tooltip for plots inforamtion panel
 	var Tooltip = d3.select("body")
 		.append("div")
@@ -240,6 +241,7 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
 		.style("height", "590px")
 		.style("font-size", "18px")
 		.style("text-align", "justify")
+*/
 
 	//updates the slider/box value entered by the user
 	var cutoff_slider_value = document.getElementById("cutoff_user");
@@ -413,10 +415,11 @@ INPUTS:
 RETURNS:
 	none
 */
-function add_tooltip({svg, xpos, ypos}={}) {
-	tooltip = svg.append("text")
-		.attr("x", xpos - 3)
-		.attr("y", ypos - 28)
+function add_tooltip({svg, xpos, ypos, content}={}) {
+	var xoffset = 300
+	infoIcon = svg.append("text")
+		.attr("x", xpos)
+		.attr("y", ypos)
 		.text("i")
 		.style("font-size", "20px")
 		.style("font-weight", "bold")
@@ -425,20 +428,34 @@ function add_tooltip({svg, xpos, ypos}={}) {
 		.attr("alignment-baseline", "middle")
 		.attr("class", "info-hover")
 		
-	tooltip.on("mouseover", function(d) {
-			d3.select(this)
+	var Tooltip = d3.select("body")
+		.append("div")
+		.style("opacity", 0)
+		.attr("class", "tooltip")
+		.style("background-color", "white")
+		.style("border", "solid")
+		.style("border-width", "2px")
+		.style("border-radius", "5px")
+		.style("padding", "5px")
+		.style("padding", "5px")
+		.style("width", "400px")
+		.style("height", "590px")
+		.style("font-size", "18px")
+		.style("text-align", "justify")
+		
+	
+	infoIcon.on("mouseover", function(d) {
+			console.log(d3.mouse(document.getElementById("my_dataviz"))[1])
 			//.style("fill", "black");
 			Tooltip.transition()
 				.duration(100)
 				.style("opacity", 1);
-			Tooltip.html(
-				"<p>The Das-Pappu phase diagram provides a means to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. </p> <img src=\"/static/daspappu_graph.png\" width=\"350\" height=\"350\"> <p> <i> <b> Figure adapted from: </b> <a href=\"https://www.pnas.org/content/early/2013/07/29/1304749110\" target=\"_blank\"> Das RK, Papu RV (2013) Conformations of intrinsically disordered proteins are influenced by linear sequence distributions of oppositely charged residues PNAS 110(33):13392–13397.</i> </p>")
-
-				.style("left", (d3.mouse(this)[0] + 70) + "px")
-				.style("top", (d3.mouse(this)[1] + (margin.top) + 500) + "px");
+			Tooltip.html(content)
+				.style("right", xoffset+"px")
+				.style("bottom", 0+"px");
 		})
 	
-	tooltip.on("mouseout", function(d, i) {
+	infoIcon.on("mouseout", function(d, i) {
 			d3.select(this)
 			Tooltip.transition()
 				.duration(500)
@@ -575,8 +592,7 @@ function chart(chartID, title) {
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
-        .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 		.attr("id", chartID)
 
     //Creates the title
@@ -599,156 +615,84 @@ function chart(chartID, title) {
         //Creates the "Mean Hydropathy" y-axis label for Smoothed hydropathy per residue
 		svg = add_phSNP_ylabel(svg)
 
+		//switch(chartID)
         if (chartID == "globsPlot") {
 			// Add Legend for globular plot:
 			add_GlobularLegend(svg)
 			
             //Blue i tool tip to the right of globular tendency plot
-			add_tooltip({svg: svg, xpos: width, ypos: margin.top})
+			var Das_Pappu_text = "<p>The Das-Pappu phase diagram provides a means to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. </p> <img src=\"/static/daspappu_graph.png\" width=\"350\" height=\"350\"> <p> <i> <b> Figure adapted from: </b> <a href=\"https://www.pnas.org/content/early/2013/07/29/1304749110\" target=\"_blank\"> Das RK, Papu RV (2013) Conformations of intrinsically disordered proteins are influenced by linear sequence distributions of oppositely charged residues PNAS 110(33):13392–13397.</i> </p>"
+			add_tooltip({svg: svg, xpos: width, ypos: margin.top, content: Das_Pappu_text})
 			
         } else if (chartID == "disorderPlot") {
-            add_colorbar({
-                svg: svg, 
-                width: 20, 
-                height: 80, 
-                min: 0, 
+            add_colorbar({svg: svg, width: 20, height: 80, xpos: width, ypos: height,
+                id: 'disorder_colorbar',
+				min: 0, 
                 max: 1,
-                xpos: width,
-                ypos: height,
                 cend: '#7f3b08',
                 cq3: '#ee9d3c', 
                 cmid: '#f6f6f7',
-                ctop: '#2d004b',
-                id: 'disorder_colorbar'})
+                ctop: '#2d004b'
+                })
 
 
-            //Blue i tool tip to the right of the NCPR plot
-            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-                .on("mouseover", function(d) {
-                    d3.select(this)
-                    //.style("fill", "black");
-                    Tooltip.transition()
-                        .duration(100)
-                        .style("opacity", 1);
-                    Tooltip.html(
-                            "<p>For each blob its fraction of disorderd residue is calculated.</p>")
-                        .style("left", (d3.mouse(this)[0] + 70) + "px")
-                        .style("top", (d3.mouse(this)[1] + (margin.top) + 700) + "px");
-                })
-                .on("mouseout", function(d, i) {
-                    d3.select(this)
-                    Tooltip.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-                })
-            } else if (chartID == "richPlot") {
-            //Color bar key to the right of the NCPR plot. It appends a png image.
-            add_colorbar({
-                svg: svg, 
-                width: 20, 
-                height: 80, 
-                min: '0', 
+            //Blue i tool tip to the right of the disorder plot
+			var disorder_tool_text = "<p>For each blob its fraction of disorderd residue is calculated.</p>"
+            add_tooltip({svg: svg, xpos: width, ypos: margin.top, content: disorder_tool_text})
+
+
+        } else if (chartID == "richPlot") {
+            //Color bar key to the right of the enrichment plot.
+            add_colorbar({svg: svg, width: 20, height: 80, xpos: width, ypos: height,
+                id: 'rich_colorbar',
+				min: '0', 
                 med: '1',
                 max: '2',
-                xpos: width,
-                ypos: height,
                 cend: '#ff0000',
                 cmid: '#f4f4ff',
-                ctop: '#0000ff',
-                id: 'NCPR_colorbar'})
+                ctop: '#0000ff'
+                })
 
 
-            //Blue i tool tip to the right of the NCPR plot
-            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-                .on("mouseover", function(d) {
-                    d3.select(this)
-                    //.style("fill", "black");
-                    Tooltip.transition()
-                        .duration(100)
-                        .style("opacity", 1);
-                    Tooltip.html(
-                            "<p>Enrichment values for h blobs")
-                        .style("left", (d3.mouse(this)[0] + 70) + "px")
-                        .style("top", (d3.mouse(this)[1] + (margin.top) + 700) + "px");
-                })
-                .on("mouseout", function(d, i) {
-                    d3.select(this)
-                    Tooltip.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-                })
+            //Blue i tool tip to the right of the enrichment plot
+			var enrichment_tool_text = "<p>Enrichment values for h blobs</p>"
+			add_tooltip({svg: svg, xpos: width, ypos: margin.top, content: enrichment_tool_text})
+
 
         } else if (chartID == "uverskyPlot") {
-            add_colorbar({
-                svg: svg, 
-                width: 20, 
-                height: 80, 
+            add_colorbar({svg: svg, width: 20, height: 80, xpos: width, ypos: height,
+				id: 'uversky_colorbar',
                 min: '-0.3', 
                 max: '0.3',
-                xpos: width,
-                ypos: height,
                 cend: '#7f3b08',
                 cq3: '#ee9d3c', 
                 cmid: '#f6f6f7',
-                ctop: '#2d004b',
-                id: 'uversky_colorbar'})
+                ctop: '#2d004b'
+                })
 
 
-            //Blue i tool tip to the right of the NCPR plot
-            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-                .on("mouseover", function(d) {
-                    d3.select(this)
-                    //.style("fill", "black");
-                    Tooltip.transition()
-                        .duration(100)
-                        .style("opacity", 1);
-                    Tooltip.html(
-                            "<p>For each blob its distance from the uversky diagram slope is plotted. Postive values are disordered and negative values are ordered. </p>")
-                        .style("left", (d3.mouse(this)[0] + 70) + "px")
-                        .style("top", (d3.mouse(this)[1] + (margin.top) + 700) + "px");
-                })
-                .on("mouseout", function(d, i) {
-                    d3.select(this)
-                    Tooltip.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-                })
+            //Blue i tool tip to the right of the uversky plot
+			var uversky_tool_text = "<p>For each blob its distance from the uversky diagram slope is plotted. Postive values are disordered and negative values are ordered. </p>"
+			add_tooltip({svg: svg, xpos: width, ypos: margin.top, content: uversky_tool_text})
+
+
         } else {
             //Color bar key to the right of the NCPR plot. It appends a png image.
-            svg = add_colorbar({
-                svg: svg, 
-                width: 20, 
-                height: 80, 
+            add_colorbar({svg: svg, width: 20, height: 80, xpos: width, ypos: height,
+                id: 'NCPR_colorbar',
                 min: '-1', 
                 med: '0',
                 max: '+1',
-                xpos: width,
-                ypos: height,
                 cend: '#ff0000',
                 cmid: '#f4f4ff',
-                ctop: '#0000ff',
-                id: 'NCPR_colorbar'})
+                ctop: '#0000ff'
+                })
 
 
             //Blue i tool tip to the right of the NCPR plot
-            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-                .on("mouseover", function(d) {
-                    d3.select(this)
-                    //.style("fill", "black");
-                    Tooltip.transition()
-                        .duration(100)
-                        .style("opacity", 1);
-                    Tooltip.html(
-                            "<p>For each blob its net charge per residue (NCPR) is calculated. </p>")
-                        .style("left", (d3.mouse(this)[0] + 70) + "px")
-                        .style("top", (d3.mouse(this)[1] + (margin.top) + 700) + "px");
-                })
-                .on("mouseout", function(d, i) {
-                    d3.select(this)
-                    Tooltip.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-                })
+            var NCPR_tool_text = "<p>For each blob its net charge per residue (NCPR) is calculated. </p>"
+			add_tooltip({svg: svg, xpos: width, ypos: margin.top, content: NCPR_tool_text})
+
 
         }
     } else {
@@ -761,25 +705,10 @@ function chart(chartID, title) {
             .attr("transform", "rotate(-90)")
             .text("Mean Hydropathy");
         //Adding the information tooltip
-        svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-            .on("mouseover", function(d) {
-                d3.select(this)
-                //.style("fill", "black");
-                Tooltip.transition()
-                    .duration(100)
-                    .style("opacity", 1);
-                Tooltip.html(
-                        "<p>The linear hydropathy uses a sliding, overlapping window approach to calculate the mean hydropathy for groups of 3 residues. This value is rescaled to lie between 0 (hydrophilic) and 1 (hydrophobic). This plot can help you identify how hydrophobicity varies along your sequence.</p>" +
+            var hydropathy_tool_text = ("<p>The linear hydropathy uses a sliding, overlapping window approach to calculate the mean hydropathy for groups of 3 residues. This value is rescaled to lie between 0 (hydrophilic) and 1 (hydrophobic). This plot can help you identify how hydrophobicity varies along your sequence.</p>" +
                         "<p>Any stretch of 'minimum blob size' or more residues with mean hydropathy > 'hydropathy cutoff' is classified as a hydrophobic or “h” blob and any remaining stretch of four or more residues is classified as a non-hydrophobic linker or “p” blob.</p>")
-                    .style("left", (d3.mouse(this)[0] + 70) + "px")
-                    .style("top", (d3.mouse(this)[1] + (margin.top) + 200) + "px");
-            })
-            .on("mouseout", function(d, i) {
-                d3.select(this)
-                Tooltip.transition()
-                    .duration(500)
-                    .style("opacity", 0);
-            })
+			add_tooltip({svg: svg, xpos: width, ypos: margin.top, content: hydropathy_tool_text})
+
     }
 
     return svg
