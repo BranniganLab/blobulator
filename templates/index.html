@@ -576,6 +576,89 @@ function add_GlobularLegend(svg) {
 }
 
 
+/* add_snps
+*/
+function add_snps(svg, x, y) {
+	//console.log("not pathyplot")
+	svg.append('g')
+		.selectAll("rect")
+		//.data(my_disorder.map(function(d) { return +d; }))
+		.data(my_snp)
+		.enter()
+		.append("rect")
+		.attr("x", function(d) { return x((d.resid)); })
+		.attr("y", function(d) { return y(0.8); })
+		.attr("width", x.bandwidth())
+		.attr("height", function(d) { return y(0.8); })
+		.attr("fill", 'black')
+		.on("click", function(d) {
+			//window.location.href = d.xrefs[0].url+'_blank'
+			window.open(d.xrefs.url, '_blank')
+		})
+		.on("mouseover", function(d) {
+			d3.select(this)
+				.attr("fill", "red");
+			Tooltip_snps.transition()
+				.duration(100)
+				.style("opacity", .9);
+			Tooltip_snps.html(
+					'<a href="' + d.xrefs.url + '"target="_blank">' + d.xrefs.id +
+					"</a>")
+				.style("left", (d3.event.pageX) + "px")
+				.style("top", (d3.event.pageY - 28) + "px");
+		})
+		.on("mouseout", function(d, i) {
+			d3.select(this).attr("fill", function() {
+				return "" + 'black' + "";
+			})
+			Tooltip_snps.transition()
+				.duration(500)
+				.style("opacity", 0);
+		})
+}
+
+
+/* add_cutoff
+*/
+function add_cutoff(svg, x, y, data) {
+	var cut_line = svg.append('g')
+		.append("path")
+		.attr("class", "mypath")
+		.datum(data)
+		.attr("fill", "none")
+		.attr("stroke", "steelblue")
+		.attr("stroke-width", 1.5)
+		.attr("d", d3.line()
+			.x(function(d) { return x(d.resid) })
+			.y(function(d) { return y(my_cut) })
+		);
+	
+	return cut_line
+}
+
+/* add_hydropathy_bar
+*/
+function add_hydropathy_bar(svg, x, y, data) {
+	var hydropathy_bar = svg.selectAll("mybar")
+		.data(data)
+		.enter()
+		.append("rect")
+		.attr("x", function(d) { return x(d.resid); })
+		.attr("y", function(d) { return y(d.hydropathy_3_window_mean); })
+		.attr("width", x.bandwidth())
+		.attr("height", function(d) { return height - y(d.hydropathy_3_window_mean); })
+		.attr("fill", 'grey')
+		.on("mouseover", function() {
+			d3.select(this)
+				.attr("fill", "grey");
+		})
+		.on("mouseout", function(d, i) {
+			d3.select(this).attr("fill", function() {
+				return "" + 'grey' + "";
+			});
+		});
+}
+
 /*
 FUNCTION: CHART
 SHORT DESCRIPTION: make svg containers for each plot
@@ -795,27 +878,12 @@ function do_update(cut_line, x, y, plot_list, plot_variable) {
 
 function draw(data) {
     var pathySVG = chart("pathyPlot", "Smoothed hydropathy per residue")
-	
-	
-	
-	
+
     var globsSVG = chart("globsPlot", "Blobs colored according to globular tendency")
-	
-	
-	
-	
 	
     var ncprSVG = chart("ncprPlot", "Blobs colored according to net charge per residue")
 	
-	
-	
-	
-	
     var uverskySVG = chart("uverskyPlot", "Blobs colored according to uversky diagram")
-	
-	
-	
-	
 
     var richSVG = chart("richPlot", "Blobs colored according to enrichments")
 
@@ -886,37 +954,9 @@ function draw(data) {
         if (svg == pathySVG) {
             svg.append("g") //the y axis is drawn only for plot 1
                 .call(d3.axisLeft(y));
-
-            var cut_line = svg.append('g')
-                .append("path")
-                .attr("class", "mypath")
-                .datum(data)
-                .attr("fill", "none")
-                .attr("stroke", "steelblue")
-                .attr("stroke-width", 1.5)
-                .attr("d", d3.line()
-                    .x(function(d) { return x(d.resid) })
-                    .y(function(d) { return y(my_cut) })
-                );
-
-            var hydropathy_bar = svg.selectAll("mybar")
-                .data(data)
-                .enter()
-                .append("rect")
-                .attr("x", function(d) { return x(d.resid); })
-                .attr("y", function(d) { return y(d.hydropathy_3_window_mean); })
-                .attr("width", x.bandwidth())
-                .attr("height", function(d) { return height - y(d.hydropathy_3_window_mean); })
-                .attr("fill", 'grey')
-                .on("mouseover", function() {
-                    d3.select(this)
-                        .attr("fill", "grey");
-                })
-                .on("mouseout", function(d, i) {
-                    d3.select(this).attr("fill", function() {
-                        return "" + 'grey' + "";
-                    });
-                });
+			var cut_line = add_cutoff(svg, x, y, data)
+			add_hydropathy_bar(svg, x, y, data)
+			
         } else {
 			var barChart = svg.append("g")
 			barChart.attr("id", "barChart"+svg.attr("id"))
@@ -933,43 +973,7 @@ function draw(data) {
         
         //add snp tool tips
         if (svg.attr("id") != "pathyPlot") {
-			//console.log("not pathyplot")
-            svg.append('g')
-                .selectAll("rect")
-                //.data(my_disorder.map(function(d) { return +d; }))
-                .data(my_snp)
-                .enter()
-                .append("rect")
-                .attr("x", function(d) { return x((d.resid)); })
-                .attr("y", function(d) { return y(0.8); })
-                .attr("width", x.bandwidth())
-                .attr("height", function(d) { return y(0.8); })
-                .attr("fill", 'black')
-                .on("click", function(d) {
-                    //window.location.href = d.xrefs[0].url+'_blank'
-                    window.open(d.xrefs.url, '_blank')
-                })
-                .on("mouseover", function(d) {
-                    d3.select(this)
-                        .attr("fill", "red");
-                    Tooltip_snps.transition()
-                        .duration(100)
-                        .style("opacity", .9);
-                    Tooltip_snps.html(
-                            '<a href="' + d.xrefs.url + '"target="_blank">' + d.xrefs.id +
-                            "</a>")
-                        .style("left", (d3.event.pageX) + "px")
-                        .style("top", (d3.event.pageY - 28) + "px");
-                })
-                .on("mouseout", function(d, i) {
-                    d3.select(this).attr("fill", function() {
-                        return "" + 'black' + "";
-                    })
-                    Tooltip_snps.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-                })
-
+			add_snps(svg, x, y)
         }
     }
     var str = "Download plots!";
