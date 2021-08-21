@@ -586,9 +586,9 @@ RETURNS:
 	svg - a d3 container with one svg graph
 */
 function chart(chartID, title) {
-    //Sets the dimensions and location of the svg container Smoothed hydropathy per residue contents
+    //Sets the dimensions and location of the svg container
     var svg = d3.select("#my_dataviz")
-        .append("svg")
+		.append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .append("g")
@@ -603,7 +603,7 @@ function chart(chartID, title) {
         .text(title)
         .attr("font-size", "20px")
 
-    //Creates the "Residue" x-axis label for Smoothed hydropathy per residue
+    //Creates the "Residue" x-axis label
     svg.append("text")
         .attr("x", width / 2)
         .attr("y", height + margin.bottom)
@@ -615,85 +615,79 @@ function chart(chartID, title) {
         //Creates the "Mean Hydropathy" y-axis label for Smoothed hydropathy per residue
 		svg = add_phSNP_ylabel(svg)
 
-		//switch(chartID)
-        if (chartID == "globsPlot") {
-			// Add Legend for globular plot:
-			add_GlobularLegend(svg)
-			
-            //Blue i tool tip to the right of globular tendency plot
-			var Das_Pappu_text = "<p>The Das-Pappu phase diagram provides a means to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. </p> <img src=\"/static/daspappu_graph.png\" width=\"350\" height=\"350\"> <p> <i> <b> Figure adapted from: </b> <a href=\"https://www.pnas.org/content/early/2013/07/29/1304749110\" target=\"_blank\"> Das RK, Papu RV (2013) Conformations of intrinsically disordered proteins are influenced by linear sequence distributions of oppositely charged residues PNAS 110(33):13392–13397.</i> </p>"
-			add_tooltip({svg: svg, xpos: width, ypos: margin.top, content: Das_Pappu_text})
-			
-        } else if (chartID == "disorderPlot") {
-            add_colorbar({svg: svg, width: 20, height: 80, xpos: width, ypos: height,
-                id: 'disorder_colorbar',
-				min: 0, 
-                max: 1,
-                cend: '#7f3b08',
-                cq3: '#ee9d3c', 
-                cmid: '#f6f6f7',
-                ctop: '#2d004b'
-                })
-
-
-            //Blue i tool tip to the right of the disorder plot
-			var disorder_tool_text = "<p>For each blob its fraction of disorderd residue is calculated.</p>"
-            add_tooltip({svg: svg, xpos: width, ypos: margin.top, content: disorder_tool_text})
-
-
-        } else if (chartID == "richPlot") {
-            //Color bar key to the right of the enrichment plot.
-            add_colorbar({svg: svg, width: 20, height: 80, xpos: width, ypos: height,
-                id: 'rich_colorbar',
-				min: '0', 
-                med: '1',
-                max: '2',
-                cend: '#ff0000',
-                cmid: '#f4f4ff',
-                ctop: '#0000ff'
-                })
-
-
-            //Blue i tool tip to the right of the enrichment plot
-			var enrichment_tool_text = "<p>Enrichment values for h blobs</p>"
-			add_tooltip({svg: svg, xpos: width, ypos: margin.top, content: enrichment_tool_text})
-
-
-        } else if (chartID == "uverskyPlot") {
-            add_colorbar({svg: svg, width: 20, height: 80, xpos: width, ypos: height,
-				id: 'uversky_colorbar',
-                min: '-0.3', 
-                max: '0.3',
-                cend: '#7f3b08',
-                cq3: '#ee9d3c', 
-                cmid: '#f6f6f7',
-                ctop: '#2d004b'
-                })
-
-
-            //Blue i tool tip to the right of the uversky plot
-			var uversky_tool_text = "<p>For each blob its distance from the uversky diagram slope is plotted. Postive values are disordered and negative values are ordered. </p>"
-			add_tooltip({svg: svg, xpos: width, ypos: margin.top, content: uversky_tool_text})
-
-
-        } else {
-            //Color bar key to the right of the NCPR plot. It appends a png image.
-            add_colorbar({svg: svg, width: 20, height: 80, xpos: width, ypos: height,
-                id: 'NCPR_colorbar',
-                min: '-1', 
-                med: '0',
-                max: '+1',
-                cend: '#ff0000',
-                cmid: '#f4f4ff',
-                ctop: '#0000ff'
-                })
-
-
-            //Blue i tool tip to the right of the NCPR plot
-            var NCPR_tool_text = "<p>For each blob its net charge per residue (NCPR) is calculated. </p>"
-			add_tooltip({svg: svg, xpos: width, ypos: margin.top, content: NCPR_tool_text})
-
-
+		switch(chartID) {
+			case "globsPlot":
+				// Add Legend for globular plot:
+				add_GlobularLegend(svg)
+				//Blue i tool tip to the right of globular tendency plot
+				var Das_Pappu_text = "<p>The Das-Pappu phase diagram provides a means to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. </p> <img src=\"/static/daspappu_graph.png\" width=\"350\" height=\"350\"> <p> <i> <b> Figure adapted from: </b> <a href=\"https://www.pnas.org/content/early/2013/07/29/1304749110\" target=\"_blank\"> Das RK, Papu RV (2013) Conformations of intrinsically disordered proteins are influenced by linear sequence distributions of oppositely charged residues PNAS 110(33):13392–13397.</i> </p>"
+				add_tooltip({svg: svg, xpos: width, ypos: margin.top, content: Das_Pappu_text})
+				break;
+				
+			case "disorderPlot":
+				add_colorbar({svg: svg, width: 20, height: 80, xpos: width, ypos: height,
+					id: 'disorder_colorbar',
+					min: 0, 
+					max: 1,
+					cend: '#7f3b08',
+					cq3: '#ee9d3c', 
+					cmid: '#f6f6f7',
+					ctop: '#2d004b'
+					})
+				//Blue i tool tip to the right of the disorder plot
+				var disorder_tool_text = "<p>For each blob its fraction of disorderd residue is calculated.</p>"
+				add_tooltip({svg: svg, xpos: width, ypos: margin.top, content: disorder_tool_text})
+				break;
+				
+			case "richPlot":
+				//Color bar key to the right of the enrichment plot.
+				add_colorbar({svg: svg, width: 20, height: 80, xpos: width, ypos: height,
+					id: 'rich_colorbar',
+					min: '0', 
+					med: '1',
+					max: '2',
+					cend: '#ff0000',
+					cmid: '#f4f4ff',
+					ctop: '#0000ff'
+					})
+				//Blue i tool tip to the right of the enrichment plot
+				var enrichment_tool_text = "<p>Enrichment values for h blobs</p>"
+				add_tooltip({svg: svg, xpos: width, ypos: margin.top, content: enrichment_tool_text})
+				break;
+				
+			case "uverskyPlot":
+				add_colorbar({svg: svg, width: 20, height: 80, xpos: width, ypos: height,
+					id: 'uversky_colorbar',
+					min: '-0.3', 
+					max: '0.3',
+					cend: '#7f3b08',
+					cq3: '#ee9d3c', 
+					cmid: '#f6f6f7',
+					ctop: '#2d004b'
+					})
+				//Blue i tool tip to the right of the uversky plot
+				var uversky_tool_text = "<p>For each blob its distance from the uversky diagram slope is plotted. Postive values are disordered and negative values are ordered. </p>"
+				add_tooltip({svg: svg, xpos: width, ypos: margin.top, content: uversky_tool_text})
+				break;
+				
+			case "ncprPlot":
+				//Color bar key to the right of the NCPR plot. It appends a png image.
+				add_colorbar({svg: svg, width: 20, height: 80, xpos: width, ypos: height,
+					id: 'NCPR_colorbar',
+					min: '-1', 
+					med: '0',
+					max: '+1',
+					cend: '#ff0000',
+					cmid: '#f4f4ff',
+					ctop: '#0000ff'
+					})
+				//Blue i tool tip to the right of the NCPR plot
+				var NCPR_tool_text = "<p>For each blob its net charge per residue (NCPR) is calculated. </p>"
+				add_tooltip({svg: svg, xpos: width, ypos: margin.top, content: NCPR_tool_text})
+				break;
+				
+			default:
+				try{throw chartID} catch(e) {console.log("I don't know how to make chart: "+e)}
         }
     } else {
         //Creates the "Mean Hydropathy" y-axis label for Smoothed hydropathy per residue
