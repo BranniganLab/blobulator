@@ -107,7 +107,7 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
 <style>
 /*CSS styling for the blue i tooltip */
 .header {
-  line-GLOBAL_HEIGHT: 2rem;
+  line-height: 2rem;
   outline: 1px solid red;
   background: #fff;
   padding: 1rem;
@@ -209,9 +209,9 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
 
 //VARIABLES
 	//These variables set fixed values for height and width to be used in making all four visualizations 
-	const MARGIN = { top: 30, right: 230, bottom: 30, left: 50 },
-		GLOBAL_WIDTH = 1200 - MARGIN.left - MARGIN.right,
-		GLOBAL_HEIGHT = 200 - MARGIN.top - MARGIN.bottom;
+	var margin = { top: 30, right: 230, bottom: 30, left: 50 },
+		width = 1200 - margin.left - margin.right,
+		height = 200 - margin.top - margin.bottom;
 
 	//tooltip for SNPs link
 	var Tooltip_snps = d3.select("body")
@@ -274,79 +274,16 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
 
 	//makes the plots
 	draw(my_data)
-////////////////////////////////////////////////////////////////
+
 class Figure {
-	figID;
-	width;
-	height;
-	tooltip;
-	yaxis;
-	svg;
-	title="";
-	snps;
-	legend;
-	bars;
-	barchart;
-	data;
-	cut_line;
-	Tooltip;
-	infoIcon;
-	plot_variable;
-	x;
-	y;
-	xAxis;
+	constructor(figID) {
 	
-	constructor(figID, data) {
-		//Sets the dimensions and location of the svg container
-		this.svg = d3.select("#my_dataviz")
-			.append("svg")
-			.attr("width", GLOBAL_WIDTH + MARGIN.left + MARGIN.right)
-			.attr("height", GLOBAL_HEIGHT + MARGIN.top + MARGIN.bottom)
-			.append("g")
-			.attr("transform", "translate(" + MARGIN.left + "," + MARGIN.top + ")")
-			.attr("id", figID)
 	}
 	
-	addTitle(title){
-	    //Creates the title
-		this.svg.append("text")
-			.attr("x", GLOBAL_WIDTH / 2)
-			.attr("y", MARGIN.top - 25)
-			.style("text-anchor", "middle")
-			.text(title)
-			.attr("font-size", "20px")
-	}
-	
-	/* add_linearGradient:
-        Function to create linear color bars for graphs. Adapted from: https://www.visualcinnamon.com/2016/05/smooth-color-legend-d3-svg-gradient/
-		Inputs: 
-			svg container, 
-			ctop and cend for the first and last colors of the gradient
-			an id string
-			optional arguments: cq1, cmid, cq3 which define the colors at 25%, 50%, and 75% respectively.d
-		Returns:
-			The svg with a linear gradient with the given id
-	*/
-	add_linearGradient(id, ctop, cend {cq1, cmid, cq3}={}) {
-		var defs = this.svg.append("defs");
+}
 
-		//Append a linearGradient element to the defs and give it a unique id
-		var linearGradient = defs.append("linearGradient").attr("id", id).attr("x1", "0%").attr("y1", "0%").attr("x2", "0%").attr("y2", "100%");
-
-		//Define the gradient
-		//Set the color for the start (0%)
-		linearGradient.append("stop").attr("offset", "0%").attr("stop-color", ctop)
-		//Set the color for the end (25%)
-		if (cq1){linearGradient.append("stop").attr("offset", "25%").attr("stop-color", cq1)}
-		//Set the color for the end (50%)
-		if (cmid){linearGradient.append("stop").attr("offset", "50%").attr("stop-color", cmid)}
-		//Set the color for the end (75%)
-		if (cq3){linearGradient.append("stop").attr("offset", "75%").attr("stop-color", cq3)}
-		//Set the color for the end (100%)
-		linearGradient.append("stop").attr("offset", "100%").attr("stop-color", cend)
-	}
-	
-	/* add_colorbar
+//FUNCTION DECLARATIONS
+/* add_colorbar
     Function to create linear color bars for graphs. Adapted from: https://www.visualcinnamon.com/2016/05/smooth-color-legend-d3-svg-gradient/
     Inputs: 
       svg container, 
@@ -358,346 +295,486 @@ class Figure {
       optional arguments: cq1, cmid, cq3 which define the colors at 25%, 50%, and 75% respectively.d
     Returns: 
         none - svg is passed "by reference"
-	*/
-	add_colorbar(width, height, min, max, xpos, ypos, ctop, cend, {med, cq1, cmid, cq3}={}) {
-		add_linearGradient(id, ctop, cend, {cq1, cmid, cq3})
+*/
+function add_colorbar({svg, width, height, min, med, max, xpos, ypos, ctop, cq1, cmid, cq3, cend, id}={}) {
+    svg = add_linearGradient({svg, ctop, cq1, cmid, cq3, cend, id: id})
 
-		//Draw the rectangle and fill with the gradient
-		this.svg.append("rect").attr("width", GLOBAL_WIDTH).attr("height", GLOBAL_HEIGHT).attr("x", xpos+GLOBAL_WIDTH).style("fill", "url(#"+id+")");
+    //Draw the rectangle and fill with the gradient
+    svg.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("x", xpos+width) //offset by one width
+        .attr("y", ypos-height) //align tops
+        .style("fill", "url(#"+id+")");
 
-		//Add labels
-		this.svg.append("text").attr("x", xpos+GLOBAL_WIDTH+GLOBAL_WIDTH+6).attr("y", ypos-GLOBAL_HEIGHT+6).text(max)
-		if (med){this.svg.append("text").attr("x", xpos+GLOBAL_WIDTH+GLOBAL_WIDTH+6).attr("y", (2*ypos-GLOBAL_HEIGHT+12)/2).text(med)}
-		this.svg.append("text").attr("x", xpos+GLOBAL_WIDTH+GLOBAL_WIDTH+6).attr("y", ypos+6).text(min)
-	}
 
-	/* add_tooltip
-	FUNCTION: add_tooltip
-	SHORT DESCRIPTION: add a small i that provides information to the user in a tooltip
-	INPUTS:
-		svg - a container for a graph (modified by the function directly)
-	RETURNS:
-		none
-	*/
-	add_tooltip(content="Place Holder", {xpos, ypos, xoffset}={xpos: GLOBAL_WIDTH, ypos: MARGIN.top, xoffset: 300}) {
-		this.infoIcon = this.svg.append("text")
-			.attr("x", xpos)
-			.attr("y", ypos)
-			.text("i")
-			.style("font-size", "20px")
-			.style("font-weight", "bold")
-			.style("font-family", "zapfino")
-			.style("fill", "1E59FC")
-			.attr("alignment-baseline", "middle")
-			.attr("class", "info-hover")
-			
-		this.Tooltip = d3.select("body")
-			.append("div")
-			.style("opacity", 0)
-			.attr("class", "tooltip")
-			.style("background-color", "white")
-			.style("border", "solid")
-			.style("border-width", "2px")
-			.style("border-radius", "5px")
-			.style("padding", "5px")
-			.style("padding", "5px")
-			.style("width", "400px")
-			.style("height", "590px")
-			.style("font-size", "18px")
-			.style("text-align", "justify")
-			
+    //Add labels
+    svg.append("text")
+        .attr("x", xpos+width+width+6)
+        .attr("y", ypos-height+6)
+        .text(max)
+
+    if (med){
+        svg.append("text")
+            .attr("x", xpos+width+width+6)
+            .attr("y", (2*ypos-height+12)/2)
+            .text(med)
+    }
+
+    svg.append("text")
+        .attr("x", xpos+width+width+6)
+        .attr("y", ypos+6)
+        .text(min)
+}
+
+/* add_linearGradient:
+        Function to create linear color bars for graphs. Adapted from: https://www.visualcinnamon.com/2016/05/smooth-color-legend-d3-svg-gradient/
+    Inputs: 
+        svg container, 
+        ctop and cend for the first and last colors of the gradient
+        an id string
+        optional arguments: cq1, cmid, cq3 which define the colors at 25%, 50%, and 75% respectively.d
+    Returns:
+        The svg with a linear gradient with the given id
+*/
+function add_linearGradient({svg, ctop, cq1, cmid, cq3, cend, id}={}) {
+    var defs = svg.append("defs");
+
+    //Append a linearGradient element to the defs and give it a unique id
+    var linearGradient = defs.append("linearGradient")
+        .attr("id", id)
+        .attr("x1", "0%")
+        .attr("y1", "0%")
+        .attr("x2", "0%")
+        .attr("y2", "100%");
+
+    //Define the gradient
+        //Set the color for the start (0%)
+    linearGradient.append("stop")
+        .attr("offset", "0%")
+        .attr("stop-color", ctop)
+
+    if (cq1){
+        //Set the color for the end (25%)
+        linearGradient.append("stop")
+            .attr("offset", "25%")
+            .attr("stop-color", cq1)
+        }
+
+    if (cmid){
+        //Set the color for the end (50%)
+        linearGradient.append("stop")
+            .attr("offset", "50%")
+            .attr("stop-color", cmid)
+        }
+
+    if (cq3){
+        //Set the color for the end (75%)
+        linearGradient.append("stop")
+            .attr("offset", "75%")
+            .attr("stop-color", cq3)
+        }
+    
+        //Set the color for the end (100%)
+    linearGradient.append("stop")
+        .attr("offset", "100%")
+        .attr("stop-color", cend)
+
+    return svg
+}
+
+/* add_tooltip
+FUNCTION: add_tooltip
+SHORT DESCRIPTION: add a small i that provides information to the user in a tooltip
+INPUTS:
+	svg - a container for a graph (modified by the function directly)
+RETURNS:
+	none
+*/
+function add_tooltip(svg, content, {xpos, ypos}={xpos: width, ypos: margin.top}) {
+	var xoffset = 300
+	infoIcon = svg.append("text")
+		.attr("x", xpos)
+		.attr("y", ypos)
+		.text("i")
+		.style("font-size", "20px")
+		.style("font-weight", "bold")
+		.style("font-family", "zapfino")
+		.style("fill", "1E59FC")
+		.attr("alignment-baseline", "middle")
+		.attr("class", "info-hover")
 		
-		infoIcon.on("mouseover", function(d) {
-				//console.log(d3.mouse(document.getElementById("my_dataviz"))[1])
-				//.style("fill", "black");
-				Tooltip.transition()
-					.duration(100)
-					.style("opacity", 1);
-				Tooltip.html(content)
-					.style("right", xoffset+"px")
-					.style("bottom", 0+"px");
-			})
+	var Tooltip = d3.select("body")
+		.append("div")
+		.style("opacity", 0)
+		.attr("class", "tooltip")
+		.style("background-color", "white")
+		.style("border", "solid")
+		.style("border-width", "2px")
+		.style("border-radius", "5px")
+		.style("padding", "5px")
+		.style("padding", "5px")
+		.style("width", "400px")
+		.style("height", "590px")
+		.style("font-size", "18px")
+		.style("text-align", "justify")
 		
-		infoIcon.on("mouseout", function(d, i) {
-				d3.select(this)
-				Tooltip.transition()
-					.duration(500)
-					.style("opacity", 0);
-			})
-	}
+	
+	infoIcon.on("mouseover", function(d) {
+			//console.log(d3.mouse(document.getElementById("my_dataviz"))[1])
+			//.style("fill", "black");
+			Tooltip.transition()
+				.duration(100)
+				.style("opacity", 1);
+			Tooltip.html(content)
+				.style("right", xoffset+"px")
+				.style("bottom", 0+"px");
+		})
+	
+	infoIcon.on("mouseout", function(d, i) {
+			d3.select(this)
+			Tooltip.transition()
+				.duration(500)
+				.style("opacity", 0);
+		})
+}
 
-	/* add_phSNP_ylabel
-	FUNCTION: add_phSNP_ylabel
-	SHORT DESCRIPTION: add an s h SNP text y label to the svg object
-	INPUTS:
-		svg - a container containing an graph modified by the function itself
-	RETURNS:
-		none
-	*/
-	add_phSNP_ylabel() {
-		//"p" blob y-axis label for globular tendency plot
-		var ylabel = this.svg.append("g").attr("id", "ylabel")
-		ylabel.append("text")
-			.attr("class", "y label")
-			.attr("text-anchor", "middle")
-			.attr("x", 0 - (GLOBAL_HEIGHT / 2) - 50)
-			.attr("y", MARGIN.left - 80)
-			.attr("transform", "rotate(-90)")
-			.text("p");
-
-		//"h" blob y-axis label for globular tendency plot
-		ylabel.append("text")
-			.attr("class", "y label")
-			.attr("text-anchor", "middle")
-			.attr("x", 0 - (GLOBAL_HEIGHT / 2))
-			.attr("y", MARGIN.left - 80)
-			.attr("transform", "rotate(-90)")
-			.text("h");
-
-		//"SNPs" y-axis label for globular tendency plot
-		ylabel.append("text")
-			.attr("class", "y label")
-			.attr("text-anchor", "middle")
-			.attr("x", 0 - (GLOBAL_HEIGHT / 2) + 40)
-			.attr("y", MARGIN.left - 80)
-			.attr("transform", "rotate(-90)")
-			.text("SNPs");
-	}
-
-	add_pathy_ylabel() {
-	//Creates the "Mean Hydropathy" y-axis label for Smoothed hydropathy per residue
-	this.svg.append("text")
+/* add_phSNP_ylabel
+FUNCTION: add_phSNP_ylabel
+SHORT DESCRIPTION: add an s h SNP text y label to the svg object
+INPUTS:
+	svg - a container containing an graph modified by the function itself
+RETURNS:
+	none
+*/
+function add_phSNP_ylabel(svg) {
+	//"p" blob y-axis label for globular tendency plot
+	svg.append("text")
 		.attr("class", "y label")
 		.attr("text-anchor", "middle")
-		.attr("x", 0 - (GLOBAL_HEIGHT / 2))
-		.attr("y", MARGIN.left - 80)
+		.attr("x", 0 - (height / 2) - 50)
+		.attr("y", margin.left - 80)
 		.attr("transform", "rotate(-90)")
-		.text("Mean Hydropathy");
-	}
+		.text("p");
 
-	/* add_GlobularLegend
-	FUNCTION: add_GlobularLegend
-	SHORT DESCRIPTION: add the discrete legend for the globular tendencies graph
-	INPUTS:
-		svg - a container containing an graph modified by the function itself
-	RETURNS:
-		none
-	*/
-	add_GlobularLegend(keysize=20, offset=20) {
-		//This section contains the key that appears next to the Globular tendency colored plot
-		//squares for the key
-		var legend = this.svg.append("g").attr("id", "legend")
+	//"h" blob y-axis label for globular tendency plot
+	svg.append("text")
+		.attr("class", "y label")
+		.attr("text-anchor", "middle")
+		.attr("x", 0 - (height / 2))
+		.attr("y", margin.left - 80)
+		.attr("transform", "rotate(-90)")
+		.text("h");
 
-		legend.append("rect")
-			.attr("x", GLOBAL_WIDTH + offset)
-			.attr("y", MARGIN.top - 25)
-			.attr('width', keysize)
-			.attr('height', keysize)
-			.style("fill", "#0f0")
-		legend.append("rect")
-			.attr("x", GLOBAL_WIDTH + offset)
-			.attr("y", MARGIN.top + 5)
-			.attr('width', keysize)
-			.attr('height', keysize)
-			.style("fill", "#FEE882")
-		legend.append("rect")
-			.attr("x", GLOBAL_WIDTH + offset)
-			.attr("y", MARGIN.top + 35)
-			.attr('width', keysize)
-			.attr('height', keysize)
-			.style("fill", "#BF72D2")
-		legend.append("rect")
-			.attr("x", GLOBAL_WIDTH + offset)
-			.attr("y", MARGIN.top + 65)
-			.attr('width', keysize)
-			.attr('height', keysize)
-			.style("fill", "#f00")
-		legend.append("rect")
-			.attr("x", GLOBAL_WIDTH + offset)
-			.attr("y", MARGIN.top + 95)
-			.attr('width', keysize)
-			.attr('height', keysize)
-			.style("fill", "#00f")
-				
-		//Text that appears to the right of the key    
-		legend.append("text")
-			.attr("x", GLOBAL_WIDTH + 50)
-			.attr("y", MARGIN.top - 15).text("Globular").style("font-size", "15px")
-			.attr("alignment-baseline", "middle")
-		legend.append("text")
-			.attr("x", GLOBAL_WIDTH + 50)
-			.attr("y", MARGIN.top + 15).text("Janus/Boundary").style("font-size", "15px")
-			.attr("alignment-baseline", "middle")
-		legend.append("text")
-			.attr("x", GLOBAL_WIDTH + 50)
-			.attr("y", MARGIN.top + 45).text("Strong Polyelectrolyte").style("font-size", "15px")
-			.attr("alignment-baseline", "middle")
-		legend.append("text")
-			.attr("x", GLOBAL_WIDTH + 50)
-			.attr("y", MARGIN.top + 75).text("Strong Polyanion (-)").style("font-size", "15px")
-			.attr("alignment-baseline", "middle")
-		legend.append("text")
-			.attr("x", GLOBAL_WIDTH + 50)
-			.attr("y", MARGIN.top + 105).text("Strong Polycation (+)").style("font-size", "15px")
-			.attr("alignment-baseline", "middle")
-	}
-	
-	add_ContinuousLegend(cmap, {min, med, max, width, height}={min: -1, med: 0, max: 1, width: 20, height: 80}){
-		switch(cmap) {
-			case "PuOr":
-				add_colorbar(width: width, height: height, xpos: GLOBAL_WIDTH, ypos: GLOBAL_HEIGHT,
-					min: min, med: med, max: max,
-					cend: '#7f3b08',
-					cq3: '#ee9d3c', 
-					cmid: '#f6f6f7',
-					ctop: '#2d004b'
-					})
-				break;
-			case "RWB":
-				//Color bar key to the right of the enrichment plot.
-				add_colorbar({svg: svg, width: width, height: height, xpos: GLOBAL_WIDTH, ypos: GLOBAL_HEIGHT,
-					id: 'rich_colorbar',
-					min: min, med: med, max: max,
-					cend: '#ff0000',
-					cmid: '#f4f4ff',
-					ctop: '#0000ff'
-					})
-				break;
-			default:
-				try{throw cmap} catch(e) {console.log("Figure.add_ContinuousLegend doesn't know colormap: "+e)}
-	}
-	
-	/* add_snps
-	*/
-	add_snps(x=this.x, y=this.y) {
-		//console.log("not pathyplot")
-		this.svg.append('g')
-			.selectAll("rect")
-			//.data(my_disorder.map(function(d) { return +d; }))
-			.data(my_snp)
-			.enter()
-			.append("rect")
-			.attr("x", function(d) { return x((d.resid)); })
-			.attr("y", function(d) { return y(0.8); })
-			.attr("width", x.bandwidth())
-			.attr("height", function(d) { return y(0.8); })
-			.attr("fill", 'black')
-			.on("click", function(d) {
-				//window.location.href = d.xrefs[0].url+'_blank'
-				window.open(d.xrefs.url, '_blank')
-				})
-			.on("mouseover", function(d) {
-				d3.select(this)
-					.attr("fill", "red");
-				Tooltip_snps.transition()
-					.duration(100)
-					.style("opacity", .9);
-				Tooltip_snps.html(
-						'<a href="' + d.xrefs.url + '"target="_blank">' + d.xrefs.id +
-						"</a>")
-					.style("left", (d3.event.pageX) + "px")
-					.style("top", (d3.event.pageY - 28) + "px");
-				})
-			.on("mouseout", function(d, i) {
-				d3.select(this).attr("fill", function() {
-					return "" + 'black' + "";
-				})
-				Tooltip_snps.transition()
-					.duration(500)
-					.style("opacity", 0);
-				})
-	}
-	
+	//"SNPs" y-axis label for globular tendency plot
+	svg.append("text")
+		.attr("class", "y label")
+		.attr("text-anchor", "middle")
+		.attr("x", 0 - (height / 2) + 40)
+		.attr("y", margin.left - 80)
+		.attr("transform", "rotate(-90)")
+		.text("SNPs");
+		
+	return svg
+}
 
-	draw_yAxis() {
-		this.svg.append("g") //the y axis is drawn only for plot 1
-				.call(d3.axisLeft(this.y));
-	}
+/* add_GlobularLegend
+FUNCTION: add_GlobularLegend
+SHORT DESCRIPTION: add the discrete legend for the globular tendencies graph
+INPUTS:
+	svg - a container containing an graph modified by the function itself
+RETURNS:
+	none
+*/
+function add_GlobularLegend(svg) {
+	//This section contains the key that appears next to the Globular tendency colored plot
+	//squares for the key
 
-	build_barChart(x=this.x, y=this.y) {
-		this.plot_variable = this.svg.append("g")
-								.attr("id", "barChart"+this.figID))
-								.selectAll("rect")
-								.data(this.data);
-		make_bars(x, y)
-	}
+	keysize=20
+	var legend = svg.append("g").attr("id", "legend")
 
-	make_bars(x=this.x, y=this.y, timing=0) {
-		this.plot_variable.enter()
-			.append("rect")
-			.merge(plot_variable)
-			.transition()
-			.duration(timing)
-			.attr("x", function(d) { return x(d.resid); })
-			.attr("y", function(d) { return y(d.domain_to_numbers); })
-			.attr("width", x.bandwidth())
-			.attr("height", function(d) { return GLOBAL_HEIGHT - y(d.domain_to_numbers); })
-			.attr("fill", function(d) { return d.var; })
-	}
-	
-	make_cut_line(x, y) {
-		this.add_cutoff()
-		this.add_hydropathy_bar()
-	}
-	
-	/* add_cutoff
-	*/
-	add_cutoff(x=this.x, y=this.y) {
-		this.cut_line = this.svg.append('g')
-			.append("path")
-			.attr("class", "mypath")
-			.datum(this.data)
-			.attr("fill", "none")
-			.attr("stroke", "steelblue")
-			.attr("stroke-width", 1.5)
-			.attr("d", d3.line()
-				.x(function(d) { return x(d.resid) })
-				.y(function(d) { return y(my_cut) })
-			);
-	}
-
-	/* add_hydropathy_bar
-	*/
-	add_hydropathy_bar(x=this.x, y=this.y) {
-		this.hydropathy_bar = this.svg.selectAll("mybar")
-		hydropathy_bar.data(this.data)
-			.enter()
-			.append("rect")
-			.attr("x", function(d) { return x(d.resid); })
-			.attr("y", function(d) { return y(d.hydropathy_3_window_mean); })
-			.attr("width", x.bandwidth())
-			.attr("height", function(d) { return GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean); })
-			.attr("fill", 'grey')
-			.on("mouseover", function() {
-				d3.select(this)
-					.attr("fill", "grey");
-			})
-			.on("mouseout", function(d, i) {
-				d3.select(this).attr("fill", function() {
-					return "" + 'grey' + "";
-				});
-			});
-	}
-
-
-	add_xAxis(x=this.x, y=this.y){
-		this.xAxis = this.svg.append("g")
-						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
-						   (Math.round((Math.round(domain_threshold_max/10))/10)*10) )})))
-						.attr("transform", "translate(0," + GLOBAL_HEIGHT + ")");
-		// Bars
-		//Creates the "Residue" x-axis label
-		this.svg.append("text")
-			.attr("x", GLOBAL_WIDTH / 2)
-			.attr("y", GLOBAL_HEIGHT + MARGIN.bottom)
-			.style("text-anchor", "middle")
-			.text("Residue")
-	}
+	legend.append("rect")
+		.attr("x", width + 20)
+		.attr("y", margin.top - 25)
+		.attr('width', keysize)
+		.attr('height', keysize)
+		.style("fill", "#0f0")
+	legend.append("rect")
+		.attr("x", width + 20)
+		.attr("y", margin.top + 5)
+		.attr('width', keysize)
+		.attr('height', keysize)
+		.style("fill", "#FEE882")
+	legend.append("rect")
+		.attr("x", width + 20)
+		.attr("y", margin.top + 35)
+		.attr('width', keysize)
+		.attr('height', keysize)
+		.style("fill", "#BF72D2")
+	legend.append("rect")
+		.attr("x", width + 20)
+		.attr("y", margin.top + 65)
+		.attr('width', keysize)
+		.attr('height', keysize)
+		.style("fill", "#f00")
+	legend.append("rect")
+		.attr("x", width + 20)
+		.attr("y", margin.top + 95)
+		.attr('width', keysize)
+		.attr('height', keysize)
+		.style("fill", "#00f")
+			
+	//Text that appears to the right of the key    
+	legend.append("text")
+		.attr("x", width + 50)
+		.attr("y", margin.top - 15).text("Globular").style("font-size", "15px")
+		.attr("alignment-baseline", "middle")
+	legend.append("text")
+		.attr("x", width + 50)
+		.attr("y", margin.top + 15).text("Janus/Boundary").style("font-size", "15px")
+		.attr("alignment-baseline", "middle")
+	legend.append("text")
+		.attr("x", width + 50)
+		.attr("y", margin.top + 45).text("Strong Polyelectrolyte").style("font-size", "15px")
+		.attr("alignment-baseline", "middle")
+	legend.append("text")
+		.attr("x", width + 50)
+		.attr("y", margin.top + 75).text("Strong Polyanion (-)").style("font-size", "15px")
+		.attr("alignment-baseline", "middle")
+	legend.append("text")
+		.attr("x", width + 50)
+		.attr("y", margin.top + 105).text("Strong Polycation (+)").style("font-size", "15px")
+		.attr("alignment-baseline", "middle")
 
 }
-//////////////////////////////
 
-//FUNCTION DECLARATIONS
+/* add_snps
+*/
+function add_snps(svg, x, y) {
+	//console.log("not pathyplot")
+	svg.append('g')
+		.selectAll("rect")
+		//.data(my_disorder.map(function(d) { return +d; }))
+		.data(my_snp)
+		.enter()
+		.append("rect")
+		.attr("x", function(d) { return x((d.resid)); })
+		.attr("y", function(d) { return y(0.8); })
+		.attr("width", x.bandwidth())
+		.attr("height", function(d) { return y(0.8); })
+		.attr("fill", 'black')
+		.on("click", function(d) {
+			//window.location.href = d.xrefs[0].url+'_blank'
+			window.open(d.xrefs.url, '_blank')
+		})
+		.on("mouseover", function(d) {
+			d3.select(this)
+				.attr("fill", "red");
+			Tooltip_snps.transition()
+				.duration(100)
+				.style("opacity", .9);
+			Tooltip_snps.html(
+					'<a href="' + d.xrefs.url + '"target="_blank">' + d.xrefs.id +
+					"</a>")
+				.style("left", (d3.event.pageX) + "px")
+				.style("top", (d3.event.pageY - 28) + "px");
+		})
+		.on("mouseout", function(d, i) {
+			d3.select(this).attr("fill", function() {
+				return "" + 'black' + "";
+			})
+			Tooltip_snps.transition()
+				.duration(500)
+				.style("opacity", 0);
+		})
+}
+
+/* add_cutoff
+*/
+function add_cutoff(svg, x, y, data) {
+	var cut_line = svg.append('g')
+		.append("path")
+		.attr("class", "mypath")
+		.datum(data)
+		.attr("fill", "none")
+		.attr("stroke", "steelblue")
+		.attr("stroke-width", 1.5)
+		.attr("d", d3.line()
+			.x(function(d) { return x(d.resid) })
+			.y(function(d) { return y(my_cut) })
+		);
+	
+	return cut_line
+}
+
+/* add_hydropathy_bar
+*/
+function add_hydropathy_bar(svg, x, y, data) {
+	var hydropathy_bar = svg.selectAll("mybar")
+		.data(data)
+		.enter()
+		.append("rect")
+		.attr("x", function(d) { return x(d.resid); })
+		.attr("y", function(d) { return y(d.hydropathy_3_window_mean); })
+		.attr("width", x.bandwidth())
+		.attr("height", function(d) { return height - y(d.hydropathy_3_window_mean); })
+		.attr("fill", 'grey')
+		.on("mouseover", function() {
+			d3.select(this)
+				.attr("fill", "grey");
+		})
+		.on("mouseout", function(d, i) {
+			d3.select(this).attr("fill", function() {
+				return "" + 'grey' + "";
+			});
+		});
+}
+
+/*
+FUNCTION: CHART
+SHORT DESCRIPTION: make svg containers for each plot
+INPUTS:
+	chartID
+	title
+RETURNS:
+	svg - a d3 container with one svg graph
+*/
+function chart(chartID, title) {
+    //Sets the dimensions and location of the svg container
+    var svg = d3.select("#my_dataviz")
+		.append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+		.attr("id", chartID)
+
+    //Creates the title
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", margin.top - 25)
+        .style("text-anchor", "middle")
+        .text(title)
+        .attr("font-size", "20px")
+
+    return svg
+}
+
+
+function add_legend(svg){
+	switch(svg.attr("id")) {
+		case "globPlot":
+			// Add Legend for globular plot:
+			add_GlobularLegend(svg)
+			break;
+		case "disorderPlot":
+			add_colorbar({svg: svg, width: 20, height: 80, xpos: width, ypos: height,
+				id: 'disorder_colorbar',
+				min: 0, max: 1,
+				cend: '#7f3b08',
+				cq3: '#ee9d3c', 
+				cmid: '#f6f6f7',
+				ctop: '#2d004b'
+				})
+			break;
+		case "richPlot":
+			//Color bar key to the right of the enrichment plot.
+			add_colorbar({svg: svg, width: 20, height: 80, xpos: width, ypos: height,
+				id: 'rich_colorbar',
+				min: '0', med: '1', max: '2',
+				cend: '#ff0000',
+				cmid: '#f4f4ff',
+				ctop: '#0000ff'
+				})
+			break;
+		case "uverskyPlot":
+			add_colorbar({svg: svg, width: 20, height: 80, xpos: width, ypos: height,
+				id: 'uversky_colorbar',
+				min: '-0.3', max: '0.3',
+				cend: '#7f3b08',
+				cq3: '#ee9d3c', 
+				cmid: '#f6f6f7',
+				ctop: '#2d004b'
+				})
+			break;
+		case "ncprPlot":
+			//Color bar key to the right of the NCPR plot. It appends a png image.
+			add_colorbar({svg: svg, width: 20, height: 80, xpos: width, ypos: height,
+				id: 'NCPR_colorbar',
+				min: '-1', med: '0', max: '+1',
+				cend: '#ff0000',
+				cmid: '#f4f4ff',
+				ctop: '#0000ff'
+				})
+			break;
+		default:
+			try{throw svg.attr("id")} catch(e) {console.log("I don't know how to make that legend: "+e)}
+	}
+}
+
+function make_pathy_ylabel(svg) {
+	//Creates the "Mean Hydropathy" y-axis label for Smoothed hydropathy per residue
+	svg.append("text")
+		.attr("class", "y label")
+		.attr("text-anchor", "middle")
+		.attr("x", 0 - (height / 2))
+		.attr("y", margin.left - 80)
+		.attr("transform", "rotate(-90)")
+		.text("Mean Hydropathy");
+}
+
+function build_barChart(svg, data, x, y) {
+	if (svg.attr("id") == "pathyPlot") {
+		svg.append("g") //the y axis is drawn only for plot 1
+			.call(d3.axisLeft(y));
+	} else {
+		var barChart = svg.append("g")
+		barChart.attr("id", "barChart"+svg.attr("id"))
+		var plot_variable = barChart.selectAll("rect")
+			.data(data)
+			
+		make_bars(plot_variable, x, y)
+	}
+	return plot_variable
+}
+
+
+
+function make_bars(plot_variable, x, y) {
+	plot_variable.enter()
+		.append("rect")
+		.merge(plot_variable)
+		.transition()
+		.duration(1000)
+		.attr("x", function(d) { return x(d.resid); })
+		.attr("y", function(d) { return y(d.domain_to_numbers); })
+		.attr("width", x.bandwidth())
+		.attr("height", function(d) { return height - y(d.domain_to_numbers); })
+		.attr("fill", function(d) { return d.var; })
+}
+
+function make_cut_line(svg, x, y, data) {
+	var cut_line = add_cutoff(svg, x, y, data)
+	add_hydropathy_bar(svg, x, y, data)
+	return cut_line
+}
+
+function add_xAxis(svg, x, y){
+	var xAxis = svg.append("g")
+	.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
+	   (Math.round((Math.round(domain_threshold_max/10))/10)*10) )})))
+	.attr("transform", "translate(0," + height + ")");
+	// Bars
+	
+	    //Creates the "Residue" x-axis label
+    svg.append("text")
+        .attr("x", width / 2)
+        .attr("y", height + margin.bottom)
+        .style("text-anchor", "middle")
+        .text("Residue")
+	
+	return xAxis
+}
 
 // A function that update the chart when eitgher slider is moved
 function updateCharts(given_cutoff, data_updated, cut_line, x, y, plot_list, plot_variables) {
@@ -761,7 +838,7 @@ function do_update(cut_line, x, y, plot_list, plot_variables) {
 	// Otherwise I revert back to wild sequence initially uploaded
 	} else {
 		var my_seq = {{ my_seq | safe }};
-		}
+	}
 
 	var d_value = d3.select("#domain_threshold_user").text()
 	var selectedValue = d3.select("#cutoff_user").text()
@@ -773,7 +850,7 @@ function do_update(cut_line, x, y, plot_list, plot_variables) {
 		var tt = JSON.stringify(eval("(" + data_tmp + ")"));
 		var data_obj = JSON.parse(tt);
 		updateCharts(selectedValue, data_obj, cut_line, x, y, plot_list, plot_variables);
-		});
+	});
 }
     
 
@@ -808,11 +885,11 @@ function draw(data) {
 	
 	var y = d3.scaleLinear()
 		.domain([0, 1])
-		.range([GLOBAL_HEIGHT, 0]);
+		.range([height, 0]);
 
 	// add the x Axis
 	var x = d3.scaleBand()
-		.range([0, GLOBAL_WIDTH])
+		.range([0, width])
 		.domain(data.map(function(d) { return d.resid; }))
 		.padding(0.2);
 
