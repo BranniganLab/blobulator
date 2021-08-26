@@ -300,13 +300,13 @@ def compute(
     df["H"] = domain_group["hydropathy"].transform("mean")
     df["NCPR"] = domain_group["charge"].transform("mean")
     df["disorder"] = domain_group["disorder"].transform("mean")
-    df["fp"] = domain_group["charge"].transform(lambda x: count_var(x, 1))
+    df["f+"] = domain_group["charge"].transform(lambda x: count_var(x, 1))
     df["f-"] = domain_group["charge"].transform(lambda x: count_var(x, -1))
-    df["fcr"] = df["f-"] + df["fp"]
-    df["P_diagram"] = df[["NCPR", "fcr", "fp", "f-"]].apply(
+    df["fcr"] = df["f-"] + df["f+"]
+    df["P_diagram"] = df[["NCPR", "fcr", "f+", "f-"]].apply(
         lambda x: phase_diagram(x), axis=1
     )
-    df["blob_charge_class"] = df[["NCPR", "fcr", "fp", "f-"]].apply(
+    df["blob_charge_class"] = df[["NCPR", "fcr", "f+", "f-"]].apply(
             lambda x: phase_diagram_class(x), axis=1
         )
     df["U_diagram"] = df[["NCPR", "H"]].apply(
@@ -323,7 +323,7 @@ def compute(
         lambda x: disorder_color(x), axis=1
     )
     
-    #print (df[["U_diagram", "NCPR", "fp", "f-", "N", "H"]].to_string())
+    #print (df[["U_diagram", "NCPR", "f+", "f-", "N", "H"]].to_string())
 
     #--------------------------------makes matplotlib plot for download-------------------------------------#
     def make_plot (df):
@@ -369,7 +369,7 @@ def compute(
             m_color = cmap(ncpr_normalized)
             return m_color  
 
-        df["P_diagram"] = df[["NCPR", "fcr", "fp", "f-"]].apply(
+        df["P_diagram"] = df[["NCPR", "fcr", "f+", "f-"]].apply(
             lambda x: phase_diagram_plot(x), axis=1
         )
 
