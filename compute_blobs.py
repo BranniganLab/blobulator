@@ -24,6 +24,8 @@ counter_s = 0  # this is global variable used for annotating domains in f3
 counter_p = 0  #
 counter_h = 0
 
+s_counter = 0 # this is global variable used for annotating domains in f4
+
 # character naming of domain names
 ch = "a"
 counter_domain_naming = ord(ch)
@@ -31,6 +33,14 @@ counter_domain_naming = ord(ch)
 cmap = LinearSegmentedColormap.from_list(
     "mycmap", [(0.0 / 1, "red"), ((0.5) / 1, "whitesmoke"), (1.0, "blue")]
 )
+
+vmax=2.5
+cmap_enrich = LinearSegmentedColormap.from_list('mycmap', [(0/ vmax, 'red'), (1./vmax, 'whitesmoke'), (vmax / vmax, 'blue')])
+
+cNorm_enrich = matplotlib.colors.Normalize(vmin=0, vmax=2) #re-wrapping normalization
+scalarMap_enrich = matplotlib.cm.ScalarMappable(norm=cNorm_enrich, cmap=cmap)
+
+
 cmap_disorder = plt.get_cmap('PuOr')
 cmap_u = plt.get_cmap('PuOr')
 #This is when you want to change the scale of colormap
@@ -42,6 +52,11 @@ cval = scalarMap.to_rgba(0)
 
 def compute(
     seq, cutoff, domain_threshold, window=3, my_plot=False, disorder_residues=[]):
+    blob_length_cutoff_enrichment = pd.read_csv('./Table_S1.csv')
+
+    dict_enrich = dict(zip(zip(blob_length_cutoff_enrichment['Hydrophobicity cutoff'], blob_length_cutoff_enrichment['Blob length']), blob_length_cutoff_enrichment['Enrichment ']))
+    
+    #print (blob_length_cutoff_enrichment)
     window_factor = int((window - 1) / 2)
     seq_start = 1  # starting resid for the seq
     resid_range = range(seq_start, len(seq) + 1 + seq_start)
@@ -289,6 +304,29 @@ def compute(
         m_color = scalarMap.to_rgba(ncpr)
         return "rgb" + str(tuple([255 * x for x in m_color[:-1]]))
 
+    def h_blob_enrichments(x):
+        cutoff_prec = round(x[1], 2)
+        if x[2] == 'h':
+            try:
+                enirch_value = dict_enrich[(cutoff_prec, x[0])]
+                #m_color = cmap(enirch_value)
+                #m_color = cmap_enrich(0.9)
+                #m_color = scalarMap_enrich.to_rgba(2)
+                m_color = scalarMap_enrich.to_rgba(enirch_value)
+                return "rgb" + str(tuple([255 * x for x in m_color[:-1]]))
+
+            except KeyError:
+                return "grey"
+        else:
+            return "grey"
+
+
+
+
+        #ncpr = x[0]
+        #m_color = cmap_disornder(ncpr)
+        #return "rgb" + str(tuple([255 * x for x in m_color[:-1]]))
+
     # ..........................Define the properties of each identified domain.........................................................#
     domain_group = df.groupby(["domain"])
 
@@ -302,7 +340,10 @@ def compute(
     df["disorder"] = domain_group["disorder"].transform("mean")
     df["f+"] = domain_group["charge"].transform(lambda x: count_var(x, 1))
     df["f-"] = domain_group["charge"].transform(lambda x: count_var(x, -1))
+   
     df["fcr"] = df["f-"] + df["f+"]
+    df['h_blob_enrichment'] =df[["N", "m_cutoff", "blobtype"]].apply(lambda x: h_blob_enrichments(x), axis=1)
+    
     df["P_diagram"] = df[["NCPR", "fcr", "f+", "f-"]].apply(
         lambda x: phase_diagram(x), axis=1
     )
@@ -322,6 +363,7 @@ def compute(
     df["disorder_color"] = df[["disorder", "fcr"]].apply(
         lambda x: disorder_color(x), axis=1
     )
+
     
     #print (df[["U_diagram", "NCPR", "f+", "f-", "N", "H"]].to_string())
 
@@ -471,8 +513,9 @@ def compute(
 
 if __name__ == "__main__":
         df = compute("MDVFMKGLSKAKEGVVAAAEKTKQGVAEAAGKTKEGVLYVGSKTKEGVVHGVATV", 0.4, 4)
-        df = df.rename(columns={'seq_name': 'res_name', 'm_cutoff': 'hydrophobicity_cutoff', 'domain_threshold':'minimum_blob_length', 'blobtype':'blob_hydrophobicty_class', 'N':'blob_length'})
-        print ("Writing output file")
-        df[['res_name', 'hydrophobicity_cutoff', 'minimum_blob_length', 'blob_hydrophobicty_class', 'blob_charge_class','blob_length']].to_csv("./blobulated.csv", index=False)
+        print (df.columns)
+        #df = df.rename(columns={'seq_name': 'res_name', 'm_cutoff': 'hydrophobicity_cutoff', 'domain_threshold':'minimum_blob_length', 'blobtype':'blob_hydrophobicty_class', 'N':'blob_length'})
+        #print ("Writing output file")
+        #df[['res_name', 'hydrophobicity_cutoff', 'minimum_blob_length', 'blob_hydrophobicty_class', 'blob_charge_class','blob_length']].to_csv("./blobulated.csv", index=False)
 
 

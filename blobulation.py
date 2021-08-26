@@ -94,7 +94,11 @@ def index():
                     message="""There was an error retrieving SNP data from UniProt""")
 
             seq_file_snp = get_snp.json()
-            snps_json = pathogenic_snps (seq_file_snp[0]["features"]) #filters the disease causing SNPs
+
+            if seq_file_snp:
+                snps_json = pathogenic_snps (seq_file_snp[0]["features"]) #filters the disease causing SNPs
+            else:
+                snps_json = "[]"
             my_seq = seq_file[0]["sequence"]
 
             if (
