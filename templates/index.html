@@ -347,7 +347,6 @@ function chart(chartID, title) {
 
             //Blue i tool tip to the right of globular tendency plot
             svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-
                 .on("click", function(d) {
                     d3.select(this)
                     //.style("fill", "black");
