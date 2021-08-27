@@ -442,7 +442,7 @@ function chart(chartID, title) {
                         .duration(100)
                         .style("opacity", 1);
                     Tooltip.html(
-                            "<p>For each blob its distance from the uversky diagram slope is plotted. Postive values are disordered and negative values are ordered. </p>")
+                            "<p>For each blob its distance from the uversky diagram slope is plotted. Postive values are disordered and negative values are ordered. </p> <img src=\"/static/uversky_plot.png\" width=\"350\" height=\"350\"> <p> <i> <b> Figure adapted from: </b> <a href=\"https://pubmed.ncbi.nlm.nih.gov/11025552/\" target=\"_blank\"> Uversky VN, Gillespie JR, Fink AL (2002) Why are \"natively unfolded\" proteins unstructured under physiologic conditions? </i> </p>")
                         .style("left", (d3.mouse(this)[0] + 70) + "px")
                         .style("top", (d3.mouse(this)[1] + (margin.top) + 700) + "px");
                 })
