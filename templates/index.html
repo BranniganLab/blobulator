@@ -347,8 +347,7 @@ function chart(chartID, title) {
 
             //Blue i tool tip to the right of globular tendency plot
             svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-
-                .on("mouseover", function(d) {
+                .on("click", function(d) {
                     d3.select(this)
                     //.style("fill", "black");
                     Tooltip.transition()
@@ -357,8 +356,8 @@ function chart(chartID, title) {
                     Tooltip.html(
                         "<p>The Das-Pappu phase diagram provides a means to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. </p> <img src=\"/static/daspappu_graph.png\" width=\"350\" height=\"350\"> <p> <i> <b> Figure adapted from: </b> <a href=\"https://www.pnas.org/content/early/2013/07/29/1304749110\" target=\"_blank\"> Das RK, Papu RV (2013) Conformations of intrinsically disordered proteins are influenced by linear sequence distributions of oppositely charged residues PNAS 110(33):13392–13397.</i> </p>")
 
-                        .style("left", (d3.mouse(this)[0] + 70) + "px")
-                        .style("top", (d3.mouse(this)[1] + (margin.top) + 500) + "px");
+                        .style("left", (d3.mouse(this)[0] + 500) + "px")
+                        .style("top", (d3.mouse(this)[1] + (margin.top) + 375) + "px");
                 })
                 .on("mouseout", function(d, i) {
                     d3.select(this)
@@ -375,18 +374,18 @@ function chart(chartID, title) {
                 .attr("y", margin.top + 15)
 
 
-            //Blue i tool tip to the right of the NCPR plot
+            //Blue i tool tip to the right of the Blobs colored according to fraction of disordred residue plot
             svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-                .on("mouseover", function(d) {
+                .on("click", function(d) {
                     d3.select(this)
                     //.style("fill", "black");
                     Tooltip.transition()
                         .duration(100)
                         .style("opacity", 1);
                     Tooltip.html(
-                            "<p>For each blob its fraction of disorderd residue is calculated.</p>")
-                        .style("left", (d3.mouse(this)[0] + 70) + "px")
-                        .style("top", (d3.mouse(this)[1] + (margin.top) + 700) + "px");
+                            "<p>For each blob its fraction of disordered residue is calculated.</p>")
+                        .style("left", (d3.mouse(this)[0] + 500) + "px")
+                        .style("top", (d3.mouse(this)[1] + (margin.top) + 1175) + "px");
                 })
                 .on("mouseout", function(d, i) {
                     d3.select(this)
@@ -404,9 +403,9 @@ function chart(chartID, title) {
                 .attr("y", margin.top + 15)
 
 
-            //Blue i tool tip to the right of the NCPR plot
+            //Blue i tool tip to the right of the Blobs colored according to enrichment plot
             svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-                .on("mouseover", function(d) {
+                .on("click", function(d) {
                     d3.select(this)
                     //.style("fill", "black");
                     Tooltip.transition()
@@ -414,8 +413,8 @@ function chart(chartID, title) {
                         .style("opacity", 1);
                     Tooltip.html(
                             "<p>Enrichment values for h blobs")
-                        .style("left", (d3.mouse(this)[0] + 70) + "px")
-                        .style("top", (d3.mouse(this)[1] + (margin.top) + 700) + "px");
+                        .style("left", (d3.mouse(this)[0] + 500) + "px")
+                        .style("top", (d3.mouse(this)[1] + (margin.top) + 975) + "px");
                 })
                 .on("mouseout", function(d, i) {
                     d3.select(this)
@@ -433,18 +432,18 @@ function chart(chartID, title) {
                 .attr("y", margin.top + 15)
 
 
-            //Blue i tool tip to the right of the NCPR plot
+            //Blue i tool tip to the right of the uversky plot
             svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-                .on("mouseover", function(d) {
+                .on("click", function(d) {
                     d3.select(this)
                     //.style("fill", "black");
                     Tooltip.transition()
                         .duration(100)
                         .style("opacity", 1);
                     Tooltip.html(
-                            "<p>For each blob its distance from the uversky diagram slope is plotted. Postive values are disordered and negative values are ordered. </p>")
-                        .style("left", (d3.mouse(this)[0] + 70) + "px")
-                        .style("top", (d3.mouse(this)[1] + (margin.top) + 700) + "px");
+                            "<p>For each blob its distance from the line representing the boundary between ordered and disordered proteins on the uversky diagram (shown below) is plotted. Postive values are disordered and negative values are ordered. </p> <img src=\"/static/uversky_plot.png\" width=\"375\" height=\"275\"> <p> <i> <b> Figure adapted from: </b> <a href=\"https://pubmed.ncbi.nlm.nih.gov/11025552/\" target=\"_blank\"> Uversky VN, Gillespie JR, Fink AL (2002) Why are \"natively unfolded\" proteins unstructured under physiologic conditions? </i> </p>")
+                        .style("left", (d3.mouse(this)[0] + 500) + "px")
+                        .style("top", (d3.mouse(this)[1] + (margin.top) + 775) + "px");
                 })
                 .on("mouseout", function(d, i) {
                     d3.select(this)
@@ -464,7 +463,7 @@ function chart(chartID, title) {
 
             //Blue i tool tip to the right of the NCPR plot
             svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-                .on("mouseover", function(d) {
+                .on("click", function(d) {
                     d3.select(this)
                     //.style("fill", "black");
                     Tooltip.transition()
@@ -472,8 +471,8 @@ function chart(chartID, title) {
                         .style("opacity", 1);
                     Tooltip.html(
                             "<p>For each blob its net charge per residue (NCPR) is calculated. </p>")
-                        .style("left", (d3.mouse(this)[0] + 70) + "px")
-                        .style("top", (d3.mouse(this)[1] + (margin.top) + 700) + "px");
+                        .style("left", (d3.mouse(this)[0] + 500) + "px")
+                        .style("top", (d3.mouse(this)[1] + (margin.top) + 575) + "px");
                 })
                 .on("mouseout", function(d, i) {
                     d3.select(this)
@@ -495,7 +494,7 @@ function chart(chartID, title) {
             .text("Mean Hydropathy");
         //Adding the information tooltip
         svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-            .on("mouseover", function(d) {
+            .on("click", function(d) {
                 d3.select(this)
                 //.style("fill", "black");
                 Tooltip.transition()
@@ -504,8 +503,8 @@ function chart(chartID, title) {
                 Tooltip.html(
                         "<p>The linear hydropathy uses a sliding, overlapping window approach to calculate the mean hydropathy for groups of 3 residues. This value is rescaled to lie between 0 (hydrophilic) and 1 (hydrophobic). This plot can help you identify how hydrophobicity varies along your sequence.</p>" +
                         "<p>Any stretch of 'minimum blob size' or more residues with mean hydropathy > 'hydropathy cutoff' is classified as a hydrophobic or “h” blob and any remaining stretch of four or more residues is classified as a non-hydrophobic linker or “p” blob.</p>")
-                    .style("left", (d3.mouse(this)[0] + 70) + "px")
-                    .style("top", (d3.mouse(this)[1] + (margin.top) + 200) + "px");
+                    .style("left", (d3.mouse(this)[0] + 500) + "px")
+                    .style("top", (d3.mouse(this)[1] + (margin.top) + 175) + "px");
             })
             .on("mouseout", function(d, i) {
                 d3.select(this)
