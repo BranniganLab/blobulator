@@ -29,89 +29,90 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<link rel="shortcut icon" href="#">
 </head>
 
 
 <body>
     <div class="container">
-    <!--Header that contains Title, protein name, Uni ID, and Gene. 
-  Other information can be placed here too? -->
-    <div class="text-center">
-        <h1> The Protein Blobulator </h1>
-        <h6> Uniprot ID: {{ my_uni_id | safe }}</h6>
-    </div>
-    <!--The div id my_dataviz is the div container for ALL D3 visualization plots, color keys-->
-    <div id="my_dataviz" class="viz_track">
-        <!--This section contains the div containers for the sliders and the text entry box-->
-        <div class="text-left">
-            Hydropathy cutoff:
-            <label style = "opacity: 0.0; display: none;">
-             <span id="cutoff_user"></span>
-            </label>
-            <input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001>
-            
-            <input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001>
+		<!--Header that contains Title, protein name, Uni ID, and Gene. 
+			Other information can be placed here too? -->
+		<div class="text-center">
+			<h1> The Protein Blobulator </h1>
+			<h6> Uniprot ID: {{ my_uni_id | safe }}</h6>
+		</div>
+		
+		<!--The div id my_dataviz is the div container for ALL D3 visualization plots, color keys-->
+		<div id="my_dataviz" class="viz_track">
+			<!--This section contains the div containers for the sliders and the text entry box-->
+			<div class="text-left">
+				Hydropathy cutoff:
+				<label style = "opacity: 0.0; display: none;">
+					<span id="cutoff_user"></span>
+				</label>
+				<input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001>
+				<input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001>
+			</div>
+			
+			<div class="text-left">
+				Minimum blob size:
+				<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
+				</label>
+				<input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1>
+				<input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider2" step=1>
+			</div>
 
-            
-        </div>
-        <div class="text-left">
-            Minimum blob size:
-            <label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
-            </label>
-            <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1>
-            <input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider2" step=1>
-        </div>
+			<div>
+				<input type="checkbox" class="checkbox" id="mutatebox" value="True"> <label for="mutatebox">Mutate residue</label>
+				<!-- my_seq includes single quotes in the string so we have to do this subscripting here -->
+				<select id="snp_id">
+				{% for residue in my_seq[1:-1] %}
+				<option value="{{ loop.index0 + 1 }}"> {{ loop.index0 + 1 }} ({{ residue }})</option>
+				{% endfor %}
+				</select>
+				to
+				<select id="residue_type">
+					<option disabled>-- Positive --</option>
+					<option selected="selected" value="R">R - Arg</option>
+					<option value="H">H - His</option>
+					<option value="K">K - Lys</option>
+					<option disabled>-- Negative --</option> 
+					<option value="D">D - Asp</option>
+					<option value="E">E - Glu</option>
+					<option	disabled>-- Polar --</option>
+					<option value="N">N - Asn</option>
+					<option value="Q">Q - Gln</option>
+					<option value="S">S - Ser</option>
+					<option value="T">T - Thr</option>
+					<option	disabled>-- Hydrophobic --</option>
+					<option value="A">A - Ala</option>
+					<option value="I">I - Ile</option>
+					<option value="L">L - Leu</option>
+					<option value="M">M - Met</option>
+					<option value="F">F - Phe</option>
+					<option value="W">W - Trp</option>
+					<option value="Y">Y - Tyr</option>
+					<option value="V">V - Val</option>  
+					<option	disabled>-- Other --</option>
+					<option value="C">C - Cys</option>
+					<option value="G">G - Gly</option>
+					<option value="P">P - Pro</option>
+				</select>
+			</div>
 
-        <div>
-            <input type="checkbox" class="checkbox" id="mutatebox" value="True"> <label for="mutatebox">Mutate residue</label>
-            <!-- my_seq includes single quotes in the string so we have to do this subscripting here -->
-            <select id="snp_id">
-            {% for residue in my_seq[1:-1] %}
-            <option value="{{ loop.index0 + 1 }}"> {{ loop.index0 + 1 }} ({{ residue }})</option>
-            {% endfor %}
-            </select>
-            to
-            <select id="residue_type">
-             <option value="A">A</option>
-             <option value="R">R</option>
-             <option value="N">N</option>
-             <option value="D">D</option>
-             <option value="C">C</option>
-             <option value="Q">Q</option>
-             <option value="E">E</option>
-             <option value="G">G</option>
-             <option value="H">H</option>
-             <option value="I">I</option>
-             <option value="L">L</option>
-             <option value="K">K</option>
-             <option value="M">M</option>
-             <option value="F">F</option>
-             <option value="P">P</option>
-             <option value="S">S</option>
-             <option value="T">T</option>
-             <option value="W">W</option>
-             <option value="Y">Y</option>
-             <option value="V">V</option>                
-            </select>
-        </div>
-
-
-
-
-        <div class="text-left">
-        <label style = "opacity: 0.0; display: none; position: relative;"> </label>
-        <button type="button" id="download_plot_link">Download plots!</button>
-        <button type="button" id="download_data_link">Download data!</button>
-        </div>
-    </div>
-      
-
-</div>
+			<div class="text-left">
+				<label style = "opacity: 0.0; display: none; position: relative;"> </label>
+				<button type="button" id="download_plot_link">Download plots!</button>
+				<button type="button" id="download_data_link">Download data!</button>
+			</div>
+		</div>
+	</div>
 </body>
+
 <style>
 /*CSS styling for the blue i tooltip */
 .header {
-  line-height: 2rem;
+  line-GLOBAL_HEIGHT: 2rem;
   outline: 1px solid red;
   background: #fff;
   padding: 1rem;
@@ -129,6 +130,7 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
     font: 12px sans-serif;
     background: lightsteelblue;
     border: 0px;
+    cursor: pointer;
 }
 
 .rangeslider {
@@ -207,365 +209,132 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
     opacity: 2.0;
 }
 </style>
+
+
+<script src="static/figure.js"></script>
+
 <script>
 
-//--------------Javascrpt for plotting in d3-------------
-//tooltip for SNPs link
-var Tooltip_snps = d3.select("body")
-    .append("div") // declare the tooltip div 
-    .attr("class", "tooltip")
-    .style("opacity", 0);
+//--------------Javascript for plotting in d3-------------
 
-//tooltip for plots inforamtion panel
-var Tooltip = d3.select("body")
-    .append("div")
-    .style("opacity", 0)
-    .attr("class", "tooltip")
-    .style("background-color", "white")
-    .style("border", "solid")
-    .style("border-width", "2px")
-    .style("border-radius", "5px")
-    .style("padding", "5px")
-    .style("padding", "5px")
-    .style("width", "400px")
-    .style("height", "590px")
-    .style("font-size", "18px")
-    .style("text-align", "justify")
+//VARIABLES
+	//tooltips
+		var hydropathy_tool_text = ("<p>The linear hydropathy uses a sliding, overlapping window approach to calculate the mean hydropathy for groups of 3 residues. This value is rescaled to lie between 0 (hydrophilic) and 1 (hydrophobic). This plot can help you identify how hydrophobicity varies along your sequence.</p>" +
+									"<p>Any stretch of 'minimum blob size' or more residues with mean hydropathy > 'hydropathy cutoff' is classified as a hydrophobic or “h” blob and any remaining stretch of four or more residues is classified as a non-hydrophobic linker or “p” blob.</p>")
+		var Das_Pappu_text = "<p>The Das-Pappu phase diagram provides a means to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. </p> <img src=\"/static/daspappu_graph.png\" width=\"350\" height=\"350\"> "+
+			"<p> <i> <b> Figure adapted from: </b> <a href=\"https://www.pnas.org/content/early/2013/07/29/1304749110\" target=\"_blank\"> Das RK, Papu RV (2013) Conformations of intrinsically disordered proteins are influenced by linear sequence distributions of oppositely charged residues PNAS 110(33):13392–13397.</i> </p>"
+		var ncpr_tool_text = "<p>For each blob its net charge per residue (NCPR) is calculated. </p>"
+		var uversky_tool_text = "<p>For each blob its distance from the line representing the boundary between ordered and disordered proteins on the uversky diagram (shown below) is plotted. Postive values are disordered and negative values are ordered. </p> <img src=\"/static/uversky_plot.png\" width=\"375\" height=\"275\"> <p> <i> <b> Figure adapted from: </b> <a href=\"https://pubmed.ncbi.nlm.nih.gov/11025552/\" target=\"_blank\"> Uversky VN, Gillespie JR, Fink AL (2002) Why are \"natively unfolded\" proteins unstructured under physiologic conditions? </i> </p>"
 
-//updates the slider/box value entered by the user
-var cutoff_slider = document.getElementById("cutoff_user_slider");
-var cutoff_slider_value = document.getElementById("cutoff_user");
-var cutoff_box = document.getElementById("cutoff_user_box");
-cutoff_slider_value.innerHTML = cutoff_slider.value;
+		var enrichment_tool_text = "<p>Enrichment values for h blobs</p>"
+		var disorder_tool_text = "<p>For each blob its fraction of disorderd residue is calculated.</p>"
+
+	//These variables set fixed values for height and width to be used in making all four visualizations 
+		const MARGIN = { top: 30, right: 230, bottom: 30, left: 50 }
+		const GLOBAL_WIDTH = 1200 - MARGIN.left - MARGIN.right
+		const GLOBAL_HEIGHT = 200 - MARGIN.top - MARGIN.bottom
+
+	//tooltip for SNPs link
+		var Tooltip_snps = d3.select("body")
+			.append("div") // declare the tooltip div 
+			.attr("class", "tooltip")
+			.style("opacity", 0);
+
+	//updates the slider/box value entered by the user
+		var cutoff_slider_value = document.getElementById("cutoff_user");
+		var cutoff_slider = document.getElementById("cutoff_user_slider");
+
+	//Cutoff Box
+		var cutoff_box = document.getElementById("cutoff_user_box");
+
+	//Threshold Slider
+		var domain_threshold_value = document.getElementById("domain_threshold_user");
+		var domain_threshold_slider = document.getElementById("domain_threshold_user_slider");
+		
+	//Threshold Box
+		var domain_threshold_box = document.getElementById("domain_threshold_user_box");
+	
+
+	//reads the input variable from flask
+		var uni_id = {{ my_uni_id | safe }}
+		var uni_id_str = '["' + uni_id + '"]'
+		var my_seq = {{ my_seq | safe }}
+		var my_data = {{ data.chart_data | safe }}
+
+		var my_cut = {{ my_cut | safe }}
+		var my_snp = {{ my_snp | safe }}
+		var my_disorder = {{ my_disorder | tojson| safe }}
+		var domain_threshold_max = {{ domain_threshold_max | safe }}
 
 
-cutoff_slider.oninput = function() {
-    cutoff_box.value = this.value;
-    cutoff_slider_value.innerHTML = this.value;
+	//GLOBAL EVENT HANDLERS
+		domain_threshold_value.innerHTML = domain_threshold_slider.value;
+		cutoff_slider_value.innerHTML = cutoff_slider.value;
+		cutoff_slider.oninput = function() {
+			cutoff_box.value = this.value;
+			cutoff_slider_value.innerHTML = this.value;
+			}
+		domain_threshold_box.oninput = function() {
+			domain_threshold_slider.value = this.value;
+			domain_threshold_value.innerHTML = this.value;
+			}
+		domain_threshold_slider.oninput = function() {
+			domain_threshold_box.value = this.value;
+			domain_threshold_value.innerHTML = this.value;
+			}
+		cutoff_box.oninput = function() {
+			cutoff_slider.value = this.value;
+			cutoff_slider_value.innerHTML = this.value;
+			}
+	
+	//make the plots
+		draw(my_data)
 
+//FUNCTION DECLARATIONS
+
+// A function that updates the charts
+function update_Charts(figs, data) {
+	figs.pathyFig.update_cutoff_line()
+
+	//iterate over all figures in figs and update them
+	for (let [key, value] of Object.entries(figs)){ 
+		try{
+			value.update_bars(data)
+		}
+		catch{console.log("Failed to update: "+key)}
+	}
 }
 
-cutoff_box.oninput = function() {
-    cutoff_slider.value = this.value;
-    cutoff_slider_value.innerHTML = this.value;
+// Update the output when parameters are changed
+function do_update(figs, data) {
+	// If the box is check, I mutate the amino acid
+	if(d3.select("#mutatebox").property("checked")){
+		var snp_id = document.getElementById("snp_id").value;
+		var my_seq = {{ my_seq | safe }};
+		var amino_acid = document.getElementById("residue_type").value;
+		var my_seq =  my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
+
+	// Otherwise I revert back to wild sequence initially uploaded
+	} else {
+		var my_seq = {{ my_seq | safe }};
+	}
+
+	d_value = d3.select("#domain_threshold_user").text()
+	selectedValue = d3.select("#cutoff_user").text()
+	var m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, my_disorder:my_disorder}
+
+	$.post( "/postmethod", m_str , "json")
+	.then(function(data) {
+		var data_tmp = data.chart_data;
+		var tt = JSON.stringify(eval("(" + data_tmp + ")"));
+		var data_obj = JSON.parse(tt);
+		update_Charts(figs, data_obj);
+		});
 }
-
-
-var domain_threshold_slider = document.getElementById("domain_threshold_user_slider");
-var domain_threshold_value = document.getElementById("domain_threshold_user");
-var domain_threshold_box = document.getElementById("domain_threshold_user_box");
-domain_threshold_value.innerHTML = domain_threshold_slider.value;
-
-domain_threshold_slider.oninput = function() {
-    domain_threshold_box.value = this.value;
-    domain_threshold_value.innerHTML = this.value;
-}
-
-domain_threshold_box.oninput = function() {
-    domain_threshold_slider.value = this.value;
-    domain_threshold_value.innerHTML = this.value;
-}
-
-//These variables set fixed values for height and width to be used in making all four visualizations 
-var margin = { top: 30, right: 230, bottom: 30, left: 50 },
-    width = 1200 - margin.left - margin.right,
-    height = 200 - margin.top - margin.bottom;
-
-
-//--------------------------------------------//make svg containers for each plot------------------------------------//
-function chart(chartID, title) {
     
 
-    //Sets the dimensions and location of the svg container Smoothed hydropathy per residue contents
-    var svg = d3.select("#my_dataviz")
-        .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-        .append("g")
-        .attr("transform",
-            "translate(" + margin.left + "," + margin.top + ")");
-
-    //Creates the title
-    svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", margin.top - 25)
-        .style("text-anchor", "middle")
-        .text(title)
-        .attr("font-size", "20px")
-
-    //Creates the "Residue" x-axis label for Smoothed hydropathy per residue
-    svg.append("text")
-        .attr("x", width / 2)
-        .attr("y", height + margin.bottom)
-        .style("text-anchor", "middle")
-        .text("Residue")
-
-
-    if (chartID == "plot2" || chartID == "plot3"|| chartID == "plot4" || chartID == "plot5" || chartID == "plot6") {
-        //Creates the "Mean Hydropathy" y-axis label for Smoothed hydropathy per residue
-        //"p" blob y-axis label for globular tendency plot
-        svg.append("text")
-            .attr("class", "y label")
-            .attr("text-anchor", "middle")
-            .attr("x", 0 - (height / 2) - 50)
-            .attr("y", margin.left - 80)
-            .attr("transform", "rotate(-90)")
-            .text("p");
-
-        //"h" blob y-axis label for globular tendency plot
-        svg.append("text")
-            .attr("class", "y label")
-            .attr("text-anchor", "middle")
-            .attr("x", 0 - (height / 2))
-            .attr("y", margin.left - 80)
-            .attr("transform", "rotate(-90)")
-            .text("h");
-
-        //"SNPs" y-axis label for globular tendency plot
-        svg.append("text")
-            .attr("class", "y label")
-            .attr("text-anchor", "middle")
-            .attr("x", 0 - (height / 2) + 40)
-            .attr("y", margin.left - 80)
-            .attr("transform", "rotate(-90)")
-            .text("SNPs");
-
-        if (chartID == "plot2") {
-            //This section contains the key that appears next to the Globular tendency colored plot
-            //Circles for the key
-            svg.append("circle").attr("cx", width + 30).attr("cy", margin.top - 15).attr("r", 10).style("fill", "#0f0")
-            svg.append("circle").attr("cx", width + 30).attr("cy", margin.top + 15).attr("r", 10).style("fill", "#FEE882")
-            svg.append("circle").attr("cx", width + 30).attr("cy", margin.top + 45).attr("r", 10).style("fill", "#BF72D2")
-            svg.append("circle").attr("cx", width + 30).attr("cy", margin.top + 75).attr("r", 10).style("fill", "#f00")
-            svg.append("circle").attr("cx", width + 30).attr("cy", margin.top + 105).attr("r", 10).style("fill", "#00f")
-            //Text that appears to the right of the circles in the key    
-            svg.append("text").attr("x", width + 50).attr("y", margin.top - 15).text("1: Globular").style("font-size", "15px").attr("alignment-baseline", "middle")
-            svg.append("text").attr("x", width + 50).attr("y", margin.top + 15).text("2: Janus/Boundary").style("font-size", "15px").attr("alignment-baseline", "middle")
-            svg.append("text").attr("x", width + 50).attr("y", margin.top + 45).text("3: Strong Polyelectrolyte").style("font-size", "15px").attr("alignment-baseline", "middle")
-            svg.append("text").attr("x", width + 50).attr("y", margin.top + 75).text("4: Negatively charged strong polyelectrolyte").style("font-size", "15px").attr("alignment-baseline", "middle")
-            svg.append("text").attr("x", width + 50).attr("y", margin.top + 105).text("5: Positively charged strong polyelectrolyte").style("font-size", "15px").attr("alignment-baseline", "middle")
-
-            //Blue i tool tip to the right of globular tendency plot
-            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-                .on("click", function(d) {
-                    d3.select(this)
-                    //.style("fill", "black");
-                    Tooltip.transition()
-                        .duration(100)
-                        .style("opacity", 1);
-                    Tooltip.html(
-                        "<p>The Das-Pappu phase diagram provides a means to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. </p> <img src=\"/static/daspappu_graph.png\" width=\"350\" height=\"350\"> <p> <i> <b> Figure adapted from: </b> <a href=\"https://www.pnas.org/content/early/2013/07/29/1304749110\" target=\"_blank\"> Das RK, Papu RV (2013) Conformations of intrinsically disordered proteins are influenced by linear sequence distributions of oppositely charged residues PNAS 110(33):13392–13397.</i> </p>")
-
-                        .style("left", (d3.mouse(this)[0] + 500) + "px")
-                        .style("top", (d3.mouse(this)[1] + (margin.top) + 375) + "px");
-                })
-                .on("mouseout", function(d, i) {
-                    d3.select(this)
-                    Tooltip.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-                })
-        } else if (chartID == "plot4") {
-            var colorbar = svg.append('image')
-                .attr('xlink:href', '/static/disorder_key1.png')
-                .attr('width', 51)
-                .attr('height', 107)
-                .attr("x", width + 30)
-                .attr("y", margin.top + 15)
-
-
-            //Blue i tool tip to the right of the Blobs colored according to fraction of disordred residue plot
-            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-                .on("click", function(d) {
-                    d3.select(this)
-                    //.style("fill", "black");
-                    Tooltip.transition()
-                        .duration(100)
-                        .style("opacity", 1);
-                    Tooltip.html(
-                            "<p>For each blob its fraction of disordered residue is calculated.</p>")
-                        .style("left", (d3.mouse(this)[0] + 500) + "px")
-                        .style("top", (d3.mouse(this)[1] + (margin.top) + 1175) + "px");
-                })
-                .on("mouseout", function(d, i) {
-                    d3.select(this)
-                    Tooltip.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-                })
-            } else if (chartID == "plot6") {
-            //Color bar key to the right of the NCPR plot. It appends a png image.
-            var colorbar = svg.append('image')
-                .attr('xlink:href', '/static/gradient_key_enich.png')
-                .attr('width', 51)
-                .attr('height', 107)
-                .attr("x", width + 30)
-                .attr("y", margin.top + 15)
-
-
-            //Blue i tool tip to the right of the Blobs colored according to enrichment plot
-            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-                .on("click", function(d) {
-                    d3.select(this)
-                    //.style("fill", "black");
-                    Tooltip.transition()
-                        .duration(100)
-                        .style("opacity", 1);
-                    Tooltip.html(
-                            "<p>Enrichment values for h blobs")
-                        .style("left", (d3.mouse(this)[0] + 500) + "px")
-                        .style("top", (d3.mouse(this)[1] + (margin.top) + 975) + "px");
-                })
-                .on("mouseout", function(d, i) {
-                    d3.select(this)
-                    Tooltip.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-                })
-
-        } else if (chartID == "plot5") {
-            var colorbar = svg.append('image')
-                .attr('xlink:href', '/static/uv_disorder_key.png')
-                .attr('width', 51)
-                .attr('height', 107)
-                .attr("x", width + 30)
-                .attr("y", margin.top + 15)
-
-
-            //Blue i tool tip to the right of the uversky plot
-            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-                .on("click", function(d) {
-                    d3.select(this)
-                    //.style("fill", "black");
-                    Tooltip.transition()
-                        .duration(100)
-                        .style("opacity", 1);
-                    Tooltip.html(
-                            "<p>For each blob its distance from the line representing the boundary between ordered and disordered proteins on the uversky diagram (shown below) is plotted. Postive values are disordered and negative values are ordered. </p> <img src=\"/static/uversky_plot.png\" width=\"375\" height=\"275\"> <p> <i> <b> Figure adapted from: </b> <a href=\"https://pubmed.ncbi.nlm.nih.gov/11025552/\" target=\"_blank\"> Uversky VN, Gillespie JR, Fink AL (2002) Why are \"natively unfolded\" proteins unstructured under physiologic conditions? </i> </p>")
-                        .style("left", (d3.mouse(this)[0] + 500) + "px")
-                        .style("top", (d3.mouse(this)[1] + (margin.top) + 775) + "px");
-                })
-                .on("mouseout", function(d, i) {
-                    d3.select(this)
-                    Tooltip.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-                })
-        } else {
-            //Color bar key to the right of the NCPR plot. It appends a png image.
-            var colorbar = svg.append('image')
-                .attr('xlink:href', '/static/gradient_key.png')
-                .attr('width', 51)
-                .attr('height', 107)
-                .attr("x", width + 30)
-                .attr("y", margin.top + 15)
-
-
-            //Blue i tool tip to the right of the NCPR plot
-            svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-                .on("click", function(d) {
-                    d3.select(this)
-                    //.style("fill", "black");
-                    Tooltip.transition()
-                        .duration(100)
-                        .style("opacity", 1);
-                    Tooltip.html(
-                            "<p>For each blob its net charge per residue (NCPR) is calculated. </p>")
-                        .style("left", (d3.mouse(this)[0] + 500) + "px")
-                        .style("top", (d3.mouse(this)[1] + (margin.top) + 575) + "px");
-                })
-                .on("mouseout", function(d, i) {
-                    d3.select(this)
-                    Tooltip.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-                })
-
-        }
-    } else {
-
-        //Creates the "Mean Hydropathy" y-axis label for Smoothed hydropathy per residue
-        svg.append("text")
-            .attr("class", "y label")
-            .attr("text-anchor", "middle")
-            .attr("x", 0 - (height / 2))
-            .attr("y", margin.left - 80)
-            .attr("transform", "rotate(-90)")
-            .text("Mean Hydropathy");
-        //Adding the information tooltip
-        svg.append("text").attr("x", width - 3).attr("y", margin.top - 28).text("i").style("font-size", "20px").style("font-weight", "bold").style("font-family", "zapfino").style("fill", "1E59FC").attr("alignment-baseline", "middle").attr("class", "info-hover")
-            .on("click", function(d) {
-                d3.select(this)
-                //.style("fill", "black");
-                Tooltip.transition()
-                    .duration(100)
-                    .style("opacity", 1);
-                Tooltip.html(
-                        "<p>The linear hydropathy uses a sliding, overlapping window approach to calculate the mean hydropathy for groups of 3 residues. This value is rescaled to lie between 0 (hydrophilic) and 1 (hydrophobic). This plot can help you identify how hydrophobicity varies along your sequence.</p>" +
-                        "<p>Any stretch of 'minimum blob size' or more residues with mean hydropathy > 'hydropathy cutoff' is classified as a hydrophobic or “h” blob and any remaining stretch of four or more residues is classified as a non-hydrophobic linker or “p” blob.</p>")
-                    .style("left", (d3.mouse(this)[0] + 500) + "px")
-                    .style("top", (d3.mouse(this)[1] + (margin.top) + 175) + "px");
-            })
-            .on("mouseout", function(d, i) {
-                d3.select(this)
-                Tooltip.transition()
-                    .duration(500)
-                    .style("opacity", 0);
-            })
-
-    }
-
-    return svg
-}
-
-//reads the input variable from flask
-
-var uni_id = {{ my_uni_id | safe }}
-var uni_id_str = '["' + uni_id + '"]'
-var my_seq = {{ my_seq | safe }}
-var my_data = {{ data.chart_data | safe }}
-console.log(my_seq)
-
-
-var my_cut = {{ my_cut | safe }}
-var my_snp = {{ my_snp | safe }}
-var my_disorder = {{ my_disorder | tojson| safe }}
-var domain_threshold_max = {{ domain_threshold_max | safe }}
-
-console.log("my_disorder")
-console.log(my_disorder)
-//makes the plots
-//--------------------------------------------------------------------adding bar graphs to SVGs------------------------------------------//
-draw(my_data)
 
 function draw(data) {
-
-
-    var svg1 = chart("plot1", "Smoothed hydropathy per residue")
-    var svg2 = chart("plot2", "Blobs colored according to globular tendency")
-    var svg3 = chart("plot3", "Blobs colored according to net charge per residue")
-    var svg5 = chart("plot5", "Blobs colored according to uversky diagram")
-    var svg6 = chart("plot6", "Blobs colored according to enrichments")
-
-    if (my_disorder == "0") {
-        var plot_list = [svg1, svg2, svg3, svg5, svg6]
-        console.log("my_disorder2")
-        console.log(my_disorder)
-
-
-    } else {
-        var svg4 = chart("plot4", "Blobs colored according to fraction of disordered residue")
-        var plot_list = [svg1, svg2, svg3, svg4, svg5, svg6] 
-
-    }
-    var domain_bar, domain_bar_disorder,domain_bar_ncpr, domain_bar_u;
-
-    var plot_variable = {2: domain_bar, 3: domain_bar_ncpr, 4: domain_bar_disorder, 5: domain_bar_u };
-
-
-    var tem = plot_variable[2]
-
-
     data.forEach(function(d) {
             d.resid = +d.resid;
             d.hydropathy = +d.hydropathy;
@@ -574,234 +343,80 @@ function draw(data) {
             d.domain_to_numbers = +d.domain_to_numbers
             d.m_cutoff = +d.m_cutoff
             d.domain_threshold = +d.domain_threshold
-
     });
+	
+	figs = []
+	
+	figs.pathyFig = new Figure("pathyPlot", data)
+		.add_title("Smoothed hydropathy per residue")
+		.add_tooltip(hydropathy_tool_text)
+		.add_pathy_ylabel()
+		.add_cutoff_line()
+		.build_barChart()
+		.add_xAxis()
+		.add_yAxis()
+	
+	figs.globFig = new Figure("globPlot", data)
+		.add_title("Blobs colored according to globular tendency")
+		.add_tooltip(Das_Pappu_text)
+		.add_GlobularLegend()
+		.build_barChart()
+		.add_snps()
+		.add_phSNP_ylabel()
+		.add_xAxis()
 
+	
+	figs.ncprFig = new Figure("ncprPlot", data)
+		.add_title("Blobs colored according to net charge per residue")
+		.add_tooltip(ncpr_tool_text)
+		.add_ContinuousLegend("RWB")
+		.build_barChart()
+		.add_snps()
+		.add_phSNP_ylabel()
+		.add_xAxis()
 
-    for (let [index, svg] of plot_list.entries()) {
-        if  (svg==svg2) {
-            data.forEach(function(d) {
-            d.var = d.P_diagram
-        })
-        } else if (svg==svg3) {
-            data.forEach(function(d) {
-            d.var = d.NCPR_color
-        })
-        } else if (svg==svg6) {
-            data.forEach(function(d) {
-            d.var = d.h_blob_enrichment
-        })
-        } else if  (svg==svg4) {
-            data.forEach(function(d) {
-            d.var = d.disorder_color
-        })
-        } else {
-            data.forEach(function(d) {
-            d.var = d.uversky_color
-        })
-        }
+	figs.uverskyFig = new Figure("uverskyPlot", data)
+		.add_title("Blobs colored according to uversky diagram")
+		.add_tooltip(uversky_tool_text)
+		.add_ContinuousLegend("PuOr")
+		.build_barChart()
+		.add_snps()
+		.add_phSNP_ylabel()
+		.add_xAxis()
 
-        var y = d3.scaleLinear()
-            .domain([0, 1])
-            .range([height, 0]);
+	figs.richFig = new Figure("richPlot", data)
+		.add_title("Blobs colored according to enrichments")
+		.add_tooltip(enrichment_tool_text)
+		.add_ContinuousLegend("RWB")
+		.build_barChart()
+		.add_snps()
+		.add_phSNP_ylabel()
+		.add_xAxis()
 
-        // add the x Axis
-        var x = d3.scaleBand()
-            .range([0, width])
-            //    .domain([1,data.length])
-            .domain(data.map(function(d) { return d.resid; }))
-            .padding(0.2);
-        var xAxis = svg.append("g")
-            .call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
-               (Math.round((Math.round(domain_threshold_max/10))/10)*10) )})))
-            .attr("transform", "translate(0," + height + ")");
-        // Bars
+	if (my_disorder == "0") {
+        figs.disorderFig = new Figure("disorderPlot", data)
+			.add_title("DISORDER UNAVAILABLE")
+			.add_tooltip("Disorder information is acquired from Uniprot. To see the disorder plot, please input the Uniprot ID on the previous page.")
+    } else {
+    	figs.disorderFig = new Figure("disorderPlot", data)
+			.add_title("Blobs colored according to fraction of disordered residue")
+			.add_tooltip(disorder_tool_text)
+			.add_ContinuousLegend("PuOr")
+			.build_barChart()
+			.add_snps()
+			.add_phSNP_ylabel()
+			.add_xAxis()
 
-        if (svg == svg1) {
-
-            svg.append("g") //the y axis is drawn only for plot 1
-                .call(d3.axisLeft(y));
-
-            var cut_line = svg.append('g')
-                .append("path")
-                .attr("class", "mypath")
-                .datum(data)
-                .attr("fill", "none")
-                .attr("stroke", "steelblue")
-                .attr("stroke-width", 1.5)
-                .attr("d", d3.line()
-                    .x(function(d) { return x(d.resid) })
-                    .y(function(d) { return y(my_cut) })
-                );
-
-            var hydropathy_bar = svg.selectAll("mybar")
-                .data(data)
-                .enter()
-                .append("rect")
-                .attr("x", function(d) { return x(d.resid); })
-                .attr("y", function(d) { return y(d.hydropathy_3_window_mean); })
-                .attr("width", x.bandwidth())
-                .attr("height", function(d) { return height - y(d.hydropathy_3_window_mean); })
-                .attr("fill", 'grey')
-                .on("mouseover", function() {
-                    d3.select(this)
-                        .attr("fill", "grey");
-                })
-                .on("mouseout", function(d, i) {
-                    d3.select(this).attr("fill", function() {
-                        return "" + 'grey' + "";
-                    });
-                });
-
-        } else {
-
-            plot_variable[index] = svg.selectAll("rect")
-                .data(data)
-                .enter()
-                .append("rect")
-                .attr("x", function(d) { return x(d.resid); })
-                .attr("y", function(d) { return y(d.domain_to_numbers); })
-                .attr("width", x.bandwidth())
-                .attr("height", function(d) { return height - y(d.domain_to_numbers); })
-                .attr("fill", function(d) { return d.var; })
-
-        }
-        
-        //add snp tool tips
-        if (svg != svg1) {
-            svg.append('g')
-                .selectAll("rect")
-                //.data(my_disorder.map(function(d) { return +d; }))
-                .data(my_snp)
-                .enter()
-                .append("rect")
-                .attr("x", function(d) { return x((d.resid)); })
-                .attr("y", function(d) { return y(0.8); })
-                .attr("width", x.bandwidth())
-                .attr("height", function(d) { return y(0.8); })
-                .attr("fill", 'black')
-                .on("click", function(d) {
-                    //window.location.href = d.xrefs[0].url+'_blank'
-                    window.open(d.xrefs.url, '_blank')
-                })
-                .on("mouseover", function(d) {
-                    d3.select(this)
-                        .attr("fill", "red");
-                    Tooltip_snps.transition()
-                        .duration(100)
-                        .style("opacity", .9);
-                    Tooltip_snps.html(
-                            '<a href="' + d.xrefs.url + '"target="_blank">' + d.xrefs.id +
-                            "</a>")
-                        .style("left", (d3.event.pageX) + "px")
-                        .style("top", (d3.event.pageY - 28) + "px");
-                })
-                .on("mouseout", function(d, i) {
-                    d3.select(this).attr("fill", function() {
-                        return "" + 'black' + "";
-                    })
-                    Tooltip_snps.transition()
-                        .duration(500)
-                        .style("opacity", 0);
-                })
-
-        }
     }
+
+
     var str = "Download plots!";
     var str_j = "Download data!";
 
-    //------------------------------------------A function that update the chart when eitgher slider is moved-----------------------------------------------//
-    function updateChart(given_cutoff, data_updated) {
 
-        cut_line
-            .transition()
-            .duration(1000)
-            .attr("d", d3.line()
-                .x(function(d) { return x(d.resid); })
-                .y(function(d) { return y(given_cutoff); })
-            );
-
-
-        for (let [index, svg] of plot_list.entries() ) {
-            if  (svg==svg2) {
-                data_updated.forEach(function(d) {
-                d.var = d.P_diagram
-            })
-            } else if (svg==svg3) {
-                data_updated.forEach(function(d) {
-                d.var = d.NCPR_color
-            })
-            } else if (svg==svg6) {
-                data_updated.forEach(function(d) {
-                d.var = d.h_blob_enrichment
-            })
-            } else if  (svg==svg4) {
-                data_updated.forEach(function(d) {
-                d.var = d.disorder_color
-            })
-            } else {
-                data_updated.forEach(function(d) {
-                d.var = d.uversky_color
-            })
-            }
-
-            if (svg!=svg1) {
-                svg.selectAll("rect")
-                    .data(data_updated)
-                plot_variable[index]
-                    .enter()
-                    .append("rect")
-                    .merge(plot_variable[index])
-                    .transition()
-                    .duration(1000)
-                    .attr("x", function(d) { return x(d.resid); })
-                    .attr("y", function(d) { return y(d.domain_to_numbers); })
-                    .attr("width", x.bandwidth())
-                    .attr("height", function(d) { return height - y(d.domain_to_numbers); })
-                    .attr("fill", function(d) { return d.var })
-                
-           } else {
-
-           }
-
-           }
-        }
-
-    // Update the output when parameters are changed
-    function do_update() {
-        // If the box is check, I mutate the amino acid
-        if(d3.select("#mutatebox").property("checked")){
-            
-            var snp_id = document.getElementById("snp_id").value;
-            var my_seq = {{ my_seq | safe }};
-            var amino_acid = document.getElementById("residue_type").value;
-            var my_seq =  my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
-
-        // Otherwise I revert back to wild sequence initially uploaded
-        } else {
-            var my_seq = {{ my_seq | safe }};
-        }
-
-        var d_value = d3.select("#domain_threshold_user").text()
-        var selectedValue = d3.select("#cutoff_user").text()
-        var m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, my_disorder:my_disorder}
-
-        $.post( "/postmethod", m_str , "json")
-        .then(function(data) {
-            var data_tmp = data.chart_data;
-            var tt = JSON.stringify(eval("(" + data_tmp + ")"));
-            var data_obj = JSON.parse(tt);
-            updateChart(selectedValue, data_obj);
-        });
-    }
+    // Set up UI element change handler
+	d3.selectAll("#mutatebox,#snp_id,#residue_type,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox").on("change", function(){do_update(figs, data)});
     
-    // Set up UI element change handlers
-    d3.selectAll(".checkbox").on("change", do_update)
-    d3.select("#cutoff_user_slider").on("change", do_update);
-    d3.select("#cutoff_user_box").on("change", do_update);
-    d3.select("#domain_threshold_user_slider").on("change", do_update);
-    d3.select("#domain_threshold_user_box").on("change", do_update);
-    d3.selectAll("#mutatebox,#snp_id,#residue_type").on("change", do_update);
 
     //download_data
     d3.select('#download_data_link').on('click', function(){
@@ -812,16 +427,14 @@ function draw(data) {
             var snp_id = document.getElementById("snp_id").value;
             var amino_acid = document.getElementById("residue_type").value;
             my_seq =  my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
-        }
+       		}
 
         $.ajax({
-                url: "/json",
-                type: "post",
-                data: {my_seq: my_seq, domain_threshold: d3.select("#domain_threshold_user").text(), cutoff: d3.select("#cutoff_user").text(), my_disorder:my_disorder},
-                xhrFields: {
-                responseType: 'blob'
-                },
-                success: function(data) {console.log(data)
+            url: "/json",
+            type: "post",
+            data: {my_seq: my_seq, domain_threshold: d3.select("#domain_threshold_user").text(), cutoff: d3.select("#cutoff_user").text(), my_disorder:my_disorder},
+            xhrFields: {responseType: 'blob'},
+            success: function(data) {console.log(data)
                 var a = document.createElement('a');
                 var url = window.URL.createObjectURL(data);
                 a.href = url;
@@ -830,16 +443,15 @@ function draw(data) {
                 a.click();
                 a.remove();
                 window.URL.revokeObjectURL(url);
-                }
-            });
-        })  
+            }
+        });
+    })  
 
     //download_plots
     $('#download_plot_link').click(function() {
         window.location='/plot?' + 'domain_threshold=' + d3.select("#domain_threshold_user").text() + '&cutoff=' + d3.select("#cutoff_user").text()    
-
-        })
-
+    })
+		
 };
 
 </script>
