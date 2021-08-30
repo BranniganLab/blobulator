@@ -387,7 +387,7 @@ function draw(data) {
 	figs.richFig = new Figure("richPlot", data)
 		.add_title("Blobs colored according to enrichments")
 		.add_tooltip(enrichment_tool_text)
-		.add_ContinuousLegend("RWB")
+		.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"})
 		.build_barChart()
 		.add_snps()
 		.add_phSNP_ylabel()
