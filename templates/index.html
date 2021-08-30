@@ -130,6 +130,7 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
     font: 12px sans-serif;
     background: lightsteelblue;
     border: 0px;
+    cursor: pointer;
 }
 
 .rangeslider {
@@ -394,6 +395,7 @@ function draw(data) {
 	if (my_disorder == "0") {
         figs.disorderFig = new Figure("disorderPlot", data)
 			.add_title("DISORDER UNAVAILABLE")
+			.add_tooltip("Disorder information is acquired from Uniprot. To see the disorder plot, please input the Uniprot ID on the previous page.")
     } else {
     	figs.disorderFig = new Figure("disorderPlot", data)
 			.add_title("Blobs colored according to fraction of disordered residue")

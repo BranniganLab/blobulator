@@ -109,6 +109,7 @@ class Figure {
 			.attr("width", 40)
 			.attr("height", 40)
 			.style("fill", "white")
+			.style("cursor", "pointer")
 			.attr("alignment-baseline", "middle")
 
 		var text = this.infoIcon.append("text")
@@ -119,6 +120,7 @@ class Figure {
 			.style("font-weight", "bold")
 			.style("font-family", "zapfino")
 			.style("fill", "1E59FC")
+			.style("cursor", "pointer")
 			.attr("alignment-baseline", "middle")
 			.attr("class", "info-hover")
 			
@@ -142,7 +144,7 @@ class Figure {
 		
 		this.infoIcon.on("click", function(d) {
 				if (!on) {
-					text.transition().duration(100).style("fill", "blue")
+					text.transition().duration(100).style("fill", "blue").text("x")
 					tt.transition()
 						.duration(100)
 						.style("opacity", 1);
@@ -151,7 +153,7 @@ class Figure {
 						.style("bottom", 0+"px");
 					on = 1
 				}else{
-					text.transition().duration(100).style("fill", "black")
+					text.transition().duration(100).style("fill", "black").text("i")
 					d3.select(this)
 					tt.transition()
 						.duration(500)
