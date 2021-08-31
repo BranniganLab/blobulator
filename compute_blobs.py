@@ -55,7 +55,6 @@ def compute(
     blob_length_cutoff_enrichment = pd.read_csv('./Table_S1.csv')
 
     dict_enrich = dict(zip(zip(blob_length_cutoff_enrichment['Hydrophobicity cutoff'], blob_length_cutoff_enrichment['Blob length']), blob_length_cutoff_enrichment['Enrichment ']))
-    
     #print (blob_length_cutoff_enrichment)
     window_factor = int((window - 1) / 2)
     seq_start = 1  # starting resid for the seq
@@ -338,15 +337,15 @@ def compute(
     df["H"] = domain_group["hydropathy"].transform("mean")
     df["NCPR"] = domain_group["charge"].transform("mean")
     df["disorder"] = domain_group["disorder"].transform("mean")
-    df["fp"] = domain_group["charge"].transform(lambda x: count_var(x, 1))
+    df["f+"] = domain_group["charge"].transform(lambda x: count_var(x, 1))
     df["f-"] = domain_group["charge"].transform(lambda x: count_var(x, -1))
-    df["fcr"] = df["f-"] + df["fp"]
+    df["fcr"] = df["f-"] + df["f+"]
     df['h_blob_enrichment'] =df[["N", "m_cutoff", "blobtype"]].apply(lambda x: h_blob_enrichments(x), axis=1)
 
-    df["P_diagram"] = df[["NCPR", "fcr", "fp", "f-"]].apply(
+    df["P_diagram"] = df[["NCPR", "fcr", "f+", "f-"]].apply(
         lambda x: phase_diagram(x), axis=1
     )
-    df["blob_charge_class"] = df[["NCPR", "fcr", "fp", "f-"]].apply(
+    df["blob_charge_class"] = df[["NCPR", "fcr", "f+", "f-"]].apply(
             lambda x: phase_diagram_class(x), axis=1
         )
     df["U_diagram"] = df[["NCPR", "H"]].apply(
@@ -364,7 +363,7 @@ def compute(
     )
 
     
-    #print (df[["U_diagram", "NCPR", "fp", "f-", "N", "H"]].to_string())
+    #print (df[["U_diagram", "NCPR", "f+", "f-", "N", "H"]].to_string())
 
     #--------------------------------makes matplotlib plot for download-------------------------------------#
     def make_plot (df):
@@ -410,7 +409,7 @@ def compute(
             m_color = cmap(ncpr_normalized)
             return m_color  
 
-        df["P_diagram"] = df[["NCPR", "fcr", "fp", "f-"]].apply(
+        df["P_diagram"] = df[["NCPR", "fcr", "+", "f-"]].apply(
             lambda x: phase_diagram_plot(x), axis=1
         )
 
@@ -512,7 +511,6 @@ def compute(
 
 if __name__ == "__main__":
         df = compute("MDVFMKGLSKAKEGVVAAAEKTKQGVAEAAGKTKEGVLYVGSKTKEGVVHGVATV", 0.4, 4)
-        print (df.columns)
         #df = df.rename(columns={'seq_name': 'res_name', 'm_cutoff': 'hydrophobicity_cutoff', 'domain_threshold':'minimum_blob_length', 'blobtype':'blob_hydrophobicty_class', 'N':'blob_length'})
         #print ("Writing output file")
         #df[['res_name', 'hydrophobicity_cutoff', 'minimum_blob_length', 'blob_hydrophobicty_class', 'blob_charge_class','blob_length']].to_csv("./blobulated.csv", index=False)

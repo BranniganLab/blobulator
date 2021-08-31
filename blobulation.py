@@ -278,7 +278,8 @@ def calc_json():
     del df["charge"]
     del df["domain_to_numbers"]
     df['resid'] = df['resid'].astype(int)
-    df = df.rename(columns={'seq_name': 'resname', 'resid': '#resID', 'H': '<H>', 'domain': 'blobindex', 'NCPR': 'blobNCPR'})
+    df = df[['seq_name', 'resid', 'window', 'm_cutoff', 'domain_threshold', 'H', 'blobtype', 'domain', 'blob_charge_class', 'NCPR', 'f+', 'f-', 'fcr', 'U_diagram', 'h_blob_enrichment', 'disorder']]
+    df = df.rename(columns={'seq_name': 'Residue Name', 'resid': 'Residue Number', 'disorder': 'Blob Disorder', 'window': 'Window', 'm_cutoff': 'Hydropathy Cutoff', 'domain_threshold': 'Minimum Blob Length', 'blobtype':'Blob Type', 'H': '<H>', 'domain': 'Blob Index Number', 'NCPR': 'Blob NCPR', 'f+': "Fraction of Positively Charged Residues", 'f-': "Fraction of Negatively Charged Residues", 'fcr': 'Fraction of Charged Residues', 'h_blob_enrichment': 'Blob Hydrophobic Residue Enrichment', 'blob_charge_class': 'Blob Das Pappu Class', 'U_diagram': 'Uversky Diagram Score'})
     return Response(
         df.round(1).to_csv(index=False),
         mimetype="text/csv",
