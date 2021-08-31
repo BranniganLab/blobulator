@@ -226,7 +226,7 @@ the SNP will turn red and if the user chooses to click on the SNP the ClinVar da
 		var ncpr_tool_text = "<p>For each blob its net charge per residue (NCPR) is calculated. Each blob is evaluated based on it's fraction of both positively and negatively charged residues. The darker blue a blob is shown here, the higher the fraction of positively charged residues are present within the blob. Alternatively, the darker red a blob is shown here, the higher the fraction of negatively charged residues are present within the blob. An even fraction of positive or negative, or a low fraction of any charged residues, results in a grey color.</p>"
 		var uversky_tool_text = "<p>For each blob its distance from the line representing the boundary between ordered and disordered proteins on the uversky diagram (shown below) is plotted. Postive values are disordered and negative values are ordered. </p> <img src=\"/static/uversky_plot.png\" width=\"375\" height=\"275\"> <p> <i> <b> Figure adapted from: </b> <a href=\"https://pubmed.ncbi.nlm.nih.gov/11025552/\" target=\"_blank\"> Uversky VN, Gillespie JR, Fink AL (2002) Why are \"natively unfolded\" proteins unstructured under physiologic conditions? </i> </p>"
 
-		var enrichment_tool_text = "<p>Enrichment values for h blobs</p>"
+		var enrichment_tool_text = "<p>Here, blobs are colored based upon their enrichment in hydropathic residues. Blobs with many hydropathic residues are considered more enriched, and have a darker blue color. P blobs are not considered, as they don't meet the initial criteria for being an h (hydropathic) blob. </p>"
 		var disorder_tool_text = "<p>For each blob its fraction of disordered residue is calculated. This disorder calculation is only available if the user uses the Uniprot ID, and uses information provided by the Database of Disordered Protein Prediction. <i> <a href=\"https://academic.oup.com/nar/article/41/D1/D508/1069637\" target=\"_blank\"> Matt E. Oates, Pedro Romero, Takashi Ishida, Mohamed Ghalwash, Marcin J. Mizianty, Bin Xue, Zsuzsanna Dosztányi, Vladimir N. Uversky, Zoran Obradovic, Lukasz Kurgan, A. Keith Dunker, Julian Gough, D2P2: database of disordered protein predictions, Nucleic Acids Research, Volume 41, Issue D1, 1 January 2013, Pages D508–D516, https://doi.org/10.1093/nar/gks1226</i></p>"
 
 	//These variables set fixed values for height and width to be used in making all four visualizations 
@@ -385,7 +385,7 @@ function draw(data) {
 		.add_xAxis()
 
 	figs.richFig = new Figure("richPlot", data)
-		.add_title("Blobs colored according to enrichments")
+		.add_title("Blobs colored according to hydropathy")
 		.add_tooltip(enrichment_tool_text)
 		.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"})
 		.build_barChart()
