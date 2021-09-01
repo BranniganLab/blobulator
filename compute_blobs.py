@@ -320,7 +320,16 @@ def compute(
             return "grey"
 
 
-
+    def h_blob_enrichments_numerical(x):
+        cutoff_prec = round(x[1], 2)
+        if x[2] == 'h':
+            try:
+                enirch_value = dict_enrich[(cutoff_prec, x[0])]
+                return enirch_value
+            except KeyError:
+                return 0
+        else:
+            return 0
 
         #ncpr = x[0]
         #m_color = cmap_disornder(ncpr)
@@ -340,7 +349,8 @@ def compute(
     df["f+"] = domain_group["charge"].transform(lambda x: count_var(x, 1))
     df["f-"] = domain_group["charge"].transform(lambda x: count_var(x, -1))
     df["fcr"] = df["f-"] + df["f+"]
-    df['h_blob_enrichment'] =df[["N", "m_cutoff", "blobtype"]].apply(lambda x: h_blob_enrichments(x), axis=1)
+    df['h_blob_enrichment'] = df[["N", "m_cutoff", "blobtype"]].apply(lambda x: h_blob_enrichments(x), axis=1)
+    df['h_numerical_enrichment'] = df[["N", "m_cutoff", "blobtype"]].apply(lambda x: h_blob_enrichments_numerical(x), axis=1)
 
     df["P_diagram"] = df[["NCPR", "fcr", "f+", "f-"]].apply(
         lambda x: phase_diagram(x), axis=1
