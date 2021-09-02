@@ -250,7 +250,7 @@ def get_post():
 def calc_json():
     """This method is used to blobulate and adds the data to data download option"""
     form = InputForm(request.form) #reads the user input
-    print(request.form)
+    #print(request.form)
     user_input = form.uniprot_id.data.splitlines()
     my_seq  = request.form['my_seq']
     domain_threshold  = request.form['domain_threshold']
