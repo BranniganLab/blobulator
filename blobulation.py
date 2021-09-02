@@ -282,10 +282,7 @@ def calc_json():
     df = df[['seq_name', 'resid', 'window', 'm_cutoff', 'domain_threshold', 'H', 'blobtype', 'domain', 'blob_charge_class', 'NCPR', 'f+', 'f-', 'fcr', 'U_diagram', 'h_numerical_enrichment', 'disorder']]
     df = df.rename(columns={'seq_name': 'Residue Name', 'resid': 'Residue Number', 'disorder': 'Blob Disorder', 'window': 'Window', 'm_cutoff': 'Hydropathy Cutoff', 'domain_threshold': 'Minimum Blob Length', 'blobtype':'Blob Type', 'H': '<H>', 'domain': 'Blob Index Number', 'NCPR': 'Blob NCPR', 'f+': "Fraction of Positively Charged Residues", 'f-': "Fraction of Negatively Charged Residues", 'fcr': 'Fraction of Charged Residues', 'h_numerical_enrichment': 'Blob Hydrophobic Residue Enrichment', 'blob_charge_class': 'Blob Das Pappu Class', 'U_diagram': 'Uversky Diagram Score'})
     
-    f = open('data.csv', 'a')
-    f.write('##' + str(user_input) + '\n')
-    f.write(df.round(1).to_csv(index=False))
-    f.close()
+    f = "##" + str(user_input) + "\n" + str(df.round(1).to_csv(index=False))
     return Response(f,
         mimetype="text/csv",
         headers={"Content-disposition":
