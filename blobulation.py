@@ -30,7 +30,6 @@ REQUEST_URL_snp = "https://www.ebi.ac.uk/proteins/api/variation"
 REQUEST_URL_features = "https://www.ebi.ac.uk/proteins/api/features"
 
 
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     form = InputForm(request.form) #reads the user input
@@ -145,7 +144,7 @@ def index():
                     my_seq_download="%s" % my_seq,
                     domain_threshold=4,
                     domain_threshold_max=len(str(my_seq)),
-                    my_disorder = str(disorder_residues).strip('[]')
+                    my_disorder = str(disorder_residues).strip('[]'),
 
                     #my_disorder = json.dumps(disorder_residues, indent=2)
                 )
@@ -189,10 +188,10 @@ def index():
                 my_seq_download="%s" % my_seq,
                 domain_threshold=4,
                 domain_threshold_max=len(str(my_seq)),
-                my_disorder = '0'
+                my_disorder = '0',
             )
     else:
-        return render_template("tabs.html", form=form) #creats the HTML layout of the home page along with user input fields
+        return render_template("tabs.html", form=form) #creates the HTML layout of the home page along with user input fields
 
 
 
@@ -212,7 +211,7 @@ def api_id():
         float(cutoff),
         float(domain_threshold),
         window=window,
-        disorder_residues = list(my_disorder)
+        disorder_residues = list(my_disorder),
     )  # blobulation
     df = my_initial_df
     #df = df.drop(range(0, 1))
@@ -235,7 +234,7 @@ def get_post():
         float(cutoff),
         float(domain_threshold),
         window=window,
-        disorder_residues = list(my_disorder)
+        disorder_residues = list(my_disorder),
     )  # blobulation
     df = my_initial_df
     #df = df.drop(range(0, 1))
@@ -250,6 +249,9 @@ def get_post():
 )
 def calc_json():
     """This method is used to blobulate and adds the data to data download option"""
+    form = InputForm(request.form) #reads the user input
+    #print(request.form)
+    user_input = form.uniprot_id.data.splitlines()
     my_seq  = request.form['my_seq']
     domain_threshold  = request.form['domain_threshold']
     cutoff  = request.form['cutoff']
@@ -261,7 +263,7 @@ def calc_json():
         float(cutoff),
         float(domain_threshold),
         window=window,
-        disorder_residues = list(my_disorder)
+        disorder_residues = list(my_disorder),
     )  # blobulation
     df = my_initial_df
     #print (df.head)
@@ -280,11 +282,15 @@ def calc_json():
     df['resid'] = df['resid'].astype(int)
     df = df[['seq_name', 'resid', 'window', 'm_cutoff', 'domain_threshold', 'H', 'blobtype', 'domain', 'blob_charge_class', 'NCPR', 'f+', 'f-', 'fcr', 'U_diagram', 'h_numerical_enrichment', 'disorder']]
     df = df.rename(columns={'seq_name': 'Residue Name', 'resid': 'Residue Number', 'disorder': 'Blob Disorder', 'window': 'Window', 'm_cutoff': 'Hydropathy Cutoff', 'domain_threshold': 'Minimum Blob Length', 'blobtype':'Blob Type', 'H': '<H>', 'domain': 'Blob Index Number', 'NCPR': 'Blob NCPR', 'f+': "Fraction of Positively Charged Residues", 'f-': "Fraction of Negatively Charged Residues", 'fcr': 'Fraction of Charged Residues', 'h_numerical_enrichment': 'Blob Hydrophobic Residue Enrichment', 'blob_charge_class': 'Blob Das Pappu Class', 'U_diagram': 'Uversky Diagram Score'})
-    return Response(
-        df.round(1).to_csv(index=False),
+    
+    #f = "##" + str(user_input) + "\n" + str(df.round(1).to_csv(index=False))
+    f = str(df.round(1).to_csv(index=False))
+    
+    return Response(f,
         mimetype="text/csv",
         headers={"Content-disposition":
                  "attachment; filename=data.csv"})
+
 
 @app.route("/plot", methods=["GET", "POST"])
 def calc_plot():

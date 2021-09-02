@@ -437,8 +437,9 @@ function draw(data) {
             success: function(data) {console.log(data)
                 var a = document.createElement('a');
                 var url = window.URL.createObjectURL(data);
+                let name = {{ my_uni_id | safe }};
                 a.href = url;
-                a.download = 'blobulation.csv';
+                a.download = name + '_blobulated.csv';
                 document.body.append(a);
                 a.click();
                 a.remove();
