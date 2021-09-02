@@ -419,7 +419,7 @@ def compute(
             m_color = cmap(ncpr_normalized)
             return m_color  
 
-        df["P_diagram"] = df[["NCPR", "fcr", "+", "f-"]].apply(
+        df["P_diagram"] = df[["NCPR", "fcr", "f+", "f-"]].apply(
             lambda x: phase_diagram_plot(x), axis=1
         )
 
