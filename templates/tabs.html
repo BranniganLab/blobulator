@@ -72,6 +72,8 @@ img {
                 <h4 class="mt-2">A Quick Overview</h4>
                 <p> User first should obtain the Uniprot ID for their protein of choice or any amino acid sequence given in one-letter notation. Here we will view an example for &#x3B1-synuclein. We will use its Uniprot ID <a href="https://www.uniprot.org/uniprot/P37840" target="_blank">P37840</a>. It is a 140-residue amino acid that is the hallmark Intrinsically Disordered Protein for Parkinson's Disease. We simply press Compute and the blobulation happens. </p>
                 <br><br>
+                <p> What is blobulation? The nomenclature used here comes from polymer physics, where the segments of a polypeptide chain are grouped together into interaction domains, where the residues within a certain region of the protein can be expected to behave in a certain, relatively predictable way (de Gennes, 1979).</p>
+                <br><br>
                 <p> Let's take a look at what we find as our output. First you will see some user adjustable sliders that we will explain, but let's first look at the first graph, which is a mapping of the entire protein, residues 1-140. Each amino acid is accounted for as one grey bar and assigned a "Mean Hydropathy" value. This value tells you how hydrophobic each residue is or how "sticky" it is. Now let's take a look at the first slider "hydropathy cutoff". The default value for hydropathy cutoff upon first outputting our blobulation is 0.4, but we can make this value bigger or smaller. By changing this, we are deciding how hydrophobic each amino acid must be to be considered part of a hydrophobic blob. Now let us take a look at the slider "Minimum blob size". As we adjust this slider, we are able to choose how many residues clumped together that must be within the hydropathy cutoff to be considered a hydrophobic blob. </p>
                 <img src="/static/graph_1example.png" alt="graph1" class="img-fluid"> <br> <br>
                 <p> Now let's view the next two graphs. These graphs show us where the blobs are on our protein. The groups of tall bars stacked together are going to be our hydrophobic blobs that we have selected for. These graphs change as we adjust the sliders. </p>
@@ -83,7 +85,7 @@ img {
             ​
             <!--Home Page Contents-->
             <div class="tab-pane container active" id="home">
-                <h5 class="text-center">Enter any Uniprot ID or Sequence and watch the blobulation happen!</h5>
+                <h5 class="text-center">Please enter the <a href="https://www.uniprot.org" target="_blank"> Uniprot ID </a> or amino acid sequence for blobulation.</h5>
                 <br>
                 <br>
                 <div class="container-fluid">
