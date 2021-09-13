@@ -75,6 +75,7 @@ def compute(
     df["window"] = window
     df["m_cutoff"] = cutoff
     df["domain_threshold"] = domain_threshold
+
     #........................calcutes three residue moving window mean............................#
 
     df["hydropathy_3_window_mean"] = (df["hydropathy"].rolling(window=window).mean())
@@ -460,7 +461,7 @@ def compute(
 
         ax2.set_title("Blobs colored according to net charge per residue")
         ax2.bar(x=df['resid'].values[2::], height=df['domain_to_numbers'].values[2::], width = 0.9 , color=df['NCPR_color'].values[2::])
-        ax2.set_ylabel("h                  p             ")
+        ax2.set_ylabel("h                 p             ")
         ax2.set_ylim([0,1])
         ax2.set_xticks(np.arange(1, df.shape[0], int(df.shape[0]/10.0)+1))  
 
