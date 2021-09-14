@@ -32,6 +32,7 @@ The opening page contains three tabs: Home, About, and Documentation.-->
         outline: none;
         transition: 0.4s;
         }
+
         /* Style the accordion panel. Note: hidden by default */
         .panel {
         padding: 0 18px;
@@ -98,22 +99,22 @@ img {
                 <h4 class="mt-2">Sequence Input</h4>
                 <p> The first thing needed for the blobulator is either a Uniprot ID for a protein of interest, or a manual sequence entry. Uniprot IDs are our recommended format for retrieving the sequence required for blobulation. Above each “compute button” there is a manual text entry box, in which the user should insert either their sequence or ID. The user should then press the “Compute” button. </p>
                 <p> On the blobulation output page, there are three adjustable parameters, each of which can be adjusted by the user: </p>
-                <button class="accordion">Adjusting Hydropathy Cutoff</button>
+                <button class="accordion"> &#10133 Adjusting Hydropathy Cutoff</button>
                 <div class="panel">
                 <p>Blobulation considers the residues in turn and calculates the average hydrophobicity score of each group of residues. If a group of residues (under the minimum blob size) is above the value for hydrophobicity cutoff, it will be considered a ‘h’ (hydrophobic) blob. If it’s below it will be considered a ‘p’ (non-hydrophobic) blob. The hydropathy cutoff can be adjusted by manual entry into the text box to the left, or by adjusting the slider to the desired value.</p>
                 </div>
-                <button class="accordion">Adjusting Minimum Blob Size</button>
+                <button class="accordion"> &#10133 Adjusting Minimum Blob Size</button>
                 <div class="panel">
                 <p>This setting establishes a threshold for how many residues constitute blob. If there are groups of residues which average above or below the hydropathy cutoff, they must then meet this requirement to be considered either a h or p blob. If a residue in a h-blob is below this threshold and below the hydropathy cutoff, or if the residue is in a p-blob and above the hydropathy cutoff and below the minimum blob size, the residue (or group of residues) will be considered a ‘s’ (spacer or separator) blob.</p>
                 </div>
-                <button class="accordion">Mutating Residues</button>
+                <button class="accordion"> &#10133 Mutating Residues</button>
                 <div class="panel">
                 <p>This allows the user to change a residue within the sequence, and see what potential affects it would have on the blobulation output. To mutate a residue, the user should check the 'Mutate Residue' box on the left, then select which residue they would like to mutate, and then choose the amino acid they would like to mutate the residue into. The graphs will automatically update after the box is checked and the changes are made.</p>
                 </div>
                 <br> <br>
 
                 <h4 class="mt-2">SNPs and Mutations</h4>
-                <button class="accordion">Visualizing SNPs</button>
+                <button class="accordion"> &#10133 Visualizing SNPs</button>
                 <div class="panel">
                 <p>SNPs are shown by the black lines above the relevant residues on many of the visualizations.</p>
                 </div>
@@ -123,33 +124,33 @@ img {
                 <h4 class="mt-2">Interpreting Graphs</h4>
                 <p>After blobulation, multiple graphs are produced and available to the user. </p>
 
-                <button class="accordion">Smoothed hydropathy per residue</button>
+                <button class="accordion">&#10133 Smoothed hydropathy per residue</button>
                 <div class="panel">
                 <p>The first outputted graph displays the smoothed hydropathy per residue. The core of blobulation consists of two parameters - the first of which being a hydropathy threshold. This threshold is shown by the blue line on the “mean hydropathy” axis. This graph is the only one that shows the residues individually, and can be used as a reference to how the residues are grouped together based upon their position above or below the mean hydropathy line.</p>
                 </div>
-                <button class="accordion">Blobs according to globular tendency</button>
+                <button class="accordion">&#10133 Blobs according to globular tendency</button>
                 <div class="panel">
                 <p>The second outputted graph shows the blobs according to their globular tendency, considered based upon their <a href="https://www.pnas.org/content/early/2013/07/29/1304749110" target="_blank"> Das-Pappu </a> classification. Here the residues are grouped based upon their determined blobs, and SNP data is shown above the relevant residues as black lines.</p>
                 </div>
-                <button class="accordion"> Blobs according to net charge per residue</button>
+                <button class="accordion">&#10133 Blobs according to net charge per residue</button>
                 <div class="panel">
                 <p>The third outputted graph shows the blobs according to their residues’ collective average charge. Here the residues are again grouped based upon their determined blobs, and SNP data is shown above the relevant residues as black lines.</p>
                 </div>
-                <button class="accordion"> Blobs colored according to Uversky diagram</button>
+                <button class="accordion">&#10133 Blobs colored according to Uversky diagram</button>
                 <div class="panel">
                 <p>The fourth outputted graph shows the blobs according to their positions on the <a href="https://pubmed.ncbi.nlm.nih.gov/11025552/" target="_blank"> Uversky diagram </a>, where the line between ordered and disordered is plotted. Here the residues are grouped based upon their determined blobs, and SNP data is shown above the relevant residues as black lines.</p>
                 </div>
-                <button class="accordion"> Blobs colored according to dSNP enrichment</button>
+                <button class="accordion">&#10133 Blobs colored according to dSNP enrichment</button>
                 <div class="panel">
                 <p>The fifth outputted graph shows the blobs according to their enrichment in documented disease associated SNPs (dSNP). Here the residues are grouped based upon their determined blobs, and SNP data is shown above the relevant residues as black lines.</p>
                 </div>
-                <button class="accordion"> Blobs colored according to fraction of disordered residue</button>
+                <button class="accordion">&#10133 Blobs colored according to fraction of disordered residue</button>
                 <div class="panel">
                 <p>The sixth and final outputted graph shows the blobs according to their fraction of disordered residue, which utilizes the <a href="https://academic.oup.com/nar/article/41/D1/D508/1069637" target="_blank">Database of Disordered protein prediction </a>. Here the residues are grouped based upon their determined blobs, and SNP data is shown above the relevant residues as black lines.</p>
                 </div>
 
                 <h4 class="mt-2">Saving Data</h4>
-                <button class="accordion"> Downloading Data</button>
+                <button class="accordion">&#10133 Downloading Data</button>
                 <div class="panel">
                 <p>After the “Download data!” button (located just below the three adjustable parameters) is pressed, the raw data will be downloaded in the form of a csv file. The data stored here is by residue. Each column corresponds to one of the following: residue name, residue number, window, hydropathy cutoff, minimum blob size, average hydrophobicity, blob type, blob index number, blob Das-Pappu classification, blob net charge per residue, fraction of positively charged residues, fraction of negatively charged residues, fraction of charged residues, uversky diagram score, blob dSNP enrichment, and blob disorder score.</p>
                 </div>
@@ -160,35 +161,35 @@ img {
             <div class="tab-pane fade" id="FAQ">
                 <h4 class="mt-2">Frequently Asked Questions:</h4>
 
-                <button class="accordion">What does the blobulator output?</button>
+                <button class="accordion">&#10133 What does the blobulator output?</button>
                 <div class="panel">
                 <p>The blobulator outputs 6 graphs showing categorizations of its subdomains. Each graph shows the sequence of the protein displayed in one of the following ways: smoothed hydropathy per residue, colored according to globular tendency, colored according to net charge per residue, colored according to the Uversky diagram, colored according to dSNP enrichment, colored according to fraction of disordered residue.</p>
                 </div>
-                <button class="accordion">Do you recommend using the manual sequence entry option, or the Uniprot ID option for input?</button>
+                <button class="accordion">&#10133 Do you recommend using the manual sequence entry option, or the Uniprot ID option for input?</button>
                 <div class="panel">
                 <p>We strongly recommend using the Uniprot ID option when available. There will be more graphs outputted, as well as SNP data available if you blobulate the protein using its Uniprot ID. If you are interested in a specific variant of the protein, such as one containing a SNP, there is a mutate residue option at the top of the output page. </p>
                 </div>
-                <button class="accordion">Can I download the plots?</button>
+                <button class="accordion">&#10133 Can I download the plots?</button>
                 <div class="panel">
                 <p>Yes! We recommend saving the page as a .pdf file using the “print” function in your browser.</p>
                 </div>
-                <button class="accordion">How do I access the data used to generate the plots?</button>
+                <button class="accordion">&#10133 How do I access the data used to generate the plots?</button>
                 <div class="panel">
                 <p>The data can be downloaded using the “Download data!” button at the top of the blobulator output page. The downloaded data will be in the form of the csv file with labeled columns, which can be used to generate custom graphs or retrieve specific values.</p>
                 </div>
-                <button class="accordion">Will the downloaded data change if I change the hydropathy cutoff or blob side using the sliders?</button>
+                <button class="accordion">&#10133 Will the downloaded data change if I change the hydropathy cutoff or blob side using the sliders?</button>
                 <div class="panel">
                 <p>Yes. Any adjustments made after blobulation but before the “Download data!” button is clicked will be reflected in the csv file.</p>
                 </div>
-                <button class="accordion">Why am I not seeing SNP data?</button>
+                <button class="accordion">&#10133 Why am I not seeing SNP data?</button>
                 <div class="panel">
                 <p>It is possible that you chose the manual sequence entry option, for which there will be no SNP data, or that there is no data in EMBL-EBI for your protein of interest. In either case, it doesn’t necessarily mean that no SNP data exists for the protein you are blobulating.</p>
                 </div>
-                <button class="accordion">Why isn’t the Blobs colored according to fraction of disordered residue graph not showing up on my output page?</button>
+                <button class="accordion">&#10133 Why isn’t the Blobs colored according to fraction of disordered residue graph not showing up on my output page?</button>
                 <div class="panel">
                 <p>Check and make sure you chose the Uniprot ID input option.</p>
                 </div>
-                <button class="accordion">I would really like to see a certain feature in the next version.</button>
+                <button class="accordion">&#10133 I would really like to see a certain feature in the next version.</button>
                 <div class="panel">
                 <p>Please contact us and let us know what you’re thinking. Our goal is to maximize the blobulator’s usefulness, and any suggestions are greatly appreciated. In the meantime, the local version of the blobulator, which can be found on our github, can be modified to your liking.</p>
                 </div>
