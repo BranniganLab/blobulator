@@ -43,7 +43,7 @@ img {
             </div>
         </div>
     </div>
-    <!--This creates a row to display the clickable toggling tabs for Home, About, and Documentation-->
+    <!--This creates a row to display the clickable toggling tabs for Home, About, Documentation, and FAQ-->
     <div class="bs-example">
         <ul class="nav nav-tabs">
             <li class="nav-item">
@@ -54,6 +54,9 @@ img {
             </li>
             <li class="nav-item">
                 <a href="#documentation" class="nav-link" data-toggle="tab">Documentation</a>
+            </li>
+            <li class="nav-item">
+                <a href="#FAQ" class="nav-link" data-toggle="tab">FAQ</a>
             </li>
         </ul>
         ​
@@ -66,14 +69,13 @@ img {
                 <br><br>
                 <p> What is blobulation? The nomenclature used here comes from polymer physics, where the segments of a polypeptide chain are grouped together into interaction domains, where the residues within a certain region of the protein can be expected to behave in a relatively predictable way (de Gennes, 1979).</p>
                 <br><br> For bug reports, feature requests, or anything else please contact at grace.brannigan@rutgers. edu.</p>
-                <br>Citing Blobulator<br> <p>A manuscript is currently in preparation. For now, please cite analysis done with Blobulator using the abstract from the Biophysical Society meetingas follows: Article (Lohia2020) Lohia, R.; Bassi, K.; Hansen, M. & Brannigan, G. (2020). Disease Associated Mutations in Intrinsically Disordered Proteins Show Evidence of Enrichment in Hydrophobic Blobs. Biophysical Journal, Elsevier BV,118, 215a.</p>
+                <br>Citing the Blobulator<br> <p>A manuscript is currently in preparation. For now, please cite analysis done with Blobulator using the abstract from the Biophysical Society meetingas follows: Article (Lohia2020) Lohia, R.; Bassi, K.; Hansen, M. & Brannigan, G. (2020). Disease Associated Mutations in Intrinsically Disordered Proteins Show Evidence of Enrichment in Hydrophobic Blobs. Biophysical Journal, Elsevier BV,118, 215a.</p>
 
             </div>
             <!--Example Page Contents-->
             <div class="tab-pane fade" id="documentation">
-                <h4 class="mt-2">A Quick Overview</h4>
+                <h4 class="mt-2">Sequence Input</h4>
                 <p> The first thing needed for the blobulator is either a Uniprot ID for a protein of interest, or a manual sequence entry. Uniprot IDs are our recommended format for retrieving the sequence required for blobulation. Above each “compute button” there is a manual text entry box, in which the user should insert either their sequence or ID. The user should then press the “Compute” button. </p>
-                <br> <br>
                 <p> On the blobulation output page, there are three adjustable parameters, each of which can be adjusted by the user: </p>
                 <p> <b> Adjusting Hydropathy Cutoff </b> </p>
                 <p> Blobulation considers the residues in turn and calculates the average hydrophobicity score of each group of residues. If a group of residues (under the minimum blob size) is above the value for hydrophobicity cutoff, it will be considered a ‘h’ (hydrophobic) blob. If it’s below it will be considered a ‘p’ (non-hydrophobic) blob. The hydropathy cutoff can be adjusted by manual entry into the text box to the left, or by adjusting the slider to the desired value. </p>
@@ -98,7 +100,11 @@ img {
                 <p> <b> Downloading Data </b> </p>
                 <p> After the “Download data!” button (located just below the three adjustable parameters) is pressed, the raw data will be downloaded in the form of a csv file. The data stored here is by residue. Each column corresponds to one of the following: residue name, residue number, window, hydropathy cutoff, minimum blob size, average hydrophobicity, blob type, blob index number, blob Das-Pappu classification, blob net charge per residue, fraction of positively charged residues, fraction of negatively charged residues, fraction of charged residues, uversky diagram score, blob dSNP enrichment, and blob disorder score. </p>
                 <br> <br>
-                <h4 class="mt-2">FAQ:</h4>
+
+            </div>
+
+            <div class="tab-pane fade" id="FAQ">
+                <h4 class="mt-2">Frequently Asked Questions:</h4>
                 <br> <br>
                 <p> <b> <i> What does the blobulator output? </i> </b> </p>
                 <p> The blobulator outputs 6 graphs showing categorizations of its subdomains. Each graph shows the sequence of the protein displayed in one of the following ways: smoothed hydropathy per residue, colored according to globular tendency, colored according to net charge per residue, colored according to the Uversky diagram, colored according to dSNP enrichment, colored according to fraction of disordered residue. </p>
@@ -116,8 +122,6 @@ img {
                 <p> Check and make sure you chose the Uniprot ID input option. </p>
                 <p> <b> <i> I would really like to see a certain feature in the next version. </i> </b> </p>
                 <p> Please contact us and let us know what you’re thinking. Our goal is to maximize the blobulator’s usefulness, and any suggestions are greatly appreciated. In the meantime, the local version of the blobulator, which can be found on our github, can be modified to your liking. </p>
-
-
             </div>
             ​
             ​
