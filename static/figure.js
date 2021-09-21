@@ -118,7 +118,7 @@ class Figure {
 			.text("i")
 			.style("font-size", "20px")
 			.style("font-weight", "bold")
-			.style("font-family", "zapfino")
+			.style("font-family", "Times New Roman")
 			.style("fill", "1E59FC")
 			.style("cursor", "pointer")
 			.attr("alignment-baseline", "middle")
