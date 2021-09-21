@@ -184,23 +184,26 @@ class Figure {
 			.attr("transform", "rotate(-90)")
 			.text("p");
 
+		var ylabel = this.svg.append("g").attr("id", "ylabel")
+		ylabel.append("text")
+			.attr("class", "y label")
+			.attr("text-anchor", "middle")
+			.attr("x", 0 - (GLOBAL_HEIGHT / 2) - 20)
+			.attr("y", MARGIN.left - 80)
+			.attr("transform", "rotate(-90)")
+			.text("s");
+
+
 		//"h" blob y-axis label for globular tendency plot
 		ylabel.append("text")
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
-			.attr("x", 0 - (GLOBAL_HEIGHT / 2))
+			.attr("x", 0 - (GLOBAL_HEIGHT / 2) + 10)
 			.attr("y", MARGIN.left - 80)
 			.attr("transform", "rotate(-90)")
 			.text("h");
 
 		//"SNPs" y-axis label for globular tendency plot
-		ylabel.append("text")
-			.attr("class", "y label")
-			.attr("text-anchor", "middle")
-			.attr("x", 0 - (GLOBAL_HEIGHT / 2) + 40)
-			.attr("y", MARGIN.left - 80)
-			.attr("transform", "rotate(-90)")
-			.text("SNPs");  
 
 		return this;
 	}
