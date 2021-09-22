@@ -165,15 +165,15 @@ class Figure {
 		return this;
 	}
 
-	/* add_phSNP_ylabel
-	FUNCTION: add_phSNP_ylabel
-	SHORT DESCRIPTION: add an s h SNP text y label to the svg object
+	/* add_psh_ylabel
+	FUNCTION: add_psh_ylabel
+	SHORT DESCRIPTION: add an p s h text y label to the svg object
 	INPUTS:
 		svg - a container containing an graph modified by the function itself
 	RETURNS:
 		none
 	*/
-	add_phSNP_ylabel() {
+	add_psh_ylabel() {
 		//"p" blob y-axis label for globular tendency plot
 		var ylabel = this.svg.append("g").attr("id", "ylabel")
 		ylabel.append("text")
