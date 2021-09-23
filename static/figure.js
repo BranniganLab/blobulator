@@ -511,6 +511,8 @@ class Figure {
 		this.bars.attr("width", x.bandwidth())
 			.attr("x", function(d) { return x(d.resid); })
 			.attr("y", function(d) { return GLOBAL_HEIGHT; })
+			.attr('stroke', 'black')
+			.attr('stroke-width', 0.15)
 
 		this.update_bars(this.data, timing)
 
