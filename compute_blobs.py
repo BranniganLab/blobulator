@@ -290,6 +290,11 @@ def compute(
 
     def NCPR_color(x):
         ncpr = x[0]
+    #Setting the limts of the ncpr graph to 0.5 and -0.5, any number higher or lower will be considered max
+        if ncpr > 0.5:
+            ncpr = 1
+        if ncpr < -0.5:
+            ncpr = -1
         ncpr_normalized = (ncpr + 1.0) / 2
         m_color = cmap(ncpr_normalized)
 
@@ -297,6 +302,7 @@ def compute(
 
     def disorder_color(x):
         ncpr = x[0]
+        print(ncpr)
         m_color = cmap_disorder(ncpr)
         return "rgb" + str(tuple([255 * x for x in m_color[:-1]]))
     def uversky_color(x):

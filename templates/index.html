@@ -369,7 +369,7 @@ function draw(data) {
 	figs.ncprFig = new Figure("ncprPlot", data)
 		.add_title("Blobs colored according to net charge per residue")
 		.add_tooltip(ncpr_tool_text)
-		.add_ContinuousLegend("RWB")
+		.add_ncprContinuousLegend("RWB")
 		.build_barChart()
 		.add_snps()
 		.add_psh_ylabel()
