@@ -316,6 +316,33 @@ class Figure {
 
 		return this
 	}
+
+		add_ncprContinuousLegend(cmap, {min='-1', med='0', max='+1', width=20, height=80}={min: '-0.5', med: '0', max: '+0.5', width: 20, height: 80}) {
+		switch(cmap) {
+			case "PuOr":
+				this.add_colorbar("PuOr", width, height, min, max, GLOBAL_WIDTH, GLOBAL_HEIGHT,
+					{med: med, 
+					cend: '#7f3b08',
+					cq3: '#ee9d3c', 
+					cmid: '#f6f6f7',
+					ctop: '#2d004b'
+					})
+				break;
+			case "RWB":
+				//Color bar key to the right of the enrichment plot.
+				this.add_colorbar("RWB", width, height, min, max, GLOBAL_WIDTH, GLOBAL_HEIGHT,
+					{med: med, 
+					cend: '#ff0000',
+					cmid: '#f4f4ff',
+					ctop: '#0000ff'
+					})
+				break;
+			default:
+				try{throw cmap} catch(e) {console.log("Figure.add_ContinuousLegend doesn't know colormap: "+e)}
+		}
+
+		return this
+	}
 	
 	/* add_colorbar
     Function to create linear color bars for graphs. Adapted from: https://www.visualcinnamon.com/2016/05/smooth-color-legend-d3-svg-gradient/
