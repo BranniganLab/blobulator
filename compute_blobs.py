@@ -302,7 +302,6 @@ def compute(
 
     def disorder_color(x):
         ncpr = x[0]
-        print(ncpr)
         m_color = cmap_disorder(ncpr)
         return "rgb" + str(tuple([255 * x for x in m_color[:-1]]))
     def uversky_color(x):
