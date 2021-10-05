@@ -1,5 +1,6 @@
 class Figure {
 	/*
+	container
 	figID;
 	width;
 	height;
@@ -25,7 +26,11 @@ class Figure {
 		//Sets the dimensions and location of the svg container
 		this.figID = figID
 
-		this.svg = d3.select("#my_dataviz")
+		var node = document.createElement("div")
+		node.style.position = "relative"
+		this.container = document.getElementById("my_dataviz").appendChild(node)
+
+		this.svg = d3.select(this.container)
 			.append("svg")
 			.attr("width", GLOBAL_WIDTH + MARGIN.left + MARGIN.right)
 			.attr("height", GLOBAL_HEIGHT + MARGIN.top + MARGIN.bottom)
@@ -92,7 +97,8 @@ class Figure {
 		return this;
 	}
 	
-	/* add_tooltip
+
+/* add_tooltip
 	FUNCTION: add_tooltip
 	SHORT DESCRIPTION: add a small i that provides information to the user in a tooltip
 	INPUTS:
@@ -101,66 +107,32 @@ class Figure {
 		none
 	*/
 	add_tooltip(content="Place Holder", {xpos, ypos, xoffset}={xpos: GLOBAL_WIDTH, ypos: MARGIN.top, xoffset: 500}) {
-		this.infoIcon = this.svg.append("g")
+		var ii = document.createElement("info")
 
-		this.infoIcon.append("rect")
-			.attr("x", xpos-20)
-			.attr("y", ypos-20)
-			.attr("width", 40)
-			.attr("height", 40)
-			.style("fill", "white")
-			.style("cursor", "pointer")
-			.attr("alignment-baseline", "middle")
+		ii.style.position = "absolute"
+		ii.style.top = ypos
+		ii.style.left = xpos+30
+		ii.style.font = "arial"
+		ii.style.cursor = "pointer"
+		ii.style.fontSize = "larger"
+		ii.style.fill = "blue"
+		ii.innerText = '🛈'
+		ii.type = "button"
 
-		var text = this.infoIcon.append("text")
-			.attr("x", xpos)
-			.attr("y", ypos)
-			.text("i")
-			.style("font-size", "20px")
-			.style("font-weight", "bold")
-			.style("font-family", "Times New Roman")
-			.style("fill", "1E59FC")
-			.style("cursor", "pointer")
-			.attr("alignment-baseline", "middle")
-			.attr("class", "info-hover")
-			
-		this.Tooltip = d3.select("body")
-			.append("div")
-			.style("opacity", 0)
-			.attr("class", "tooltip")
-			.style("background-color", "white")
-			.style("border", "solid")
-			.style("border-width", "2px")
-			.style("border-radius", "5px")
-			.style("padding", "5px")
-			.style("padding", "5px")
-			.style("width", "400px")
-			.style("height", "590px")
-			.style("font-size", "18px")
-			.style("text-align", "justify")
-			
-		var tt = this.Tooltip
-		var on=0
+
+		var genericCloseBtnHtml = '<a onclick="$(this).closest(\'div.popover\').popover(\'hide\');" type="button" class="close" aria-hidden="true">&times;</a>';
 		
-		this.infoIcon.on("click", function(d) {
-				if (!on) {
-					text.transition().duration(100).style("fill", "blue").text("x")
-					tt.transition()
-						.duration(100)
-						.style("opacity", 1);
-					tt.html(content)
-						.style("left", (event.pageX-xoffset)+"px")
-						.style("bottom", 0+"px");
-					on = 1
-				}else{
-					text.transition().duration(100).style("fill", "black").text("i")
-					d3.select(this)
-					tt.transition()
-						.duration(500)
-						.style("opacity", 0);
-					on = 0
-				}
-			})
+		var p = $(ii).popover({
+			title: genericCloseBtnHtml+'<p></p>',
+			content: content, 
+			placement:"top", 
+			html: true,
+			sanitize: false,
+			container: 'body'
+		}) 
+
+		this.infoIcon = ii
+		this.container.appendChild(this.infoIcon)
 
 		return this;
 	}
