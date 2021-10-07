@@ -293,8 +293,10 @@ def compute(
     #Setting the limts of the ncpr graph to 0.5 and -0.5, any number higher or lower will be considered max
         if ncpr > 0.5:
             ncpr = 1
-        if ncpr < -0.5:
+        elif ncpr < -0.5:
             ncpr = -1
+        else:
+            ncpr = ncpr*2
         ncpr_normalized = (ncpr + 1.0) / 2
         m_color = cmap(ncpr_normalized)
 

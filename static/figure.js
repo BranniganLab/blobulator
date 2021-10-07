@@ -33,7 +33,7 @@ class Figure {
 		this.svg = d3.select(this.container)
 			.append("svg")
 			.attr("width", GLOBAL_WIDTH + MARGIN.left + MARGIN.right)
-			.attr("height", GLOBAL_HEIGHT + MARGIN.top + MARGIN.bottom)
+			.attr("height", GLOBAL_HEIGHT + MARGIN.top + MARGIN.bottom + 45)
 			.append("g")
 			.attr("transform", "translate(" + MARGIN.left + "," + MARGIN.top + ")")
 			
@@ -356,9 +356,9 @@ class Figure {
 			.enter()
 			.append("rect")
 			.attr("x", function(d) { return x((d.resid)); })
-			.attr("y", function(d) { return y(0.8); })
+			.attr("y", function(d) { return y(0); })
 			.attr("width", x.bandwidth())
-			.attr("height", function(d) { return y(0.8); })
+			.attr("height", function(d) { return y(0.84); })
 			.attr("fill", 'black')
 			.on("click", function(d) {
 				//window.location.href = d.xrefs[0].url+'_blank'
@@ -448,17 +448,17 @@ class Figure {
 	}
 
 
-
 	add_xAxis(x=this.x, y=this.y){
 		this.xAxis = this.svg.append("g")
 						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
 						   (Math.round((Math.round(domain_threshold_max/10))/10)*10) )})))
-						.attr("transform", "translate(0," + GLOBAL_HEIGHT + ")");
+						.attr("transform", "translate(0," + GLOBAL_HEIGHT + ")")
+						.attr("transform", "translate(0, 165)");
 		// Bars
 		//Creates the "Residue" x-axis label
 		this.svg.append("text")
 			.attr("x", GLOBAL_WIDTH / 2)
-			.attr("y", GLOBAL_HEIGHT + MARGIN.bottom)
+			.attr("y", GLOBAL_HEIGHT + MARGIN.bottom + 40)
 			.style("text-anchor", "middle")
 			.text("Residue")
 
@@ -483,9 +483,6 @@ class Figure {
 		this.bars.attr("width", x.bandwidth())
 			.attr("x", function(d) { return x(d.resid); })
 			.attr("y", function(d) { return GLOBAL_HEIGHT; })
-			.attr('stroke', 'black')
-			.attr('stroke-width', 0.15)
-
 		this.update_bars(this.data, timing)
 
 		return this
