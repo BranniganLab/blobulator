@@ -534,7 +534,7 @@ class Figure {
 					break;
 				case 'uverskyPlot':
 					var color = function(d){return d.uversky_color}
-					break;
+					break;PDB
 				case 'disorderPlot':
 					var color = function(d){return d.disorder_color}
 					break;
@@ -546,6 +546,22 @@ class Figure {
 			.attr("y", bar_y)
 			.attr("height", bar_height)
 			.attr("fill", color);
+
+		return this
+	}
+
+	add_skyline(x=this.x, y=this.y) {
+		this.skyline = this.svg.append('g')
+			.append("path")
+			.attr("class", "mypath")
+			.datum(this.data)
+			.attr("fill", "none")
+			.attr("stroke", "black")
+			.attr("stroke-width", 1.5)
+			.attr("d", d3.line()
+				.x(function(d) { return x(d.resid) })
+				.y(function(d) { return y(d.domain_to_numbers) })
+			);
 
 		return this
 	}

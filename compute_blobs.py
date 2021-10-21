@@ -128,6 +128,7 @@ def compute(
 
     df["domain_to_numbers"] = df[["domain", "hydropathy"]].apply(
         lambda x: domain_to_numbers(x), axis=1
+
     )
 
     # ..........................Define domain names.........................................................#
@@ -433,9 +434,8 @@ def compute(
 
         df["NCPR_color"] = df[["NCPR", "fcr"]].apply(
             lambda x: NCPR_color_plot(x), axis=1
-        )   
+        )
     
-
         ncol = 1
         nrow = 3        
 
