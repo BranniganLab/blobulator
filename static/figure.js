@@ -447,8 +447,24 @@ class Figure {
 		return this
 	}
 
-
 	add_xAxis(x=this.x, y=this.y){
+		this.xAxis = this.svg.append("g")
+						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
+						   (Math.round((Math.round(domain_threshold_max/10))/10)*10) )})))
+						.attr("transform", "translate(0," + GLOBAL_HEIGHT + ")");
+		// Bars
+		//Creates the "Residue" x-axis label
+		this.svg.append("text")
+			.attr("x", GLOBAL_WIDTH / 2)
+			.attr("y", GLOBAL_HEIGHT + MARGIN.bottom)
+			.style("text-anchor", "middle")
+			.text("Residue")
+
+		return this
+	}
+
+
+	add_snp_xAxis(x=this.x, y=this.y){
 		this.xAxis = this.svg.append("g")
 						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
 						   (Math.round((Math.round(domain_threshold_max/10))/10)*10) )})))
