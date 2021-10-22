@@ -123,11 +123,27 @@ def compute(
             return 0.2
         elif x[0][0] == "h":
             return 0.6
-        else:
+        elif x[0][0] == "s":
             return 0.3
 
     df["domain_to_numbers"] = df[["domain", "hydropathy"]].apply(
         lambda x: domain_to_numbers(x), axis=1
+
+    )
+
+    def domain_to_skyline_numbers(x):
+        """convert domains to skyline height for javascript display"""
+        if x[0][0] == "p":
+            return 0.2
+        elif x[0][0] == "h":
+            return 0.6
+        else:
+            return 0.3
+
+
+    df["domain_for_skyline"] = df[["domain", "hydropathy"]].apply(
+        lambda x: domain_to_skyline_numbers(x), axis=1
+
     )
 
     # ..........................Define domain names.........................................................#
@@ -293,8 +309,10 @@ def compute(
     #Setting the limts of the ncpr graph to 0.5 and -0.5, any number higher or lower will be considered max
         if ncpr > 0.5:
             ncpr = 1
-        if ncpr < -0.5:
+        elif ncpr < -0.5:
             ncpr = -1
+        else:
+            ncpr = ncpr*2
         ncpr_normalized = (ncpr + 1.0) / 2
         m_color = cmap(ncpr_normalized)
 
@@ -431,9 +449,8 @@ def compute(
 
         df["NCPR_color"] = df[["NCPR", "fcr"]].apply(
             lambda x: NCPR_color_plot(x), axis=1
-        )   
+        )
     
-
         ncol = 1
         nrow = 3        
 
@@ -523,7 +540,7 @@ def compute(
     else:
         figname = make_plot(df)
         return figname
-
+        
 
 if __name__ == "__main__":
         df = compute("MDVFMKGLSKAKEGVVAAAEKTKQGVAEAAGKTKEGVLYVGSKTKEGVVHGVATV", 0.4, 4)

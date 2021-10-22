@@ -33,7 +33,7 @@ class Figure {
 		this.svg = d3.select(this.container)
 			.append("svg")
 			.attr("width", GLOBAL_WIDTH + MARGIN.left + MARGIN.right)
-			.attr("height", GLOBAL_HEIGHT + MARGIN.top + MARGIN.bottom)
+			.attr("height", GLOBAL_HEIGHT + MARGIN.top + MARGIN.bottom + 45)
 			.append("g")
 			.attr("transform", "translate(" + MARGIN.left + "," + MARGIN.top + ")")
 			
@@ -356,9 +356,9 @@ class Figure {
 			.enter()
 			.append("rect")
 			.attr("x", function(d) { return x((d.resid)); })
-			.attr("y", function(d) { return y(0.8); })
+			.attr("y", function(d) { return y(0); })
 			.attr("width", x.bandwidth())
-			.attr("height", function(d) { return y(0.8); })
+			.attr("height", function(d) { return y(0.84); })
 			.attr("fill", 'black')
 			.on("click", function(d) {
 				//window.location.href = d.xrefs[0].url+'_blank'
@@ -447,8 +447,6 @@ class Figure {
 		return this
 	}
 
-
-
 	add_xAxis(x=this.x, y=this.y){
 		this.xAxis = this.svg.append("g")
 						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
@@ -459,6 +457,24 @@ class Figure {
 		this.svg.append("text")
 			.attr("x", GLOBAL_WIDTH / 2)
 			.attr("y", GLOBAL_HEIGHT + MARGIN.bottom)
+			.style("text-anchor", "middle")
+			.text("Residue")
+
+		return this
+	}
+
+
+	add_snp_xAxis(x=this.x, y=this.y){
+		this.xAxis = this.svg.append("g")
+						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
+						   (Math.round((Math.round(domain_threshold_max/10))/10)*10) )})))
+						.attr("transform", "translate(0," + GLOBAL_HEIGHT + ")")
+						.attr("transform", "translate(0, 165)");
+		// Bars
+		//Creates the "Residue" x-axis label
+		this.svg.append("text")
+			.attr("x", GLOBAL_WIDTH / 2)
+			.attr("y", GLOBAL_HEIGHT + MARGIN.bottom + 40)
 			.style("text-anchor", "middle")
 			.text("Residue")
 
@@ -483,9 +499,6 @@ class Figure {
 		this.bars.attr("width", x.bandwidth())
 			.attr("x", function(d) { return x(d.resid); })
 			.attr("y", function(d) { return GLOBAL_HEIGHT; })
-			.attr('stroke', 'black')
-			.attr('stroke-width', 0.15)
-
 		this.update_bars(this.data, timing)
 
 		return this
@@ -521,7 +534,7 @@ class Figure {
 					break;
 				case 'uverskyPlot':
 					var color = function(d){return d.uversky_color}
-					break;
+					break;PDB
 				case 'disorderPlot':
 					var color = function(d){return d.disorder_color}
 					break;
@@ -533,6 +546,22 @@ class Figure {
 			.attr("y", bar_y)
 			.attr("height", bar_height)
 			.attr("fill", color);
+
+		return this
+	}
+
+	add_skyline(x=this.x, y=this.y) {
+		this.skyline = this.svg.append('g')
+			.append("path")
+			.attr("class", "mypath")
+			.datum(this.data)
+			.attr("fill", "none")
+			.attr("stroke", "black")
+			.attr("stroke-width", 1.5)
+			.attr("d", d3.line()
+				.x(function(d) { return x(d.resid) })
+				.y(function(d) { return y(d.domain_for_skyline) })
+			);
 
 		return this
 	}
