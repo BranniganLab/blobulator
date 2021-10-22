@@ -2,14 +2,14 @@ import pandas as pd
 import numpy as np
 import json
 
-def pathogenic_snps(varaint_file):
+def pathogenic_snps(variant_file):
 	"""Takes json file as input, filters the missense snps and stores its information in json format"""
 	resid = []
 	xrefs = []
 	clinicalSignificances = []
 	genomicLocation = []
 	alternativeSequence = []
-	for each_line in varaint_file:
+	for each_line in variant_file:
 		try:
 			try:
 				sig_list = each_line['clinicalSignificances'].split(',')

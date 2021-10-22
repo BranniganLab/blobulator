@@ -245,8 +245,11 @@ def lookupEnrichment(x):
     blob_length = x[0]
     blob_type = x[2]
     #check if blob type is h AND the cutoff/bloblength combination exists in the reference set
-    if blob_type == 'h' and enrichDF.index.isin([(cutoff, blob_length)]).any:
-        return enrichDF.color.loc[cutoff, blob_length]
+    if blob_type == 'h':
+        try:
+            return enrichDF.color.loc[cutoff, blob_length]
+        except KeyError:
+            return "grey"
     else:
         return "grey"
 
@@ -288,26 +291,7 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
     #........................calcutes three residue moving window mean............................#
     df["hydropathy_3_window_mean"] = (df["hydropathy"].rolling(window=window).mean())
 
-    if window_factor > 0:
-        mean_list = df["hydropathy_3_window_mean"].tolist()
-        mean_list_modified = mean_list[window_factor::] + mean_list[-window_factor::]
-        df["hydropathy_3_window_mean"] = mean_list_modified
 
-    for i in range(0,window_factor):
-                resid_start = i - window_factor
-                resid_end = i + window_factor
-                true_resid_start = max(0, resid_start)
-                true_resid_end  = min(resid_end, df.shape[0]-1)
-                window_resid_list = range(true_resid_start, (true_resid_end+1))
-                df['hydropathy_3_window_mean'].iloc[i] = np.mean(df["hydropathy"].iloc[true_resid_start:true_resid_end])
-    for i in range(df.shape[0]-window_factor,df.shape[0]):
-                resid_start = i - window_factor
-                resid_end = i + window_factor
-                resid_start_true = max(0, resid_start)
-                true_resid_end  = min(resid_end, df.shape[0]-1)
-                window_resid_list = range(resid_start_true, (true_resid_end+1))
-                df['hydropathy_3_window_mean'].iloc[i] = sum([df["hydropathy"].iloc[x] for x in  window_resid_list])/len(window_resid_list)
-    
     df["hydropathy_digitized"] = [ 1 if x > cutoff else 0 if np.isnan(x)  else -1 for x in df["hydropathy_3_window_mean"]]
     #define continous stretch of residues
     df["domain_pre"] = (df["hydropathy_digitized"].groupby(df["hydropathy_digitized"].ne(df["hydropathy_digitized"].shift()).cumsum()).transform("count"))
