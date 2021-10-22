@@ -123,11 +123,26 @@ def compute(
             return 0.2
         elif x[0][0] == "h":
             return 0.6
-        else:
+        elif x[0][0] == "s":
             return 0.3
 
     df["domain_to_numbers"] = df[["domain", "hydropathy"]].apply(
         lambda x: domain_to_numbers(x), axis=1
+
+    )
+
+    def domain_to_skyline_numbers(x):
+        """convert domains to skyline height for javascript display"""
+        if x[0][0] == "p":
+            return 0.2
+        elif x[0][0] == "h":
+            return 0.6
+        else:
+            return 0.3
+
+
+    df["domain_for_skyline"] = df[["domain", "hydropathy"]].apply(
+        lambda x: domain_to_skyline_numbers(x), axis=1
 
     )
 
@@ -525,7 +540,7 @@ def compute(
     else:
         figname = make_plot(df)
         return figname
-
+        
 
 if __name__ == "__main__":
         df = compute("MDVFMKGLSKAKEGVVAAAEKTKQGVAEAAGKTKEGVLYVGSKTKEGVVHGVATV", 0.4, 4)

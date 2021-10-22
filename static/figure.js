@@ -560,7 +560,7 @@ class Figure {
 			.attr("stroke-width", 1.5)
 			.attr("d", d3.line()
 				.x(function(d) { return x(d.resid) })
-				.y(function(d) { return y(d.domain_to_numbers) })
+				.y(function(d) { return y(d.domain_for_skyline) })
 			);
 
 		return this
