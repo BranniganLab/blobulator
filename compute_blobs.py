@@ -305,6 +305,21 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
 
     df["domain_to_numbers"] = df[["domain", "hydropathy"]].apply(
         domain_to_numbers, axis=1
+
+    def domain_to_skyline_numbers(x):
+        """convert domains to skyline height for javascript display"""
+        if x[0][0] == "p":
+            return 0.2
+        elif x[0][0] == "h":
+            return 0.6
+        else:
+            return 0.3
+
+
+    df["domain_for_skyline"] = df[["domain", "hydropathy"]].apply(
+        lambda x: domain_to_skyline_numbers(x), axis=1
+
+
     )
 
     # ..........................Define domain names.........................................................#
@@ -314,6 +329,7 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
 
     df['domain'] = df[['domain_pre', 'domain']].apply(lambda x: f4(x, domain_threshold, counts_group_length),axis=1)
     df['domain'].fillna(value='s', inplace=True)
+
 
 
     # ..........................Define the properties of each identified domain.........................................................#
