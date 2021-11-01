@@ -504,24 +504,27 @@ class Figure {
 		return this
 	}
 	
-	
-
 	update_bars(data, timing=1000, x=this.x, y=this.y){
-		this.bars = this.plot_variable.enter().selectAll("rect").data(data)
-
+	
+		this.plot_variable.enter().selectAll("rect").data(data)
+		
 		//set height
 		if (this.figID == "pathyPlot") {
 			var bar_height = function(d) { return GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean); }
 			var bar_y = function(d) { return y(d.hydropathy_3_window_mean); }	
+			this.bars.transition()
+			.duration(timing)
+			.attr("y", bar_y)
+			.attr("height", bar_height);
+			this.bars.attr("fill", 'grey')
 		}else{
 			var bar_height = function(d) { return GLOBAL_HEIGHT - y(d.domain_to_numbers); }
 			var bar_y = function(d) { return y(d.domain_to_numbers); }
-		}
-
-		//set color
-		switch(this.figID){ 
+		
+			//set color
+			switch(this.figID){ 
 				case 'pathyPlot':
-					var color = 'grey'
+					console.error("!!!Control flow error: figure.js pathyPlot should not update color!!!")
 					break;
 				case 'globPlot':
 					var color = function(d){return d.P_diagram}
@@ -540,15 +543,17 @@ class Figure {
 					break;
 			}
 
-
-		this.bars.transition()
-			.duration(timing)
-			.attr("y", bar_y)
-			.attr("height", bar_height)
-			.attr("fill", color);
-
+		// console.log(this.bars.data())
+		 this.bars.transition()
+		 	.duration(timing)
+		 	.attr("y", bar_y)
+		 	.attr("height", bar_height)
+		 	.attr("fill", color);
+		}
+		console.log(timing)
 		return this
 	}
+
 
 	add_skyline(x=this.x, y=this.y) {
 		this.skyline = this.svg.append('g')
@@ -565,5 +570,6 @@ class Figure {
 
 		return this
 	}
+
 
 }
