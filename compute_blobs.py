@@ -304,7 +304,7 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
     df['blobtype'] = df['domain']
 
     df["domain_to_numbers"] = df[["domain", "hydropathy"]].apply(
-        domain_to_numbers, axis=1 )
+        domain_to_numbers, axis=1)
 
     # ..........................Define domain names.........................................................#
     df['domain'] =  df['domain'].groupby(df['domain'].ne(df['domain'].shift()).cumsum()).apply(lambda x: f3(x, domain_threshold))
