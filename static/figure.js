@@ -549,3 +549,4 @@ class Figure {
 
 		return this
 	}
+}

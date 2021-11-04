@@ -63,68 +63,7 @@ def domain_to_numbers(x):
     else:
         return 0.3
 
-# give the numeric values to each domain
-def f3(x, domain_threshold):
-    global counter_s
-    global counter_p
-    global counter_h
-    if x.name == 1:
-        counter_s=0  #intitialising the global value of counter to 0
-        counter_p=0
-        counter_h=0
-        if x.iloc[0] == 'h':
-            counter_h+=1
-            return x + str(counter_h)
-        elif x.iloc[0] == 'p':
-            counter_p+=1
-            return x + str(counter_p)
-        else:
-            counter_s+=1
-            return x + str((counter_s))
 
-
-    elif len(x) >= domain_threshold:
-        if x.iloc[0] == 'h':
-            counter_h+=1
-            return x + str(counter_h)
-        else:
-            counter_p+=1
-            return x + str(counter_p)
-    else:
-        counter_s+=1
-        if counter_h>=1:
-            counter_h=counter_h-1
-            return x + str((counter_s))
-        else:
-            return x + str(counter_s)#
-
-
-# gives the alphabetic names to each domain
-def f4(x, domain_threshold, counts_group_length):
-        global counter_domain_naming
-        global s_counter
-        if x[1][0] == 'p':
-            counter_domain_naming = 0
-            s_counter = 0
-            return x[1]
-        elif x[0] < domain_threshold:
-            if x[1] == 's':
-                counter_domain_naming = 0
-                s_counter = 0
-            else:
-                s_counter = s_counter + 1
-                if s_counter == x[0]:
-                    counter_domain_naming = counter_domain_naming + 1
-                    return x[1]
-                else:
-                    return x[1]
-        else:
-            if counts_group_length[x[1]] != x[0]:
-                s_counter = 0
-                return x[1] + chr(ord('a')+int(counter_domain_naming))
-            else:
-                s_counter = 0
-                return x[1]#
 
 
 # ..........................Define phase diagram.........................................................#
@@ -268,6 +207,69 @@ def count_var(x, v):
     return x.values.tolist().count(v) / (x.shape[0] * 1.0)
 
 def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
+
+    # give the numeric values to each domain
+    def f3(x, domain_threshold):
+        global counter_s
+        global counter_p
+        global counter_h
+        if x.name == 1:
+            counter_s=0  #intitialising the global value of counter to 0
+            counter_p=0
+            counter_h=0
+            if x.iloc[0] == 'h':
+                counter_h+=1
+                return x + str(counter_h)
+            elif x.iloc[0] == 'p':
+                counter_p+=1
+                return x + str(counter_p)
+            else:
+                counter_s+=1
+                return x + str((counter_s))
+
+
+        elif len(x) >= domain_threshold:
+            if x.iloc[0] == 'h':
+                counter_h+=1
+                return x + str(counter_h)
+            else:
+                counter_p+=1
+                return x + str(counter_p)
+        else:
+            counter_s+=1
+            if counter_h>=1:
+                counter_h=counter_h-1
+                return x + str((counter_s))
+            else:
+                return x + str(counter_s)#
+
+
+    # gives the alphabetic names to each domain
+    def f4(x, domain_threshold, counts_group_length):
+        global counter_domain_naming
+        global s_counter
+        if x[1][0] == 'p':
+            counter_domain_naming = 0
+            s_counter = 0
+            return x[1]
+        elif x[0] < domain_threshold:
+            if x[1] == 's':
+                counter_domain_naming = 0
+                s_counter = 0
+            else:
+                s_counter = s_counter + 1
+                if s_counter == x[0]:
+                    counter_domain_naming = counter_domain_naming + 1
+                    return x[1]
+                else:
+                    return x[1]
+        else:
+            if counts_group_length[x[1]] != x[0]:
+                s_counter = 0
+                return x[1] + chr(ord('a')+int(counter_domain_naming))
+            else:
+                s_counter = 0
+                return x[1]#
 
     window_factor = int((window - 1) / 2)
     seq_start = 1  # starting resid for the seq
