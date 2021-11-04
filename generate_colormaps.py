@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import pickle
+import csv
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
@@ -71,18 +71,19 @@ def writeCMap(func, fname, vmin, vmax, res):
     for i in keys:
         values.append(func([i]))
     myDict = dict(zip(keys, values))
-
-    file = open(fname, "wb")
-    pickle.dump(myDict, file)
-    file.close()
+    myDF = pd.DataFrame.from_dict(myDict, orient='index')
+    #file = open(fname, "wb")
+    #pickle.dump(myDict, file)
+    #file.close()
+    myDF.to_csv(fname)
 
 res = 2 #this determines the resolution in terms of the number of decimal places
 
-writeCMap(uversky_color, "uverskyCMap.pkl", -1, 1, res)
+writeCMap(uversky_color, "uverskyCMap.csv", -1, 1, res)
 
-writeCMap(NCPR_color, "ncprCMap.pkl", -1, 1, res)
+writeCMap(NCPR_color, "ncprCMap.csv", -1, 1, res)
 
-writeCMap(disorder_color,"disorderCMap.pkl",-1, 1, res)
+writeCMap(disorder_color,"disorderCMap.csv",-1, 1, res)
 
 
 
@@ -123,8 +124,8 @@ print(f'Num errors: {errCount}')
 if len(dfMI.index) != len(dfMI.index.unique()):
     print("WARNING: non-unique blob-size/cutoff enrichment predictions!!!")
 
-#dfMI.to_csv('./Enrich_CMap.csv')
-fname = "enrichCMap.pkl"
-file = open(fname, "wb")
-pickle.dump(dfMI, file)
-file.close()
+dfMI.to_csv('./enrichCMap.csv')
+#fname = "enrichCMap.pkl"
+#file = open(fname, "wb")
+#pickle.dump(dfMI, file)
+#file.close()
