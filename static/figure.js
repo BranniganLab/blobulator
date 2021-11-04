@@ -537,7 +537,7 @@ class Figure {
 					break;
 				case 'uverskyPlot':
 					var color = function(d){return d.uversky_color}
-					break;PDB
+					break;
 				case 'disorderPlot':
 					var color = function(d){return d.disorder_color}
 					break;
