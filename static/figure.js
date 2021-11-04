@@ -495,7 +495,7 @@ class Figure {
 
 	make_bars(timing=0, x=this.x, y=this.y) {
 
-		this.bars = this.plot_variable.enter().append("rect");
+		this.plot_variable.enter().append("rect");
 
 		this.bars.attr("width", x.bandwidth())
 			.attr("x", function(d) { return x(d.resid); })
