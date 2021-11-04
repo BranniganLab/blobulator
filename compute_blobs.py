@@ -303,7 +303,7 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
     df["domain_threshold"] = domain_threshold
 
     #........................calcutes three residue moving window mean............................#
-    df["hydropathy_3_window_mean"] = (df["hydropathy"].rolling(window=window).mean())
+    df["hydropathy_3_window_mean"] = (df["hydropathy"].rolling(window=window, min_periods=0).mean())
 
 
     df["hydropathy_digitized"] = [ 1 if x > cutoff else 0 if np.isnan(x)  else -1 for x in df["hydropathy_3_window_mean"]]
