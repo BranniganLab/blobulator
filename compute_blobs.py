@@ -152,33 +152,36 @@ def uversky_diagram(x):
 
 # ..........................Define NCPR.........................................................#
 
-file = open("ncprCMap.pkl", "rb")
-ncprDict = pickle.load(file)
-file.close()
+#file = open("ncprCMap.pkl", "rb")
+#ncprDict = pickle.load(file)
+#file.close()
+ncprDict = pd.read_csv("ncprCMap.csv", index_col=0)
 def lookupNCPR(x):
     val = x[0]
-    return ncprDict[np.round(val, 2)]
+    return ncprDict.loc[np.round(val, 2)]
 
 
-file = open("uverskyCMap.pkl", "rb")
-uverskyDict = pickle.load(file)
-file.close()
+#file = open("uverskyCMap.pkl", "rb")
+#uverskyDict = pickle.load(file)
+#file.close()
+uverskyDict = pd.read_csv("uverskyCMap.csv", index_col=0)
 def lookupUversky(x):
     val = x[0]
-    return uverskyDict[np.round(val, 2)]
+    return uverskyDict.loc[np.round(val, 2)]
 
-file = open("disorderCMap.pkl", "rb")
-disorderDict = pickle.load(file)
-file.close()
+#file = open("disorderCMap.pkl", "rb")
+#disorderDict = pickle.load(file)
+#file.close()
+disorderDict = pd.read_csv("disorderCMap.csv", index_col=0)
 def lookupDisorder(x):
     val = x[0]
-    return disorderDict[np.round(val, 2)]
+    return disorderDict.loc[np.round(val, 2)]
 
 
-file = open("enrichCMap.pkl", "rb")
-enrichDF = pd.read_pickle(file)
-file.close()
-
+#file = open("enrichCMap.pkl", "rb")
+#enrichDF = pd.read_pickle(file)
+#file.close()
+enrichDF = pd.read_csv("enrichCMap.csv", index_col=[0,1])
 def lookupEnrichment(x):
     cutoff = round(x[1], 2)
     blob_length = x[0]
