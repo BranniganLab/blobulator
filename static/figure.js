@@ -387,7 +387,7 @@ class Figure {
 
 		return this
 	}
-}
+
 	
 	add_yAxis() {
 		this.svg.append("g") //the y axis is drawn only for plot 1
@@ -550,7 +550,6 @@ class Figure {
 
 		return this
 	}
-<<<<<<< HEAD
+
 }
-=======
->>>>>>> 7955758b0e009c49d0e866c678dad01cacdd6950
+
