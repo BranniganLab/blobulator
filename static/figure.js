@@ -387,6 +387,7 @@ class Figure {
 
 		return this
 	}
+
 	
 	add_yAxis() {
 		this.svg.append("g") //the y axis is drawn only for plot 1
@@ -494,7 +495,7 @@ class Figure {
 
 	make_bars(timing=0, x=this.x, y=this.y) {
 
-		this.bars = this.plot_variable.enter().append("rect");
+		this.plot_variable.enter().append("rect");
 
 		this.bars.attr("width", x.bandwidth())
 			.attr("x", function(d) { return x(d.resid); })
@@ -504,27 +505,24 @@ class Figure {
 		return this
 	}
 	
-	update_bars(data, timing=1000, x=this.x, y=this.y){
 	
-		this.plot_variable.enter().selectAll("rect").data(data)
-		
+
+	update_bars(data, timing=1000, x=this.x, y=this.y){
+		this.bars = this.plot_variable.enter().selectAll("rect").data(data)
+
 		//set height
 		if (this.figID == "pathyPlot") {
 			var bar_height = function(d) { return GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean); }
 			var bar_y = function(d) { return y(d.hydropathy_3_window_mean); }	
-			this.bars.transition()
-			.duration(timing)
-			.attr("y", bar_y)
-			.attr("height", bar_height);
-			this.bars.attr("fill", 'grey')
 		}else{
 			var bar_height = function(d) { return GLOBAL_HEIGHT - y(d.domain_to_numbers); }
 			var bar_y = function(d) { return y(d.domain_to_numbers); }
-		
-			//set color
-			switch(this.figID){ 
+		}
+
+		//set color
+		switch(this.figID){ 
 				case 'pathyPlot':
-					console.error("!!!Control flow error: figure.js pathyPlot should not update color!!!")
+					var color = 'grey'
 					break;
 				case 'globPlot':
 					var color = function(d){return d.P_diagram}
@@ -543,33 +541,15 @@ class Figure {
 					break;
 			}
 
-		// console.log(this.bars.data())
-		 this.bars.transition()
-		 	.duration(timing)
-		 	.attr("y", bar_y)
-		 	.attr("height", bar_height)
-		 	.attr("fill", color);
-		}
-		console.log(timing)
-		return this
-	}
 
-
-	add_skyline(x=this.x, y=this.y) {
-		this.skyline = this.svg.append('g')
-			.append("path")
-			.attr("class", "mypath")
-			.datum(this.data)
-			.attr("fill", "none")
-			.attr("stroke", "black")
-			.attr("stroke-width", 1.5)
-			.attr("d", d3.line()
-				.x(function(d) { return x(d.resid) })
-				.y(function(d) { return y(d.domain_for_skyline) })
-			);
+		this.bars.transition()
+			.duration(timing)
+			.attr("y", bar_y)
+			.attr("height", bar_height)
+			.attr("fill", color);
 
 		return this
 	}
-
 
 }
+
