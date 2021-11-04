@@ -176,7 +176,7 @@ def lookupDisorder(x):
 
 
 file = open("enrichCMap.pkl", "rb")
-enrichDF = pickle.load(file)
+enrichDF = pd.read_pickle(file)
 file.close()
 
 def lookupEnrichment(x):
