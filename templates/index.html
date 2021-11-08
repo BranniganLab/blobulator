@@ -352,114 +352,59 @@ function draw(data) {
     });
 	
 	figs = []
-		if (my_disorder == "0") {
-			figs.pathyFig = new Figure("pathyPlot", data)
-			.add_title("Smoothed hydropathy per residue")
-			.add_tooltip(hydropathy_tool_text)
-			.add_pathy_ylabel()
-			.add_cutoff_line()
-			.build_barChart()
-			.add_yAxis()
-			.add_snps()
-			.add_xAxis()
-		} else {
-			figs.pathyFig = new Figure("pathyPlot", data)
-			.add_title("Smoothed hydropathy per residue")
-			.add_tooltip(hydropathy_tool_text)
-			.add_pathy_ylabel()
-			.add_cutoff_line()
-			.build_barChart()
-			.add_yAxis()
-			.add_snps()
-			.add_snp_xAxis()
-		}
+	figs.pathyFig = new Figure("hydropathy_3_window_mean", data)
+	.add_title("Smoothed hydropathy per residue")
+	.add_tooltip(hydropathy_tool_text)
+	.add_pathy_ylabel()
+	.add_cutoff_line()
+	.build_barChart()
+	.add_yAxis()
+	.add_snps()
+	.add_xAxis()
+
+	figs.globFig = new Figure("P_diagram", data)
+	.add_title("Blobs colored according to globular tendency")
+	.add_tooltip(Das_Pappu_text)
+	.add_GlobularLegend()
+	.build_barChart()
+	.add_snps()
+	.add_psh_ylabel();
+
+	figs.ncprFig = new Figure("NCPR_color", data)
+	.add_title("Blobs colored according to net charge per residue")
+	.add_tooltip(ncpr_tool_text)
+	.add_ncprContinuousLegend("RWB")
+	.build_barChart()
+	.add_snps()
+	.add_psh_ylabel()
+	.add_xAxis();
+
+	figs.uverskyFig = new Figure("uversky_color", data)
+	.add_title("Blobs colored according to Uversky diagram")
+	.add_tooltip(uversky_tool_text)
+	.add_ContinuousLegend("PuOr")
+	.build_barChart()
+	.add_snps()
+	.add_psh_ylabel()
+	.add_xAxis();
+
+	figs.richFig = new Figure("h_blob_enrichment", data)
+	.add_title("Blobs colored according to dSNP enrichment")
+	.add_tooltip(enrichment_tool_text)
+	.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"})
+	.build_barChart()
+	.add_snps()
+	.add_psh_ylabel()
+	.add_xAxis();
 	
-	if (my_disorder == "0") {
-		figs.globFig = new Figure("globPlot", data)
-		.add_title("Blobs colored according to globular tendency")
-		.add_tooltip(Das_Pappu_text)
-		.add_GlobularLegend()
-		.build_barChart()
-		.add_snps()
-		.add_psh_ylabel()
-		.add_xAxis()
-	} else {
-		figs.globFig = new Figure("globPlot", data)
-		.add_title("Blobs colored according to globular tendency")
-		.add_tooltip(Das_Pappu_text)
-		.add_GlobularLegend()
-		.build_barChart()
-		.add_snps()
-		.add_psh_ylabel()
-		.add_snp_xAxis()
-	}
+	if (my_disorder != "0") {
+		figs.pathyFig.add_snp_xAxis();
+		figs.globFig.add_snp_xAxis();
+		figs.ncprFig.add_snp_xAxis();
+		figs.uverskyFig.add_snp_xAxis();
+		figs.richFig.add_snp_xAxis();
 
-	if (my_disorder == "0") {
-		figs.ncprFig = new Figure("ncprPlot", data)
-		.add_title("Blobs colored according to net charge per residue")
-		.add_tooltip(ncpr_tool_text)
-		.add_ncprContinuousLegend("RWB")
-		.build_barChart()
-		.add_snps()
-		.add_psh_ylabel()
-		.add_xAxis()
-	} else {
-		figs.ncprFig = new Figure("ncprPlot", data)
-		.add_title("Blobs colored according to net charge per residue")
-		.add_tooltip(ncpr_tool_text)
-		.add_ncprContinuousLegend("RWB")
-		.build_barChart()
-		.add_snps()
-		.add_psh_ylabel()
-		.add_snp_xAxis()
-	}
-
-	if (my_disorder == "0") {
-		figs.uverskyFig = new Figure("uverskyPlot", data)
-		.add_title("Blobs colored according to Uversky diagram")
-		.add_tooltip(uversky_tool_text)
-		.add_ContinuousLegend("PuOr")
-		.build_barChart()
-		.add_snps()
-		.add_psh_ylabel()
-		.add_xAxis()
-	} else {
-		figs.uverskyFig = new Figure("uverskyPlot", data)
-		.add_title("Blobs colored according to Uversky diagram")
-		.add_tooltip(uversky_tool_text)
-		.add_ContinuousLegend("PuOr")
-		.build_barChart()
-		.add_snps()
-		.add_psh_ylabel()
-		.add_snp_xAxis()
-	}
-
-	if (my_disorder == "0") {
-		figs.richFig = new Figure("richPlot", data)
-		.add_title("Blobs colored according to dSNP enrichment")
-		.add_tooltip(enrichment_tool_text)
-		.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"})
-		.build_barChart()
-		.add_snps()
-		.add_psh_ylabel()
-		.add_xAxis()
-	} else {
-		figs.richFig = new Figure("richPlot", data)
-		.add_title("Blobs colored according to dSNP enrichment")
-		.add_tooltip(enrichment_tool_text)
-		.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"})
-		.build_barChart()
-		.add_snps()
-		.add_psh_ylabel()
-		.add_snp_xAxis()
-	}
-
-	if (my_disorder == "0") {
-        figs.disorderFig = new Figure("disorderPlot", data)
-			.add_title("DISORDER UNAVAILABLE")
-			.add_tooltip("Disorder information is acquired from Uniprot. To see the disorder plot, please input the Uniprot ID on the previous page.")
-    } else {
-    	figs.disorderFig = new Figure("disorderPlot", data)
+		figs.disorderFig = new Figure("disorder_color", data)
 			.add_title("Blobs colored according to fraction of disordered residue")
 			.add_tooltip(disorder_tool_text)
 			.add_ContinuousLegend("PuOr")
@@ -467,13 +412,16 @@ function draw(data) {
 			.add_snps()
 			.add_psh_ylabel()
 			.add_snp_xAxis()
-    }
+	} else { // my_disorder == "0" which means disorder information unavailable
+		figs.disorderFig = new Figure("disorder_color", data)
+			.add_title("DISORDER UNAVAILABLE")
+			.add_tooltip("Disorder information is acquired from Uniprot. To see the disorder plot, please input the Uniprot ID on the previous page.")
+	}
 
     var str_j = "Download data!";
 
-
     // Set up UI element change handler
-	d3.selectAll("#mutatebox,#snp_id,#residue_type,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox").on("change", function(){do_update(figs, data)});
+	d3.selectAll("#mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox").on("change", function(){do_update(figs, data)});
     
 
     //download_data

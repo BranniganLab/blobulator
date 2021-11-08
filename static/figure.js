@@ -182,7 +182,7 @@ class Figure {
 
 	add_pathy_ylabel() {
 		//Creates the "Mean Hydropathy" y-axis label for Smoothed hydropathy per residue
-		this.svg.append("text")
+		this.svg.append("text") 
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
 			.attr("x", 0 - (GLOBAL_HEIGHT / 2))
@@ -211,53 +211,53 @@ class Figure {
 			.attr("y", MARGIN.top - 25)
 			.attr('width', keysize)
 			.attr('height', keysize)
-			.style("fill", "#0f0")
+			.style("fill", "#0f0");
 		legend.append("rect")
 			.attr("x", GLOBAL_WIDTH + offset)
 			.attr("y", MARGIN.top + 5)
 			.attr('width', keysize)
 			.attr('height', keysize)
-			.style("fill", "#FEE882")
+			.style("fill", "#FEE882");
 		legend.append("rect")
 			.attr("x", GLOBAL_WIDTH + offset)
 			.attr("y", MARGIN.top + 35)
 			.attr('width', keysize)
 			.attr('height', keysize)
-			.style("fill", "#BF72D2")
+			.style("fill", "#BF72D2");
 		legend.append("rect")
 			.attr("x", GLOBAL_WIDTH + offset)
 			.attr("y", MARGIN.top + 65)
 			.attr('width', keysize)
 			.attr('height', keysize)
-			.style("fill", "#f00")
+			.style("fill", "#f00");
 		legend.append("rect")
 			.attr("x", GLOBAL_WIDTH + offset)
 			.attr("y", MARGIN.top + 95)
 			.attr('width', keysize)
 			.attr('height', keysize)
-			.style("fill", "#00f")
+			.style("fill", "#00f");
 				
 		//Text that appears to the right of the key    
 		legend.append("text")
 			.attr("x", GLOBAL_WIDTH + 50)
 			.attr("y", MARGIN.top - 15).text("Globular").style("font-size", "15px")
-			.attr("alignment-baseline", "middle")
+			.attr("alignment-baseline", "middle");
 		legend.append("text")
 			.attr("x", GLOBAL_WIDTH + 50)
 			.attr("y", MARGIN.top + 15).text("Janus/Boundary").style("font-size", "15px")
-			.attr("alignment-baseline", "middle")
+			.attr("alignment-baseline", "middle");
 		legend.append("text")
 			.attr("x", GLOBAL_WIDTH + 50)
 			.attr("y", MARGIN.top + 45).text("Strong Polyelectrolyte").style("font-size", "15px")
-			.attr("alignment-baseline", "middle")
+			.attr("alignment-baseline", "middle");
 		legend.append("text")
 			.attr("x", GLOBAL_WIDTH + 50)
 			.attr("y", MARGIN.top + 75).text("Strong Polyanion (-)").style("font-size", "15px")
-			.attr("alignment-baseline", "middle")
+			.attr("alignment-baseline", "middle");
 		legend.append("text")
 			.attr("x", GLOBAL_WIDTH + 50)
 			.attr("y", MARGIN.top + 105).text("Strong Polycation (+)").style("font-size", "15px")
-			.attr("alignment-baseline", "middle")
+			.attr("alignment-baseline", "middle");
 
 		return this;
 	}
@@ -271,7 +271,7 @@ class Figure {
 					cq3: '#ee9d3c', 
 					cmid: '#f6f6f7',
 					ctop: '#2d004b'
-					})
+					});
 				break;
 			case "RWB":
 				//Color bar key to the right of the enrichment plot.
@@ -280,20 +280,25 @@ class Figure {
 					cend: '#ff0000',
 					cmid: '#f4f4ff',
 					ctop: '#0000ff'
-					})
+					});
 				break;
 			default:
-				try{throw cmap} catch(e) {console.log("Figure.add_ContinuousLegend doesn't know colormap: "+e)}
+				// XXX: ???	
+				try{
+					throw cmap
+				} catch(e) {
+					console.log("Figure.add_ContinuousLegend doesn't know colormap: "+e)
+				}
 		}
 
-		return this
+		return this;
 	}
 
-		add_ncprContinuousLegend(cmap, {min='-1', med='0', max='+1', width=20, height=80}={min: '-0.5', med: '0', max: '+0.5', width: 20, height: 80}) {
+	add_ncprContinuousLegend(cmap, {min='-1', med='0', max='+1', width=20, height=80}={min: '-0.5', med: '0', max: '+0.5', width: 20, height: 80}) {
 		switch(cmap) {
 			case "PuOr":
 				this.add_colorbar("PuOr", width, height, min, max, GLOBAL_WIDTH, GLOBAL_HEIGHT,
-					{med: med, 
+					{ med: med, 
 					cend: '#7f3b08',
 					cq3: '#ee9d3c', 
 					cmid: '#f6f6f7',
@@ -313,7 +318,7 @@ class Figure {
 				try{throw cmap} catch(e) {console.log("Figure.add_ContinuousLegend doesn't know colormap: "+e)}
 		}
 
-		return this
+		return this;
 	}
 	
 	/* add_colorbar
@@ -338,7 +343,9 @@ class Figure {
 		//Add labels
 		this.svg.append("text").attr("x", xpos+2*width+6).attr("y", ypos-height+6).text(max)
 		
-		if (med){this.svg.append("text").attr("x", xpos+2*width+6).attr("y", (2*ypos-height+12)/2).text(med)}
+		if (med) {
+			this.svg.append("text").attr("x", xpos+2*width+6).attr("y", (2*ypos-height+12)/2).text(med);
+		}
 		
 		this.svg.append("text").attr("x", xpos+2*width+6).attr("y", ypos+6).text(min)
 
@@ -363,7 +370,7 @@ class Figure {
 			.on("click", function(d) {
 				//window.location.href = d.xrefs[0].url+'_blank'
 				window.open(d.xrefs.url, '_blank')
-				})
+			})
 			.on("mouseover", function(d) {
 				d3.select(this)
 					.attr("fill", "red");
@@ -375,15 +382,16 @@ class Figure {
 						"</a>")
 					.style("left", (d3.event.pageX) + "px")
 					.style("top", (d3.event.pageY - 28) + "px");
-				})
+			})
 			.on("mouseout", function(d, i) {
 				d3.select(this).attr("fill", function() {
 					return "" + 'black' + "";
-				})
+				});
+				
 				Tooltip_snps.transition()
 					.duration(500)
 					.style("opacity", 0);
-				})
+			})
 
 		return this
 	}
@@ -391,7 +399,7 @@ class Figure {
 	add_yAxis() {
 		this.svg.append("g") //the y axis is drawn only for plot 1
 				.call(d3.axisLeft(this.y));
-		return this
+		return this;
 	}
 
 
@@ -415,7 +423,7 @@ class Figure {
 				.y(function(d) { return y(my_cut) })
 			);
 
-		return this
+		return this;
 	}
 	
 	update_cutoff_line(x=this.x, y=this.y) {
@@ -428,7 +436,7 @@ class Figure {
 				.y(function(d) { return y(given_cutoff); })
 			);
 
-		return this
+		return this;
 	}
 
 	/* add_hydropathy_bars
@@ -442,15 +450,16 @@ class Figure {
 			.attr("y", function(d) { return y(d.hydropathy_3_window_mean); })
 			.attr("width", x.bandwidth())
 			.attr("height", function(d) { return GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean); })
-			.attr("fill", 'grey')
+			.attr("fill", 'grey');
 
-		return this
+		return this;
 	}
 
 	add_xAxis(x=this.x, y=this.y){
 		this.xAxis = this.svg.append("g")
-						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
-						   (Math.round((Math.round(domain_threshold_max/10))/10)*10) )})))
+						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) {
+							return !((i+1) % (Math.round((Math.round(domain_threshold_max/10))/10)*10));
+						})))
 						.attr("transform", "translate(0," + GLOBAL_HEIGHT + ")");
 		// Bars
 		//Creates the "Residue" x-axis label
@@ -458,7 +467,7 @@ class Figure {
 			.attr("x", GLOBAL_WIDTH / 2)
 			.attr("y", GLOBAL_HEIGHT + MARGIN.bottom)
 			.style("text-anchor", "middle")
-			.text("Residue")
+			.text("Residue");
 
 		return this
 	}
@@ -476,82 +485,85 @@ class Figure {
 			.attr("x", GLOBAL_WIDTH / 2)
 			.attr("y", GLOBAL_HEIGHT + MARGIN.bottom + 40)
 			.style("text-anchor", "middle")
-			.text("Residue")
+			.text("Residue");
 
-		return this
+		return this;
+	}
+
+	// Run-length-encodes data identified by a key in this array of dicts
+	// Conceptually:
+	// t, t, t, t, o, o, m, m, m, m, m => t*4, o*2, m*5
+	//   t: offset: 0, length: 4
+	//   o: offset: 4, length: 2
+	//   m: offset: 6, length: 5
+	run_length_encode_data(data, key) {
+		let offsets = [], widths = [0], values = [];
+		let d, val, offset_counter = 0, last_val = null, iter = data.values();
+		while(d = iter.next(), !d.done) {
+		    val = d.value[key];
+		    if(val != last_val && last_val != null) {
+		    	// End and save this run so we can move on to the next
+				offsets.push(offset_counter)
+				offset_counter += widths[widths.length - 1];
+				widths.push(0);
+				values.push(val);
+		    }
+			// Increment the width of the current run
+			widths[widths.length - 1]++;
+			last_val = val;
+		}
+		offsets.push(offset_counter)
+		values.push(val);
+		widths.forEach((x) => { })
+		// Make this into a d3-compatible data structure
+		let out = [];
+		for(let i = 0; i < offsets.length; i++) {
+			out.push({offset: offsets[i], width: widths[i], value: values[i]});
+		}
+		return out;
 	}
 
 
 	build_barChart(timing=0, x=this.x, y=this.y) {
 		this.plot_variable = this.svg.append("g")
-								.attr("id", "barChart"+this.figID)
+								.attr("id", "barChart" + this.figID)
 								.selectAll("rect")
 								.data(this.data);
-		this.make_bars(timing)
+		this.update_bars(this.data, timing);
 
 		return this;
 	}
 
-	make_bars(timing=0, x=this.x, y=this.y) {
-
+	
+	update_bars(data, timing=1000, x=this.x, y=this.y) {
+		this.plot_variable.exit().remove();
 		this.bars = this.plot_variable.enter().append("rect");
 
-		this.bars.attr("width", x.bandwidth())
-			.attr("x", function(d) { return x(d.resid); })
-			.attr("y", function(d) { return GLOBAL_HEIGHT; })
-		this.update_bars(this.data, timing)
+		// Set bar heights and colors and stuff
+		let relevant_attr = this.figID; // this.figID won't make it inside closures
+		// Special case for hydropathy plot
+		if(this.figID == "hydropathy_3_window_mean") {
+			this.plot_variable.enter().selectAll("rect").data(data);
+			this.bars.attr("height", (d) => GLOBAL_HEIGHT - y(d[relevant_attr]))
+				.attr("width", x.bandwidth())
+				.attr("x", (d) => x(d.resid) )
+				.attr("y", (d) => y(d[relevant_attr]) )
+				.attr("fill", "grey");
+		} else {
+			const step = x.step();
+			const padding = step - x.bandwidth();
+			let coalesced_data = this.run_length_encode_data(data, this.figID);
+			this.plot_variable.enter().selectAll("rect").data(coalesced_data);
+			this.bars.attr("height", (d) => GLOBAL_HEIGHT) // should subtract y(d.domain_to_numbers);
+				.attr("width", (d) => d.width * step - padding)
+				.attr("x", (d) => x(d.offset + 1))
+				.attr("y", (d) => 0)
+				.attr("fill", (d) => d.value);
 
-		return this
-	}
-	
-	update_bars(data, timing=1000, x=this.x, y=this.y){
-	
-		this.plot_variable.enter().selectAll("rect").data(data)
-		
-		//set height
-		if (this.figID == "pathyPlot") {
-			var bar_height = function(d) { return GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean); }
-			var bar_y = function(d) { return y(d.hydropathy_3_window_mean); }	
-			this.bars.transition()
-			.duration(timing)
-			.attr("y", bar_y)
-			.attr("height", bar_height);
-			this.bars.attr("fill", 'grey')
-		}else{
-			var bar_height = function(d) { return GLOBAL_HEIGHT - y(d.domain_to_numbers); }
-			var bar_y = function(d) { return y(d.domain_to_numbers); }
-		
-			//set color
-			switch(this.figID){ 
-				case 'pathyPlot':
-					console.error("!!!Control flow error: figure.js pathyPlot should not update color!!!")
-					break;
-				case 'globPlot':
-					var color = function(d){return d.P_diagram}
-					break;
-				case 'ncprPlot':
-					var color = function(d){return d.NCPR_color}
-					break;
-				case 'richPlot':
-					var color = function(d){return d.h_blob_enrichment}
-					break;
-				case 'uverskyPlot':
-					var color = function(d){return d.uversky_color}
-					break;PDB
-				case 'disorderPlot':
-					var color = function(d){return d.disorder_color}
-					break;
-			}
-
-		// console.log(this.bars.data())
-		 this.bars.transition()
-		 	.duration(timing)
-		 	.attr("y", bar_y)
-		 	.attr("height", bar_height)
-		 	.attr("fill", color);
+			console.log(coalesced_data);
 		}
-		console.log(timing)
-		return this
+
+		return this;
 	}
 
 
