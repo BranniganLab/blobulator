@@ -490,35 +490,64 @@ class Figure {
 		return this;
 	}
 
-	// Run-length-encodes data identified by a key in this array of dicts
+	// Run-length-encodes data identified by keys in this array of dicts
 	// Conceptually:
 	// t, t, t, t, o, o, m, m, m, m, m => t*4, o*2, m*5
 	//   t: offset: 0, length: 4
 	//   o: offset: 4, length: 2
 	//   m: offset: 6, length: 5
-	run_length_encode_data(data, key) {
-		let offsets = [], widths = [0], values = [];
-		let d, val, offset_counter = 0, last_val = null, iter = data.values();
+	// This is a trivial example. Each run is actually defined as a contiguous block
+	// where all specified keys remain the same.
+	run_length_encode_data(data, keys) {
+		let offsets = [0], run_lengths = [0], values = {};
+		let d, val, offset_counter = 0, last_val = null; 
+		// Initialize our saved values
+		for(const k of keys) {
+			values[k] = [];
+		}
+		let iter = data.values();
 		while(d = iter.next(), !d.done) {
-		    val = d.value[key];
-		    if(val != last_val && last_val != null) {
-		    	// End and save this run so we can move on to the next
+		    val = d.value;
+			let changed = false;
+			if(last_val != null) {
+				for(const k of keys) {
+					if(val[k] != last_val[k]) {
+						changed = true;
+						// We know something is different so no need to keep going
+						break;
+					}
+				}
+			}
+		    if(changed) {
+		    	// We have encountered a value that was not the same as the previous one,
+				// and we are not on the first iteration. So we will save the key-value pairs
+				// encountered thus far.
+				for(const k of keys) {
+					values[k].push(last_val[k]);
+				}
+				// Start new run
+				// This will the the starting offset of the next run
+				offset_counter += run_lengths[run_lengths.length - 1];
 				offsets.push(offset_counter)
-				offset_counter += widths[widths.length - 1];
-				widths.push(0);
-				values.push(val);
+				run_lengths.push(0);
 		    }
 			// Increment the width of the current run
-			widths[widths.length - 1]++;
+			run_lengths[run_lengths.length - 1]++;
 			last_val = val;
 		}
-		offsets.push(offset_counter)
-		values.push(val);
-		widths.forEach((x) => { })
+		// offsets.push(offset_counter)
+		for(const k of keys) {
+			values[k].push(last_val[k]);
+		}
+		
 		// Make this into a d3-compatible data structure
 		let out = [];
 		for(let i = 0; i < offsets.length; i++) {
-			out.push({offset: offsets[i], width: widths[i], value: values[i]});
+			let elt = {offset: offsets[i], run_length: run_lengths[i]};
+			for(const k of keys) {
+				elt[k] = values[k][i];
+			}
+			out.push(elt);
 		}
 		return out;
 	}
@@ -541,7 +570,7 @@ class Figure {
 
 		// Set bar heights and colors and stuff
 		let relevant_attr = this.figID; // this.figID won't make it inside closures
-		// Special case for hydropathy plot
+		// Special case for hydropathy plot because we aren't run-length-encoding its data
 		if(this.figID == "hydropathy_3_window_mean") {
 			this.plot_variable.enter().selectAll("rect").data(data);
 			this.bars.attr("height", (d) => GLOBAL_HEIGHT - y(d[relevant_attr]))
@@ -550,15 +579,18 @@ class Figure {
 				.attr("y", (d) => y(d[relevant_attr]) )
 				.attr("fill", "grey");
 		} else {
-			const step = x.step();
-			const padding = step - x.bandwidth();
-			let coalesced_data = this.run_length_encode_data(data, this.figID);
+			console.log(this.figID);
+			let coalesced_data = this.run_length_encode_data(data, [this.figID, "domain_to_numbers"]);
 			this.plot_variable.enter().selectAll("rect").data(coalesced_data);
-			this.bars.attr("height", (d) => GLOBAL_HEIGHT) // should subtract y(d.domain_to_numbers);
-				.attr("width", (d) => d.width * step - padding)
+			this.bars.attr("height", (d) => GLOBAL_HEIGHT - y(d.domain_to_numbers))
+				// .attr("width", (d) => x.step() * d.run_length)
+				.attr("width", function(d) {
+					// console.log(d);
+					return x.step() * d.run_length;
+				})
 				.attr("x", (d) => x(d.offset + 1))
-				.attr("y", (d) => 0)
-				.attr("fill", (d) => d.value);
+				.attr("y", (d) => y(d.domain_to_numbers))
+				.attr("fill", (d) => d[this.figID]);
 
 			console.log(coalesced_data);
 		}
