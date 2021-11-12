@@ -129,12 +129,8 @@ def index():
             chart_data = df.round(3).to_dict(orient="records")
             chart_data = json.dumps(chart_data, indent=2)
             data = {"chart_data": chart_data}
-            if disorder_residues == [0]:
-                r_tem = "index_seq.html"
-            else:
-                r_tem = "index.html"
             return render_template(
-                    "index.html",
+                    "result.html",
                     data=data,
                     form=form,
                     my_cut=0.4,
@@ -145,8 +141,7 @@ def index():
                     domain_threshold=4,
                     domain_threshold_max=len(str(my_seq)),
                     my_disorder = str(disorder_residues).strip('[]'),
-
-                    #my_disorder = json.dumps(disorder_residues, indent=2)
+                    activetab = '#result'
                 )
 
         else: #if the user inputs amino acid sequence
@@ -178,7 +173,7 @@ def index():
             chart_data = json.dumps(chart_data, indent=2)
             data = {"chart_data": chart_data}
             return render_template(
-                "index.html",
+                "result.html",
                 data=data,
                 form=form,
                 my_cut=0.4,
@@ -189,9 +184,11 @@ def index():
                 domain_threshold=4,
                 domain_threshold_max=len(str(my_seq)),
                 my_disorder = '0',
+                activetab = '#result'
             )
     else:
-        return render_template("tabs.html", form=form) #creates the HTML layout of the home page along with user input fields
+         #creates the HTML layout of the home page along with user input fields
+        return render_template("index.html", form=form, activetab='#home')
 
 
 
