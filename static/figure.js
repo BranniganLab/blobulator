@@ -102,7 +102,7 @@ class Figure {
 		this.infoIcon.style.cursor = "pointer";
 		this.infoIcon.style.fontSize = "larger";
 		this.infoIcon.style.fill = "blue";
-		this.infoIcon.innerText = '🛈';
+		this.infoIcon.innerText = '\u{24D8}';
 		this.infoIcon.type = "button";
 		this.infoIcon.title = '<a onclick="$(this).closest(\'div.popover\').popover(\'hide\');" type="button" class="close" aria-hidden="true">&times;</a><br>';
 		this.infoIcon.style.zIndex = "10"; // Put this element on top of the SVG
