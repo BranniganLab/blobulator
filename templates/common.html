@@ -15,7 +15,7 @@
             // Set active tab. We do it this way because we don't know what tab should be selected,
             // whether it's the home tab or results tab, or perhaps something else one day. So it is
             // specified in the call to render_template.
-            $('{{ activetab }}').addClass('active');
+            $('{{ activetab }}').tab('show');
 
             // Disable enter key
             $('p').keypress(function(event) {

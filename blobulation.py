@@ -141,7 +141,7 @@ def index():
                     domain_threshold=4,
                     domain_threshold_max=len(str(my_seq)),
                     my_disorder = str(disorder_residues).strip('[]'),
-                    activetab = '#result'
+                    activetab = '#result-tab'
                 )
 
         else: #if the user inputs amino acid sequence
@@ -184,11 +184,11 @@ def index():
                 domain_threshold=4,
                 domain_threshold_max=len(str(my_seq)),
                 my_disorder = '0',
-                activetab = '#result'
+                activetab = '#result-tab'
             )
     else:
          #creates the HTML layout of the home page along with user input fields
-        return render_template("index.html", form=form, activetab='#home')
+        return render_template("index.html", form=form, activetab='#home-tab')
 
 
 
