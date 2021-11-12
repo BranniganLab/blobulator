@@ -116,7 +116,7 @@ class Figure {
 		ii.style.cursor = "pointer"
 		ii.style.fontSize = "larger"
 		ii.style.fill = "blue"
-		ii.innerText = '\u{1F6C8}'
+		ii.innerText = '\u{24D8}'
 		ii.type = "button"
 
 
