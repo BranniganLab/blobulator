@@ -1,49 +1,31 @@
 class Figure {
-	/*
-	container
-	figID;
-	width;
-	height;
-	tooltip;
-	yaxis;
-	svg;
-	title="";
-	snps;
-	legend;
-	bars;
-	barchart;
-	data;
-	cut_line;
-	Tooltip;
-	infoIcon;
-	plot_variable;
-	x;
-	y;
-	xAxis;
-	*/
-	
 	constructor(figID, data) {
-		//Sets the dimensions and location of the svg container
-		this.figID = figID
+		// These constants set fixed values for height and width to be used in making all four visualizations
+		this.MARGIN = { top: 30, right: 230, bottom: 30, left: 50 };
+		this.GLOBAL_WIDTH = 1200 - this.MARGIN.left - this.MARGIN.right;
+		this.GLOBAL_HEIGHT = 200 - this.MARGIN.top - this.MARGIN.bottom;
 
-		var node = document.createElement("div")
-		node.style.position = "relative"
-		this.container = document.getElementById("my_dataviz").appendChild(node)
+		//Sets the dimensions and location of the svg container
+		this.figID = figID;
+
+		let node = document.createElement("div");
+		node.style.position = "relative";
+		this.container = document.getElementById("my_dataviz").appendChild(node);
 
 		this.svg = d3.select(this.container)
 			.append("svg")
-			.attr("width", GLOBAL_WIDTH + MARGIN.left + MARGIN.right)
-			.attr("height", GLOBAL_HEIGHT + MARGIN.top + MARGIN.bottom + 45)
+			.attr("width", this.GLOBAL_WIDTH + this.MARGIN.left + this.MARGIN.right)
+			.attr("height", this.GLOBAL_HEIGHT + this.MARGIN.top + this.MARGIN.bottom + 45)
 			.append("g")
-			.attr("transform", "translate(" + MARGIN.left + "," + MARGIN.top + ")")
+			.attr("transform", "translate(" + this.MARGIN.left + "," + this.MARGIN.top + ")");
 			
 		this.y = d3.scaleLinear()
 			.domain([0, 1])
-			.range([GLOBAL_HEIGHT, 0]);
+			.range([this.GLOBAL_HEIGHT, 0]);
 
 		// add the x Axis
 		this.x = d3.scaleBand()
-			.range([0, GLOBAL_WIDTH])
+			.range([0, this.GLOBAL_WIDTH])
 			.domain(data.map(function(d) { return d.resid; }))
 			.padding(0.2);
 			
@@ -52,13 +34,11 @@ class Figure {
 		return this;
 	}
 
-	set_data(data) {this.data=data; return this;}
-	
 	add_title(title){
-	    //Creates the title
+	    // Creates the title
 		this.svg.append("text")
-			.attr("x", GLOBAL_WIDTH / 2)
-			.attr("y", MARGIN.top - 25)
+			.attr("x", this.GLOBAL_WIDTH / 2)
+			.attr("y", this.MARGIN.top - 25)
 			.style("text-anchor", "middle")
 			.text(title)
 			.attr("font-size", "20px")
@@ -84,15 +64,21 @@ class Figure {
 
 		//Define the gradient
 		//Set the color for the start (0%)
-		linearGradient.append("stop").attr("offset", "0%").attr("stop-color", ctop)
+		linearGradient.append("stop").attr("offset", "0%").attr("stop-color", ctop);
 		//Set the color for the end (25%)
-		if (cq1){linearGradient.append("stop").attr("offset", "25%").attr("stop-color", cq1)}
+		if (cq1) {
+			linearGradient.append("stop").attr("offset", "25%").attr("stop-color", cq1);
+		}
 		//Set the color for the end (50%)
-		if (cmid){linearGradient.append("stop").attr("offset", "50%").attr("stop-color", cmid)}
+		if (cmid) {
+			linearGradient.append("stop").attr("offset", "50%").attr("stop-color", cmid);
+		}
 		//Set the color for the end (75%)
-		if (cq3){linearGradient.append("stop").attr("offset", "75%").attr("stop-color", cq3)}
+		if (cq3) {
+			linearGradient.append("stop").attr("offset", "75%").attr("stop-color", cq3);
+		}
 		//Set the color for the end (100%)
-		linearGradient.append("stop").attr("offset", "100%").attr("stop-color", cend)
+		linearGradient.append("stop").attr("offset", "100%").attr("stop-color", cend);
 
 		return this;
 	}
@@ -106,33 +92,29 @@ class Figure {
 	RETURNS:
 		none
 	*/
-	add_tooltip(content="Place Holder", {xpos, ypos, xoffset}={xpos: GLOBAL_WIDTH, ypos: MARGIN.top, xoffset: 500}) {
-		var ii = document.createElement("info")
-
-		ii.style.position = "absolute"
-		ii.style.top = ypos
-		ii.style.left = xpos+30
-		ii.style.font = "arial"
-		ii.style.cursor = "pointer"
-		ii.style.fontSize = "larger"
-		ii.style.fill = "blue"
-		ii.innerText = '\u{24D8}'
-		ii.type = "button"
-
-
-		var genericCloseBtnHtml = '<a onclick="$(this).closest(\'div.popover\').popover(\'hide\');" type="button" class="close" aria-hidden="true">&times;</a>';
+	add_tooltip(content="Place Holder", xpos=this.GLOBAL_WIDTH, ypos=this.MARGIN.top) {
+		this.infoIcon = document.createElement("div");
+		this.infoIcon.style.position = "absolute";
+		this.infoIcon.style.top = ypos + "px";
+		this.infoIcon.style.left = xpos + 30 + "px";
+		this.infoIcon.style.font = "arial";
+		this.infoIcon.style.cursor = "pointer";
+		this.infoIcon.style.fontSize = "larger";
+		this.infoIcon.style.fill = "blue";
+		this.infoIcon.innerText = '\u{24D8}';
+		this.infoIcon.type = "button";
+		this.infoIcon.title = '<a onclick="$(this).closest(\'div.popover\').popover(\'hide\');" type="button" class="close" aria-hidden="true">&times;</a><br>';
+		this.infoIcon.style.zIndex = "10"; // Put this element on top of the SVG
 		
-		var p = $(ii).popover({
-			title: genericCloseBtnHtml+'<p></p>',
+		$(this.infoIcon).popover({
 			content: content, 
-			placement:"top", 
+			placement: "top", 
 			html: true,
 			sanitize: false,
 			container: 'body'
-		}) 
+		});
 
-		this.infoIcon = ii
-		this.container.appendChild(this.infoIcon)
+		this.container.appendChild(this.infoIcon);
 
 		return this;
 	}
@@ -151,8 +133,8 @@ class Figure {
 		ylabel.append("text")
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
-			.attr("x", 0 - (GLOBAL_HEIGHT / 2) - 50)
-			.attr("y", MARGIN.left - 80)
+			.attr("x", 0 - (this.GLOBAL_HEIGHT / 2) - 50)
+			.attr("y", this.MARGIN.left - 80)
 			.attr("transform", "rotate(-90)")
 			.text("p");
 
@@ -160,8 +142,8 @@ class Figure {
 		ylabel.append("text")
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
-			.attr("x", 0 - (GLOBAL_HEIGHT / 2) - 20)
-			.attr("y", MARGIN.left - 80)
+			.attr("x", 0 - (this.GLOBAL_HEIGHT / 2) - 20)
+			.attr("y", this.MARGIN.left - 80)
 			.attr("transform", "rotate(-90)")
 			.text("s");
 
@@ -170,8 +152,8 @@ class Figure {
 		ylabel.append("text")
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
-			.attr("x", 0 - (GLOBAL_HEIGHT / 2) + 10)
-			.attr("y", MARGIN.left - 80)
+			.attr("x", 0 - (this.GLOBAL_HEIGHT / 2) + 10)
+			.attr("y", this.MARGIN.left - 80)
 			.attr("transform", "rotate(-90)")
 			.text("h");
 
@@ -185,8 +167,8 @@ class Figure {
 		this.svg.append("text")
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
-			.attr("x", 0 - (GLOBAL_HEIGHT / 2))
-			.attr("y", MARGIN.left - 80)
+			.attr("x", 0 - (this.GLOBAL_HEIGHT / 2))
+			.attr("y", this.MARGIN.left - 80)
 			.attr("transform", "rotate(-90)")
 			.text("Mean Hydropathy");
 
@@ -207,56 +189,56 @@ class Figure {
 		var legend = this.svg.append("g").attr("id", "legend")
 
 		legend.append("rect")
-			.attr("x", GLOBAL_WIDTH + offset)
-			.attr("y", MARGIN.top - 25)
+			.attr("x", this.GLOBAL_WIDTH + offset)
+			.attr("y", this.MARGIN.top - 25)
 			.attr('width', keysize)
 			.attr('height', keysize)
 			.style("fill", "#0f0")
 		legend.append("rect")
-			.attr("x", GLOBAL_WIDTH + offset)
-			.attr("y", MARGIN.top + 5)
+			.attr("x", this.GLOBAL_WIDTH + offset)
+			.attr("y", this.MARGIN.top + 5)
 			.attr('width', keysize)
 			.attr('height', keysize)
 			.style("fill", "#FEE882")
 		legend.append("rect")
-			.attr("x", GLOBAL_WIDTH + offset)
-			.attr("y", MARGIN.top + 35)
+			.attr("x", this.GLOBAL_WIDTH + offset)
+			.attr("y", this.MARGIN.top + 35)
 			.attr('width', keysize)
 			.attr('height', keysize)
 			.style("fill", "#BF72D2")
 		legend.append("rect")
-			.attr("x", GLOBAL_WIDTH + offset)
-			.attr("y", MARGIN.top + 65)
+			.attr("x", this.GLOBAL_WIDTH + offset)
+			.attr("y", this.MARGIN.top + 65)
 			.attr('width', keysize)
 			.attr('height', keysize)
 			.style("fill", "#f00")
 		legend.append("rect")
-			.attr("x", GLOBAL_WIDTH + offset)
-			.attr("y", MARGIN.top + 95)
+			.attr("x", this.GLOBAL_WIDTH + offset)
+			.attr("y", this.MARGIN.top + 95)
 			.attr('width', keysize)
 			.attr('height', keysize)
 			.style("fill", "#00f")
 				
 		//Text that appears to the right of the key    
 		legend.append("text")
-			.attr("x", GLOBAL_WIDTH + 50)
-			.attr("y", MARGIN.top - 15).text("Globular").style("font-size", "15px")
+			.attr("x", this.GLOBAL_WIDTH + 50)
+			.attr("y", this.MARGIN.top - 15).text("Globular").style("font-size", "15px")
 			.attr("alignment-baseline", "middle")
 		legend.append("text")
-			.attr("x", GLOBAL_WIDTH + 50)
-			.attr("y", MARGIN.top + 15).text("Janus/Boundary").style("font-size", "15px")
+			.attr("x", this.GLOBAL_WIDTH + 50)
+			.attr("y", this.MARGIN.top + 15).text("Janus/Boundary").style("font-size", "15px")
 			.attr("alignment-baseline", "middle")
 		legend.append("text")
-			.attr("x", GLOBAL_WIDTH + 50)
-			.attr("y", MARGIN.top + 45).text("Strong Polyelectrolyte").style("font-size", "15px")
+			.attr("x", this.GLOBAL_WIDTH + 50)
+			.attr("y", this.MARGIN.top + 45).text("Strong Polyelectrolyte").style("font-size", "15px")
 			.attr("alignment-baseline", "middle")
 		legend.append("text")
-			.attr("x", GLOBAL_WIDTH + 50)
-			.attr("y", MARGIN.top + 75).text("Strong Polyanion (-)").style("font-size", "15px")
+			.attr("x", this.GLOBAL_WIDTH + 50)
+			.attr("y", this.MARGIN.top + 75).text("Strong Polyanion (-)").style("font-size", "15px")
 			.attr("alignment-baseline", "middle")
 		legend.append("text")
-			.attr("x", GLOBAL_WIDTH + 50)
-			.attr("y", MARGIN.top + 105).text("Strong Polycation (+)").style("font-size", "15px")
+			.attr("x", this.GLOBAL_WIDTH + 50)
+			.attr("y", this.MARGIN.top + 105).text("Strong Polycation (+)").style("font-size", "15px")
 			.attr("alignment-baseline", "middle")
 
 		return this;
@@ -265,55 +247,45 @@ class Figure {
 	add_ContinuousLegend(cmap, {min='-1', med='0', max='+1', width=20, height=80}={min: '-1', med: '0', max: '+1', width: 20, height: 80}) {
 		switch(cmap) {
 			case "PuOr":
-				this.add_colorbar("PuOr", width, height, min, max, GLOBAL_WIDTH, GLOBAL_HEIGHT,
-					{med: med, 
-					cend: '#7f3b08',
-					cq3: '#ee9d3c', 
-					cmid: '#f6f6f7',
-					ctop: '#2d004b'
-					})
+				this.add_colorbar("PuOr", width, height, min, max, this.GLOBAL_WIDTH, this.GLOBAL_HEIGHT,
+					{ med: med, cend: '#7f3b08', cq3: '#ee9d3c', cmid: '#f6f6f7', ctop: '#2d004b' });
 				break;
 			case "RWB":
 				//Color bar key to the right of the enrichment plot.
-				this.add_colorbar("RWB", width, height, min, max, GLOBAL_WIDTH, GLOBAL_HEIGHT,
-					{med: med, 
-					cend: '#ff0000',
-					cmid: '#f4f4ff',
-					ctop: '#0000ff'
-					})
+				this.add_colorbar("RWB", width, height, min, max, this.GLOBAL_WIDTH, this.GLOBAL_HEIGHT,
+					{ med: med, cend: '#ff0000', cmid: '#f4f4ff', ctop: '#0000ff' });
 				break;
 			default:
-				try{throw cmap} catch(e) {console.log("Figure.add_ContinuousLegend doesn't know colormap: "+e)}
+				try {
+					throw cmap
+				} catch(e) {
+					console.log("Figure.add_ContinuousLegend doesn't know colormap: "+e)
+				}
 		}
 
-		return this
+		return this;
 	}
 
-		add_ncprContinuousLegend(cmap, {min='-1', med='0', max='+1', width=20, height=80}={min: '-0.5', med: '0', max: '+0.5', width: 20, height: 80}) {
+	add_ncprContinuousLegend(cmap, {min='-1', med='0', max='+1', width=20, height=80}={min: '-0.5', med: '0', max: '+0.5', width: 20, height: 80}) {
 		switch(cmap) {
 			case "PuOr":
-				this.add_colorbar("PuOr", width, height, min, max, GLOBAL_WIDTH, GLOBAL_HEIGHT,
-					{med: med, 
-					cend: '#7f3b08',
-					cq3: '#ee9d3c', 
-					cmid: '#f6f6f7',
-					ctop: '#2d004b'
-					})
+				this.add_colorbar("PuOr", width, height, min, max, this.GLOBAL_WIDTH, this.GLOBAL_HEIGHT,
+					{ med: med, cend: '#7f3b08', cq3: '#ee9d3c', cmid: '#f6f6f7', ctop: '#2d004b'});
 				break;
 			case "RWB":
 				//Color bar key to the right of the enrichment plot.
-				this.add_colorbar("RWB", width, height, min, max, GLOBAL_WIDTH, GLOBAL_HEIGHT,
-					{med: med, 
-					cend: '#ff0000',
-					cmid: '#f4f4ff',
-					ctop: '#0000ff'
-					})
+				this.add_colorbar("RWB", width, height, min, max, this.GLOBAL_WIDTH, this.GLOBAL_HEIGHT,
+					{ med: med, cend: '#ff0000', cmid: '#f4f4ff', ctop: '#0000ff' });
 				break;
 			default:
-				try{throw cmap} catch(e) {console.log("Figure.add_ContinuousLegend doesn't know colormap: "+e)}
+				try {
+					throw cmap
+				} catch(e) {
+					      ("Figure.add_ContinuousLegend doesn't know colormap: "+e)
+				}
 		}
 
-		return this
+		return this;
 	}
 	
 	/* add_colorbar
@@ -347,8 +319,7 @@ class Figure {
 	
 	/* add_snps
 	*/
-	add_snps(x=this.x, y=this.y) {
-		//console.log("not pathyplot")
+	add_snps(my_snp, tooltip_snps, x=this.x, y=this.y) {
 		this.svg.append('g')
 			.selectAll("rect")
 			//.data(my_disorder.map(function(d) { return +d; }))
@@ -363,29 +334,25 @@ class Figure {
 			.on("click", function(d) {
 				//window.location.href = d.xrefs[0].url+'_blank'
 				window.open(d.xrefs.url, '_blank')
-				})
+			})
 			.on("mouseover", function(d) {
 				d3.select(this)
 					.attr("fill", "red");
-				Tooltip_snps.transition()
+				tooltip_snps.transition()
 					.duration(100)
 					.style("opacity", .9);
-				Tooltip_snps.html(
-						'<a href="' + d.xrefs.url + '"target="_blank">' + d.xrefs.id +
-						"</a>")
+				tooltip_snps.html('<a href="' + d.xrefs.url + '"target="_blank">' + d.xrefs.id + "</a>")
 					.style("left", (d3.event.pageX) + "px")
 					.style("top", (d3.event.pageY - 28) + "px");
-				})
+			})
 			.on("mouseout", function(d, i) {
-				d3.select(this).attr("fill", function() {
-					return "" + 'black' + "";
-				})
-				Tooltip_snps.transition()
+				d3.select(this).attr("fill", "black");
+				tooltip_snps.transition()
 					.duration(500)
 					.style("opacity", 0);
-				})
+			});
 
-		return this
+		return this;
 	}
 	
 	add_yAxis() {
@@ -393,16 +360,8 @@ class Figure {
 				.call(d3.axisLeft(this.y));
 		return this
 	}
-
-
-//	add_cut_line(x=this.x, y=this.y) {
-//		this.add_cutoff(this.x, this.y)
-//		this.add_hydropathy_bar(this.x, this.y)
-//	}
 	
-	/* add_cutoff
-	*/
-	add_cutoff_line(x=this.x, y=this.y) {
+	add_cutoff_line(my_cut, x=this.x, y=this.y) {
 		this.cut_line = this.svg.append('g')
 			.append("path")
 			.attr("class", "mypath")
@@ -411,24 +370,21 @@ class Figure {
 			.attr("stroke", "steelblue")
 			.attr("stroke-width", 1.5)
 			.attr("d", d3.line()
-				.x(function(d) { return x(d.resid) })
-				.y(function(d) { return y(my_cut) })
-			);
+				.x((d) => x(d.resid))
+				.y((d) => y(my_cut)));
 
-		return this
+		return this;
 	}
 	
-	update_cutoff_line(x=this.x, y=this.y) {
-		let given_cutoff=d3.select("#cutoff_user").text()
+	update_cutoff_line(my_cut, x=this.x, y=this.y) {
 		this.cut_line
 			.transition()
 			.duration(1000)
 			.attr("d", d3.line()
-				.x(function(d) { return x(d.resid); })
-				.y(function(d) { return y(given_cutoff); })
-			);
+				.x((d) => x(d.resid))
+				.y((d) => y(my_cut)));
 
-		return this
+		return this;
 	}
 
 	/* add_hydropathy_bars
@@ -438,25 +394,25 @@ class Figure {
 		this.hydropathy_bars.data(this.data)
 			.enter()
 			.append("rect")
-			.attr("x", function(d) { return x(d.resid); })
-			.attr("y", function(d) { return y(d.hydropathy_3_window_mean); })
+			.attr("x", (d) => x(d.resid))
+			.attr("y", (d) => y(d.hydropathy_3_window_mean))
 			.attr("width", x.bandwidth())
-			.attr("height", function(d) { return GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean); })
+			.attr("height", (d) => this.GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean))
 			.attr("fill", 'grey')
 
 		return this
 	}
 
-	add_xAxis(x=this.x, y=this.y){
+	add_xAxis(domain_threshold_max, x=this.x, y=this.y){
 		this.xAxis = this.svg.append("g")
 						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
 						   (Math.round((Math.round(domain_threshold_max/10))/10)*10) )})))
-						.attr("transform", "translate(0," + GLOBAL_HEIGHT + ")");
+						.attr("transform", "translate(0," + this.GLOBAL_HEIGHT + ")");
 		// Bars
 		//Creates the "Residue" x-axis label
 		this.svg.append("text")
-			.attr("x", GLOBAL_WIDTH / 2)
-			.attr("y", GLOBAL_HEIGHT + MARGIN.bottom)
+			.attr("x", this.GLOBAL_WIDTH / 2)
+			.attr("y", this.GLOBAL_HEIGHT + this.MARGIN.bottom)
 			.style("text-anchor", "middle")
 			.text("Residue")
 
@@ -464,17 +420,17 @@ class Figure {
 	}
 
 
-	add_snp_xAxis(x=this.x, y=this.y){
+	add_snp_xAxis(domain_threshold_max, x=this.x, y=this.y){
 		this.xAxis = this.svg.append("g")
 						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
 						   (Math.round((Math.round(domain_threshold_max/10))/10)*10) )})))
-						.attr("transform", "translate(0," + GLOBAL_HEIGHT + ")")
+						.attr("transform", "translate(0," + this.GLOBAL_HEIGHT + ")")
 						.attr("transform", "translate(0, 165)");
 		// Bars
 		//Creates the "Residue" x-axis label
 		this.svg.append("text")
-			.attr("x", GLOBAL_WIDTH / 2)
-			.attr("y", GLOBAL_HEIGHT + MARGIN.bottom + 40)
+			.attr("x", this.GLOBAL_WIDTH / 2)
+			.attr("y", this.GLOBAL_HEIGHT + this.MARGIN.bottom + 40)
 			.style("text-anchor", "middle")
 			.text("Residue")
 
@@ -487,71 +443,40 @@ class Figure {
 								.attr("id", "barChart"+this.figID)
 								.selectAll("rect")
 								.data(this.data);
-		this.make_bars(timing)
+
+		this.bars = this.plot_variable.enter().append("rect");
+		this.bars.attr("width", x.bandwidth())
+			.attr("x", (d) => x(d.resid))
+			.attr("y", this.GLOBAL_HEIGHT)
+		this.update_bars(this.data, timing);
 
 		return this;
 	}
-
-	make_bars(timing=0, x=this.x, y=this.y) {
-
-		this.bars = this.plot_variable.enter().append("rect");
-
-		this.bars.attr("width", x.bandwidth())
-			.attr("x", function(d) { return x(d.resid); })
-			.attr("y", function(d) { return GLOBAL_HEIGHT; })
-		this.update_bars(this.data, timing)
-
-		return this
-	}
 	
-	update_bars(data, timing=1000, x=this.x, y=this.y){
+	update_bars(data, timing=1000, x=this.x, y=this.y) {
 	
-		this.plot_variable.enter().selectAll("rect").data(data)
+		this.plot_variable.enter().selectAll("rect").data(data);
 		
-		//set height
+		// The hydropathy plot requires special colors
 		if (this.figID == "pathyPlot") {
-			var bar_height = function(d) { return GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean); }
-			var bar_y = function(d) { return y(d.hydropathy_3_window_mean); }	
 			this.bars.transition()
-			.duration(timing)
-			.attr("y", bar_y)
-			.attr("height", bar_height);
-			this.bars.attr("fill", 'grey')
-		}else{
-			var bar_height = function(d) { return GLOBAL_HEIGHT - y(d.domain_to_numbers); }
-			var bar_y = function(d) { return y(d.domain_to_numbers); }
-		
-			//set color
-			switch(this.figID){ 
-				case 'pathyPlot':
-					console.error("!!!Control flow error: figure.js pathyPlot should not update color!!!")
-					break;
-				case 'globPlot':
-					var color = function(d){return d.P_diagram}
-					break;
-				case 'ncprPlot':
-					var color = function(d){return d.NCPR_color}
-					break;
-				case 'richPlot':
-					var color = function(d){return d.h_blob_enrichment}
-					break;
-				case 'uverskyPlot':
-					var color = function(d){return d.uversky_color}
-					break;PDB
-				case 'disorderPlot':
-					var color = function(d){return d.disorder_color}
-					break;
-			}
+				.duration(timing)
+				.attr("y", (d) => y(d.hydropathy_3_window_mean))
+				.attr("height", (d) => this.GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean));
+			this.bars.attr("fill", 'grey');
+		} else {
+			// Lookup table for color attribute of our data as a function of the plot name.
+			// E.g. The "globPlot" plot data stores colors in the "P_diagram" attribute of the data.
+			const figID_to_var = {'globPlot': 'P_diagram', 'ncprPlot': 'NCPR_color', 'richPlot': 'h_blob_enrichment',
+				'uverskyPlot': 'uversky_color', 'disorderPlot': 'disorder_color'};
 
-		// console.log(this.bars.data())
-		 this.bars.transition()
-		 	.duration(timing)
-		 	.attr("y", bar_y)
-		 	.attr("height", bar_height)
-		 	.attr("fill", color);
+			this.bars.transition()
+				.duration(timing)
+				.attr("y", (d) => y(d.domain_to_numbers))
+				.attr("height", (d) => this.GLOBAL_HEIGHT - y(d.domain_to_numbers))
+				.attr("fill", (d) => d[figID_to_var[this.figID]]);
 		}
-		console.log(timing)
-		return this
+		return this;
 	}
 
 
@@ -564,11 +489,11 @@ class Figure {
 			.attr("stroke", "black")
 			.attr("stroke-width", 1.5)
 			.attr("d", d3.line()
-				.x(function(d) { return x(d.resid) })
-				.y(function(d) { return y(d.domain_for_skyline) })
+				.x((d) => x(d.resid))
+				.y((d) => y(d.domain_for_skyline))
 			);
 
-		return this
+		return this;
 	}
 
 

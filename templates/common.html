@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Blobulator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            // Set active tab. We do it this way because we don't know what tab should be selected,
+            // whether it's the home tab or results tab, or perhaps something else one day. So it is
+            // specified in the call to render_template.
+            $('{{ activetab }}').tab('show');
+
+            // Disable enter key
+            $('p').keypress(function(event) {
+                if (event.keyCode == 13) {
+                    event.preventDefault()
+                }
+            });
+        
+            // Accordions are used in the FAQ - this code is necessary for the question headings to respond
+            // to clicks
+            let acc = document.getElementsByClassName("accordion");
+        
+            for (let i = 0; i < acc.length; i++) {
+                acc[i].addEventListener("click", function() {
+                    this.classList.toggle("active");
+                    let panel = this.nextElementSibling;
+                    if (panel.style.display === "block") {
+                        panel.style.display = "none";
+                    } else {
+                        panel.style.display = "block";
+                    }
+                });
+            }
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+    {% block css %}{% endblock %}
+    <style>
+    .bs-example {
+        margin: 20px;
+    }
+    
+    /* Style the buttons that are used to open and close the accordion panel */
+    .accordion {
+        background-color: #eee;
+        color: #444;
+        cursor: pointer;
+        padding: 18px;
+        width: 100%;
+        text-align: left;
+        border: solid;
+        border-width: thin;
+        outline: none;
+        transition: 0.4s;
+    }
+
+    /* Style the accordion panel. Note: hidden by default */
+    .panel {
+        padding: 0 18px;
+        background-color: white;
+        display: none;
+        overflow: hidden;
+    }
+    
+    img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+    }
+</style>
+</head>
+
+<body>
+    <!--This is a row that contains the header with two images of the BDNF illustrations
+  on each side of the text-->
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xs-6-4">
+                <img src="/static/IDP_decor1.png" width="120" height="125">
+            </div>
+            <div class="col-xs-6">
+                <h2>The Protein Blobulator</h2>
+            </div>
+            <div class="col-xs-6">
+                <img src="/static/IDP_decor2.png" width="84" height="125">
+            </div>
+        </div>
+    </div>
+    <!--This creates a row to display the clickable toggling tabs for Home, About, Documentation, and FAQ-->
+    <div class="bs-example">
+        <ul class="nav nav-tabs justify-content-center" role="tablist">
+        {% block tablist %}{% endblock %}
+        </ul>
+        <div class="tab-content" style="padding-top: 1.5em">
+        {% block tabcontent %}{% endblock %}
+        </div>
+    </div>
+</body>
+​
+<!--footer for the page-->
+<footer>
+    <div class="container">
+        <p>Protein Blobulator &mdash; &copy; Brannigan Lab 2021</p>
+    </div>
+</footer>
+​
+
+</html>
