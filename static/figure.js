@@ -1,9 +1,8 @@
-// These constants set fixed values for height and width to be used in making all four visualizations
-const MARGIN = { top: 30, right: 230, bottom: 30, left: 50 };
-const GLOBAL_WIDTH = 1200 - MARGIN.left - MARGIN.right;
-const GLOBAL_HEIGHT = 200 - MARGIN.top - MARGIN.bottom;
-
 class Figure {
+	// These constants set fixed values for height and width to be used in making all four visualizations
+	MARGIN = { top: 30, right: 230, bottom: 30, left: 50 };
+	GLOBAL_WIDTH = 1200 - MARGIN.left - MARGIN.right;
+	GLOBAL_HEIGHT = 200 - MARGIN.top - MARGIN.bottom;
 
 	constructor(figID, data) {
 		//Sets the dimensions and location of the svg container
