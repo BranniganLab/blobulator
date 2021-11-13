@@ -1,10 +1,10 @@
 class Figure {
-	// These constants set fixed values for height and width to be used in making all four visualizations
-	MARGIN = { top: 30, right: 230, bottom: 30, left: 50 };
-	GLOBAL_WIDTH = 1200 - MARGIN.left - MARGIN.right;
-	GLOBAL_HEIGHT = 200 - MARGIN.top - MARGIN.bottom;
-
 	constructor(figID, data) {
+		// These constants set fixed values for height and width to be used in making all four visualizations
+		this.MARGIN = { top: 30, right: 230, bottom: 30, left: 50 };
+		this.GLOBAL_WIDTH = 1200 - this.MARGIN.left - this.MARGIN.right;
+		this.GLOBAL_HEIGHT = 200 - this.MARGIN.top - this.MARGIN.bottom;
+
 		//Sets the dimensions and location of the svg container
 		this.figID = figID;
 
@@ -14,18 +14,18 @@ class Figure {
 
 		this.svg = d3.select(this.container)
 			.append("svg")
-			.attr("width", GLOBAL_WIDTH + MARGIN.left + MARGIN.right)
-			.attr("height", GLOBAL_HEIGHT + MARGIN.top + MARGIN.bottom + 45)
+			.attr("width", this.GLOBAL_WIDTH + this.MARGIN.left + this.MARGIN.right)
+			.attr("height", this.GLOBAL_HEIGHT + this.MARGIN.top + this.MARGIN.bottom + 45)
 			.append("g")
-			.attr("transform", "translate(" + MARGIN.left + "," + MARGIN.top + ")");
+			.attr("transform", "translate(" + this.MARGIN.left + "," + this.MARGIN.top + ")");
 			
 		this.y = d3.scaleLinear()
 			.domain([0, 1])
-			.range([GLOBAL_HEIGHT, 0]);
+			.range([this.GLOBAL_HEIGHT, 0]);
 
 		// add the x Axis
 		this.x = d3.scaleBand()
-			.range([0, GLOBAL_WIDTH])
+			.range([0, this.GLOBAL_WIDTH])
 			.domain(data.map(function(d) { return d.resid; }))
 			.padding(0.2);
 			
@@ -37,8 +37,8 @@ class Figure {
 	add_title(title){
 	    // Creates the title
 		this.svg.append("text")
-			.attr("x", GLOBAL_WIDTH / 2)
-			.attr("y", MARGIN.top - 25)
+			.attr("x", this.GLOBAL_WIDTH / 2)
+			.attr("y", this.MARGIN.top - 25)
 			.style("text-anchor", "middle")
 			.text(title)
 			.attr("font-size", "20px")
@@ -92,7 +92,7 @@ class Figure {
 	RETURNS:
 		none
 	*/
-	add_tooltip(content="Place Holder", xpos=GLOBAL_WIDTH, ypos=MARGIN.top) {
+	add_tooltip(content="Place Holder", xpos=this.GLOBAL_WIDTH, ypos=this.MARGIN.top) {
 		this.infoIcon = document.createElement("div");
 		this.infoIcon.style.position = "absolute";
 		this.infoIcon.style.top = ypos + "px";
@@ -133,8 +133,8 @@ class Figure {
 		ylabel.append("text")
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
-			.attr("x", 0 - (GLOBAL_HEIGHT / 2) - 50)
-			.attr("y", MARGIN.left - 80)
+			.attr("x", 0 - (this.GLOBAL_HEIGHT / 2) - 50)
+			.attr("y", this.MARGIN.left - 80)
 			.attr("transform", "rotate(-90)")
 			.text("p");
 
@@ -142,8 +142,8 @@ class Figure {
 		ylabel.append("text")
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
-			.attr("x", 0 - (GLOBAL_HEIGHT / 2) - 20)
-			.attr("y", MARGIN.left - 80)
+			.attr("x", 0 - (this.GLOBAL_HEIGHT / 2) - 20)
+			.attr("y", this.MARGIN.left - 80)
 			.attr("transform", "rotate(-90)")
 			.text("s");
 
@@ -152,8 +152,8 @@ class Figure {
 		ylabel.append("text")
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
-			.attr("x", 0 - (GLOBAL_HEIGHT / 2) + 10)
-			.attr("y", MARGIN.left - 80)
+			.attr("x", 0 - (this.GLOBAL_HEIGHT / 2) + 10)
+			.attr("y", this.MARGIN.left - 80)
 			.attr("transform", "rotate(-90)")
 			.text("h");
 
@@ -167,8 +167,8 @@ class Figure {
 		this.svg.append("text")
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
-			.attr("x", 0 - (GLOBAL_HEIGHT / 2))
-			.attr("y", MARGIN.left - 80)
+			.attr("x", 0 - (this.GLOBAL_HEIGHT / 2))
+			.attr("y", this.MARGIN.left - 80)
 			.attr("transform", "rotate(-90)")
 			.text("Mean Hydropathy");
 
@@ -189,56 +189,56 @@ class Figure {
 		var legend = this.svg.append("g").attr("id", "legend")
 
 		legend.append("rect")
-			.attr("x", GLOBAL_WIDTH + offset)
-			.attr("y", MARGIN.top - 25)
+			.attr("x", this.GLOBAL_WIDTH + offset)
+			.attr("y", this.MARGIN.top - 25)
 			.attr('width', keysize)
 			.attr('height', keysize)
 			.style("fill", "#0f0")
 		legend.append("rect")
-			.attr("x", GLOBAL_WIDTH + offset)
-			.attr("y", MARGIN.top + 5)
+			.attr("x", this.GLOBAL_WIDTH + offset)
+			.attr("y", this.MARGIN.top + 5)
 			.attr('width', keysize)
 			.attr('height', keysize)
 			.style("fill", "#FEE882")
 		legend.append("rect")
-			.attr("x", GLOBAL_WIDTH + offset)
-			.attr("y", MARGIN.top + 35)
+			.attr("x", this.GLOBAL_WIDTH + offset)
+			.attr("y", this.MARGIN.top + 35)
 			.attr('width', keysize)
 			.attr('height', keysize)
 			.style("fill", "#BF72D2")
 		legend.append("rect")
-			.attr("x", GLOBAL_WIDTH + offset)
-			.attr("y", MARGIN.top + 65)
+			.attr("x", this.GLOBAL_WIDTH + offset)
+			.attr("y", this.MARGIN.top + 65)
 			.attr('width', keysize)
 			.attr('height', keysize)
 			.style("fill", "#f00")
 		legend.append("rect")
-			.attr("x", GLOBAL_WIDTH + offset)
-			.attr("y", MARGIN.top + 95)
+			.attr("x", this.GLOBAL_WIDTH + offset)
+			.attr("y", this.MARGIN.top + 95)
 			.attr('width', keysize)
 			.attr('height', keysize)
 			.style("fill", "#00f")
 				
 		//Text that appears to the right of the key    
 		legend.append("text")
-			.attr("x", GLOBAL_WIDTH + 50)
-			.attr("y", MARGIN.top - 15).text("Globular").style("font-size", "15px")
+			.attr("x", this.GLOBAL_WIDTH + 50)
+			.attr("y", this.MARGIN.top - 15).text("Globular").style("font-size", "15px")
 			.attr("alignment-baseline", "middle")
 		legend.append("text")
-			.attr("x", GLOBAL_WIDTH + 50)
-			.attr("y", MARGIN.top + 15).text("Janus/Boundary").style("font-size", "15px")
+			.attr("x", this.GLOBAL_WIDTH + 50)
+			.attr("y", this.MARGIN.top + 15).text("Janus/Boundary").style("font-size", "15px")
 			.attr("alignment-baseline", "middle")
 		legend.append("text")
-			.attr("x", GLOBAL_WIDTH + 50)
-			.attr("y", MARGIN.top + 45).text("Strong Polyelectrolyte").style("font-size", "15px")
+			.attr("x", this.GLOBAL_WIDTH + 50)
+			.attr("y", this.MARGIN.top + 45).text("Strong Polyelectrolyte").style("font-size", "15px")
 			.attr("alignment-baseline", "middle")
 		legend.append("text")
-			.attr("x", GLOBAL_WIDTH + 50)
-			.attr("y", MARGIN.top + 75).text("Strong Polyanion (-)").style("font-size", "15px")
+			.attr("x", this.GLOBAL_WIDTH + 50)
+			.attr("y", this.MARGIN.top + 75).text("Strong Polyanion (-)").style("font-size", "15px")
 			.attr("alignment-baseline", "middle")
 		legend.append("text")
-			.attr("x", GLOBAL_WIDTH + 50)
-			.attr("y", MARGIN.top + 105).text("Strong Polycation (+)").style("font-size", "15px")
+			.attr("x", this.GLOBAL_WIDTH + 50)
+			.attr("y", this.MARGIN.top + 105).text("Strong Polycation (+)").style("font-size", "15px")
 			.attr("alignment-baseline", "middle")
 
 		return this;
@@ -247,12 +247,12 @@ class Figure {
 	add_ContinuousLegend(cmap, {min='-1', med='0', max='+1', width=20, height=80}={min: '-1', med: '0', max: '+1', width: 20, height: 80}) {
 		switch(cmap) {
 			case "PuOr":
-				this.add_colorbar("PuOr", width, height, min, max, GLOBAL_WIDTH, GLOBAL_HEIGHT,
+				this.add_colorbar("PuOr", width, height, min, max, this.GLOBAL_WIDTH, this.GLOBAL_HEIGHT,
 					{ med: med, cend: '#7f3b08', cq3: '#ee9d3c', cmid: '#f6f6f7', ctop: '#2d004b' });
 				break;
 			case "RWB":
 				//Color bar key to the right of the enrichment plot.
-				this.add_colorbar("RWB", width, height, min, max, GLOBAL_WIDTH, GLOBAL_HEIGHT,
+				this.add_colorbar("RWB", width, height, min, max, this.GLOBAL_WIDTH, this.GLOBAL_HEIGHT,
 					{ med: med, cend: '#ff0000', cmid: '#f4f4ff', ctop: '#0000ff' });
 				break;
 			default:
@@ -269,12 +269,12 @@ class Figure {
 	add_ncprContinuousLegend(cmap, {min='-1', med='0', max='+1', width=20, height=80}={min: '-0.5', med: '0', max: '+0.5', width: 20, height: 80}) {
 		switch(cmap) {
 			case "PuOr":
-				this.add_colorbar("PuOr", width, height, min, max, GLOBAL_WIDTH, GLOBAL_HEIGHT,
+				this.add_colorbar("PuOr", width, height, min, max, this.GLOBAL_WIDTH, this.GLOBAL_HEIGHT,
 					{ med: med, cend: '#7f3b08', cq3: '#ee9d3c', cmid: '#f6f6f7', ctop: '#2d004b'});
 				break;
 			case "RWB":
 				//Color bar key to the right of the enrichment plot.
-				this.add_colorbar("RWB", width, height, min, max, GLOBAL_WIDTH, GLOBAL_HEIGHT,
+				this.add_colorbar("RWB", width, height, min, max, this.GLOBAL_WIDTH, this.GLOBAL_HEIGHT,
 					{ med: med, cend: '#ff0000', cmid: '#f4f4ff', ctop: '#0000ff' });
 				break;
 			default:
@@ -397,7 +397,7 @@ class Figure {
 			.attr("x", (d) => x(d.resid))
 			.attr("y", (d) => y(d.hydropathy_3_window_mean))
 			.attr("width", x.bandwidth())
-			.attr("height", (d) => GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean))
+			.attr("height", (d) => this.GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean))
 			.attr("fill", 'grey')
 
 		return this
@@ -407,12 +407,12 @@ class Figure {
 		this.xAxis = this.svg.append("g")
 						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
 						   (Math.round((Math.round(domain_threshold_max/10))/10)*10) )})))
-						.attr("transform", "translate(0," + GLOBAL_HEIGHT + ")");
+						.attr("transform", "translate(0," + this.GLOBAL_HEIGHT + ")");
 		// Bars
 		//Creates the "Residue" x-axis label
 		this.svg.append("text")
-			.attr("x", GLOBAL_WIDTH / 2)
-			.attr("y", GLOBAL_HEIGHT + MARGIN.bottom)
+			.attr("x", this.GLOBAL_WIDTH / 2)
+			.attr("y", this.GLOBAL_HEIGHT + this.MARGIN.bottom)
 			.style("text-anchor", "middle")
 			.text("Residue")
 
@@ -424,13 +424,13 @@ class Figure {
 		this.xAxis = this.svg.append("g")
 						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
 						   (Math.round((Math.round(domain_threshold_max/10))/10)*10) )})))
-						.attr("transform", "translate(0," + GLOBAL_HEIGHT + ")")
+						.attr("transform", "translate(0," + this.GLOBAL_HEIGHT + ")")
 						.attr("transform", "translate(0, 165)");
 		// Bars
 		//Creates the "Residue" x-axis label
 		this.svg.append("text")
-			.attr("x", GLOBAL_WIDTH / 2)
-			.attr("y", GLOBAL_HEIGHT + MARGIN.bottom + 40)
+			.attr("x", this.GLOBAL_WIDTH / 2)
+			.attr("y", this.GLOBAL_HEIGHT + this.MARGIN.bottom + 40)
 			.style("text-anchor", "middle")
 			.text("Residue")
 
@@ -447,7 +447,7 @@ class Figure {
 		this.bars = this.plot_variable.enter().append("rect");
 		this.bars.attr("width", x.bandwidth())
 			.attr("x", (d) => x(d.resid))
-			.attr("y", GLOBAL_HEIGHT)
+			.attr("y", this.GLOBAL_HEIGHT)
 		this.update_bars(this.data, timing);
 
 		return this;
@@ -462,7 +462,7 @@ class Figure {
 			this.bars.transition()
 				.duration(timing)
 				.attr("y", (d) => y(d.hydropathy_3_window_mean))
-				.attr("height", (d) => GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean));
+				.attr("height", (d) => this.GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean));
 			this.bars.attr("fill", 'grey');
 		} else {
 			// Lookup table for color attribute of our data as a function of the plot name.
@@ -473,7 +473,7 @@ class Figure {
 			this.bars.transition()
 				.duration(timing)
 				.attr("y", (d) => y(d.domain_to_numbers))
-				.attr("height", (d) => GLOBAL_HEIGHT - y(d.domain_to_numbers))
+				.attr("height", (d) => this.GLOBAL_HEIGHT - y(d.domain_to_numbers))
 				.attr("fill", (d) => d[figID_to_var[this.figID]]);
 		}
 		return this;
@@ -493,7 +493,7 @@ class Figure {
 				.y((d) => y(d.domain_for_skyline))
 			);
 
-		return this
+		return this;
 	}
 
 
