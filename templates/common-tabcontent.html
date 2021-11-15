@@ -38,10 +38,10 @@
 
 <!--About Page Contents-->
 <div class="tab-pane fade" id="about">
-    <h4 class="mt-2">Welcome to the Protein Blobulator</h4>
-    <p>The Protein Blobulator is an online resource developed at The<a href="https://branniganlab.wordpress.com/news-2/" target="_blank"> Brannigan Lab</a> at Rutgers-Camden Center for Computational and Integrative Biology. The goal of the Protein Blobulator is to annotate and illustrate subdomains of proteins that have distinct physical properties from each other, and make predictions about how these distinctions have functional effects. <br> <br> The information provided on this website spans any protein sequence or Uniprot ID, but it is especially useful for Intrinsically Disordered Proteins. This website also provides information about Disease-associated SNPs that have been obtained from the <a href="https://www.ncbi.nlm.nih.gov/clinvar/" target="_blank">Clin Var</a> database.</p>
+    <h4 class="mt-2">Welcome to the Blobulator</h4>
+    <p>Blobulation is an approach for edge-detection in protein sequences based on contiguous hydrophobicity, originally developed [link to BDNF paper] by the Brannigan Lab (link) for a specific long intrinsically disordered protein (the prodomain of BDNF). The blobulator allows the user to blobulate any sequence, and visualize the results while adjusting the two blobulation parameters to detect more edges for higher-resolution ("zooming-in") or detect fewer edges for a more tractable visualization ("zooming-out").</p>
     <br><br>
-    <p> What is blobulation? The nomenclature used here comes from polymer physics, where the segments of a polypeptide chain are grouped together into interaction domains, where the residues within a certain region of the protein can be expected to behave in a relatively predictable way (de Gennes, 1979). Blobs here are determined by defining regions of contihuously hydrophobic residues, and the regions of non-hydrophobic residues that span between. A blob is a contiguous stretch of either hydrophobic or non-hydrophobic residues, and were first classified by the ways that they "stuck" together. While many softwares exist that consider charge, disorder, or conformational states of proteins, the blobulator considers hydrophobicity and its role in the determination of regions of a protein. <a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007390" target="_blank">This has been shown already to be a powerful tool for analysis of different domains of the BDNF protein</a>, the research within which this tool was developed. </p>
+    <p> A stretch of residues between two edges are called blobs, inspired by the terminology in polymer physics. The blobulator also characterizes each blob based on several collective properties of the blob residues, including hydrophobicity, net charge, globular tendency (Das-Pappu phase), distance from the Uversky boundary, and sensitivity to mutation. These properties are also dynamically adjusted as the user increases or decreases resolution of the sequence. For human proteins, users will also see the location of disease-associated single nucleotide polymorphisms (SNPs). </p>
     <br><br> For bug reports, feature requests, or anything else please contact at connor.pitman@rutgers.edu or grace.brannigan@rutgers.edu.</p>
     <br>Citing the Blobulator<br> <p>A manuscript is currently in preparation. For now, please cite analysis done with Blobulator using the abstract from the Biophysical Society meetingas follows: Article (Lohia2020) Lohia, R.; Bassi, K.; Hansen, M. & Brannigan, G. (2020). Disease Associated Mutations in Intrinsically Disordered Proteins Show Evidence of Enrichment in Hydrophobic Blobs. Biophysical Journal, Elsevier BV,118, 215a.</p>
 
@@ -113,6 +113,14 @@
 <div class="tab-pane fade" id="FAQ">
     <h4 class="mt-2">Frequently Asked Questions:</h4>
 
+    <button class="accordion">&#10133 Why do you call them blobs?</button>
+    <div class="panel">
+    <p>The nomenclature used here comes from polymer physics, where the segments of a polypeptide chain are grouped together into interaction domains, where the residues within a certain region of the protein can be expected to behave in a relatively predictable way (de Gennes, 1979). Blobs here are determined by defining regions of contihuously hydrophobic residues, and the regions of non-hydrophobic residues that span between. A blob is a contiguous stretch of either hydrophobic or non-hydrophobic residues, and were first classified by the ways that they "stuck" together. </p>
+    </div>
+    <button class="accordion">&#10133 What is the evidence that blobulation is useful?</button>
+    <div class="panel">
+    <p>While many softwares exist that consider charge, disorder, or conformational states of proteins, the blobulator considers hydrophobicity and its role in the determination of regions of a protein. <a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007390" target="_blank"> This has been shown already to be a powerful tool for analysis of different domains of the BDNF protein </a>, the research within which this tool was developed. </p>
+    </div>
     <button class="accordion">&#10133 What does the blobulator output?</button>
     <div class="panel">
     <p>The blobulator outputs 6 graphs showing categorizations of its subdomains. Each graph shows the sequence of the protein displayed in one of the following ways: smoothed hydropathy per residue, colored according to globular tendency, colored according to net charge per residue, colored according to the Uversky diagram, colored according to dSNP enrichment, colored according to fraction of disordered residue.</p>
