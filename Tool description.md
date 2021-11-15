@@ -21,6 +21,4 @@ If the user inputs uniprot id, it further makes following calls
 **compute_blobs.py** is called from blobulation.py with the sequence and its features (when present) to blobulate the protein. This script takes the amino acid sequence as input and outputs the blob properties for each residue. It also contains function for plotting the downloadable version of the plot.
 The output of compute_blobs.py (dataframe of blobulated sequence) is then passed to index.html for plotting with d3. 
 
-**index.html** - This script uses javascript to interact with the html elements and draws and updates the blobulated protein. Each time the user changes the input values (moves the slider) the script makes a call to its own api function written in blobulation.py. The api function calls compute_blobs.py with updated input parameters.
-
-**tabs.html** - HTML layout of the blobulator page including documentation and tabs.
+**index.html**, **result.html**, **figure.js**, etc. - Website providing a user interface for blobulation of proteins. The user may specify a UniProt ID or a protein sequence. Updates in real time as user changes parameters, fetching results from the web API implemented in blobulation.py, which uses compute_blobs.py under the hood.
