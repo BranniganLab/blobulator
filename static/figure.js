@@ -555,7 +555,23 @@ class Figure {
 	}
 
 
-	add_skyline(x=this.x, y=this.y) {
+	add_skyline(data, x=this.x, y=this.y) {
+		this.skyline = this.svg.append("g")
+		var sky_points = function(d) { return y(d.domain_to_numbers); }
+		const skyline_x = [] ; 
+		const skyline_y = [] ;
+
+		for(let i = 0; i < sky_points.length; i++){
+			var last_res = sky_points[i-1]
+			var this_res = sky_points[i]
+		if (last_res != this_res) {
+			skyline_x.push(i)
+			skyline_y.push(last_res)
+			skyline_x.push(i)
+			skyline_x.push(this_res)
+			} ; 
+		} ; 
+		console.log(skyline_y)
 		this.skyline = this.svg.append('g')
 			.append("path")
 			.attr("class", "mypath")
@@ -564,12 +580,10 @@ class Figure {
 			.attr("stroke", "black")
 			.attr("stroke-width", 1.5)
 			.attr("d", d3.line()
-				.x(function(d) { return x(d.resid) })
-				.y(function(d) { return y(d.domain_for_skyline) })
+				.x(skyline_x)
+				.y(skyline_y)
 			);
 
 		return this
 	}
-
-
 }
