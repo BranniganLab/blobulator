@@ -19,7 +19,7 @@ class InputForm(Form):
         label='Sequence:', widget=TextArea(), default='MDVFMKGLSKAKEGVVAAAEKTKQGVAEAAGKTKEGVLYVGSKTKEGVVHGVATVAEKTKEQVTNVGGAVVTGVTAVAQKTVEGAGSIAAATGFVKKDQLGKNEEGAPQEGILEDMPVDPDNEAYEMPSEEGYQDYEPEA',
         )
     seq_name = StringField(
-        label='Seq name:', widget=TextArea(), default='Alpha-synuclein',
+        label='Seq name:', widget=TextArea(), default='Sequence Name',
         )
     def validate_name(form, field):
         if len(field.data) > 3:

@@ -48,6 +48,44 @@
         margin: 20px;
     }
     
+    #page-container {
+      position: relative;
+      min-height: 100vh;
+    }
+
+    #content-wrap {
+      padding-bottom: 2.5rem;    /* Footer height */
+    }
+
+    #footer {
+      position: absolute;
+      bottom: 0;
+      text-align: center;
+      width: 100%;
+      height: 2.5rem;            /* Footer height */
+    }
+
+    .form-group {
+        text-align: justify;
+    }
+
+    .col-sm{
+        padding-left: 40px;
+        padding-right: 40px;
+    }
+
+    .btn {
+        display: block;
+        margin: auto;
+    }
+
+    .container-fluid {
+        position: relative;
+        display:  block;
+        margin: auto;
+        width: 90%;
+    }
+
     /* Style the buttons that are used to open and close the accordion panel */
     .accordion {
         background-color: #eee;
@@ -69,7 +107,12 @@
         display: none;
         overflow: hidden;
     }
+
+    .text-monospace {
+        font-family: monospace;
+    }
     
+
     img {
         display: block;
         margin-left: auto;
@@ -79,32 +122,35 @@
 </head>
 
 <body>
-    <!--This is a row that contains the header with two images of the BDNF illustrations
-  on each side of the text-->
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-xs-6-4">
-                <img src="/static/header.png" width="650" height="150">
+    <div id="page-container">
+        <div id="content-wrap">
+            <!--This is a row that contains the header with two images of the BDNF illustrations
+          on each side of the text-->
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="col-xs-6-4">
+                        <img src="/static/header.png" width="650" height="150">
+                    </div>
+                </div>
+            </div>
+            <!--This creates a row to display the clickable toggling tabs for Home, About, Documentation, and FAQ-->
+            <div class="bs-example">
+                <ul class="nav nav-tabs justify-content-center" role="tablist">
+                {% block tablist %}{% endblock %}
+                </ul>
+                <div class="tab-content" style="padding-top: 1.5em">
+                {% block tabcontent %}{% endblock %}
+                </div>
             </div>
         </div>
-    </div>
-    <!--This creates a row to display the clickable toggling tabs for Home, About, Documentation, and FAQ-->
-    <div class="bs-example">
-        <ul class="nav nav-tabs justify-content-center" role="tablist">
-        {% block tablist %}{% endblock %}
-        </ul>
-        <div class="tab-content" style="padding-top: 1.5em">
-        {% block tabcontent %}{% endblock %}
-        </div>
+        <!--footer for the page-->
+        <footer id="footer">
+            <p>Protein Blobulator &mdash; &copy; Brannigan Lab 2021</p>
+        </footer>
     </div>
 </body>
 ​
-<!--footer for the page-->
-<footer>
-    <div class="container">
-        <p>Protein Blobulator &mdash; &copy; Brannigan Lab 2021</p>
-    </div>
-</footer>
+
 ​
 
 </html>
