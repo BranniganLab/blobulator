@@ -189,17 +189,13 @@ $(document).ready( function() {
 
 	// Update the output when parameters are changed
 	function do_update(figs, data) {
-		// If the box is check, I mutate the amino acid
+        let my_seq = {{ my_seq | safe }};
+		// If the box is checked, I mutate the amino acid
 		if(d3.select("#mutatebox").property("checked")){
 			const snp_id = document.getElementById("snp_id").value;
-			const my_seq = {{ my_seq | safe }};
-			my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
 			const amino_acid = document.getElementById("residue_type").value;
-
-		// Otherwise I revert back to wild sequence initially uploaded
-		} else {
-			const my_seq = {{ my_seq | safe }};
-		}
+			my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
+		} 
 
 		const d_value = d3.select("#domain_threshold_user").text();
 		const selectedValue = d3.select("#cutoff_user").text();
