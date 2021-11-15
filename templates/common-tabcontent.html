@@ -1,33 +1,31 @@
 <div class="tab-pane container" id="home">
-    <h5 class="text-center">Please enter the <a href="https://www.uniprot.org" target="_blank"> Uniprot ID </a> or amino acid sequence for blobulation.</h5>
-    <br>
-    <br>
+
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm-4">
+            <div class="col-sm">
                 <!--form-->
                 <div class="form-group">
                     <form class="navbar-form navbar-top" method=post target="_blank" action="">
-                        <label> {{form.uniprot_id.label }}</label>
-                        <p> The UniProtKB accession number is the unique alphanumeric identifier of each entry in UniProtKB. </p>
+                        <h5 class="text-center"> Option 1: Uniprot Entry</h5>
+                        <br>
+                        <p>Enter a <a href="https://www.uniprot.org" target="_blank"> Uniprot ID</a> for your protein.</p>
+                        <p>Note: Please make sure to use the ID for the human protein if you also want to see the location of disease-associated mutations. </p>
                         <!--form.uniprot_id calls the Uniprot ID field in model_2.py -->
                         <p> {{ form.uniprot_id(class_="form-control", rows="1")}}</p>
+                        <p>This option takes about 30 seconds to fetch SNP and disorder data, but may take longer.</p> 
                         <p><input type=submit name="action_u" class="btn btn-primary" value="Compute"></p>
                     </form>
                 </div>
             </div>
-            <div class="col-sm-2 align-self-center">
-                <div class="text-center"><h2>or</h2></div>
-            </div>
-            <div class="col-sm-4">
+            <div class="col-sm">
                 <div class="form-group">
                     <form class="navbar-form navbar-top" method=post target="_blank" action="">
-                        <label> {{form.aa_sequence.label }}</label>
-                        <p> Input any sequence of your choosing. </p>
-                        <p> Certain outputs, such as SNP identification and display of blobs according to fraction of disordered residue, will be omitted. Blobulation using Uniprot ID is recommended. <p>
-                        <p> {{ form.aa_sequence(class_="form-control", rows="5")}}</p>
-                        <label> {{form.seq_name.label }}</label>
-                        <p> Enter any name for your sequence of choice. </p>
+                        <h5 class="text-center"> Option 2: Manual Entry </h5>
+                        <br>
+                        <p> Input the protein sequence directly. </p>
+                        <p> Note: Disease-associated SNPs and disorder prediction are based on Uniprot annotation and will not be displayed with this option. </p>
+                        <p class="text-monospace"> {{ form.aa_sequence(class_="form-control", rows="4")}}</p>
+                        <p> Enter a name for this sequence (optional):</p>
                         <p> {{ form.seq_name(class_="form-control", rows="1")}} </p>
                         <p><input type=submit name="action_s" class="btn btn-primary" value="Compute"></p>
                     </form>

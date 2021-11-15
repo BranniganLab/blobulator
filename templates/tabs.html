@@ -220,7 +220,7 @@ img {
                             <div class="form-group">
                                 <form class="navbar-form navbar-top" method=post target="_blank" action="">
                                     <label> {{form.uniprot_id.label }}</label>
-                                    <p> The UniProtKB accession number is the unique alphanumeric identifier of each entry in UniProtKB. </p>
+                                    <p> Option 1: Enter a <a href="https://www.uniprot.org" target="_blank"> Uniprot ID </a> </p>
                                     <!--form.uniprot_id calls the Uniprot ID field in model_2.py -->
                                     <p> {{ form.uniprot_id(class_="form-control", rows="1")}}</p>
                                     <p><input type=submit name="action_u" class="btn btn-primary" value="Compute"></p>
@@ -231,20 +231,16 @@ img {
                                 </form>
                             </div>
                         </div>
-                        <div class="col-sm-2 align-self-center">
-                            <div class="text-center">
-                                <h2>Or</h2>
-                            </div>
-                        </div>
                         <div class="col-sm-4">
                             <div class="form-group">
                                 <form class="navbar-form navbar-top" method=post target="_blank" action="">
                                     <label> {{form.aa_sequence.label }}</label>
-                                    <p> Input any sequence of your choosing. </p>
-                                    <p> The user should note that if they choose to enter their sequence manually that certain outputs, such as SNP identification and display of blobs according to fraction of disordered residue, will be omitted. Blobulation using Uniprot ID is recommended. <p>
+                                    <p> Option 2: Manual Entry </p>
+                                    <p> Input the protein sequence directly. </p>
+                                    <p> Note: Disease-associated SNPs and disorder prediction are based on Uniprot annotation and will not be displayed with this option. </p>
                                     <p> {{ form.aa_sequence(class_="form-control", rows="5")}}</p>
                                     <label> {{form.seq_name.label }}</label>
-                                    <p> Enter any name for your sequence of choice. </p>
+                                    <p> Enter a name for this sequence (optional)</p>
                                     <p> {{ form.seq_name(class_="form-control", rows="1")}} </p>
                                     <p><input type=submit name="action_s" class="btn btn-primary" value="Compute"></p>
                                     <p>
