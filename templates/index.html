@@ -383,6 +383,7 @@ function draw(data) {
 		.add_snps()
 		.add_psh_ylabel()
 		.add_xAxis()
+		.add_skyline()
 	} else {
 		figs.globFig = new Figure("globPlot", data)
 		.add_title("Blobs colored according to globular tendency")
@@ -392,6 +393,7 @@ function draw(data) {
 		.add_snps()
 		.add_psh_ylabel()
 		.add_snp_xAxis() //special snp xaxis
+		.add_skyline()
 	}
 
 	if (my_disorder == "0") {
@@ -403,6 +405,7 @@ function draw(data) {
 		.add_snps()
 		.add_psh_ylabel()
 		.add_xAxis()
+		.add_skyline()
 	} else {
 		figs.ncprFig = new Figure("ncprPlot", data)
 		.add_title("Blobs colored according to net charge per residue")
@@ -412,6 +415,7 @@ function draw(data) {
 		.add_snps()
 		.add_psh_ylabel()
 		.add_snp_xAxis() //special snp xaxis
+		.add_skyline()
 	}
 
 	if (my_disorder == "0") {
@@ -423,6 +427,7 @@ function draw(data) {
 		.add_snps()
 		.add_psh_ylabel()
 		.add_xAxis()
+		.add_skyline()
 	} else {
 		figs.uverskyFig = new Figure("uverskyPlot", data)
 		.add_title("Blobs colored according to Uversky diagram")
@@ -432,6 +437,7 @@ function draw(data) {
 		.add_snps()
 		.add_psh_ylabel()
 		.add_snp_xAxis() //special snp xaxis
+		.add_skyline()
 	}
 
 	if (my_disorder == "0") {
@@ -453,6 +459,7 @@ function draw(data) {
 		.add_snps()
 		.add_psh_ylabel()
 		.add_snp_xAxis() //special snp xaxis
+		.add_skyline()
 	}
 
 	if (my_disorder == "0") {
@@ -468,6 +475,7 @@ function draw(data) {
 			.add_snps()
 			.add_psh_ylabel()
 			.add_snp_xAxis() 
+			.add_skyline()
     }
 
     var str_j = "Download data!";

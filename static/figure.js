@@ -585,8 +585,8 @@ add_skyline(data=this.data, x=this.x, y=this.y) {
 			.attr("class", "mypath")
 			.datum(points)
 			.attr("fill", "none")
-			.attr("stroke", "black")
-			.attr("stroke-width", 1.5)
+			.attr("stroke", "gray")
+			.attr("stroke-width", 1.0)
 			.attr("d", d3.line()
 				.x(function (d) {
 					// Extend the final line segment all the way to the right
