@@ -480,18 +480,48 @@ class Figure {
 	}
 
 
-	add_skyline(x=this.x, y=this.y) {
-		this.skyline = this.svg.append('g')
-			.append("path")
+	add_skyline(data=this.data, x=this.x, y=this.y) {
+		// We should have at least two data points to draw a line
+		if(data.length < 2) {
+			return;
+		}
+
+		// Start the line in the correct spot
+		let points = [{resid: data[0].resid, height: data[0].domain_to_numbers}];
+
+		// Find the edges of each "skyscraper"
+		for(let i = 1; i < data.length; i++){
+			let last_res = data[i-1].domain_to_numbers;
+			let this_res = data[i].domain_to_numbers;
+			let resid = data[i].resid;
+			if (last_res != this_res) {
+				points.push({resid: resid, height: last_res});
+				points.push({resid: resid, height: this_res});
+			} 
+		}
+
+		// Last line segment
+		const last_resid = data[data.length-1].resid;
+		points.push({resid: last_resid,
+			height: data[data.length-1].domain_to_numbers});
+
+		this.skyline = this.svg.append('g');
+		this.skyline.append("path")
 			.attr("class", "mypath")
-			.datum(this.data)
+			.datum(points)
 			.attr("fill", "none")
-			.attr("stroke", "black")
-			.attr("stroke-width", 1.5)
+			.attr("stroke", "grey")
+			.attr("stroke-width", 1.0)
 			.attr("d", d3.line()
-				.x((d) => x(d.resid))
-				.y((d) => y(d.domain_for_skyline))
-			);
+				.x(function (d) {
+					// Extend the final line segment all the way to the right
+					if(d.resid == last_resid) {
+						return x(d.resid) + x.bandwidth();
+					} else {
+						return x(d.resid);
+					}
+				})
+				.y((d) => y(d.height)));
 
 		return this;
 	}

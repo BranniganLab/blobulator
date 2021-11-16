@@ -229,7 +229,8 @@ $(document).ready( function() {
 			.add_GlobularLegend()
 			.build_barChart()
 			.add_snps(my_snp, Tooltip_snps)
-			.add_psh_ylabel();
+			.add_psh_ylabel()
+			.add_skyline();
 
 		figs.ncprFig = new Figure("ncprPlot", data)
 			.add_title("Blobs colored according to net charge per residue")
@@ -237,7 +238,8 @@ $(document).ready( function() {
 			.add_ContinuousLegend("RWB", {min: "-0.5", med: "0.0", max: "+0.5"})
 			.build_barChart()
 			.add_snps(my_snp, Tooltip_snps)
-			.add_psh_ylabel();
+			.add_psh_ylabel()
+			.add_skyline();
 
 		figs.uverskyFig = new Figure("uverskyPlot", data)
 			.add_title("Blobs colored according to Uversky diagram")
@@ -245,7 +247,8 @@ $(document).ready( function() {
 			.add_ContinuousLegend("PuOr", {min: "-1.0", med: "0.0", max: "+1.0"})
 			.build_barChart()
 			.add_snps(my_snp, Tooltip_snps)
-			.add_psh_ylabel();
+			.add_psh_ylabel()
+			.add_skyline();
 
 		figs.richFig = new Figure("richPlot", data)
 			.add_title("Blobs colored according to dSNP enrichment")
@@ -253,7 +256,8 @@ $(document).ready( function() {
 			.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"})
 			.build_barChart()
 			.add_snps(my_snp, Tooltip_snps)
-			.add_psh_ylabel();
+			.add_psh_ylabel()
+			.add_skyline()
 
 		const domain_threshold_max = {{ domain_threshold_max | safe }};
 		for(const fig of [figs.globFig, figs.pathyFig, figs.ncprFig, figs.uverskyFig, figs.richFig]) {
@@ -276,7 +280,8 @@ $(document).ready( function() {
 				.build_barChart()
 				.add_snps(my_snp)
 				.add_psh_ylabel()
-				.add_snp_xAxis(domain_threshold_max);
+				.add_snp_xAxis(domain_threshold_max)
+				.add_skyline();
 		}
 
 		var str_j = "Download data!";
