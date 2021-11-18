@@ -209,14 +209,6 @@ def h_blob_enrichments_numerical(x):
 def count_var(x, v):
     return x.values.tolist().count(v) / (x.shape[0] * 1.0)
 
-def domain_to_skyline_numbers(x):
-    """convert domains to skyline height for javascript display"""
-    if x[0][0] == "p":
-        return 0.2
-    elif x[0][0] == "h":
-        return 0.6
-    else:
-        return 0.3
 
 def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
 
@@ -319,9 +311,6 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
 
     df["domain_to_numbers"] = df[["domain", "hydropathy"]].apply(
         domain_to_numbers, axis=1)
-    df["domain_for_skyline"] = df[["domain", "hydropathy"]].apply(
-        domain_to_skyline_numbers, axis=1)
-
 
     # ..........................Define domain names.........................................................#
     df['domain'] =  df['domain'].groupby(df['domain'].ne(df['domain'].shift()).cumsum()).apply(lambda x: f3(x, domain_threshold))

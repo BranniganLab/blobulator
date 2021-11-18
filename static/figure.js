@@ -525,6 +525,4 @@ class Figure {
 
 		return this;
 	}
-
-
 }
