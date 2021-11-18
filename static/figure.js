@@ -480,7 +480,11 @@ class Figure {
 	}
 
 
+<<<<<<< HEAD
 	add_skyline(data=this.data, x=this.x, y=this.y) {
+=======
+add_skyline(data=this.data, x=this.x, y=this.y) {
+>>>>>>> d9f28307ef0744dcd1f87a74bc985add1609660a
 		// We should have at least two data points to draw a line
 		if(data.length < 2) {
 			return;
@@ -510,7 +514,11 @@ class Figure {
 			.attr("class", "mypath")
 			.datum(points)
 			.attr("fill", "none")
+<<<<<<< HEAD
 			.attr("stroke", "grey")
+=======
+			.attr("stroke", "gray")
+>>>>>>> d9f28307ef0744dcd1f87a74bc985add1609660a
 			.attr("stroke-width", 1.0)
 			.attr("d", d3.line()
 				.x(function (d) {
@@ -525,6 +533,4 @@ class Figure {
 
 		return this;
 	}
-
-
 }
