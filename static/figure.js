@@ -92,7 +92,7 @@ class Figure {
 	RETURNS:
 		none
 	*/
-	add_tooltip(content="Place Holder", xpos=this.GLOBAL_WIDTH, ypos=this.MARGIN.top) {
+	add_tooltip(content="Place Holder", xpos=this.GLOBAL_WIDTH, ypos=this.MARGIN.top - 20) {
 		this.infoIcon = document.createElement("div");
 		this.infoIcon.style.position = "absolute";
 		this.infoIcon.style.top = ypos + "px";
@@ -320,16 +320,15 @@ class Figure {
 	/* add_snps
 	*/
 	add_snps(my_snp, tooltip_snps, x=this.x, y=this.y) {
+		var arc = d3.symbol().type(d3.symbolTriangle)
 		this.svg.append('g')
 			.selectAll("rect")
 			//.data(my_disorder.map(function(d) { return +d; }))
 			.data(my_snp)
 			.enter()
-			.append("rect")
-			.attr("x", function(d) { return x((d.resid)); })
-			.attr("y", function(d) { return y(0); })
-			.attr("width", x.bandwidth())
-			.attr("height", function(d) { return y(0.84); })
+			.append("path")
+			.attr('d', arc)
+			.attr("transform", function(d) {return "translate(" + x((d.resid)) +", 145)"})
 			.attr("fill", 'black')
 			.on("click", function(d) {
 				//window.location.href = d.xrefs[0].url+'_blank'
@@ -425,7 +424,7 @@ class Figure {
 						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
 						   (Math.round((Math.round(domain_threshold_max/10))/10)*10) )})))
 						.attr("transform", "translate(0," + this.GLOBAL_HEIGHT + ")")
-						.attr("transform", "translate(0, 165)");
+						.attr("transform", "translate(0, 155)");
 		// Bars
 		//Creates the "Residue" x-axis label
 		this.svg.append("text")
