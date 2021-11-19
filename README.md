@@ -5,7 +5,7 @@ This tool identifies contiguous stretches of hydrophobic residues within a prote
 ## Software requirements:
 
 ```
-Python 3+
+Python 3.9+
 ```
 ## Python dependencies:
 
@@ -24,6 +24,23 @@ Download from github:
 ```
 git clone https://github.com/BranniganLab/blobulator
 ```
+
+## Steps for running blobulator locally:
+install conda
+conda create --name blobulator_env python=3.9
+conda activate blobulator_env
+pip install wtforms
+pip install pandas
+pip install matplotlib
+pip install flask
+pip install flask_restful
+pip install flask_cors
+pip install flask_session
+pip install requests
+pip install svglib
+python blobulation.py
+
+
 ## Demo:
 
 To blobulate default sequence with default blobulation parameters of hydrophobicity threshold and minimum blob length:
