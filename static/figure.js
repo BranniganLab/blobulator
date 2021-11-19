@@ -453,7 +453,7 @@ class Figure {
 	}
 	
 	update_bars(data, timing=1000, x=this.x, y=this.y) {
-	
+		this.data = data;
 		this.plot_variable.enter().selectAll("rect").data(data);
 		
 		// The hydropathy plot requires special colors
@@ -474,6 +474,9 @@ class Figure {
 				.attr("y", (d) => y(d.domain_to_numbers))
 				.attr("height", (d) => this.GLOBAL_HEIGHT - y(d.domain_to_numbers))
 				.attr("fill", (d) => d[figID_to_var[this.figID]]);
+			
+			// Update/add the corresponding skyline, in a potentially ugly way
+			this.add_skyline();
 		}
 		return this;
 	}
@@ -483,6 +486,11 @@ class Figure {
 		// We should have at least two data points to draw a line
 		if(data.length < 2) {
 			return;
+		}
+		
+		// Do we already have a skyline? Remove it
+		if(this.skyline !== undefined) {
+			this.skyline.remove();
 		}
 
 		// Start the line in the correct spot
