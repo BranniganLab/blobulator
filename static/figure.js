@@ -328,7 +328,7 @@ class Figure {
 			.enter()
 			.append("path")
 			.attr('d', arc)
-			.attr("transform", function(d) {return "translate(" + x((d.resid)) +", 145)"})
+			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 145)")
 			.attr("fill", 'black')
 			.on("click", function(d) {
 				//window.location.href = d.xrefs[0].url+'_blank'
