@@ -26,6 +26,7 @@ git clone https://github.com/BranniganLab/blobulator
 ```
 
 ## Steps for running blobulator locally:
+```
 install conda
 conda create --name blobulator_env python=3.9
 conda activate blobulator_env
@@ -39,7 +40,7 @@ pip install flask_session
 pip install requests
 pip install svglib
 python blobulation.py
-
+```
 
 ## Demo:
 
