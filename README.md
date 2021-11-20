@@ -30,15 +30,7 @@ git clone https://github.com/BranniganLab/blobulator
 install conda
 conda create --name blobulator_env python=3.9
 conda activate blobulator_env
-pip install wtforms
-pip install pandas
-pip install matplotlib
-pip install flask
-pip install flask_restful
-pip install flask_cors
-pip install flask_session
-pip install requests
-pip install svglib
+pip install -r requirements.txt
 python blobulation.py
 ```
 
