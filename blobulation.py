@@ -273,12 +273,29 @@ def calc_json():
     del df["disorder_color"]
     del df["hydropathy_3_window_mean"] 
     del df["hydropathy_digitized"] 
-    del df["hydropathy"]
+    #del df["hydropathy"]
     del df["charge"]
     del df["domain_to_numbers"]
     df['resid'] = df['resid'].astype(int)
-    df = df[['seq_name', 'resid', 'window', 'm_cutoff', 'domain_threshold', 'H', 'blobtype', 'domain', 'blob_charge_class', 'NCPR', 'f+', 'f-', 'fcr', 'U_diagram', 'h_numerical_enrichment', 'disorder']]
-    df = df.rename(columns={'seq_name': 'Residue Name', 'resid': 'Residue Number', 'disorder': 'Blob Disorder', 'window': 'Window', 'm_cutoff': 'Hydropathy Cutoff', 'domain_threshold': 'Minimum Blob Length', 'blobtype':'Blob Type', 'H': '<H>', 'domain': 'Blob Index Number', 'NCPR': 'Blob NCPR', 'f+': "Fraction of Positively Charged Residues", 'f-': "Fraction of Negatively Charged Residues", 'fcr': 'Fraction of Charged Residues', 'h_numerical_enrichment': 'dSNP enrichment', 'blob_charge_class': 'Blob Das Pappu Class', 'U_diagram': 'Uversky Diagram Score'})
+    df = df[['seq_name', 'resid', 'window', 'm_cutoff', 'domain_threshold', 'H', 'blobtype', 'domain', 'blob_charge_class', 'NCPR', 'f+', 'f-', 'fcr', 'U_diagram', 'h_numerical_enrichment', 'disorder', 'hydropathy']]
+    df = df.rename(columns={'seq_name': 'Residue_Name', 
+                            'resid': 'Residue_Number', 
+                            'disorder': 'Blob_Disorder', 
+                            'window': 'Window', 
+                            'm_cutoff': 'Hydropathy_Cutoff', 
+                            'domain_threshold': 'Minimum_Blob_Length', 
+                            'blobtype':'Blob_Type', 
+                            'H': 'Mean_Blob_Hydropathy(0-1)', 
+                            'domain': 'Blob_Index_Number', 
+                            'NCPR': 'Blob_NCPR', 
+                            'f+': "Fraction_of_Positively_Charged_Residues", 
+                            'f-': "Fraction_of_Negatively_Charged_Residues", 
+                            'fcr': 'Fraction_of_Charged_Residues', 
+                            'h_numerical_enrichment': 'dSNP_enrichment', 
+                            'blob_charge_class': 'Blob_Das-Pappu_Class', 
+                            'U_diagram': 'Uversky_Diagram_Score', 
+                            'hydropathy': 'Kyte-Doolittle_hydropathy(0-1)'})
+    df['Kyte-Doolittle_hydropathy'] = df['Kyte-Doolittle_hydropathy(0-1)']*9-4.5
     
     #f = "##" + str(user_input) + "\n" + str(df.round(1).to_csv(index=False))
     f = str(df.round(1).to_csv(index=False))
