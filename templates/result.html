@@ -224,7 +224,7 @@ $(document).ready( function() {
 			.add_snps(my_snp, Tooltip_snps);
 		
 		figs.globFig = new Figure("globPlot", data)
-			.add_title("Blobs colored according to globular tendency")
+			.add_title("Blobs colored according to globular tendency (Das-Pappu Phase)")
 			.add_tooltip(Das_Pappu_text)
 			.add_GlobularLegend()
 			.build_barChart()
@@ -242,7 +242,7 @@ $(document).ready( function() {
 			.add_skyline();
 
 		figs.uverskyFig = new Figure("uverskyPlot", data)
-			.add_title("Blobs colored according to Uversky diagram")
+			.add_title("Blobs colored according to distance from Uversky boundary")
 			.add_tooltip(uversky_tool_text)
 			.add_ContinuousLegend("PuOr", {min: "-1.0", med: "0.0", max: "+1.0"})
 			.build_barChart()
@@ -251,7 +251,7 @@ $(document).ready( function() {
 			.add_skyline();
 
 		figs.richFig = new Figure("richPlot", data)
-			.add_title("Blobs colored according to dSNP enrichment")
+			.add_title("Blobs colored according to estimated mutation sensitivity")
 			.add_tooltip(enrichment_tool_text)
 			.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"})
 			.build_barChart()
@@ -274,7 +274,7 @@ $(document).ready( function() {
 				.add_tooltip("Disorder information is acquired from Uniprot. To see the disorder plot, please provide the Uniprot ID on the previous page.");
 		} else {
 			figs.disorderFig = new Figure("disorderPlot", data)
-				.add_title("Blobs colored according to fraction of disordered residue")
+				.add_title("Blobs colored according to disordered fraction")
 				.add_tooltip(disorder_tool_text)
 				.add_ContinuousLegend("PuOr", {min: "0.0", med: "0.5", max: "1.0"})
 				.build_barChart()
