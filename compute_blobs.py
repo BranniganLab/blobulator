@@ -136,6 +136,15 @@ def phase_diagram_class(x):
             "Found inaccessible region of phase diagram. Numerical error"
         )
 
+def blob_diagram(x):
+    """convert domains to colors for blob figure"""
+    if x[0][0] == "p":
+        return "blue"
+    elif x[0][0] == "h":
+        return "orange"
+    else:
+        return "green"
+
 # ..........................Define phase diagram.........................................................#
 def uversky_diagram(x):
     h = x[1]*1.0
@@ -335,6 +344,8 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
     df['h_blob_enrichment'] = df[["N", "m_cutoff", "blobtype"]].apply(lookupEnrichment, axis=1)
     df['h_numerical_enrichment'] = df[["N", "m_cutoff", "blobtype"]].apply(lambda x: h_blob_enrichments_numerical(x), axis=1)
 
+    df["blob_color"] = df[["domain", "hydropathy"]].apply(
+        blob_diagram, axis=1)
     df["P_diagram"] = df[["NCPR", "fcr", "f+", "f-"]].apply(
         phase_diagram, axis=1
     )
