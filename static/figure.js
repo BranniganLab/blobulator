@@ -387,6 +387,7 @@ class Figure {
 				d3.select(this)
 					.attr("fill", "red");
 				tooltip_snps.transition()
+					.on("start", () => tooltip_snps.style("display", "block"))
 					.duration(100)
 					.style("opacity", .9);
 				tooltip_snps.html('<a href="' + d.xrefs.url + '"target="_blank">' + d.xrefs.id + "</a>")
@@ -397,7 +398,8 @@ class Figure {
 				d3.select(this).attr("fill", "black");
 				tooltip_snps.transition()
 					.duration(500)
-					.style("opacity", 0);
+					.style("opacity", 0)
+					.on("end", () => tooltip_snps.style("display", "none"));
 			});
 
 		return this;
