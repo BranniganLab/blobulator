@@ -268,7 +268,7 @@ $(document).ready( function() {
 			.add_skyline()
 
 		const domain_threshold_max = {{ domain_threshold_max | safe }};
-		for(const fig of [figs.globFig, figs.pathyFig, figs.ncprFig, figs.uverskyFig, figs.richFig]) {
+		for(const fig of [figs.blobFig, figs.globFig, figs.pathyFig, figs.ncprFig, figs.uverskyFig, figs.richFig]) {
 			if (my_disorder == "0") {
 				fig.add_xAxis(domain_threshold_max);
 			} else {
