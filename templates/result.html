@@ -1,107 +1,7 @@
 {% extends 'common.html' %}
 
 {% block css %}
-<style>
-	/*CSS styling for the blue i tooltip */
-	.header {
-	  outline: 1px solid red;
-	  background: #fff;
-	  padding: 1rem;
-	
-	  position: sticky;
-	  top: 0;
-	}
-	
-	.tooltip {
-		position: absolute;
-		text-align: center;
-		width: 100px;
-		height: 20px;
-		padding: 1px;
-		font: 12px sans-serif;
-		background: lightsteelblue;
-		border: 0px;
-		cursor: pointer;
-	}
-
-	.popover {
-		min-width: 500px;
-	}
-	
-	.rangeslider {
-		width: 90%;
-		padding: 10px;
-	}
-	
-	/*CSS styling for the top slider*/
-	.myslider1 {
-		-webkit-appearance: none;
-		/* Override default CSS styles */
-		appearance: none;
-		width: 30%;
-		/* Full-width */
-		height: 20px;
-		/* Specified height */
-		background: #d3d3d3;
-		/* Grey background */
-		outline: none;
-		/* Remove outline */
-		opacity: 0.7;
-		/* Set transparency (for mouse-over effects on hover) */
-		-webkit-transition: .2s;
-		/* 0.2 seconds transition on hover */
-		transition: opacity .2s;
-	
-	}
-	
-	/*CSS styling for the top slider button*/
-	.myslider1::-webkit-slider-thumb {
-		-webkit-appearance: none;
-		cursor: pointer;
-		background: #007BFF;
-		border-radius: 20px;
-		width: 20px;
-		height: 20px;
-	}
-	
-	.myslider1:hover {
-		opacity: 2.0;
-	}
-	
-	/*CSS styling for the bottom slider*/
-	.myslider2 {
-		-webkit-appearance: none;
-		/* Override default CSS styles */
-		appearance: none;
-		width: 30%;
-		/* Full-width */
-		height: 20px;
-		/* Specified height */
-		background: #d3d3d3;
-		/* Grey background */
-		outline: none;
-		/* Remove outline */
-		opacity: 0.7;
-		/* Set transparency (for mouse-over effects on hover) */
-		-webkit-transition: .2s;
-		/* 0.2 seconds transition on hover */
-		transition: opacity .2s;
-	}
-	
-	/*CSS styling for the bottom slider button*/
-	.myslider2::-webkit-slider-thumb {
-		-webkit-appearance: none;
-		cursor: pointer;
-		background: #007BFF;
-		border-radius: 20px;
-		width: 20px;
-		height: 20px;
-	}
-	
-	.myslider2:hover {
-		opacity: 2.0;
-	}
-	</style>
+<style> @import "../static/style.css"; </style>
 {% endblock %}
 
 {% block scripts %}
@@ -172,6 +72,8 @@ $(document).ready( function() {
 
 	//FUNCTION DECLARATIONS
 
+
+
 	// A function that updates the charts
 	function update_Charts(figs, data) {
 		figs.pathyFig.update_cutoff_line(d3.select("#cutoff_user").text());
@@ -182,6 +84,7 @@ $(document).ready( function() {
 				value.update_bars(data);
 			}
 			catch {
+	
 				console.log("Failed to update: " + key)
 			}
 		}
@@ -413,6 +316,17 @@ $(document).ready( function() {
 					<option value="P">P - Pro</option>
 				</select> </tr> </td>
 			</div>
+
+			<tr><td>
+			<div class="wrap" role="group" aria-labelledby="multi-lbl" style="--a: -30; --b: 20; --min: -50; --max: 50">
+			  <div id="zoom">Residue Range</div>
+			  <label class="sr-only" for="a">fromRes</label>
+			  <input id="a" type="range" min="-50" value="-30" max="50"/>
+			  <label class="sr-only" for="b">toRes</label>
+			  <input id="b" type="range" min="-50" value="20" max="50"/>
+			</div>
+
+
 		</table>
 
 			<div class="text-left">
@@ -420,6 +334,7 @@ $(document).ready( function() {
 				<button type="button" onclick="window.print();return false;">Download plots!</button>
 				<button type="button" id="download_data_link">Download data!</button>
 			</div>
+
 		</div>
 	</div>
 </div>

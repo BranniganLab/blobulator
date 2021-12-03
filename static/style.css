@@ -1,95 +1,167 @@
 /*CSS styling for the blue i tooltip */
+.header {
+  outline: 1px solid red;
+  background: #fff;
+  padding: 1rem;
+
+  position: sticky;
+  top: 0;
+}
+
 .tooltip {
-    position: absolute;
-    text-align: center;
-    width: 100px;
-    height: 20px;
-    padding: 2px;
-    font: 12px sans-serif;
-    background: lightsteelblue;
-    border: 0px;
-    border-radius: 8px;
+	position: absolute;
+	text-align: center;
+	width: 100px;
+	height: 20px;
+	padding: 1px;
+	font: 12px sans-serif;
+	background: lightsteelblue;
+	border: 0px;
+	cursor: pointer;
+}
+
+.popover {
+	min-width: 500px;
 }
 
 .rangeslider {
-    width: 90%;
-    padding: 10px;
+	width: 90%;
+	padding: 10px;
 }
+
+/* Wrapper for zoom box */
+.wrap {
+  display: grid;
+  grid-template-rows: -webkit-max-content 1em;
+  grid-template-rows: max-content 1em;
+  overflow: hidden;
+  position: relative;
+  margin: 1em auto;
+  width: 20em;
+  background: linear-gradient(0deg, #ccc 1em, transparent 0);
+}
+
+.sr-only {
+  position: absolute;
+  -webkit-clip-path: inset(50%);
+          clip-path: inset(50%);
+}
+
+input[type=range] {
+  grid-column: 1;
+  grid-row: 2;
+  margin: 0;
+  background: none;
+  /* get rid of white Chrome background */
+  color: #000;
+  font: inherit;
+  /* fix too small font-size in both Chrome & Firefox */
+  pointer-events: none;
+}
+input[type=range]::-webkit-slider-runnable-track, input[type=range]::-webkit-slider-thumb, input[type=range] {
+  -webkit-appearance: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 100%;
+  background: none;
+}
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 100%;
+  background: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  border: none;
+  /* get rid of Firefox thumb border */
+  width: 1em;
+  height: 1em;
+  border-radius: 0;
+  /* get rid of Firefox corner rounding */
+  background: currentcolor;
+  pointer-events: auto;
+}
+input[type=range]::-moz-range-thumb {
+  border: none;
+  /* get rid of Firefox thumb border */
+  width: 1em;
+  height: 1em;
+  border-radius: 0;
+  /* get rid of Firefox corner rounding */
+  background: currentcolor;
+  pointer-events: auto;
+}
+
+
+
 
 /*CSS styling for the top slider*/
 .myslider1 {
-    -webkit-appearance: none;
-    /* Override default CSS styles */
-    appearance: none;
-    width: 30%;
-    /* Full-width */
-    height: 20px;
-    /* Specified height */
-    background: #d3d3d3;
-    /* Grey background */
-    outline: none;
-    /* Remove outline */
-    opacity: 0.7;
-    /* Set transparency (for mouse-over effects on hover) */
-    -webkit-transition: .2s;
-    /* 0.2 seconds transition on hover */
-    transition: opacity .2s;
+	-webkit-appearance: none;
+	/* Override default CSS styles */
+	appearance: none;
+	width: 30%;
+	/* Full-width */
+	height: 20px;
+	/* Specified height */
+	background: #d3d3d3;
+	/* Grey background */
+	outline: none;
+	/* Remove outline */
+	opacity: 0.7;
+	/* Set transparency (for mouse-over effects on hover) */
+	-webkit-transition: .2s;
+	/* 0.2 seconds transition on hover */
+	transition: opacity .2s;
 
 }
 
 /*CSS styling for the top slider button*/
 .myslider1::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    cursor: pointer;
-    background: #007BFF;
-    border-radius: 20px;
-    width: 20px;
-    height: 20px;
+	-webkit-appearance: none;
+	cursor: pointer;
+	background: #007BFF;
+	border-radius: 20px;
+	width: 20px;
+	height: 20px;
 }
 
 .myslider1:hover {
-    opacity: 2.0;
+	opacity: 2.0;
 }
 
 /*CSS styling for the bottom slider*/
 .myslider2 {
-    -webkit-appearance: none;
-    /* Override default CSS styles */
-    appearance: none;
-    width: 30%;
-    /* Full-width */
-    height: 20px;
-    /* Specified height */
-    background: #d3d3d3;
-    /* Grey background */
-    outline: none;
-    /* Remove outline */
-    opacity: 0.7;
-    /* Set transparency (for mouse-over effects on hover) */
-    -webkit-transition: .2s;
-    /* 0.2 seconds transition on hover */
-    transition: opacity .2s;
-
-}
-
+	-webkit-appearance: none;
+	/* Override default CSS styles */
+	appearance: none;
+	width: 30%;
+	/* Full-width */
+	height: 20px;
+	/* Specified height */
+	background: #d3d3d3;
+	/* Grey background */
+	outline: none;
+	/* Remove outline */
+	opacity: 0.7;
+	/* Set transparency (for mouse-over effects on hover) */
+	-webkit-transition: .2s;
+	/* 0.2 seconds transition on hover */
+	transition: opacity .2s;
 }
 
 /*CSS styling for the bottom slider button*/
 .myslider2::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    cursor: pointer;
-    background: #007BFF;
-    border-radius: 20px;
-    width: 20px;
-    height: 20px;
+	-webkit-appearance: none;
+	cursor: pointer;
+	background: #007BFF;
+	border-radius: 20px;
+	width: 20px;
+	height: 20px;
 }
 
 .myslider2:hover {
-    opacity: 2.0;
+	opacity: 2.0;
 }
-
-/* Suppress certain elements of the page when printing */
-@media print {
-    .myslider1, .myslider2, .info-hover, button { display: none }
 
 }
