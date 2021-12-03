@@ -225,8 +225,8 @@ $(document).ready( function() {
 
 		figs.blobFig = new Figure("blobPlot", data)
 			.add_title("Blobs colored according to blob type")
-			.build_barChart()
 			.add_BlobLegend()
+			.build_barChart()
 			.add_snps(my_snp, Tooltip_snps)
 			.add_psh_ylabel()
 			.add_skyline();
