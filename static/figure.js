@@ -183,55 +183,6 @@ class Figure {
 	RETURNS:
 		none
 	*/
-	add_BlobLegend(keysize=20, offset=20) {
-		//This section contains the key that appears next to the Globular tendency colored plot
-		//squares for the key
-		var legend = this.svg.append("g").attr("id", "legend")
-
-		legend.append("rect")
-			.attr("x", this.GLOBAL_WIDTH + offset)
-			.attr("y", this.MARGIN.top + 5)
-			.attr('width', keysize)
-			.attr('height', keysize)
-			.style("fill", "orange")
-		legend.append("rect")
-			.attr("x", this.GLOBAL_WIDTH + offset)
-			.attr("y", this.MARGIN.top + 35)
-			.attr('width', keysize)
-			.attr('height', keysize)
-			.style("fill", "blue")
-		legend.append("rect")
-			.attr("x", this.GLOBAL_WIDTH + offset)
-			.attr("y", this.MARGIN.top + 65)
-			.attr('width', keysize)
-			.attr('height', keysize)
-			.style("fill", "green")
-				
-		//Text that appears to the right of the key    
-		legend.append("text")
-			.attr("x", this.GLOBAL_WIDTH + 50)
-			.attr("y", this.MARGIN.top + 15).text("h blob").style("font-size", "15px")
-			.attr("alignment-baseline", "middle")
-		legend.append("text")
-			.attr("x", this.GLOBAL_WIDTH + 50)
-			.attr("y", this.MARGIN.top + 45).text("p blob").style("font-size", "15px")
-			.attr("alignment-baseline", "middle")
-		legend.append("text")
-			.attr("x", this.GLOBAL_WIDTH + 50)
-			.attr("y", this.MARGIN.top + 75).text("s blob").style("font-size", "15px")
-			.attr("alignment-baseline", "middle")
-		return this;
-	}
-	
-
-	/* add_GlobularLegend
-	FUNCTION: add_GlobularLegend
-	SHORT DESCRIPTION: add the discrete legend for the globular tendencies graph
-	INPUTS:
-		svg - a container containing an graph modified by the function itself
-	RETURNS:
-		none
-	*/
 	add_GlobularLegend(keysize=20, offset=20) {
 		//This section contains the key that appears next to the Globular tendency colored plot
 		//squares for the key
@@ -515,7 +466,7 @@ class Figure {
 		} else {
 			// Lookup table for color attribute of our data as a function of the plot name.
 			// E.g. The "globPlot" plot data stores colors in the "P_diagram" attribute of the data.
-			const figID_to_var = {'blobPlot': 'blob_color', 'globPlot': 'P_diagram', 'ncprPlot': 'NCPR_color', 'richPlot': 'h_blob_enrichment',
+			const figID_to_var = {'globPlot': 'P_diagram', 'ncprPlot': 'NCPR_color', 'richPlot': 'h_blob_enrichment',
 				'uverskyPlot': 'uversky_color', 'disorderPlot': 'disorder_color'};
 
 			this.bars.transition()
