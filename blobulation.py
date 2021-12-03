@@ -268,6 +268,7 @@ def calc_json():
     del df['domain_pre']
     del df['N']
     del df['NCPR_color']
+    del df['blob_color']
     del df["P_diagram"]
     del df["uversky_color"]
     del df["disorder_color"]
