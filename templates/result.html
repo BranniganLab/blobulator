@@ -222,6 +222,14 @@ $(document).ready( function() {
 			.build_barChart()
 			.add_yAxis()
 			.add_snps(my_snp, Tooltip_snps);
+
+		figs.blobFig = new Figure("blobPlot", data)
+			.add_title("Blobs colored according to blob type")
+			.add_BlobLegend()
+			.build_barChart()
+			.add_snps(my_snp, Tooltip_snps)
+			.add_psh_ylabel()
+			.add_skyline();
 		
 		figs.globFig = new Figure("globPlot", data)
 			.add_title("Blobs colored according to globular tendency (Das-Pappu Phase)")
@@ -260,7 +268,7 @@ $(document).ready( function() {
 			.add_skyline()
 
 		const domain_threshold_max = {{ domain_threshold_max | safe }};
-		for(const fig of [figs.globFig, figs.pathyFig, figs.ncprFig, figs.uverskyFig, figs.richFig]) {
+		for(const fig of [figs.blobFig, figs.globFig, figs.pathyFig, figs.ncprFig, figs.uverskyFig, figs.richFig]) {
 			if (my_disorder == "0") {
 				fig.add_xAxis(domain_threshold_max);
 			} else {
