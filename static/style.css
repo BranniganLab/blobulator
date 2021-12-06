@@ -23,7 +23,7 @@
 .popover {
 	min-width: 500px;
 }
-
+/*
 .rangeslider {
 	width: 90%;
 	padding: 10px;
@@ -90,7 +90,7 @@ input[type=range]::-moz-range-thumb {
   /* get rid of Firefox corner rounding */
   background: currentcolor;
   pointer-events: auto;
-}
+}*/
 
 
 
