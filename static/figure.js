@@ -92,7 +92,7 @@ class Figure {
 	RETURNS:
 		none
 	*/
-	add_tooltip(content="Place Holder", xpos=this.GLOBAL_WIDTH, ypos=this.MARGIN.top - 20) {
+	add_tooltip(content="Place Holder", xpos=this.GLOBAL_WIDTH, ypos=this.MARGIN.top-20) {
 		this.infoIcon = document.createElement("div");
 		this.infoIcon.style.position = "absolute";
 		this.infoIcon.style.top = ypos + "px";
