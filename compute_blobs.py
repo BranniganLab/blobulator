@@ -139,11 +139,11 @@ def phase_diagram_class(x):
 def blob_diagram(x):
     """convert domains to colors for blob figure"""
     if x[0][0] == "p":
-        return "blue"
+        return "#0071BC"
     elif x[0][0] == "h":
-        return "orange"
+        return "#F7931E"
     else:
-        return "green"
+        return "#2DB11A"
 
 # ..........................Define phase diagram.........................................................#
 def uversky_diagram(x):
