@@ -153,7 +153,7 @@ $(document).ready( function() {
 			.add_skyline();
 
 		figs.uverskyFig = new Figure("uverskyPlot", data)
-			.add_title("Blobs colored according to distance from Uversky boundary")
+			.add_title("Blobs colored according to distance from Uversky-Gillespie-Fink boundary")
 			.add_tooltip(uversky_tool_text)
 			.add_ContinuousLegend("PuOr", {min: "-0.65", med: "0.05", max: "0.73"})
 			.build_barChart()
