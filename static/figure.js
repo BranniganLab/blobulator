@@ -175,8 +175,8 @@ class Figure {
 		return this;
 	}
 
-	/* add_GlobularLegend
-	FUNCTION: add_GlobularLegend
+	/* add_BlobLegend
+	FUNCTION: add_BlobLegend
 	SHORT DESCRIPTION: add the discrete legend for the globular tendencies graph
 	INPUTS:
 		svg - a container containing an graph modified by the function itself
@@ -184,7 +184,7 @@ class Figure {
 		none
 	*/
 	add_BlobLegend(keysize=20, offset=20) {
-		//This section contains the key that appears next to the Globular tendency colored plot
+		//This section contains the key that appears next to the Blob types colored plot
 		//squares for the key
 		var legend = this.svg.append("g").attr("id", "legend")
 

@@ -136,6 +136,9 @@ def phase_diagram_class(x):
             "Found inaccessible region of phase diagram. Numerical error"
         )
 
+
+# ..........................Define colors for each blob type.........................................................#
+
 def blob_diagram(x):
     """convert domains to colors for blob figure"""
     if x[0][0] == "p":
