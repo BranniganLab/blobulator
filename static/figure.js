@@ -389,15 +389,15 @@ class Figure {
 				tooltip_snps.transition()
 					.on("start", () => tooltip_snps.style("display", "block"))
 					.duration(100)
-					.style("opacity", .9);
-				tooltip_snps.html('<a href="' + d.xrefs.url + '"target="_blank">' + d.xrefs.id + "</a>")
-					.style("left", (d3.event.pageX) + "px")
+					.style("opacity", 0.9);
+				tooltip_snps.html('<a href="' + d.xrefs.url + '"target="_blank">' + d.xrefs.id + "</a>" + ', ' + "Residue #" + d.resid + " Mutated to " + d.alternativeSequence + ', ' + "<a href=" + 'ClinVar link' + '"target="_blank">' + d.xrefs.url + "</a>")
+					.style("left", (d3.event.pageX) + 10 + "px")
 					.style("top", (d3.event.pageY - 28) + "px");
 			})
 			.on("mouseout", function(d, i) {
 				d3.select(this).attr("fill", "black");
 				tooltip_snps.transition()
-					.duration(500)
+					.duration(2000)
 					.style("opacity", 0)
 					.on("end", () => tooltip_snps.style("display", "none"));
 			});
