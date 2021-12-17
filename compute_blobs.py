@@ -432,6 +432,7 @@ if __name__ == "__main__":
         print("ERROR: Input EITHER --sequence OR --fasta. NOT both.")
 
     elif args.fasta:
+        print(f"Reading {args.fasta}")
         for seq_record in SeqIO.parse(args.fasta, "fasta"):
             print(f'Running: {seq_record.id}')
             if args.DNA:
@@ -440,7 +441,7 @@ if __name__ == "__main__":
                 sequence = mrna.translate(to_stop=True)
             else:
                 sequence = seq_record.seq
-            df = compute(sequence)
+            df = compute(sequence, args.cutoff, args.minBlob)
             print(f"Writing output file to: {args.oname}{seq_record.id}.csv")
             df = clean_df(df)
             df.to_csv(f'{args.oname}{seq_record.id}.csv', index=False)
