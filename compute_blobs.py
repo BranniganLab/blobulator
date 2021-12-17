@@ -163,49 +163,34 @@ def uversky_diagram(x):
         return distance 
 
 # ..........................Define NCPR.........................................................#
-if __name__ != "__main__":
-    #file = open("ncprCMap.pkl", "rb")
-    #ncprDict = pickle.load(file)
-    #file.close()
-    ncprDict = pd.read_csv("ncprCMap.csv", index_col=0)
-    def lookupNCPR(x):
-        val = x[0]
-        return ncprDict.loc[np.round(val, 2)]
+ncprDict = pd.read_csv("ncprCMap.csv", index_col=0)
+def lookupNCPR(x):
+    val = x[0]
+    return ncprDict.loc[np.round(val, 2)]
 
+uverskyDict = pd.read_csv("uverskyCMap.csv", index_col=0)
+def lookupUversky(x):
+    val = x[0]
+    return uverskyDict.loc[np.round(val, 2)]
 
-    #file = open("uverskyCMap.pkl", "rb")
-    #uverskyDict = pickle.load(file)
-    #file.close()
-    uverskyDict = pd.read_csv("uverskyCMap.csv", index_col=0)
-    def lookupUversky(x):
-        val = x[0]
-        return uverskyDict.loc[np.round(val, 2)]
+disorderDict = pd.read_csv("disorderCMap.csv", index_col=0)
+def lookupDisorder(x):
+    val = x[0]
+    return disorderDict.loc[np.round(val, 2)]
 
-    #file = open("disorderCMap.pkl", "rb")
-    #disorderDict = pickle.load(file)
-    #file.close()
-    disorderDict = pd.read_csv("disorderCMap.csv", index_col=0)
-    def lookupDisorder(x):
-        val = x[0]
-        return disorderDict.loc[np.round(val, 2)]
-
-
-    #file = open("enrichCMap.pkl", "rb")
-    #enrichDF = pd.read_pickle(file)
-    #file.close()
-    enrichDF = pd.read_csv("enrichCMap.csv", index_col=[0,1])
-    def lookupEnrichment(x):
-        cutoff = round(x[1], 2)
-        blob_length = x[0]
-        blob_type = x[2]
-        #check if blob type is h AND the cutoff/bloblength combination exists in the reference set
-        if blob_type == 'h':
-            try:
-                return enrichDF.color.loc[cutoff, blob_length]
-            except KeyError:
-                return "grey"
-        else:
+enrichDF = pd.read_csv("enrichCMap.csv", index_col=[0,1])
+def lookupEnrichment(x):
+    cutoff = round(x[1], 2)
+    blob_length = x[0]
+    blob_type = x[2]
+    #check if blob type is h AND the cutoff/bloblength combination exists in the reference set
+    if blob_type == 'h':
+        try:
+            return enrichDF.color.loc[cutoff, blob_length]
+        except KeyError:
             return "grey"
+    else:
+        return "grey"
 
 def h_blob_enrichments_numerical(x):
     cutoff = round(x[1], 2)
@@ -223,10 +208,48 @@ def count_var(x, v):
 
 def get_hydrophobicity(x):
     try: 
-        properties_hydropathy[x]
+        return properties_hydropathy[x]
     except:
         print(f'\n!!!ERROR: Residue {x} is not in my library of known amino acids!!!\n')
         raise
+
+def clean_df(df):
+    #print (df.head)
+    #df = df.drop(range(0, 1))
+    del df['domain_pre']
+    del df['NCPR_color']
+    del df['blob_color']
+    del df["P_diagram"]
+    del df["uversky_color"]
+    del df["disorder_color"]
+    del df["hydropathy_3_window_mean"] 
+    del df["hydropathy_digitized"] 
+    #del df["hydropathy"]
+    del df["charge"]
+    del df["domain_to_numbers"]
+    df['resid'] = df['resid'].astype(int)
+    df = df[[ 'resid', 'seq_name', 'window', 'm_cutoff', 'domain_threshold', 'N', 'H', 'blobtype', 'domain', 'blob_charge_class', 'NCPR', 'f+', 'f-', 'fcr', 'U_diagram', 'h_numerical_enrichment', 'disorder', 'hydropathy']]
+    df = df.rename(columns={'seq_name': 'Residue_Name', 
+                            'resid': 'Residue_Number', 
+                            'disorder': 'Blob_Disorder', 
+                            'window': 'Window', 
+                            'm_cutoff': 'Hydropathy_Cutoff', 
+                            'domain_threshold': 'Minimum_Blob_Length', 
+                            'blobtype':'Blob_Type', 
+                            'H': 'Normalized_Mean_Blob_Hydropathy', 
+                            'domain': 'Blob_Index_Number', 
+                            'NCPR': 'Blob_NCPR', 
+                            'f+': "Fraction_of_Positively_Charged_Residues", 
+                            'f-': "Fraction_of_Negatively_Charged_Residues", 
+                            'fcr': 'Fraction_of_Charged_Residues', 
+                            'h_numerical_enrichment': 'dSNP_enrichment', 
+                            'blob_charge_class': 'Blob_Das-Pappu_Class', 
+                            'U_diagram': 'Uversky_Diagram_Score', 
+                            'hydropathy': 'Normalized_Kyte-Doolittle_hydropathy',
+                            'N': 'blob_length'})
+    df['Kyte-Doolittle_hydropathy'] = df['Normalized_Kyte-Doolittle_hydropathy']*9-4.5
+
+    return df
 
 def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
 
@@ -392,24 +415,19 @@ if __name__ == "__main__":
     #df = compute("MSPQTETKASVGFKAGVKDYKLTYYTPEYETKDTDILAAFRVTPQPGVPPEEAGAAVAAESSTGTWTTVWTDGLTSLDRYKGRCYHIEPVAGEENQYICYVAYPLDLFEEGSVTNMFTSIVGNVFGFKALRALRLEDLRIPTAYVKTFQGPPHGIQVERDKLNKYGRPLLGCTIKPKLGLSAKNYGRAVYECLRGGLDFTKDDENVNSQPFMRWRDRFLFCAEAIYKSQAETGEIKGHYLNATAGTCEEMMKRAIFARELGVPIVMHDYLTGGFTANTSLAHYCRDNGLLLHIHRAMHAVIDRQKNHGIHFRVLAKALRMSGGDHIHSGTVVGKLEGERDITLGFVDLLRDDFIEKDRSRGIYFTQDWVSLPGVLPVASGGIHVWHMPALTEIFGDDSVLQFGGGTLGHPWGNAPGAVANRVALEACVQARNEGRDLAREGNEIIREACKWSPELAAACEVWKEIKFEFQAMDTL", 0.4, 1)
     
     parser = argparse.ArgumentParser(description='')
-    parser.add_argument('sequence', type=str, help='Input sequence')
-    parser.add_argument('cutoff', type=float, help='Cutoff hydrophobicity (float between 0.00 and 1.00 inclusive)')
-    parser.add_argument('minBlob', type=int, help='Mininmum blob length (integer from 1 to N)')
+    parser.add_argument('--sequence', type=str, help='Input sequence', default="MSPQTETKASVGFKAGVKDYKLTYYTPEYETKDTDILAAFRVTPQPGVPPEEAGAAVAAESSTGTWTTVWTDGLTSLDRYKGRCYHIEPVAGEENQYICYVAYPLDLFEEGSVTNMFTSIVGNVFGFKALRALRLEDLRIPTAYVKTFQGPPHGIQVERDKLNKYGRPLLGCTIKPKLGLSAKNYGRAVYECLRGGLDFTKDDENVNSQPFMRWRDRFLFCAEAIYKSQAETGEIKGHYLNATAGTCEEMMKRAIFARELGVPIVMHDYLTGGFTANTSLAHYCRDNGLLLHIHRAMHAVIDRQKNHGIHFRVLAKALRMSGGDHIHSGTVVGKLEGERDITLGFVDLLRDDFIEKDRSRGIYFTQDWVSLPGVLPVASGGIHVWHMPALTEIFGDDSVLQFGGGTLGHPWGNAPGAVANRVALEACVQARNEGRDLAREGNEIIREACKWSPELAAACEVWKEIKFEFQAMDTL")
+    parser.add_argument('--cutoff', type=float, help='Cutoff hydrophobicity (float between 0.00 and 1.00 inclusive)', default=0.4)
+    parser.add_argument('--minBlob', type=int, help='Mininmum blob length (integer from 1 to N)', default=4)
+    parser.add_argument('--oname', type=str, help='Name of output file', default="blobulated.csv")
 
     args = parser.parse_args()
-
-
-    
          
-    if True:
-        print(f'seq: {args.sequence}, cutoff: {args.cutoff}, minBlob: {args.minBlob}')
-        df = compute(args.sequence, args.cutoff, args.minBlob)
-    else:
-        print("No options provided, running test case")
-        df = compute("MSPQTETKASVGFKAGVKDYKLTYYTPEYETKDTDILAAFRVTPQPGVPPEEAGAAVAAESSTGTWTTVWTDGLTSLDRYKGRCYHIEPVAGEENQYICYVAYPLDLFEEGSVTNMFTSIVGNVFGFKALRALRLEDLRIPTAYVKTFQGPPHGIQVERDKLNKYGRPLLGCTIKPKLGLSAKNYGRAVYECLRGGLDFTKDDENVNSQPFMRWRDRFLFCAEAIYKSQAETGEIKGHYLNATAGTCEEMMKRAIFARELGVPIVMHDYLTGGFTANTSLAHYCRDNGLLLHIHRAMHAVIDRQKNHGIHFRVLAKALRMSGGDHIHSGTVVGKLEGERDITLGFVDLLRDDFIEKDRSRGIYFTQDWVSLPGVLPVASGGIHVWHMPALTEIFGDDSVLQFGGGTLGHPWGNAPGAVANRVALEACVQARNEGRDLAREGNEIIREACKWSPELAAACEVWKEIKFEFQAMDTL", 0.4, 4)
+    print(f'Running...\nseq: {args.sequence}\ncutoff: {args.cutoff}\nminBlob: {args.minBlob}\nOutput to: {args.oname}')
+    df = compute(args.sequence, args.cutoff, args.minBlob)
+
         
-    df = df.rename(columns={'seq_name': 'res_name', 'm_cutoff': 'hydrophobicity_cutoff', 'domain_threshold':'minimum_blob_length', 'blobtype':'blob_hydrophobicty_class', 'N':'blob_length'})
-    
     print ("Writing output file")
-    df[['res_name', 'hydrophobicity_cutoff', 'minimum_blob_length', 'blob_hydrophobicty_class', 'blob_charge_class','blob_length']].to_csv("./blobulated.csv", index=False)
+    df = clean_df(df)
+    df.to_csv(args.oname, index=False)
+
     print("done")
