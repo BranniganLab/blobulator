@@ -11,8 +11,8 @@
 .tooltip {
 	position: absolute;
 	text-align: center;
-	width: 100px;
-	height: 85px;
+	width: 15em;
+	height: 2em;
 	padding: 1px;
 	font: 12px sans-serif;
 	background: lightsteelblue;
