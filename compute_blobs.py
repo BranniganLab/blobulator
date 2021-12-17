@@ -448,7 +448,13 @@ if __name__ == "__main__":
 
     elif args.sequence:
         print(f'Running...\nseq: {args.sequence}\ncutoff: {args.cutoff}\nminBlob: {args.minBlob}\nOutput to: {args.oname}')
-        df = compute(args.sequence, args.cutoff, args.minBlob)
+        if args.DNA:
+                coding_dna = seq_record.seq
+                mrna = coding_dna.transcribe()
+                sequence = mrna.translate(to_stop=True)
+            else:
+                sequence = seq_record.seq
+            df = compute(sequence, args.cutoff, args.minBlob)
         print ("Writing output file")
         df = clean_df(df)
         df.to_csv(args.oname, index=False)
