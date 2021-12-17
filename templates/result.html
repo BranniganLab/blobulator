@@ -153,6 +153,15 @@ $(document).ready( function() {
 			.add_psh_ylabel()
 			.add_skyline();
 
+		figs.richFig = new Figure("richPlot", data)
+			.add_title("Blobs colored according to estimated mutation sensitivity")
+			.add_tooltip(enrichment_tool_text)
+			.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"})
+			.build_barChart()
+			.add_snps(my_snp, Tooltip_snps)
+			.add_psh_ylabel()
+			.add_skyline()
+
 		figs.uverskyFig = new Figure("uverskyPlot", data)
 			.add_title("Blobs colored according to distance from Uversky-Gillespie-Fink boundary")
 			.add_tooltip(uversky_tool_text)
@@ -162,14 +171,7 @@ $(document).ready( function() {
 			.add_psh_ylabel()
 			.add_skyline();
     
-		figs.richFig = new Figure("richPlot", data)
-			.add_title("Blobs colored according to estimated mutation sensitivity")
-			.add_tooltip(enrichment_tool_text)
-			.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"})
-			.build_barChart()
-			.add_snps(my_snp, Tooltip_snps)
-			.add_psh_ylabel()
-			.add_skyline()
+
 
 		const domain_threshold_max = {{ domain_threshold_max | safe }};
 		for(const fig of [figs.blobFig, figs.globFig, figs.pathyFig, figs.ncprFig, figs.uverskyFig, figs.richFig]) {
