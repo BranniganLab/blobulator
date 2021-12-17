@@ -133,18 +133,18 @@ class Figure {
 		ylabel.append("text")
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
-			.attr("x", 0 - (this.GLOBAL_HEIGHT / 2) - 50)
-			.attr("y", this.MARGIN.left - 80)
-			.attr("transform", "rotate(-90)")
+			.attr("y", this.GLOBAL_HEIGHT-5)
+			.attr("x", this.MARGIN.left-80)
+			.attr("transform", "rotate(0)")
 			.text("p");
 
 		var ylabel = this.svg.append("g").attr("id", "ylabel")
 		ylabel.append("text")
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
-			.attr("x", 0 - (this.GLOBAL_HEIGHT / 2) - 20)
-			.attr("y", this.MARGIN.left - 80)
-			.attr("transform", "rotate(-90)")
+			.attr("y", this.GLOBAL_HEIGHT - 37.5)
+			.attr("x", this.MARGIN.left - 80)
+			.attr("transform", "rotate(0)")
 			.text("s");
 
 
@@ -152,9 +152,9 @@ class Figure {
 		ylabel.append("text")
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
-			.attr("x", 0 - (this.GLOBAL_HEIGHT / 2) + 10)
-			.attr("y", this.MARGIN.left - 80)
-			.attr("transform", "rotate(-90)")
+			.attr("y", this.GLOBAL_HEIGHT - 70)
+			.attr("x", this.MARGIN.left - 80)
+			.attr("transform", "rotate(0)")
 			.text("h");
 
 		//"SNPs" y-axis label for globular tendency plot
@@ -210,15 +210,15 @@ class Figure {
 		//Text that appears to the right of the key    
 		legend.append("text")
 			.attr("x", this.GLOBAL_WIDTH + 50)
-			.attr("y", this.MARGIN.top + 15).text("h blob").style("font-size", "15px")
+			.attr("y", this.MARGIN.top + 15).text("Hydrophobic blob").style("font-size", "15px")
 			.attr("alignment-baseline", "middle")
 		legend.append("text")
 			.attr("x", this.GLOBAL_WIDTH + 50)
-			.attr("y", this.MARGIN.top + 45).text("p blob").style("font-size", "15px")
+			.attr("y", this.MARGIN.top + 45).text("Hydrophilic blob").style("font-size", "15px")
 			.attr("alignment-baseline", "middle")
 		legend.append("text")
 			.attr("x", this.GLOBAL_WIDTH + 50)
-			.attr("y", this.MARGIN.top + 75).text("s blob").style("font-size", "15px")
+			.attr("y", this.MARGIN.top + 75).text("Short blob").style("font-size", "15px")
 			.attr("alignment-baseline", "middle")
 		return this;
 	}
