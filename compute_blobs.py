@@ -403,6 +403,8 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
 if __name__ == "__main__":
 
     import argparse
+    from Bio import SeqIO
+    from Bio.Seq import Seq
 
     #For diagnostics/development benchmarking
     #import cProfile
@@ -415,19 +417,41 @@ if __name__ == "__main__":
     #df = compute("MSPQTETKASVGFKAGVKDYKLTYYTPEYETKDTDILAAFRVTPQPGVPPEEAGAAVAAESSTGTWTTVWTDGLTSLDRYKGRCYHIEPVAGEENQYICYVAYPLDLFEEGSVTNMFTSIVGNVFGFKALRALRLEDLRIPTAYVKTFQGPPHGIQVERDKLNKYGRPLLGCTIKPKLGLSAKNYGRAVYECLRGGLDFTKDDENVNSQPFMRWRDRFLFCAEAIYKSQAETGEIKGHYLNATAGTCEEMMKRAIFARELGVPIVMHDYLTGGFTANTSLAHYCRDNGLLLHIHRAMHAVIDRQKNHGIHFRVLAKALRMSGGDHIHSGTVVGKLEGERDITLGFVDLLRDDFIEKDRSRGIYFTQDWVSLPGVLPVASGGIHVWHMPALTEIFGDDSVLQFGGGTLGHPWGNAPGAVANRVALEACVQARNEGRDLAREGNEIIREACKWSPELAAACEVWKEIKFEFQAMDTL", 0.4, 1)
     
     parser = argparse.ArgumentParser(description='')
-    parser.add_argument('--sequence', type=str, help='Input sequence', default="MSPQTETKASVGFKAGVKDYKLTYYTPEYETKDTDILAAFRVTPQPGVPPEEAGAAVAAESSTGTWTTVWTDGLTSLDRYKGRCYHIEPVAGEENQYICYVAYPLDLFEEGSVTNMFTSIVGNVFGFKALRALRLEDLRIPTAYVKTFQGPPHGIQVERDKLNKYGRPLLGCTIKPKLGLSAKNYGRAVYECLRGGLDFTKDDENVNSQPFMRWRDRFLFCAEAIYKSQAETGEIKGHYLNATAGTCEEMMKRAIFARELGVPIVMHDYLTGGFTANTSLAHYCRDNGLLLHIHRAMHAVIDRQKNHGIHFRVLAKALRMSGGDHIHSGTVVGKLEGERDITLGFVDLLRDDFIEKDRSRGIYFTQDWVSLPGVLPVASGGIHVWHMPALTEIFGDDSVLQFGGGTLGHPWGNAPGAVANRVALEACVQARNEGRDLAREGNEIIREACKWSPELAAACEVWKEIKFEFQAMDTL")
+    parser.add_argument('--sequence', type=str, help='Input sequence', default=None)
     parser.add_argument('--cutoff', type=float, help='Cutoff hydrophobicity (float between 0.00 and 1.00 inclusive)', default=0.4)
     parser.add_argument('--minBlob', type=int, help='Mininmum blob length (integer from 1 to N)', default=4)
-    parser.add_argument('--oname', type=str, help='Name of output file', default="blobulated.csv")
-
+    parser.add_argument('--oname', type=str, help='Name of output file', default="blobulated_")
+    parser.add_argument('--fasta', type=str, help='FASTA file with 1 or more sequences', default=None)
+    parser.add_argument('--DNA', type=bool, help='Inputs are DNA. Default=false', default=False)
     args = parser.parse_args()
-         
-    print(f'Running...\nseq: {args.sequence}\ncutoff: {args.cutoff}\nminBlob: {args.minBlob}\nOutput to: {args.oname}')
-    df = compute(args.sequence, args.cutoff, args.minBlob)
 
-        
-    print ("Writing output file")
-    df = clean_df(df)
-    df.to_csv(args.oname, index=False)
+    if args.DNA:
+        print("REMINDER: The blobulator assumes all DNA inputs to be coding sequences and only translates up to the first stop codon.")
+        print("CAUTION: Do not mix DNA and protein sequences")
+    if (args.sequence!=None) & (args.fasta!=None):
+        print("ERROR: Input EITHER --sequence OR --fasta. NOT both.")
 
-    print("done")
+    elif args.fasta:
+        for seq_record in SeqIO.parse(args.fasta, "fasta"):
+            print(f'Running: {seq_record.id}')
+            if args.DNA:
+                coding_dna = seq_record.seq
+                mrna = coding_dna.transcribe()
+                sequence = mrna.translate(to_stop=True)
+            else:
+                sequence = seq_record.seq
+            df = compute(sequence)
+            print(f"Writing output file to: {args.oname}{seq_record.id}.csv")
+            df = clean_df(df)
+            df.to_csv(f'{args.oname}{seq_record.id}.csv', index=False)
+
+    elif args.sequence:
+        print(f'Running...\nseq: {args.sequence}\ncutoff: {args.cutoff}\nminBlob: {args.minBlob}\nOutput to: {args.oname}')
+        df = compute(args.sequence, args.cutoff, args.minBlob)
+        print ("Writing output file")
+        df = clean_df(df)
+        df.to_csv(args.oname, index=False)
+
+        print("done")
+    else:
+        print("No sequence provided")
