@@ -368,8 +368,8 @@ class Figure {
 	
 	/* add_snps
 	*/
-	add_snps(my_snp, tooltip_snps, x=this.x, y=this.y) {
-		var arc = d3.symbol().type(d3.symbolTriangle)
+	add_snps(my_snp, my_seq, tooltip_snps, x=this.x, y=this.y) {
+		var arc = d3.symbol().type(d3.symbolTriangle);
 		this.svg.append('g')
 			.selectAll("rect")
 			//.data(my_disorder.map(function(d) { return +d; }))
@@ -390,7 +390,7 @@ class Figure {
 					.on("start", () => tooltip_snps.style("display", "block"))
 					.duration(100)
 					.style("opacity", 0.9);
-				tooltip_snps.html('<a href="' + d.xrefs.url + '"target="_blank">' + d.xrefs.id + "</a>" + ', ' + "Residue #" + d.resid + " Mutated to " + d.alternativeSequence + ', ' + "<a href=" + 'ClinVar link' + '"target="_blank">' + d.xrefs.url + "</a>")
+				tooltip_snps.html(`<a href="${d.xrefs.url}" target="_blank">${d.xrefs.id}</a>, ${my_seq[d.resid-1]}${d.resid}${d.alternativeSequence}`)
 					.style("left", (d3.event.pageX) + 10 + "px")
 					.style("top", (d3.event.pageY - 28) + "px");
 			})
