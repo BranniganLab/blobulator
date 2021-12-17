@@ -163,49 +163,49 @@ def uversky_diagram(x):
         return distance 
 
 # ..........................Define NCPR.........................................................#
-
-#file = open("ncprCMap.pkl", "rb")
-#ncprDict = pickle.load(file)
-#file.close()
-ncprDict = pd.read_csv("ncprCMap.csv", index_col=0)
-def lookupNCPR(x):
-    val = x[0]
-    return ncprDict.loc[np.round(val, 2)]
-
-
-#file = open("uverskyCMap.pkl", "rb")
-#uverskyDict = pickle.load(file)
-#file.close()
-uverskyDict = pd.read_csv("uverskyCMap.csv", index_col=0)
-def lookupUversky(x):
-    val = x[0]
-    return uverskyDict.loc[np.round(val, 2)]
-
-#file = open("disorderCMap.pkl", "rb")
-#disorderDict = pickle.load(file)
-#file.close()
-disorderDict = pd.read_csv("disorderCMap.csv", index_col=0)
-def lookupDisorder(x):
-    val = x[0]
-    return disorderDict.loc[np.round(val, 2)]
+if __name__ != "__main__":
+    #file = open("ncprCMap.pkl", "rb")
+    #ncprDict = pickle.load(file)
+    #file.close()
+    ncprDict = pd.read_csv("ncprCMap.csv", index_col=0)
+    def lookupNCPR(x):
+        val = x[0]
+        return ncprDict.loc[np.round(val, 2)]
 
 
-#file = open("enrichCMap.pkl", "rb")
-#enrichDF = pd.read_pickle(file)
-#file.close()
-enrichDF = pd.read_csv("enrichCMap.csv", index_col=[0,1])
-def lookupEnrichment(x):
-    cutoff = round(x[1], 2)
-    blob_length = x[0]
-    blob_type = x[2]
-    #check if blob type is h AND the cutoff/bloblength combination exists in the reference set
-    if blob_type == 'h':
-        try:
-            return enrichDF.color.loc[cutoff, blob_length]
-        except KeyError:
+    #file = open("uverskyCMap.pkl", "rb")
+    #uverskyDict = pickle.load(file)
+    #file.close()
+    uverskyDict = pd.read_csv("uverskyCMap.csv", index_col=0)
+    def lookupUversky(x):
+        val = x[0]
+        return uverskyDict.loc[np.round(val, 2)]
+
+    #file = open("disorderCMap.pkl", "rb")
+    #disorderDict = pickle.load(file)
+    #file.close()
+    disorderDict = pd.read_csv("disorderCMap.csv", index_col=0)
+    def lookupDisorder(x):
+        val = x[0]
+        return disorderDict.loc[np.round(val, 2)]
+
+
+    #file = open("enrichCMap.pkl", "rb")
+    #enrichDF = pd.read_pickle(file)
+    #file.close()
+    enrichDF = pd.read_csv("enrichCMap.csv", index_col=[0,1])
+    def lookupEnrichment(x):
+        cutoff = round(x[1], 2)
+        blob_length = x[0]
+        blob_type = x[2]
+        #check if blob type is h AND the cutoff/bloblength combination exists in the reference set
+        if blob_type == 'h':
+            try:
+                return enrichDF.color.loc[cutoff, blob_length]
+            except KeyError:
+                return "grey"
+        else:
             return "grey"
-    else:
-        return "grey"
 
 def h_blob_enrichments_numerical(x):
     cutoff = round(x[1], 2)
@@ -221,6 +221,12 @@ def h_blob_enrichments_numerical(x):
 def count_var(x, v):
     return x.values.tolist().count(v) / (x.shape[0] * 1.0)
 
+def get_hydrophobicity(x):
+    try: 
+        properties_hydropathy[x]
+    except:
+        print(f'\n!!!ERROR: Residue {x} is not in my library of known amino acids!!!\n')
+        raise
 
 def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
 
@@ -299,7 +305,7 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
 
     df = pd.DataFrame({"seq_name": seq_name, "resid": resid,})
     df["disorder"] = df["resid"].apply(lambda x: 1 if x in disorder_residues else 0 )
-    df["hydropathy"] = [ properties_hydropathy[x] for x in df["seq_name"]] 
+    df["hydropathy"] = [get_hydrophobicity(x) for x in df["seq_name"]]
     df["charge"] = [properties_charge[x] for x in df["seq_name"]]           
     df["charge"] = df["charge"].astype('int')
     df["window"] = window
@@ -371,9 +377,9 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
 
     return df
 
-def read_fasta(fname):
-    
-    if __name__ == "__main__":
+if __name__ == "__main__":
+
+    import argparse
 
     #For diagnostics/development benchmarking
     #import cProfile
@@ -385,10 +391,25 @@ def read_fasta(fname):
 
     #df = compute("MSPQTETKASVGFKAGVKDYKLTYYTPEYETKDTDILAAFRVTPQPGVPPEEAGAAVAAESSTGTWTTVWTDGLTSLDRYKGRCYHIEPVAGEENQYICYVAYPLDLFEEGSVTNMFTSIVGNVFGFKALRALRLEDLRIPTAYVKTFQGPPHGIQVERDKLNKYGRPLLGCTIKPKLGLSAKNYGRAVYECLRGGLDFTKDDENVNSQPFMRWRDRFLFCAEAIYKSQAETGEIKGHYLNATAGTCEEMMKRAIFARELGVPIVMHDYLTGGFTANTSLAHYCRDNGLLLHIHRAMHAVIDRQKNHGIHFRVLAKALRMSGGDHIHSGTVVGKLEGERDITLGFVDLLRDDFIEKDRSRGIYFTQDWVSLPGVLPVASGGIHVWHMPALTEIFGDDSVLQFGGGTLGHPWGNAPGAVANRVALEACVQARNEGRDLAREGNEIIREACKWSPELAAACEVWKEIKFEFQAMDTL", 0.4, 1)
     
+    parser = argparse.ArgumentParser(description='')
+    parser.add_argument('sequence', type=str, help='Input sequence')
+    parser.add_argument('cutoff', type=float, help='Cutoff hydrophobicity (float between 0.00 and 1.00 inclusive)')
+    parser.add_argument('minBlob', type=int, help='Mininmum blob length (integer from 1 to N)')
 
+    args = parser.parse_args()
+
+
+    
+         
+    if True:
+        print(f'seq: {args.sequence}, cutoff: {args.cutoff}, minBlob: {args.minBlob}')
+        df = compute(args.sequence, args.cutoff, args.minBlob)
+    else:
+        print("No options provided, running test case")
         df = compute("MSPQTETKASVGFKAGVKDYKLTYYTPEYETKDTDILAAFRVTPQPGVPPEEAGAAVAAESSTGTWTTVWTDGLTSLDRYKGRCYHIEPVAGEENQYICYVAYPLDLFEEGSVTNMFTSIVGNVFGFKALRALRLEDLRIPTAYVKTFQGPPHGIQVERDKLNKYGRPLLGCTIKPKLGLSAKNYGRAVYECLRGGLDFTKDDENVNSQPFMRWRDRFLFCAEAIYKSQAETGEIKGHYLNATAGTCEEMMKRAIFARELGVPIVMHDYLTGGFTANTSLAHYCRDNGLLLHIHRAMHAVIDRQKNHGIHFRVLAKALRMSGGDHIHSGTVVGKLEGERDITLGFVDLLRDDFIEKDRSRGIYFTQDWVSLPGVLPVASGGIHVWHMPALTEIFGDDSVLQFGGGTLGHPWGNAPGAVANRVALEACVQARNEGRDLAREGNEIIREACKWSPELAAACEVWKEIKFEFQAMDTL", 0.4, 4)
-        df = df.rename(columns={'seq_name': 'res_name', 'm_cutoff': 'hydrophobicity_cutoff', 'domain_threshold':'minimum_blob_length', 'blobtype':'blob_hydrophobicty_class', 'N':'blob_length'})
         
-        print ("Writing output file")
-        df[['res_name', 'hydrophobicity_cutoff', 'minimum_blob_length', 'blob_hydrophobicty_class', 'blob_charge_class','blob_length']].to_csv("./blobulated.csv", index=False)
-        print("done")
+    df = df.rename(columns={'seq_name': 'res_name', 'm_cutoff': 'hydrophobicity_cutoff', 'domain_threshold':'minimum_blob_length', 'blobtype':'blob_hydrophobicty_class', 'N':'blob_length'})
+    
+    print ("Writing output file")
+    df[['res_name', 'hydrophobicity_cutoff', 'minimum_blob_length', 'blob_hydrophobicty_class', 'blob_charge_class','blob_length']].to_csv("./blobulated.csv", index=False)
+    print("done")
