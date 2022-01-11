@@ -26,7 +26,7 @@ class Figure {
 		// add the x Axis
 		this.x = d3.scaleBand()
 			.range([0, this.GLOBAL_WIDTH])
-			.domain(data.map(function(d) { return d.resid; }))
+			.domain(data.map(d => d.resid ))
 			.padding(0.2);
 			
 		this.data = data;
@@ -316,28 +316,7 @@ class Figure {
 		return this;
 	}
 
-	add_ncprContinuousLegend(cmap, {min='-1', med='0', max='+1', width=20, height=80}={min: '-0.5', med: '0', max: '+0.5', width: 20, height: 80}) {
-		switch(cmap) {
-			case "PuOr":
-				this.add_colorbar("PuOr", width, height, min, max, this.GLOBAL_WIDTH, this.GLOBAL_HEIGHT,
-					{ med: med, cend: '#7f3b08', cq3: '#ee9d3c', cmid: '#f6f6f7', ctop: '#2d004b'});
-				break;
-			case "RWB":
-				//Color bar key to the right of the enrichment plot.
-				this.add_colorbar("RWB", width, height, min, max, this.GLOBAL_WIDTH, this.GLOBAL_HEIGHT,
-					{ med: med, cend: '#ff0000', cmid: '#f4f4ff', ctop: '#0000ff' });
-				break;
-			default:
-				try {
-					throw cmap
-				} catch(e) {
-					      ("Figure.add_ContinuousLegend doesn't know colormap: "+e)
-				}
-		}
 
-		return this;
-	}
-	
 	/* add_colorbar
     Function to create linear color bars for graphs. Adapted from: https://www.visualcinnamon.com/2016/05/smooth-color-legend-d3-svg-gradient/
     Inputs: 
@@ -483,7 +462,6 @@ class Figure {
 
 
 	build_barChart(domain_threshold_max, snps=0, timing=0, x=this.x, y=this.y) {
-		
 		// Add a clipPath: everything out of this area won't be drawn.
 		this.clip = this.svg.append("defs").append("svg:clipPath")
 			.attr("id", "clip")
@@ -493,16 +471,15 @@ class Figure {
 			.attr("x", 0)
 			.attr("y", 0);
 		
-		this.plot_variable = this.svg.append("g")
-								.attr("id", "barChart"+this.figID)
-								.attr("clip-path", "url(#clip)")
-								.selectAll("rect")
-								.data(this.data);
-
-		this.bars = this.plot_variable.enter().append("rect");
-		this.bars.attr("width", x.bandwidth())
+		this.bars = this.svg.selectAll("bars")
+			.data(this.data)
+			.join("rect")
+			.attr("id", "barChart"+this.figID)
+			.attr("clip-path", "url(#clip)")
+			.attr("width", x.bandwidth())
 			.attr("x", (d) => x(d.resid))
-			.attr("y", this.GLOBAL_HEIGHT)
+			.attr("y", this.GLOBAL_HEIGHT);
+			
 		this.update_bars(this.data, timing);
 		this.add_xAxis(domain_threshold_max, snps)
 		
@@ -511,7 +488,7 @@ class Figure {
 	
 	update_bars(data, timing=1000, x=this.x, y=this.y) {
 		this.data = data;
-		this.plot_variable.enter().selectAll("rect").data(data);
+		this.bars.data(data);
 		
 		// The hydropathy plot requires special colors
 		if (this.figID == "pathyPlot") {
