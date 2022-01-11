@@ -1,11 +1,13 @@
 {% extends 'common.html' %}
 
+
 {% block css %}
 <style> @import "../static/style.css"; </style>
+<style> @import "../static/zoomStyle.css"; </style>
 {% endblock %}
 
 {% block scripts %}
-<script src="https://d3js.org/d3.v4.js"></script>
+<script src="https://d3js.org/d3.v6.js"></script>
 <script src="static/figure.js"></script>
 <script>
 $(document).ready( function() {
@@ -177,17 +179,6 @@ $(document).ready( function() {
 			.add_psh_ylabel()
 			.add_skyline();
     
-
-
-
-/*for(const fig of [figs.blobFig, figs.globFig, figs.pathyFig, figs.ncprFig, figs.uverskyFig, figs.richFig]) {
-			if (my_disorder == "0") {
-				fig.add_xAxis(domain_threshold_max);
-			} else {
-				fig.add_snp_xAxis(domain_threshold_max);
-			}
-		}		 */
-
 		if (my_disorder == "0") {
 			figs.disorderFig = new Figure("disorderPlot", data)
 				.add_title("DISORDER UNAVAILABLE")
@@ -243,6 +234,9 @@ $(document).ready( function() {
 });
 
 </script>
+
+
+
 {% endblock %}
 
 {% block tablist %}

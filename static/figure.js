@@ -373,18 +373,17 @@ class Figure {
 		var arc = d3.symbol().type(d3.symbolTriangle);
 		this.svg.append('g')
 			.selectAll("rect")
-			//.data(my_disorder.map(function(d) { return +d; }))
 			.data(my_snp)
 			.enter()
 			.append("path")
 			.attr('d', arc)
 			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 145)")
 			.attr("fill", 'black')
-			.on("click", function(d) {
+			.on("click", function(event, d) {
 				//window.location.href = d.xrefs[0].url+'_blank'
 				window.open(d.xrefs.url, '_blank')
 			})
-			.on("mouseover", function(d) {
+			.on("mouseover", function(event, d) {
 				d3.select(this)
 					.attr("fill", "red");
 				tooltip_snps.transition()
@@ -392,10 +391,10 @@ class Figure {
 					.duration(100)
 					.style("opacity", 0.9);
 				tooltip_snps.html(`<a href="${d.xrefs.url}" target="_blank">${d.xrefs.id}</a>, ${my_seq[d.resid-1]}${d.resid}${d.alternativeSequence}`)
-					.style("left", (d3.event.pageX) + 10 + "px")
-					.style("top", (d3.event.pageY - 28) + "px");
+					.style("left", (event.pageX) + 10 + "px")
+					.style("top", (event.pageY - 28) + "px");
 			})
-			.on("mouseout", function(d, i) {
+			.on("mouseout", function(event, d) {
 				d3.select(this).attr("fill", "black");
 				tooltip_snps.transition()
 					.duration(2000)
