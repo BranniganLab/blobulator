@@ -117,19 +117,25 @@ $(document).ready( function() {
 		const my_snp = {{ my_snp | safe }};
 		const my_seq = {{ my_seq | safe }};
 		const my_disorder = {{ my_disorder | tojson | safe }};
+		const domain_threshold_max = {{ domain_threshold_max | safe }};
+		if (my_disorder == "0") {
+			var snps = false
+		} else {
+			var snps = true
+		}
 		let figs = [];
 		figs.pathyFig = new Figure("pathyPlot", data)
 			.add_title("Smoothed hydropathy per residue")
 			.add_tooltip(hydropathy_tool_text)
 			.add_pathy_ylabel()
 			.add_cutoff_line({{ my_cut | safe }})
-			.build_barChart()
+			.build_barChart(domain_threshold_max, snps)
 			.add_yAxis()
 			.add_snps(my_snp, my_seq, Tooltip_snps);
 
 		figs.blobFig = new Figure("blobPlot", data)
 			.add_title("Blobs colored according to blob type")
-			.build_barChart()
+			.build_barChart(domain_threshold_max, snps)
 			.add_BlobLegend()
 			.add_snps(my_snp, my_seq, Tooltip_snps)
 			.add_psh_ylabel()
@@ -139,7 +145,7 @@ $(document).ready( function() {
 			.add_title("Blobs colored according to globular tendency (Das-Pappu Phase)")
 			.add_tooltip(Das_Pappu_text)
 			.add_GlobularLegend()
-			.build_barChart()
+			.build_barChart(domain_threshold_max, snps)
 			.add_snps(my_snp, my_seq, Tooltip_snps)
 			.add_psh_ylabel()
 			.add_skyline();
@@ -148,7 +154,7 @@ $(document).ready( function() {
 			.add_title("Blobs colored according to net charge per residue")
 			.add_tooltip(ncpr_tool_text)
 			.add_ContinuousLegend("RWB", {min: "-0.5", med: "0.0", max: "+0.5"})
-			.build_barChart()
+			.build_barChart(domain_threshold_max, snps)
 			.add_snps(my_snp, my_seq, Tooltip_snps)
 			.add_psh_ylabel()
 			.add_skyline();
@@ -157,7 +163,7 @@ $(document).ready( function() {
 			.add_title("Blobs colored according to estimated mutation sensitivity")
 			.add_tooltip(enrichment_tool_text)
 			.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"})
-			.build_barChart()
+			.build_barChart(domain_threshold_max, snps)
 			.add_snps(my_snp, my_seq, Tooltip_snps)
 			.add_psh_ylabel()
 			.add_skyline()
@@ -166,21 +172,21 @@ $(document).ready( function() {
 			.add_title("Blobs colored according to distance from Uversky-Gillespie-Fink boundary")
 			.add_tooltip(uversky_tool_text)
 			.add_ContinuousLegend("PuOr", {min: "-0.65", med: "0.05", max: "0.73"})
-			.build_barChart()
+			.build_barChart(domain_threshold_max, snps)
 			.add_snps(my_snp, my_seq, Tooltip_snps)
 			.add_psh_ylabel()
 			.add_skyline();
     
 
 
-		const domain_threshold_max = {{ domain_threshold_max | safe }};
-		for(const fig of [figs.blobFig, figs.globFig, figs.pathyFig, figs.ncprFig, figs.uverskyFig, figs.richFig]) {
+
+/*for(const fig of [figs.blobFig, figs.globFig, figs.pathyFig, figs.ncprFig, figs.uverskyFig, figs.richFig]) {
 			if (my_disorder == "0") {
 				fig.add_xAxis(domain_threshold_max);
 			} else {
 				fig.add_snp_xAxis(domain_threshold_max);
 			}
-		}		
+		}		 */
 
 		if (my_disorder == "0") {
 			figs.disorderFig = new Figure("disorderPlot", data)
@@ -191,10 +197,9 @@ $(document).ready( function() {
 				.add_title("Blobs colored according to disordered fraction")
 				.add_tooltip(disorder_tool_text)
 				.add_ContinuousLegend("PuOr", {min: "0.0", med: "0.5", max: "1.0"})
-				.build_barChart()
+				.build_barChart(domain_threshold_max, snps)
 				.add_snps(my_snp, my_seq, Tooltip_snps)
 				.add_psh_ylabel()
-				.add_snp_xAxis(domain_threshold_max)
 				.add_skyline();
 		}
 

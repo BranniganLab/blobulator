@@ -30,6 +30,7 @@ class Figure {
 			.padding(0.2);
 			
 		this.data = data;
+	
 
 		return this;
 	}
@@ -84,13 +85,13 @@ class Figure {
 	}
 	
 
-/* add_tooltip
-	FUNCTION: add_tooltip
-	SHORT DESCRIPTION: add a small i that provides information to the user in a tooltip
-	INPUTS:
-		svg - a container for a graph (modified by the function directly)
-	RETURNS:
-		none
+	/* add_tooltip
+		FUNCTION: add_tooltip
+		SHORT DESCRIPTION: add a small i that provides information to the user in a tooltip
+		INPUTS:
+			svg - a container for a graph (modified by the function directly)
+		RETURNS:
+			none
 	*/
 	add_tooltip(content="Place Holder", xpos=this.GLOBAL_WIDTH, ypos=this.MARGIN.top-20) {
 		this.infoIcon = document.createElement("div");
@@ -453,16 +454,28 @@ class Figure {
 		return this
 	}
 
-	add_xAxis(domain_threshold_max, x=this.x, y=this.y){
+	add_xAxis(domain_threshold_max, snps=0, x=this.x, y=this.y){
+		
+		if (snps) {
+			var xaxisMargin = this.GLOBAL_HEIGHT + 15
+		} else {
+			var xaxisMargin = this.GLOBAL_HEIGHT
+		}
 		this.xAxis = this.svg.append("g")
 						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
 						   (Math.round((Math.round(domain_threshold_max/10))/10)*10) )})))
-						.attr("transform", "translate(0," + this.GLOBAL_HEIGHT + ")");
+						.attr("transform", "translate(0," + xaxisMargin + ")");
+		
 		// Bars
 		//Creates the "Residue" x-axis label
+		if (snps) {
+			var bottomMargin = this.MARGIN.bottom + 25
+		} else {
+			var bottomMargin = this.MARGIN.bottom
+		}
 		this.svg.append("text")
 			.attr("x", this.GLOBAL_WIDTH / 2)
-			.attr("y", this.GLOBAL_HEIGHT + this.MARGIN.bottom)
+			.attr("y", this.GLOBAL_HEIGHT + bottomMargin)
 			.style("text-anchor", "middle")
 			.text("Residue")
 
@@ -470,27 +483,20 @@ class Figure {
 	}
 
 
-	add_snp_xAxis(domain_threshold_max, x=this.x, y=this.y){
-		this.xAxis = this.svg.append("g")
-						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
-						   (Math.round((Math.round(domain_threshold_max/10))/10)*10) )})))
-						.attr("transform", "translate(0," + this.GLOBAL_HEIGHT + ")")
-						.attr("transform", "translate(0, 155)");
-		// Bars
-		//Creates the "Residue" x-axis label
-		this.svg.append("text")
-			.attr("x", this.GLOBAL_WIDTH / 2)
-			.attr("y", this.GLOBAL_HEIGHT + this.MARGIN.bottom + 40)
-			.style("text-anchor", "middle")
-			.text("Residue")
-
-		return this
-	}
-
-
-	build_barChart(timing=0, x=this.x, y=this.y) {
+	build_barChart(domain_threshold_max, snps=0, timing=0, x=this.x, y=this.y) {
+		
+		// Add a clipPath: everything out of this area won't be drawn.
+		this.clip = this.svg.append("defs").append("svg:clipPath")
+			.attr("id", "clip")
+			.append("svg:rect")
+			.attr("width", this.GLOBAL_WIDTH )
+			.attr("height", this.GLOBAL_HEIGHT )
+			.attr("x", 0)
+			.attr("y", 0);
+		
 		this.plot_variable = this.svg.append("g")
 								.attr("id", "barChart"+this.figID)
+								.attr("clip-path", "url(#clip)")
 								.selectAll("rect")
 								.data(this.data);
 
@@ -499,7 +505,8 @@ class Figure {
 			.attr("x", (d) => x(d.resid))
 			.attr("y", this.GLOBAL_HEIGHT)
 		this.update_bars(this.data, timing);
-
+		this.add_xAxis(domain_threshold_max, snps)
+		
 		return this;
 	}
 	
