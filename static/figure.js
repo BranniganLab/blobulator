@@ -120,62 +120,6 @@ class Figure {
 		return this;
 	}
 
-	/* add_psh_ylabel
-	FUNCTION: add_psh_ylabel
-	SHORT DESCRIPTION: add an p s h text y label to the svg object
-	INPUTS:
-		svg - a container containing an graph modified by the function itself
-	RETURNS:
-		none
-	*/
-	add_psh_ylabel() {
-		//"p" blob y-axis label for globular tendency plot
-		var ylabel = this.svg.append("g").attr("id", "ylabel")
-		ylabel.append("text")
-			.attr("class", "y label")
-			.attr("text-anchor", "middle")
-			.attr("y", this.GLOBAL_HEIGHT-5)
-			.attr("x", this.MARGIN.left-80)
-			.attr("transform", "rotate(0)")
-			.text("p");
-
-		var ylabel = this.svg.append("g").attr("id", "ylabel")
-		ylabel.append("text")
-			.attr("class", "y label")
-			.attr("text-anchor", "middle")
-			.attr("y", this.GLOBAL_HEIGHT - 37.5)
-			.attr("x", this.MARGIN.left - 80)
-			.attr("transform", "rotate(0)")
-			.text("s");
-
-
-		//"h" blob y-axis label for globular tendency plot
-		ylabel.append("text")
-			.attr("class", "y label")
-			.attr("text-anchor", "middle")
-			.attr("y", this.GLOBAL_HEIGHT - 70)
-			.attr("x", this.MARGIN.left - 80)
-			.attr("transform", "rotate(0)")
-			.text("h");
-
-		//"SNPs" y-axis label for globular tendency plot
-
-		return this;
-	}
-
-	add_pathy_ylabel() {
-		//Creates the "Mean Hydropathy" y-axis label for Smoothed hydropathy per residue
-		this.svg.append("text")
-			.attr("class", "y label")
-			.attr("text-anchor", "middle")
-			.attr("x", 0 - (this.GLOBAL_HEIGHT / 2))
-			.attr("y", this.MARGIN.left - 80)
-			.attr("transform", "rotate(-90)")
-			.text("Mean Hydropathy");
-
-		return this;
-	}
-
 	/* add_BlobLegend
 	FUNCTION: add_BlobLegend
 	SHORT DESCRIPTION: add the discrete legend for the globular tendencies graph
@@ -346,6 +290,18 @@ class Figure {
 		return this
 	}
 	
+}
+
+class barChart extends Figure {
+	constructor(figID, data, snps, seq, snp_tooltips) {
+		super(figID, data);
+		this.build_barChart(snps.length)
+		if (snps) {
+			this.add_snps(snps, seq, snp_tooltips)
+		}
+	}
+
+	
 	/* add_snps
 	*/
 	add_snps(my_snp, my_seq, tooltip_snps, x=this.x, y=this.y) {
@@ -384,84 +340,7 @@ class Figure {
 		return this;
 	}
 	
-	add_yAxis() {
-		this.svg.append("g") //the y axis is drawn only for plot 1
-				.call(d3.axisLeft(this.y));
-		return this
-	}
-	
-	add_cutoff_line(my_cut, x=this.x, y=this.y) {
-		this.cut_line = this.svg.append('g')
-			.append("path")
-			.attr("class", "mypath")
-			.datum(this.data)
-			.attr("fill", "none")
-			.attr("stroke", "steelblue")
-			.attr("stroke-width", 1.5)
-			.attr("d", d3.line()
-				.x((d) => x(d.resid))
-				.y((d) => y(my_cut)));
-
-		return this;
-	}
-	
-	update_cutoff_line(my_cut, x=this.x, y=this.y) {
-		this.cut_line
-			.transition()
-			.duration(1000)
-			.attr("d", d3.line()
-				.x((d) => x(d.resid))
-				.y((d) => y(my_cut)));
-
-		return this;
-	}
-
-	/* add_hydropathy_bars
-	*/
-	add_hydropathy_bars(x=this.x, y=this.y) {
-		this.hydropathy_bars = this.svg.selectAll("mybar")
-		this.hydropathy_bars.data(this.data)
-			.enter()
-			.append("rect")
-			.attr("x", (d) => x(d.resid))
-			.attr("y", (d) => y(d.hydropathy_3_window_mean))
-			.attr("width", x.bandwidth())
-			.attr("height", (d) => this.GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean))
-			.attr("fill", 'grey')
-
-		return this
-	}
-
-	add_xAxis(domain_threshold_max, snps=0, x=this.x, y=this.y){
-		
-		if (snps) {
-			var xaxisMargin = this.GLOBAL_HEIGHT + 15
-		} else {
-			var xaxisMargin = this.GLOBAL_HEIGHT
-		}
-		this.xAxis = this.svg.append("g")
-						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
-						   (Math.round((Math.round(domain_threshold_max/10))/10)*10) )})))
-						.attr("transform", "translate(0," + xaxisMargin + ")");
-		
-		// Bars
-		//Creates the "Residue" x-axis label
-		if (snps) {
-			var bottomMargin = this.MARGIN.bottom + 25
-		} else {
-			var bottomMargin = this.MARGIN.bottom
-		}
-		this.svg.append("text")
-			.attr("x", this.GLOBAL_WIDTH / 2)
-			.attr("y", this.GLOBAL_HEIGHT + bottomMargin)
-			.style("text-anchor", "middle")
-			.text("Residue")
-
-		return this
-	}
-
-
-	build_barChart(domain_threshold_max, snps=0, timing=0, x=this.x, y=this.y) {
+	build_barChart(snps=0, timing=0, x=this.x, y=this.y) {
 		// Add a clipPath: everything out of this area won't be drawn.
 		this.clip = this.svg.append("defs").append("svg:clipPath")
 			.attr("id", "clip")
@@ -481,41 +360,113 @@ class Figure {
 			.attr("y", this.GLOBAL_HEIGHT);
 			
 		this.update_bars(this.data, timing);
-		this.add_xAxis(domain_threshold_max, snps)
+		this.add_xAxis(snps)
 		
 		return this;
 	}
 	
-	update_bars(data, timing=1000, x=this.x, y=this.y) {
+	add_xAxis(snps=0, x=this.x, y=this.y){
+		if (snps) {
+			var xaxisMargin = this.GLOBAL_HEIGHT + 15
+		} else {
+			var xaxisMargin = this.GLOBAL_HEIGHT
+		}
+		var num_residues = this.data.length
+		this.xAxis = this.svg.append("g")
+						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
+						   (Math.round((Math.round(num_residues/10))/10)*10) )})))
+						.attr("transform", "translate(0," + xaxisMargin + ")");
+		
+		// Bars
+		//Creates the "Residue" x-axis label
+		if (snps) {
+			var bottomMargin = this.MARGIN.bottom + 25
+		} else {
+			var bottomMargin = this.MARGIN.bottom
+		}
+		this.svg.append("text")
+			.attr("x", this.GLOBAL_WIDTH / 2)
+			.attr("y", this.GLOBAL_HEIGHT + bottomMargin)
+			.style("text-anchor", "middle")
+			.text("Residue")
+
+		return this
+	}
+
+}
+
+class blobChart extends barChart {
+	constructor(figID, data, snps, seq, snp_tooltips, num_residues) {
+		super(figID, data, snps, seq, snp_tooltips, num_residues);
+		this.add_psh_ylabel();
+		this.update_bars();
+		this.add_skyline();
+	}
+	
+	/* add_psh_ylabel
+	FUNCTION: add_psh_ylabel
+	SHORT DESCRIPTION: add an p s h text y label to the svg object
+	INPUTS:
+		svg - a container containing an graph modified by the function itself
+	RETURNS:
+		none
+	*/
+	add_psh_ylabel() {
+		//"p" blob y-axis label for globular tendency plot
+		var ylabel = this.svg.append("g").attr("id", "ylabel")
+		ylabel.append("text")
+			.attr("class", "y label")
+			.attr("text-anchor", "middle")
+			.attr("y", this.GLOBAL_HEIGHT-5)
+			.attr("x", this.MARGIN.left-80)
+			.attr("transform", "rotate(0)")
+			.text("p");
+
+		var ylabel = this.svg.append("g").attr("id", "ylabel")
+		ylabel.append("text")
+			.attr("class", "y label")
+			.attr("text-anchor", "middle")
+			.attr("y", this.GLOBAL_HEIGHT - 37.5)
+			.attr("x", this.MARGIN.left - 80)
+			.attr("transform", "rotate(0)")
+			.text("s");
+
+
+		//"h" blob y-axis label for globular tendency plot
+		ylabel.append("text")
+			.attr("class", "y label")
+			.attr("text-anchor", "middle")
+			.attr("y", this.GLOBAL_HEIGHT - 70)
+			.attr("x", this.MARGIN.left - 80)
+			.attr("transform", "rotate(0)")
+			.text("h");
+
+		//"SNPs" y-axis label for globular tendency plot
+
+		return this;
+	}
+	
+	update_bars(data=this.data, timing=1000, x=this.x, y=this.y) {
 		this.data = data;
 		this.bars.data(data);
 		
-		// The hydropathy plot requires special colors
-		if (this.figID == "pathyPlot") {
-			this.bars.transition()
-				.duration(timing)
-				.attr("y", (d) => y(d.hydropathy_3_window_mean))
-				.attr("height", (d) => this.GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean));
-			this.bars.attr("fill", 'grey');
-		} else {
-			// Lookup table for color attribute of our data as a function of the plot name.
-			// E.g. The "globPlot" plot data stores colors in the "P_diagram" attribute of the data.
-			const figID_to_var = {'blobPlot': 'blob_color', 'globPlot': 'P_diagram', 'ncprPlot': 'NCPR_color', 'richPlot': 'h_blob_enrichment',
-				'uverskyPlot': 'uversky_color', 'disorderPlot': 'disorder_color'};
+		// Lookup table for color attribute of our data as a function of the plot name.
+		// E.g. The "globPlot" plot data stores colors in the "P_diagram" attribute of the data.
+		const figID_to_var = {'blobPlot': 'blob_color', 'globPlot': 'P_diagram', 'ncprPlot': 'NCPR_color', 'richPlot': 'h_blob_enrichment',
+			'uverskyPlot': 'uversky_color', 'disorderPlot': 'disorder_color'};
 
-			this.bars.transition()
-				.duration(timing)
-				.attr("y", (d) => y(d.domain_to_numbers))
-				.attr("height", (d) => this.GLOBAL_HEIGHT - y(d.domain_to_numbers))
-				.attr("fill", (d) => d[figID_to_var[this.figID]]);
-			
-			// Update/add the corresponding skyline, in a potentially ugly way
-			this.add_skyline();
-		}
+		this.bars.transition()
+			.duration(timing)
+			.attr("y", (d) => y(d.domain_to_numbers))
+			.attr("height", (d) => this.GLOBAL_HEIGHT - y(d.domain_to_numbers))
+			.attr("fill", (d) => d[figID_to_var[this.figID]]);
+		
+		// Update/add the corresponding skyline, in a potentially ugly way
+		this.add_skyline();
+		
 		return this;
 	}
-
-
+	
 	add_skyline(data=this.data, x=this.x, y=this.y) {
 		// We should have at least two data points to draw a line
 		if(data.length < 2) {
@@ -563,6 +514,92 @@ class Figure {
 					}
 				})
 				.y((d) => y(d.height)));
+
+		return this;
+	}
+}
+
+class hydropathyPlot extends barChart {
+	constructor(figID, data, snps, seq, snp_tooltips, cutoff_init=0.4) {
+		super(figID, data, snps, seq, snp_tooltips);
+		this.add_cutoff_line(cutoff_init);
+		this.add_hydropathy_bars();
+		this.add_yAxis();
+		this.add_pathy_ylabel();
+		this.update_bars();
+	}
+
+	add_pathy_ylabel() {
+		//Creates the "Mean Hydropathy" y-axis label for Smoothed hydropathy per residue
+		this.svg.append("text")
+			.attr("class", "y label")
+			.attr("text-anchor", "middle")
+			.attr("x", 0 - (this.GLOBAL_HEIGHT / 2))
+			.attr("y", this.MARGIN.left - 80)
+			.attr("transform", "rotate(-90)")
+			.text("Mean Hydropathy");
+
+		return this;
+	}
+
+	add_yAxis() {
+		this.svg.append("g") //the y axis is drawn only for plot 1
+				.call(d3.axisLeft(this.y));
+		return this
+	}
+	
+	add_cutoff_line(my_cut=0.4, x=this.x, y=this.y) {
+		this.cut_line = this.svg.append('g')
+			.append("path")
+			.attr("class", "mypath")
+			.datum(this.data)
+			.attr("fill", "none")
+			.attr("stroke", "steelblue")
+			.attr("stroke-width", 1.5)
+			.attr("d", d3.line()
+				.x((d) => x(d.resid))
+				.y((d) => y(my_cut)));
+
+		return this;
+	}
+	
+	update_cutoff_line(my_cut, x=this.x, y=this.y) {
+		this.cut_line
+			.transition()
+			.duration(1000)
+			.attr("d", d3.line()
+				.x((d) => x(d.resid))
+				.y((d) => y(my_cut)));
+
+		return this;
+	}
+
+	/* add_hydropathy_bars
+	*/
+	add_hydropathy_bars(x=this.x, y=this.y) {
+		this.hydropathy_bars = this.svg.selectAll("mybar")
+		this.hydropathy_bars.data(this.data)
+			.enter()
+			.append("rect")
+			.attr("x", (d) => x(d.resid))
+			.attr("y", (d) => y(d.hydropathy_3_window_mean))
+			.attr("width", x.bandwidth())
+			.attr("height", (d) => this.GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean))
+			.attr("fill", 'grey')
+
+		return this
+	}	
+	
+	update_bars(data=this.data, timing=1000, x=this.x, y=this.y) {
+		this.data = data;
+		this.bars.data(data);
+		
+		// The hydropathy plot requires special colors
+		this.bars.transition()
+			.duration(timing)
+			.attr("y", (d) => y(d.hydropathy_3_window_mean))
+			.attr("height", (d) => this.GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean));
+		this.bars.attr("fill", 'grey');
 
 		return this;
 	}
