@@ -126,7 +126,7 @@ $(document).ready( function() {
 			var snps = true
 		}
 		let figs = [];
-		figs.zoomFig = new ZoomableChart("zoomPlot");
+		figs.zoomFig = new ZoomableChart("zoomPlot", data);
 		
 		figs.pathyFig = new hydropathyPlot("pathyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Smoothed hydropathy per residue")
