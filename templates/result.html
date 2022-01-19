@@ -86,7 +86,6 @@ $(document).ready( function() {
 				value.update_bars(data);
 			}
 			catch {
-	
 				console.log("Failed to update: " + key)
 			}
 		}
@@ -127,6 +126,8 @@ $(document).ready( function() {
 			var snps = true
 		}
 		let figs = [];
+		figs.zoomFig = new ZoomableChart("zoomPlot");
+		
 		figs.pathyFig = new hydropathyPlot("pathyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Smoothed hydropathy per residue")
 			.add_tooltip(hydropathy_tool_text);
@@ -155,8 +156,8 @@ $(document).ready( function() {
 			.add_tooltip(uversky_tool_text)
 			.add_ContinuousLegend("PuOr", {min: "-0.65", med: "0.05", max: "0.73"});
     
-		if (my_disorder == "0") {
-			figs.disorderFig = new blobChart("disorderPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
+		if (my_disorder == 0) {
+			figs.disorderFig = new Figure("disorderPlot", data)
 				.add_title("DISORDER UNAVAILABLE")
 				.add_tooltip("Disorder information is acquired from Uniprot. To see the disorder plot, please provide the Uniprot ID on the previous page.");
 		} else {

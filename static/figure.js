@@ -1,5 +1,119 @@
+// Based on this tutorial: https://www.d3-graph-gallery.com/graph/interactivity_zoom.html
+class ZoomableChart {
+	constructor(figID) {
+		let node = document.createElement("div");
+		this.container = document.getElementById("my_dataviz").appendChild(node);
+		
+		// set the dimensions and margins of the graph
+		var margin = {top: 10, right: 30, bottom: 30, left: 60},
+			width = 460 - margin.left - margin.right,
+			height = 400 - margin.top - margin.bottom;
+
+		// append the svg object to the body of the page
+		var Svg = d3.select(this.container)
+		  .append("svg")
+			.attr("width", width + margin.left + margin.right)
+			.attr("height", height + margin.top + margin.bottom)
+		  .append("g")
+			.attr("transform",
+				  "translate(" + margin.left + "," + margin.top + ")");
+
+		//Read the data
+		const data = d3.csv("https://raw.githubusercontent.com/holtzy/D3-graph-gallery/master/DATA/iris.csv");
+		data.then(function(data){
+
+			// Add X axis
+			var x = d3.scaleLinear()
+				.domain([4, 8])
+				.range([ 0, width ]);
+			var xAxis = Svg.append("g")
+				.attr("transform", "translate(0," + height + ")")
+				.call(d3.axisBottom(x));
+
+			// Add Y axis
+			var y = d3.scaleLinear()
+				.domain([0, 9])
+				.range([ height, 0]);
+			Svg.append("g")
+				.call(d3.axisLeft(y));
+
+			// Add a clipPath: everything out of this area won't be drawn.
+			var clip = Svg.append("defs").append("svg:clipPath")
+				.attr("id", "clip")
+				.append("svg:rect")
+				.attr("width", width )
+				.attr("height", height )
+				.attr("x", 0)
+				.attr("y", 0);
+
+			// Color scale: give me a specie name, I return a color
+			var color = d3.scaleOrdinal()
+				.domain(["setosa", "versicolor", "virginica" ])
+				.range([ "#440154ff", "#21908dff", "#fde725ff"])
+
+			// Add brushing
+			var brush = d3.brushX()                 // Add the brush feature using the d3.brush function
+				.extent( [ [0,0], [width,height] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+				.on("end", updateChart) // Each time the brush selection changes, trigger the 'updateChart' function
+
+			// Create the scatter variable: where both the circles and the brush take place
+			var scatter = Svg.append('g')
+				.attr("clip-path", "url(#clip)")
+
+			// Add circles
+			scatter
+				.selectAll("circle")
+				.data(data)
+				.enter()
+				.append("circle")
+				  .attr("cx", d => x(d.Sepal_Length))
+				  .attr("cy", d => y(d.Petal_Length) )
+				  .attr("r", 8)
+				  .style("fill", d => color(d.Species) )
+				  .style("opacity", 0.5)
+			
+			// Add the brushing
+			scatter
+				.append("g")
+				  .attr("class", "brush")
+				  .call(brush);
+
+			// A function that set idleTimeOut to null
+			var idleTimeout
+			function idled() { idleTimeout = null; }
+
+			// A function that update the chart for given boundaries
+			function updateChart(event) {
+				const extent = event.selection
+
+				// If no selection, back to initial coordinate. Otherwise, update X axis domain
+				if(!extent){
+				  if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+				  x.domain([ 4,8])
+				}else{
+				  x.domain([ x.invert(extent[0]), x.invert(extent[1]) ])
+				  scatter.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
+				}
+
+				// Update axis and circle position
+				xAxis.transition().duration(1000).call(d3.axisBottom(x))
+				scatter
+				  .selectAll("circle")
+				  .transition().duration(1000)
+				  .attr("cx", function (d) { return x(d.Sepal_Length); } )
+				  .attr("cy", function (d) { return y(d.Petal_Length); } )
+			}
+		});
+	}
+}
+
+
+
+
+
+
 class Figure {
-	constructor(figID, data) {
+	constructor(figID, data, snps=0) {
 		// These constants set fixed values for height and width to be used in making all four visualizations
 		this.MARGIN = { top: 30, right: 230, bottom: 30, left: 50 };
 		this.GLOBAL_WIDTH = 1200 - this.MARGIN.left - this.MARGIN.right;
@@ -12,12 +126,7 @@ class Figure {
 		node.style.position = "relative";
 		this.container = document.getElementById("my_dataviz").appendChild(node);
 
-		this.svg = d3.select(this.container)
-			.append("svg")
-			.attr("width", this.GLOBAL_WIDTH + this.MARGIN.left + this.MARGIN.right)
-			.attr("height", this.GLOBAL_HEIGHT + this.MARGIN.top + this.MARGIN.bottom + 45)
-			.append("g")
-			.attr("transform", "translate(" + this.MARGIN.left + "," + this.MARGIN.top + ")");
+
 			
 		this.y = d3.scaleLinear()
 			.domain([0, 1])
@@ -28,12 +137,45 @@ class Figure {
 			.range([0, this.GLOBAL_WIDTH])
 			.domain(data.map(d => d.resid ))
 			.padding(0.2);
-			
 		this.data = data;
-	
+				
+		var x = this.x;
+		var margin = this.MARGIN;
+		var height = this.GLOBAL_HEIGHT;
+		var width = this.GLOBAL_WIDTH;
+		
+		this.svg = d3.select(this.container)
+				.append("svg")
+				.attr("width", this.GLOBAL_WIDTH + this.MARGIN.left + this.MARGIN.right)
+				.attr("height", this.GLOBAL_HEIGHT + this.MARGIN.top + this.MARGIN.bottom + 45)
+				.append("g")
+				.attr("transform", "translate(" + this.MARGIN.left + "," + this.MARGIN.top + ")")
+				.attr("viewBox", [0,0,this.GLOBAL_WIDTH, this.GLOBAL_HEIGHT])
+				.call(zoom);
+		this.add_xAxis(snps);	
+		var xAxis = this.xAxis
 
+		
+		function zoom(svg) {
+			const extent = [[margin.left, margin.top], [width - margin.right, height - margin.top]];
+			
+			svg.call(d3.zoom()
+				.scaleExtent([1, 8])
+				.translateExtent(extent)
+				.extent(extent)
+				.on("zoom", zoomed));
+
+			function zoomed(event) {
+				x.range([margin.left, width - margin.right].map(d => event.transform.applyX(d)));
+				svg.selectAll(".bars rect").attr("x", d => x(d.name)).attr("width", x.bandwidth());
+				svg.selectAll(".x-axis").call(xAxis);
+			}
+		}
+		
 		return this;
 	}
+	
+
 
 	add_title(title){
 	    // Creates the title
@@ -290,11 +432,42 @@ class Figure {
 		return this
 	}
 	
+	add_xAxis(snps=0, x=this.x, y=this.y){
+		if (snps) {
+			var xaxisMargin = this.GLOBAL_HEIGHT + 15
+		} else {
+			var xaxisMargin = this.GLOBAL_HEIGHT
+		}
+
+		var num_residues = this.data.length
+		var tickPeriod = (Math.round((Math.round(num_residues/10))/10)*10)
+		this.xAxis = this.svg.append("g")
+						.attr("transform", "translate(0," + xaxisMargin + ")")
+						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
+						   (tickPeriod) )})));
+		
+		// Bars
+		//Creates the "Residue" x-axis label
+		if (snps) {
+			var bottomMargin = this.MARGIN.bottom + 25
+		} else {
+			var bottomMargin = this.MARGIN.bottom
+		}
+		this.svg.append("text")
+			.attr("x", this.GLOBAL_WIDTH / 2)
+			.attr("y", this.GLOBAL_HEIGHT + bottomMargin)
+			.style("text-anchor", "middle")
+			.text("Residue")
+		
+		return this
+	}
+
+	
 }
 
 class barChart extends Figure {
 	constructor(figID, data, snps, seq, snp_tooltips) {
-		super(figID, data);
+		super(figID, data, snps);
 		this.build_barChart(snps.length)
 		if (snps) {
 			this.add_snps(snps, seq, snp_tooltips)
@@ -341,15 +514,6 @@ class barChart extends Figure {
 	}
 	
 	build_barChart(snps=0, timing=0, x=this.x, y=this.y) {
-		// Add a clipPath: everything out of this area won't be drawn.
-		this.clip = this.svg.append("defs").append("svg:clipPath")
-			.attr("id", "clip")
-			.append("svg:rect")
-			.attr("width", this.GLOBAL_WIDTH )
-			.attr("height", this.GLOBAL_HEIGHT )
-			.attr("x", 0)
-			.attr("y", 0);
-		
 		this.bars = this.svg.selectAll("bars")
 			.data(this.data)
 			.join("rect")
@@ -359,39 +523,11 @@ class barChart extends Figure {
 			.attr("x", (d) => x(d.resid))
 			.attr("y", this.GLOBAL_HEIGHT);
 			
-		this.update_bars(this.data, timing);
-		this.add_xAxis(snps)
+		
 		
 		return this;
 	}
 	
-	add_xAxis(snps=0, x=this.x, y=this.y){
-		if (snps) {
-			var xaxisMargin = this.GLOBAL_HEIGHT + 15
-		} else {
-			var xaxisMargin = this.GLOBAL_HEIGHT
-		}
-		var num_residues = this.data.length
-		this.xAxis = this.svg.append("g")
-						.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
-						   (Math.round((Math.round(num_residues/10))/10)*10) )})))
-						.attr("transform", "translate(0," + xaxisMargin + ")");
-		
-		// Bars
-		//Creates the "Residue" x-axis label
-		if (snps) {
-			var bottomMargin = this.MARGIN.bottom + 25
-		} else {
-			var bottomMargin = this.MARGIN.bottom
-		}
-		this.svg.append("text")
-			.attr("x", this.GLOBAL_WIDTH / 2)
-			.attr("y", this.GLOBAL_HEIGHT + bottomMargin)
-			.style("text-anchor", "middle")
-			.text("Residue")
-
-		return this
-	}
 
 }
 
@@ -399,7 +535,7 @@ class blobChart extends barChart {
 	constructor(figID, data, snps, seq, snp_tooltips, num_residues) {
 		super(figID, data, snps, seq, snp_tooltips, num_residues);
 		this.add_psh_ylabel();
-		this.update_bars();
+		this.update_bars(data);
 		this.add_skyline();
 	}
 	
@@ -446,7 +582,7 @@ class blobChart extends barChart {
 		return this;
 	}
 	
-	update_bars(data=this.data, timing=1000, x=this.x, y=this.y) {
+	update_bars(data, timing=1000, x=this.x, y=this.y) {
 		this.data = data;
 		this.bars.data(data);
 		
@@ -523,10 +659,10 @@ class hydropathyPlot extends barChart {
 	constructor(figID, data, snps, seq, snp_tooltips, cutoff_init=0.4) {
 		super(figID, data, snps, seq, snp_tooltips);
 		this.add_cutoff_line(cutoff_init);
-		this.add_hydropathy_bars();
+		//this.add_hydropathy_bars();
 		this.add_yAxis();
 		this.add_pathy_ylabel();
-		this.update_bars();
+		this.update_bars(data);
 	}
 
 	add_pathy_ylabel() {
@@ -577,29 +713,28 @@ class hydropathyPlot extends barChart {
 	/* add_hydropathy_bars
 	*/
 	add_hydropathy_bars(x=this.x, y=this.y) {
-		this.hydropathy_bars = this.svg.selectAll("mybar")
-		this.hydropathy_bars.data(this.data)
+		this.bars = this.svg.selectAll("mybar")
+		this.bars.data(this.data)
 			.enter()
 			.append("rect")
 			.attr("x", (d) => x(d.resid))
 			.attr("y", (d) => y(d.hydropathy_3_window_mean))
 			.attr("width", x.bandwidth())
 			.attr("height", (d) => this.GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean))
-			.attr("fill", 'grey')
+			.attr("fill", 'grey');
 
 		return this
 	}	
 	
-	update_bars(data=this.data, timing=1000, x=this.x, y=this.y) {
+	update_bars(data, timing=1000, x=this.x, y=this.y) {
 		this.data = data;
 		this.bars.data(data);
-		
-		// The hydropathy plot requires special colors
+		//console.log(this.bars.data())
 		this.bars.transition()
 			.duration(timing)
-			.attr("y", (d) => y(d.hydropathy_3_window_mean))
-			.attr("height", (d) => this.GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean));
-		this.bars.attr("fill", 'grey');
+			.attr("y", d => y(d.hydropathy_3_window_mean))
+			.attr("fill", "grey")
+			.attr("height", d => this.GLOBAL_HEIGHT - y(d.hydropathy_3_window_mean));
 
 		return this;
 	}
