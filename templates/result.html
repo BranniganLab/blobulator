@@ -131,36 +131,36 @@ $(document).ready( function() {
 			.add_title("Smoothed hydropathy per residue")
 			.add_tooltip(hydropathy_tool_text);
 
-		figs.blobFig = new blobChart("blobPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
+		figs.blobFig = new ZblobChart("blobPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to blob type")
 			.add_BlobLegend();
 		
-		figs.globFig = new blobChart("globPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
+		figs.globFig = new ZblobChart("globPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to globular tendency (Das-Pappu Phase)")
 			.add_tooltip(Das_Pappu_text)
 			.add_GlobularLegend();
 
-		figs.ncprFig = new blobChart("ncprPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
+		figs.ncprFig = new ZblobChart("ncprPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to net charge per residue")
 			.add_tooltip(ncpr_tool_text)
 			.add_ContinuousLegend("RWB", {min: "-0.5", med: "0.0", max: "+0.5"});
 
-		figs.richFig = new blobChart("richPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
+		figs.richFig = new ZblobChart("richPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to estimated mutation sensitivity")
 			.add_tooltip(enrichment_tool_text)
 			.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"});
 
-		figs.uverskyFig = new blobChart("uverskyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
+		figs.uverskyFig = new ZblobChart("uverskyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to distance from Uversky-Gillespie-Fink boundary")
 			.add_tooltip(uversky_tool_text)
 			.add_ContinuousLegend("PuOr", {min: "-0.65", med: "0.05", max: "0.73"});
     
 		if (my_disorder == 0) {
-			figs.disorderFig = new Figure("disorderPlot", data)
+			figs.disorderFig = new ZFigure("disorderPlot", data)
 				.add_title("DISORDER UNAVAILABLE")
 				.add_tooltip("Disorder information is acquired from Uniprot. To see the disorder plot, please provide the Uniprot ID on the previous page.");
 		} else {
-			figs.disorderFig = new blobChart("disorderPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
+			figs.disorderFig = new ZblobChart("disorderPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 				.add_title("Blobs colored according to disordered fraction")
 				.add_tooltip(disorder_tool_text)
 				.add_ContinuousLegend("PuOr", {min: "0.0", med: "0.5", max: "1.0"});
