@@ -1,7 +1,7 @@
 // Based on this tutorial: https://www.d3-graph-gallery.com/graph/interactivity_zoom.html
 class ZoomableChart {
 	constructor(figID, data) {
-		// These constants set fixed values for height and width to be used in making all four visualizations
+		// These constants set fixed values for height and width to be used in making all visualizations
 		this.MARGIN = { top: 30, right: 230, bottom: 30, left: 50 };
 		this.WIDTH = 1200 - this.MARGIN.left - this.MARGIN.right;
 		this.HEIGHT = 200 - this.MARGIN.top - this.MARGIN.bottom;
@@ -52,14 +52,10 @@ class ZoomableChart {
 			.domain(["setosa", "versicolor", "virginica" ])
 			.range([ "#440154ff", "#21908dff", "#fde725ff"]) */
 
-		// Add brushing
-		var brush = d3.brushX()                 // Add the brush feature using the d3.brush function
-			.extent( [ [0,0], [this.WIDTH, this.HEIGHT] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
-			.on("end", updateChart) // Each time the brush selection changes, trigger the 'updateChart' function
 
 		// Create the plot
 		this.plot = Svg.append('g')
-			.attr("clip-path", "url(#clip)")
+			.attr("clip-path", "url(#clip)");
 	
 
 		this.data = data
@@ -73,8 +69,12 @@ class ZoomableChart {
 			.attr("y", d => this.HEIGHT)
 			.style("fill", "grey" );
 			
-		
 		this.update_bars(data);
+		
+		// Add brushing
+		var brush = d3.brushX()                 // Add the brush feature using the d3.brush function
+			.extent( [ [0,0], [this.WIDTH, this.HEIGHT] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+			.on("end", updateChart) // Each time the brush selection changes, trigger the 'updateChart' function
 		
 		// Add the brushing
 		this.plot
@@ -85,10 +85,13 @@ class ZoomableChart {
 		// A function that set idleTimeOut to null
 		var idleTimeout
 		function idled() { idleTimeout = null; }
+		
 		// A function that update the chart for given boundaries
+		// Make this. variables local variables so they can be used inside updateChart
 		var bars = this.bars
 		var plot = this.plot
 		var y = this.y
+		var width = this.WIDTH
 		const range = ([min, max]) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
 		function updateChart(event) {
 			const extent = event.selection
@@ -99,16 +102,25 @@ class ZoomableChart {
 			  x.domain(data.map(d => d.resid ))
 			}else{
 			  var domain = [ scaleBandInvert(x)(extent[0]), scaleBandInvert(x)(extent[1]) ]
-			  console.log(domain)
+			  console.log(range(domain))
 			  x.domain(range(domain))
+			  
 			  plot.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
 			}
 
-			// Update axis and circle position
+			// Update axis and bar position
 			xAxis.transition().duration(1000).call(d3.axisBottom(x))
 			bars
 			  .transition().duration(1000)
-			  .attr("x", function (d) { return x(d.resid); } )
+			  .attr("x", function (d) { 
+				if(extent && d.resid>domain[1]){
+					return width+10
+				}else if(extent && d.resid<domain[0]){
+					return -10;
+				}else{
+					return x(d.resid); 
+				}
+			  })
 			  .attr("y", function (d) { return y(d.hydropathy_3_window_mean); } )
 		}
 		
