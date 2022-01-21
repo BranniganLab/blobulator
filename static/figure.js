@@ -328,16 +328,15 @@ class ZHydropathy extends ZChart{
 	}
 	
 	add_cutoff_line(my_cut=0.4, x=this.x, y=this.y) {
-		this.cut_line = this.svg.append('g')
-			.append("path")
-			.attr("class", "mypath")
-			.datum(this.data)
+		this.cut_line = this.plot.append('g')
+			.append("line")
 			.attr("fill", "none")
 			.attr("stroke", "steelblue")
 			.attr("stroke-width", 1.5)
-			.attr("d", d3.line()
-				.x((d) => x(d.resid))
-				.y((d) => y(my_cut)));
+			.attr("x1", 0)
+			.attr("x2", this.WIDTH)
+			.attr("y1", y(my_cut))
+			.attr("y2", y(my_cut))
 
 		return this;
 	}
@@ -346,9 +345,8 @@ class ZHydropathy extends ZChart{
 		this.cut_line
 			.transition()
 			.duration(1000)
-			.attr("d", d3.line()
-				.x((d) => x(d.resid))
-				.y((d) => y(my_cut)));
+			.attr("y2", y(my_cut))
+			.attr("y1", y(my_cut));
 
 		return this;
 	}

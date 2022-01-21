@@ -79,7 +79,6 @@ $(document).ready( function() {
 	// A function that updates the charts
 	function update_Charts(figs, data) {
 		figs.pathyFig.update_cutoff_line(d3.select("#cutoff_user").text());
-		figs.zoomFig.update_cutoff_line(d3.select("#cutoff_user").text());
 
 		//iterate over all figures in figs and update them
 		for (let [key, value] of Object.entries(figs)) { 
@@ -127,11 +126,8 @@ $(document).ready( function() {
 			var snps = true
 		}
 		let figs = [];
-		figs.zoomFig = new ZHydropathy("zoomPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
-			.add_title("Smoothed hydropathy per residue")
-			.add_tooltip(hydropathy_tool_text);
-		
-		figs.pathyFig = new hydropathyPlot("pathyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
+	
+		figs.pathyFig = new ZHydropathy("pathyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Smoothed hydropathy per residue")
 			.add_tooltip(hydropathy_tool_text);
 
