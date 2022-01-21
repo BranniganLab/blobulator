@@ -1,163 +1,3 @@
-// Based on this tutorial: https://www.d3-graph-gallery.com/graph/interactivity_zoom.html
-class ZoomableChart {
-	constructor(figID, data) {
-		// These constants set fixed values for height and width to be used in making all visualizations
-		this.MARGIN = { top: 30, right: 230, bottom: 30, left: 50 };
-		this.WIDTH = 1200 - this.MARGIN.left - this.MARGIN.right;
-		this.HEIGHT = 200 - this.MARGIN.top - this.MARGIN.bottom;
-		
-		this.figID = figID
-		
-		let node = document.createElement("div");
-		node.style.position = "relative";
-		this.container = document.getElementById("my_dataviz").appendChild(node);
-		
-		// append the svg object to the body of the page
-		var Svg = d3.select(this.container)
-		  .append("svg")
-			.attr("width", this.WIDTH + this.MARGIN.left + this.MARGIN.right)
-			.attr("height", this.HEIGHT + this.MARGIN.top + this.MARGIN.bottom)
-		  .append("g")
-			.attr("transform",
-				  "translate(" + this.MARGIN.left + "," + this.MARGIN.top + ")");
-
-		// Add X axis
-		var x = d3.scaleBand()
-			.range([0, this.WIDTH])
-			.domain(data.map(d => d.resid ))
-			.padding(0.2);
-		var xAxis = Svg.append("g")
-			.attr("transform", "translate(0," + this.HEIGHT + ")")
-			.call(d3.axisBottom(x));
-
-		// Add Y axis
-		this.y = d3.scaleLinear()
-			.domain([0, 1])
-			.range([this.HEIGHT, 0]);
-			
-		Svg.append("g")
-			.call(d3.axisLeft(this.y));
-
-		// Add a clipPath: everything out of this area won't be drawn.
-		var clip = Svg.append("defs").append("svg:clipPath")
-			.attr("id", "clip")
-			.append("svg:rect")
-			.attr("width", this.WIDTH )
-			.attr("height", this.HEIGHT )
-			.attr("x", 0)
-			.attr("y", 0);
-
-		// Color scale: give me a specie name, I return a color
-/* 		var color = d3.scaleOrdinal()
-			.domain(["setosa", "versicolor", "virginica" ])
-			.range([ "#440154ff", "#21908dff", "#fde725ff"]) */
-
-
-		// Create the plot
-		this.plot = Svg.append('g')
-			.attr("clip-path", "url(#clip)");
-	
-
-		this.data = data
-
-		this.bars = this.plot.selectAll("bars")
-			.data(this.data)
-			.join("rect")
-			.attr("id", "barChart"+this.figID)
-			.attr("width", x.bandwidth())
-			.attr("x", (d) => x(d.resid))
-			.attr("y", d => this.HEIGHT)
-			.style("fill", "grey" );
-			
-		this.update_bars(data);
-		
-		// Add brushing
-		var brush = d3.brushX()                 // Add the brush feature using the d3.brush function
-			.extent( [ [0,0], [this.WIDTH, this.HEIGHT] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
-			.on("end", updateChart) // Each time the brush selection changes, trigger the 'updateChart' function
-		
-		// Add the brushing
-		this.plot
-			.append("g")
-			  .attr("class", "brush")
-			  .call(brush);
-
-		// A function that set idleTimeOut to null
-		var idleTimeout
-		function idled() { idleTimeout = null; }
-		
-		// A function that update the chart for given boundaries
-		// Make this. variables local variables so they can be used inside updateChart
-		var bars = this.bars
-		var plot = this.plot
-		var y = this.y
-		var width = this.WIDTH
-		const range = ([min, max]) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
-		function updateChart(event) {
-			const extent = event.selection
-			
-			// If no selection, back to initial coordinate. Otherwise, update X axis domain
-			if(!extent){
-			  if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-			  x.domain(data.map(d => d.resid ))
-			}else{
-			  var domain = [ scaleBandInvert(x)(extent[0]), scaleBandInvert(x)(extent[1]) ]
-			  console.log(range(domain))
-			  x.domain(range(domain))
-			  
-			  plot.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
-			}
-
-			// Update axis and bar position
-			xAxis.transition().duration(1000).call(d3.axisBottom(x))
-			bars
-			  .transition().duration(1000)
-			  .attr("x", function (d) { 
-				if(extent && d.resid>domain[1]){
-					return width+10
-				}else if(extent && d.resid<domain[0]){
-					return -10;
-				}else{
-					return x(d.resid); 
-				}
-			  })
-			  .attr("y", function (d) { return y(d.hydropathy_3_window_mean); } )
-		}
-		
-		function scaleBandInvert(scale) {
-		  var domain = scale.domain();
-		  var paddingOuter = scale(domain[0]);
-		  var eachBand = scale.step();
-		  return function (value) {
-			var index = Math.floor(((value - paddingOuter) / eachBand));
-			return domain[Math.max(0,Math.min(index, domain.length-1))];
-		  }
-		}
-	}
-	
-
-	
-	update_bars(data, timing=1000, x=this.x, y=this.y) {
-		this.data = data;
-		this.bars.data(data);
-		//console.log(this.bars.data())
-		this.bars.transition()
-			.duration(timing)
-			.attr("y", d => y(d.hydropathy_3_window_mean))
-			.attr("fill", "grey")
-			.attr("height", d => this.HEIGHT - y(d.hydropathy_3_window_mean));
-
-		return this;
-	}
-}
-
-
-
-
-
-
-
-
 class Figure {
 	constructor(figID, data, snps=0) {
 		// These constants set fixed values for height and width to be used in making all four visualizations
@@ -485,9 +325,213 @@ class Figure {
 		
 		return this
 	}
+}
+
+
+
+// Based on this tutorial: https://www.d3-graph-gallery.com/graph/interactivity_zoom.html
+class ZoomableChart extends Figure {
+	constructor(figID, data, snps=0) {
+		// These constants set fixed values for height and width to be used in making all visualizations
+		this.MARGIN = { top: 30, right: 230, bottom: 30, left: 50 };
+		this.WIDTH = 1200 - this.MARGIN.left - this.MARGIN.right;
+		this.HEIGHT = 200 - this.MARGIN.top - this.MARGIN.bottom;
+		
+		this.figID = figID
+		this.data = data
+		
+		let node = document.createElement("div");
+		node.style.position = "relative";
+		this.container = document.getElementById("my_dataviz").appendChild(node);
+		
+		// append the svg object to the body of the page
+		this.Svg = d3.select(this.container)
+		  .append("svg")
+			.attr("width", this.WIDTH + this.MARGIN.left + this.MARGIN.right)
+			.attr("height", this.HEIGHT + this.MARGIN.top + this.MARGIN.bottom)
+		  .append("g")
+			.attr("transform",
+				  "translate(" + this.MARGIN.left + "," + this.MARGIN.top + ")");
+
+		// Add X axis
+		var x = d3.scaleBand()
+			.range([0, this.WIDTH])
+			.domain(data.map(d => d.resid ))
+			.padding(0.2);
+		this.add_xAxis(snps, x)
+/* 		var xAxis = Svg.append("g")
+			.attr("transform", "translate(0," + this.HEIGHT + ")")
+			.call(d3.axisBottom(x)); */
+
+		// Add Y axis
+		this.y = d3.scaleLinear()
+			.domain([0, 1])
+			.range([this.HEIGHT, 0]);
+			
+		this.Svg.append("g")
+			.call(d3.axisLeft(this.y));
+
+		// Add a clipPath: everything out of this area won't be drawn.
+		var clip = this.Svg.append("defs").append("svg:clipPath")
+			.attr("id", "clip")
+			.append("svg:rect")
+			.attr("width", this.WIDTH )
+			.attr("height", this.HEIGHT )
+			.attr("x", 0)
+			.attr("y", 0);
+
+		// Color scale: give me a specie name, I return a color
+/* 		var color = d3.scaleOrdinal()
+			.domain(["setosa", "versicolor", "virginica" ])
+			.range([ "#440154ff", "#21908dff", "#fde725ff"]) */
+
+
+		// Create the plot
+		this.plot = this.Svg.append('g')
+			.attr("clip-path", "url(#clip)");
+	
+
+		this.data = data
+
+		this.bars = this.plot.selectAll("bars")
+			.data(this.data)
+			.join("rect")
+			.attr("id", "barChart"+this.figID)
+			.attr("width", x.bandwidth())
+			.attr("x", (d) => x(d.resid))
+			.attr("y", d => this.HEIGHT)
+			.style("fill", "grey" );
+			
+		this.update_bars(data);
+		
+		// Add brushing
+		var brush = d3.brushX()                 // Add the brush feature using the d3.brush function
+			.extent( [ [0,0], [this.WIDTH, this.HEIGHT] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+			.on("end", updateChart) // Each time the brush selection changes, trigger the 'updateChart' function
+		
+		// Add the brushing
+		this.plot
+			.append("g")
+			  .attr("class", "brush")
+			  .call(brush);
+
+		// A function that set idleTimeOut to null
+		var idleTimeout
+		function idled() { idleTimeout = null; }
+		
+		// A function that update the chart for given boundaries
+		// Make this. variables local variables so they can be used inside updateChart
+		var bars = this.bars
+		var plot = this.plot
+		var y = this.y
+		var width = this.WIDTH
+		var Svg = this.Svg
+		var xAxis = this.xAxis
+		var chart = this
+		const range = ([min, max]) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
+		function updateChart(event) {
+			console.log(this)
+			const extent = event.selection
+			
+			// If no selection, back to initial coordinate. Otherwise, update X axis domain
+			if(!extent){
+			  if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+			  x.domain(data.map(d => d.resid ))
+			}else{
+			  var domain = [ scaleBandInvert(x)(extent[0]), scaleBandInvert(x)(extent[1]) ]
+			  console.log(range(domain))
+			  x.domain(range(domain))
+			  
+			  plot.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
+			}
+
+			// Update axis and bar position
+			xAxis.transition().duration(1000).call(d3.axisBottom(x))
+			bars
+			  .transition().duration(1000)
+			  .attr("x", function (d) { 
+				if(extent && d.resid>domain[1]){
+					return width+10
+				}else if(extent && d.resid<domain[0]){
+					return -10;
+				}else{
+					return x(d.resid); 
+				}
+			  })
+			  .attr("y", function (d) { return y(d.hydropathy_3_window_mean); } )
+			  chart.update_xAxis(x)
+		}
+		
+		function scaleBandInvert(scale) {
+		  var domain = scale.domain();
+		  var paddingOuter = scale(domain[0]);
+		  var eachBand = scale.step();
+		  return function (value) {
+			var index = Math.floor(((value - paddingOuter) / eachBand));
+			return domain[Math.max(0,Math.min(index, domain.length-1))];
+		  }
+		}
+	}
+	
 
 	
+	update_bars(data, timing=1000, x=this.x, y=this.y) {
+		this.data = data;
+		this.bars.data(data);
+		//console.log(this.bars.data())
+		this.bars.transition()
+			.duration(timing)
+			.attr("y", d => y(d.hydropathy_3_window_mean))
+			.attr("fill", "grey")
+			.attr("height", d => this.HEIGHT - y(d.hydropathy_3_window_mean));
+
+		return this;
+	}
+	
+	
+	add_xAxis(snps=0, x){
+		if (snps) {
+			var xaxisMargin = this.HEIGHT + 15
+		} else {
+			var xaxisMargin = this.HEIGHT
+		}
+
+		var num_residues = this.data.length
+		
+		this.xAxis = this.Svg.append("g")
+						.attr("transform", "translate(0," + xaxisMargin + ")");
+						
+		this.update_xAxis(x)
+		
+		// Bars
+		//Creates the "Residue" x-axis label
+		if (snps) {
+			var bottomMargin = this.MARGIN.bottom + 25
+		} else {
+			var bottomMargin = this.MARGIN.bottom
+		}
+		this.Svg.append("text")
+			.attr("x", this.WIDTH / 2)
+			.attr("y", this.HEIGHT + bottomMargin)
+			.style("text-anchor", "middle")
+			.text("Residue")
+		
+		return this
+	}
+	
+	update_xAxis(x){
+		console.log(x.domain().length)
+		var tickPeriod = (Math.round((Math.round(x.domain().length/10))/10)*10)
+		this.xAxis.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
+						   (tickPeriod) )})));
+		return this
+	}
 }
+
+
+
+
+
 
 class barChart extends Figure {
 	constructor(figID, data, snps, seq, snp_tooltips) {
