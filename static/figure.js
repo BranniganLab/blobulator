@@ -237,9 +237,10 @@ class ZChart extends ZFigure{
 			.attr('d', arc)
 			.attr("fill", 'black')
 			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 145)")
-			.on("click", function(event, d) {
-				//window.location.href = d.xrefs[0].url+'_blank'
-				window.open(d.xrefs.url, '_blank')
+			.on("click", function(event, d){
+				document.getElementById("snp_id").value = d.resid;
+				document.getElementById("residue_type").value = d.alternativeSequence;
+				document.getElementById("mutatebox").click();
 			})
 			.on("mouseover", function(event, d) {
 				d3.select(this)
