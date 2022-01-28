@@ -15,6 +15,7 @@ pandas
 matplotlib
 svglib
 reportlab
+flask (website version)
 ```
 
 ## Installation guide:

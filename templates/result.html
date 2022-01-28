@@ -86,7 +86,6 @@ $(document).ready( function() {
 				value.update_bars(data);
 			}
 			catch {
-	
 				console.log("Failed to update: " + key)
 			}
 		}
@@ -100,7 +99,7 @@ $(document).ready( function() {
 			const snp_id = document.getElementById("snp_id").value;
 			const amino_acid = document.getElementById("residue_type").value;
 			my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
-		}
+		} 
 
 		const d_value = d3.select("#domain_threshold_user").text();
 		const selectedValue = d3.select("#cutoff_user").text();
@@ -115,10 +114,10 @@ $(document).ready( function() {
 			});
 	}
 
-	// Gather the data and draw the plots
 	function draw(data) {
 		const my_snp = {{ my_snp | safe }};
 		const my_seq = {{ my_seq | safe }};
+		var   my_cut = {{ my_cut | safe }}
 		const my_disorder = {{ my_disorder | tojson | safe }};
 		const domain_threshold_max = {{ domain_threshold_max | safe }};
 		if (my_disorder == "0") {
@@ -127,89 +126,51 @@ $(document).ready( function() {
 			var snps = true
 		}
 		let figs = [];
-
-		// Gray plot that shows the residues individually based on their hydropathy score
-		figs.pathyFig = new Figure("pathyPlot", data)
+	
+		figs.pathyFig = new ZHydropathy("pathyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Smoothed hydropathy per residue")
-			.add_tooltip(hydropathy_tool_text)
-			.add_pathy_ylabel()
-			.add_cutoff_line({{ my_cut | safe }})
-			.build_barChart(domain_threshold_max, snps)
-			.add_yAxis()
-			.add_snps(my_snp, my_seq, Tooltip_snps);
+			.add_tooltip(hydropathy_tool_text);
 
-		// Plot that shows the residues grouped by blob type (h, p, or s)
-		figs.blobFig = new Figure("blobPlot", data)
+		figs.blobFig = new ZblobChart("blobPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to blob type")
-			.build_barChart(domain_threshold_max, snps)
-			.add_BlobLegend()
-			.add_snps(my_snp, my_seq, Tooltip_snps)
-			.add_psh_ylabel()
-			.add_skyline();
+			.add_BlobLegend();
 		
-		// Plot that shows the blobs according to Das-Pappu phase
-		figs.globFig = new Figure("globPlot", data)
+		figs.globFig = new ZblobChart("globPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to globular tendency (Das-Pappu Phase)")
 			.add_tooltip(Das_Pappu_text)
-			.add_GlobularLegend()
-			.build_barChart(domain_threshold_max, snps)
-			.add_snps(my_snp, my_seq, Tooltip_snps)
-			.add_psh_ylabel()
-			.add_skyline();
+			.add_GlobularLegend();
 
-		// Plot that shows blobs according to their net charge
-		figs.ncprFig = new Figure("ncprPlot", data)
+		figs.ncprFig = new ZblobChart("ncprPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to net charge per residue")
 			.add_tooltip(ncpr_tool_text)
-			.add_ContinuousLegend("RWB", {min: "-0.5", med: "0.0", max: "+0.5"})
-			.build_barChart(domain_threshold_max, snps)
-			.add_snps(my_snp, my_seq, Tooltip_snps)
-			.add_psh_ylabel()
-			.add_skyline();
+			.add_ContinuousLegend("RWB", {min: "-0.5", med: "0.0", max: "+0.5"});
 
-		// Plot that shows blobs according to esitmated mutation sensitivity
-		figs.richFig = new Figure("richPlot", data)
+		figs.richFig = new ZblobChart("richPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to estimated mutation sensitivity")
 			.add_tooltip(enrichment_tool_text)
-			.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"})
-			.build_barChart(domain_threshold_max, snps)
-			.add_snps(my_snp, my_seq, Tooltip_snps)
-			.add_psh_ylabel()
-			.add_skyline()
+			.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"});
 
-		// Plot that shows blobs according to their displacement from the Uversky-Gillespie-Fink boundary
-		figs.uverskyFig = new Figure("uverskyPlot", data)
-			.add_title("Blobs colored according to location Uversky-Gillespie-Fink boundary plot")
+		figs.uverskyFig = new ZblobChart("uverskyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
+			.add_title("Blobs colored according to distance from Uversky-Gillespie-Fink boundary")
 			.add_tooltip(uversky_tool_text)
-			.add_ContinuousLegend("PuOr", {min: "More Ordered", med: "", max: "More Disordered"})
-			.build_barChart(domain_threshold_max, snps)
-			.add_snps(my_snp, my_seq, Tooltip_snps)
-			.add_psh_ylabel()
-			.add_skyline();
+			.add_ContinuousLegend("PuOr", {min: "-0.65", med: "0.05", max: "0.73"});
     
-		// Error check for if disorder is available or not - if it's available, create a plot of the blobs colored according to the fraction of disordered residues. If not, return an error.
-		if (my_disorder == "0") {
-			figs.disorderFig = new Figure("disorderPlot", data)
+		if (my_disorder == 0) {
+			figs.disorderFig = new ZFigure("disorderPlot", data)
 				.add_title("DISORDER UNAVAILABLE")
 				.add_tooltip("Disorder information is acquired from Uniprot. To see the disorder plot, please provide the Uniprot ID on the previous page.");
 		} else {
-			figs.disorderFig = new Figure("disorderPlot", data)
+			figs.disorderFig = new ZblobChart("disorderPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 				.add_title("Blobs colored according to disordered fraction")
 				.add_tooltip(disorder_tool_text)
-				.add_ContinuousLegend("PuOr", {min: "0.0", med: "0.5", max: "1.0"})
-				.build_barChart(domain_threshold_max, snps)
-				.add_snps(my_snp, my_seq, Tooltip_snps)
-				.add_psh_ylabel()
-				.add_skyline();
+				.add_ContinuousLegend("PuOr", {min: "0.0", med: "0.5", max: "1.0"});
 		}
-		// Define text for within the buttons for downloading plots, or downloading data
+
 		var str_i = "Download plots!";
 		var str_j = "Download data!";
 
 		// Set up UI element change handler
 		d3.selectAll("#mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox").on("change", function(){do_update(figs, data)});
-
-
 		
 
 		//download_data
@@ -222,6 +183,7 @@ $(document).ready( function() {
 				var amino_acid = document.getElementById("residue_type").value;
 				my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
 			}
+
 			$.ajax({
 				url: "/json",
 				type: "post",
