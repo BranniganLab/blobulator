@@ -1,7 +1,7 @@
 #BLOB TYPE COLORER (BTC) TOOL
 
 # Read file that user wishes to analyze
-set file [open "1ubq_blobulated.csv" r]
+set file [open "Lysozyme_blobulated.csv" r]
 
 # Read data
 set file_data [read $file]
