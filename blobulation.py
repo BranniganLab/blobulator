@@ -31,14 +31,13 @@ Session(app) #This stores the user input for further calls
 REQUEST_URL_snp = "https://www.ebi.ac.uk/proteins/api/variation"
 REQUEST_URL_features = "https://www.ebi.ac.uk/proteins/api/features"
 REQUEST_UNIPROT_ID_FROM_ENSEMBL = "https://www.uniprot.org/uploadlists/"
-
+   
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     form = InputForm(request.form) #reads the user input
 
     if request.method == "POST":
-
         #checks if the user has provided uniprot id or residue sequence
         if "action_u" in request.form.to_dict(): #if uniprot id
             # get the disorder information for a given sequence
@@ -52,21 +51,32 @@ def index():
 
             user_uniprot_id = uniprot_id[0].strip()
 
-            if user_uniprot_id[0:3] == "ENS":
-                params = {
-                'from': 'ENSEMBL_ID',
-                'to': 'ACC',
-                'format': 'tab',
-                'query': user_uniprot_id
-                }
-                ensembl_data = urllib.parse.urlencode(params)
-                ensembl_data = ensembl_data.encode('utf-8')
-                req = urllib.request.Request(REQUEST_UNIPROT_ID_FROM_ENSEMBL, ensembl_data)
-                with urllib.request.urlopen(req) as f:
-                   response = f.read()
-                database_return = response.decode('utf-8')
-                listed_database_return = database_return.split()
-                user_uniprot_id = listed_database_return[3]
+            # Takes the input form, converts it to a dictionary, and requests the input type (from the dropdown menu selection) using the input_type key
+            request_dict = request.form.to_dict()
+            input_type = request_dict["input_type"]
+
+            types = {"ensembl_id":"ENSEMBL_ID"}
+
+            for input_key in types:
+                print(input_key)
+                if input_type == input_key:
+                    params = {
+                    'from': types[input_key],
+                    'to': 'ACC',
+                    'format': 'tab',
+                    'query': user_uniprot_id
+                    }
+                    ensembl_data = urllib.parse.urlencode(params)
+                    ensembl_data = ensembl_data.encode('utf-8')
+                    req = urllib.request.Request(REQUEST_UNIPROT_ID_FROM_ENSEMBL, ensembl_data)
+                    with urllib.request.urlopen(req) as f:
+                       response = f.read()
+                    database_return = response.decode('utf-8')
+                    print(database_return)
+                    listed_database_return = database_return.split()
+                    user_uniprot_id = listed_database_return[3]
+
+
 
             try:
                 response_d2p2 = requests.get(
