@@ -226,75 +226,74 @@ $(document).ready( function() {
 		<div class="text-center">
 			<h6> Uniprot ID: {{ my_uni_id | safe }}</h6>
 		</div>
-		<div class="sticky-top" style="background-color: white; padding: 1em;">
-		<table width ="100%">
-			<col style="width:22%">
-			<col style="width:8%">
-			<col style="width:70%">
-			<tr>
-			<td> <div class="text-left">
-				Hydropathy cutoff:
-				<label style = "opacity: 0.0; display: none;">
-					<span id="cutoff_user"></span>
-				</label> </td>
-				<td> <input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001> </td>
-				<td> <input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001> </td> </tr>
-			</div>
-			
-			<tr>
-			<td> <div class="text-left">
-				Minimum blob size:
-				<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
-				</label> </td>
-				<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> </td>
-				<td> <input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider2" step=1> </td> </tr>
-			</div>
 
-			<div>
-				<tr> <td> <input type="checkbox" class="checkbox" id="mutatebox" value="True"> <label for="mutatebox">Mutate residue:</label> </td>
-				<!-- my_seq includes single quotes in the string so we have to do this subscripting here -->
-				<td> <select id="snp_id">
-				{% for residue in my_seq[1:-1] %}
-				<option value="{{ loop.index0 + 1 }}"> {{ loop.index0 + 1 }} ({{ residue }})</option>
-				{% endfor %}
-				 </select> </td>
-				<td> to
-				<select id="residue_type">
-					<option disabled>&mdash; Positive &mdash;</option>
-					<option selected="selected" value="R">R - Arg</option>
-					<option value="H">H - His</option>
-					<option value="K">K - Lys</option>
-					<option disabled> &mdash; Negative &mdash;</option> 
-					<option value="D">D - Asp</option>
-					<option value="E">E - Glu</option>
-					<option	disabled> &mdash; Polar &mdash;</option>
-					<option value="N">N - Asn</option>
-					<option value="Q">Q - Gln</option>
-					<option value="S">S - Ser</option>
-					<option value="T">T - Thr</option>
-					<option	disabled>&mdash; Hydrophobic &mdash;</option>
-					<option value="A">A - Ala</option>
-					<option value="I">I - Ile</option>
-					<option value="L">L - Leu</option>
-					<option value="M">M - Met</option>
-					<option value="F">F - Phe</option>
-					<option value="W">W - Trp</option>
-					<option value="Y">Y - Tyr</option>
-					<option value="V">V - Val</option>  
-					<option	disabled>&mdash; Other &mdash;</option>
-					<option value="C">C - Cys</option>
-					<option value="G">G - Gly</option>
-					<option value="P">P - Pro</option>
-				</select> </tr> </td>
-			</div>
-		</table>
-		<div class="text-left">
-			<label style = "opacity: 0.0; display: none; position: relative;"> </label>
-			<button type="button" onclick="window.print();return false;">Download plots!</button>
-			<button type="button" id="download_data_link">Download data!</button>
-		</div>
-</div>
-		
+		<div class="result-controls">
+			<table>
+				<col style="width:22%">
+				<col style="width:8%">
+				<!-- col style="width:50%" -->
+				<tr>
+				<td> <div class="text-left">
+					Hydropathy cutoff:
+					<label style = "opacity: 0.0; display: none;">
+						<span id="cutoff_user"></span>
+					</label> </td>
+					<td> <input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001> </td>
+					<td> <input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001> </td> </tr>
+				</div>
+				
+				<tr>
+				<td> <div class="text-left">
+					Minimum blob size:
+					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
+					</label> </td>
+					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> </td>
+					<td> <input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider2" step=1> </td> </tr>
+				</div>
+	
+				<div>
+					<tr> <td> <input type="checkbox" class="checkbox" id="mutatebox" value="True"> <label for="mutatebox">Mutate residue:</label> </td>
+					<!-- my_seq includes single quotes in the string so we have to do this subscripting here -->
+					<td> <select id="snp_id">
+					{% for residue in my_seq[1:-1] %}
+					<option value="{{ loop.index0 + 1 }}"> {{ loop.index0 + 1 }} ({{ residue }})</option>
+					{% endfor %}
+					 </select> </td>
+					<td> to
+					<select id="residue_type">
+						<option disabled>&mdash; Positive &mdash;</option>
+						<option selected="selected" value="R">R - Arg</option>
+						<option value="H">H - His</option>
+						<option value="K">K - Lys</option>
+						<option disabled> &mdash; Negative &mdash;</option> 
+						<option value="D">D - Asp</option>
+						<option value="E">E - Glu</option>
+						<option	disabled> &mdash; Polar &mdash;</option>
+						<option value="N">N - Asn</option>
+						<option value="Q">Q - Gln</option>
+						<option value="S">S - Ser</option>
+						<option value="T">T - Thr</option>
+						<option	disabled>&mdash; Hydrophobic &mdash;</option>
+						<option value="A">A - Ala</option>
+						<option value="I">I - Ile</option>
+						<option value="L">L - Leu</option>
+						<option value="M">M - Met</option>
+						<option value="F">F - Phe</option>
+						<option value="W">W - Trp</option>
+						<option value="Y">Y - Tyr</option>
+						<option value="V">V - Val</option>  
+						<option	disabled>&mdash; Other &mdash;</option>
+						<option value="C">C - Cys</option>
+						<option value="G">G - Gly</option>
+						<option value="P">P - Pro</option>
+					</select> </tr> </td>
+				</div>
+			</table>
+				<label style = "opacity: 0.0; display: none; position: relative;"> </label>
+				<button type="button" onclick="window.print();return false;">Download plots!</button>
+				<button type="button" id="download_data_link">Download data!</button>
+	</div>
+	
 		<!--The div id my_dataviz is the div container for ALL D3 visualization plots, color keys-->
 		<div id="my_dataviz" class="viz_track">
 

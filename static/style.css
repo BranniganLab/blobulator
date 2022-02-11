@@ -24,7 +24,20 @@
 	min-width: 500px;
 }
 
+/* Sliders and controls for result graphs ("Hydropathy cutoff" and the like) */
+.result-controls {
+	background-color: white;
+	padding: 1em;
+	z-index: 100;
+	display: inline-block;
+}
 
+@media not print {
+	.result-controls {
+		position: sticky;
+		top: 0;
+	}
+}
 
 
 
