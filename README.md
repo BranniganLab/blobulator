@@ -46,7 +46,7 @@ The protein seqeunce and blobulation parameters can be changed with â€œcomputeâ€
 ```
 compute(seq, hydrophobicity_threshold, minimum_blob_length)
 ```
-Current defaluts for compute function
+Current defaults for compute function
 
 ```
 compute("MDVFMKGLSKAKEGVVAAAEKTKQGVAEAAGKTKEGVLYVGSKTKEGVVHGVATV", 0.4, 4)
