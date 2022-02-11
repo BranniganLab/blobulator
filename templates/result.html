@@ -226,14 +226,11 @@ $(document).ready( function() {
 		<div class="text-center">
 			<h6> Uniprot ID: {{ my_uni_id | safe }}</h6>
 		</div>
-		
-		<!--The div id my_dataviz is the div container for ALL D3 visualization plots, color keys-->
-		<div id="my_dataviz" class="viz_track">
-			<!--This section contains the div containers for the sliders and the text entry box-->
+		<div class="sticky-top" style="background-color: white; padding: 1em;">
 		<table width ="100%">
-			<col style="width:14%">
+			<col style="width:22%">
 			<col style="width:8%">
-			<col style="width:74%">
+			<col style="width:70%">
 			<tr>
 			<td> <div class="text-left">
 				Hydropathy cutoff:
@@ -290,26 +287,19 @@ $(document).ready( function() {
 					<option value="P">P - Pro</option>
 				</select> </tr> </td>
 			</div>
-
-			<tr><td>
-			<!--<div class="wrap" role="group" aria-labelledby="multi-lbl" style="--a: -30; --b: 20; --min: -50; --max: 50">
-			  <div id="zoom">Residue Range</div>
-			  <label class="sr-only" for="a">fromRes</label>
-			  <input id="a" type="range" min="-50" value="-30" max="50"/>
-			  <label class="sr-only" for="b">toRes</label>
-			  <input id="b" type="range" min="-50" value="20" max="50"/>
-			</div>-->
-
-
 		</table>
-
-			<div class="text-left">
-				<label style = "opacity: 0.0; display: none; position: relative;"> </label>
-				<button type="button" onclick="window.print();return false;">Download plots!</button>
-				<button type="button" id="download_data_link">Download data!</button>
-			</div>
+		<div class="text-left">
+			<label style = "opacity: 0.0; display: none; position: relative;"> </label>
+			<button type="button" onclick="window.print();return false;">Download plots!</button>
+			<button type="button" id="download_data_link">Download data!</button>
+		</div>
+</div>
+		
+		<!--The div id my_dataviz is the div container for ALL D3 visualization plots, color keys-->
+		<div id="my_dataviz" class="viz_track">
 
 		</div>
+
 	</div>
 </div>
 
