@@ -55,10 +55,9 @@ def index():
             request_dict = request.form.to_dict()
             input_type = request_dict["input_type"]
 
-            types = {"ensembl_id":"ENSEMBL_ID"}
+            types = {"hgnc_id":"HGNC_ID", "ensembl_id":"ENSEMBL_ID"}
 
             for input_key in types:
-                print(input_key)
                 if input_type == input_key:
                     params = {
                     'from': types[input_key],
@@ -75,7 +74,6 @@ def index():
                     print(database_return)
                     listed_database_return = database_return.split()
                     user_uniprot_id = listed_database_return[3]
-
 
 
             try:

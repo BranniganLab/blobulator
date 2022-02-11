@@ -13,7 +13,8 @@
                         <label for="input-types">Choose an input type:</label>
                         <select name="input_type" id="input_type">
                             <option value="uniprot_id">Uniprot ID</option>
-                            <option value="ensembl_id">Ensembl ID</option></select>
+                            <option value="ensembl_id">Ensembl ID</option>
+                            <option value="hgnc_id">HGNC ID</option></select>
                         <!--form.uniprot_id calls the Uniprot ID field in model_2.py -->
                         <p> {{ form.uniprot_id(class_="form-control", rows="1")}}</p>
                         <p>This option takes about 30 seconds to fetch SNP and disorder data, but may take longer.</p> 
