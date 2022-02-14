@@ -7,3 +7,5 @@ flask_cors
 flask_session
 requests
 svglib
+biopython
+argparse

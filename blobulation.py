@@ -1,7 +1,8 @@
 import json
 from user_input_form import InputForm
 from amino_acids import properties_hydropathy
-from compute_blobs import compute
+from compute_blobs import (compute, clean_df)
+
 from compute_snps import pathogenic_snps
 import pandas as pd
 import numpy as np
@@ -292,40 +293,7 @@ def calc_json():
         disorder_residues = list(my_disorder),
     )  # blobulation
     df = my_initial_df
-    #print (df.head)
-    #df = df.drop(range(0, 1))
-    del df['domain_pre']
-    del df['N']
-    del df['NCPR_color']
-    del df['blob_color']
-    del df["P_diagram"]
-    del df["uversky_color"]
-    del df["disorder_color"]
-    del df["hydropathy_3_window_mean"] 
-    del df["hydropathy_digitized"] 
-    #del df["hydropathy"]
-    del df["charge"]
-    del df["domain_to_numbers"]
-    df['resid'] = df['resid'].astype(int)
-    df = df[[ 'resid', 'seq_name', 'window', 'm_cutoff', 'domain_threshold', 'H', 'blobtype', 'domain', 'blob_charge_class', 'NCPR', 'f+', 'f-', 'fcr', 'U_diagram', 'h_numerical_enrichment', 'disorder', 'hydropathy']]
-    df = df.rename(columns={'seq_name': 'Residue_Name', 
-                            'resid': 'Residue_Number', 
-                            'disorder': 'Blob_Disorder', 
-                            'window': 'Window', 
-                            'm_cutoff': 'Hydropathy_Cutoff', 
-                            'domain_threshold': 'Minimum_Blob_Length', 
-                            'blobtype':'Blob_Type', 
-                            'H': 'Normalized_Mean_Blob_Hydropathy', 
-                            'domain': 'Blob_Index_Number', 
-                            'NCPR': 'Blob_NCPR', 
-                            'f+': "Fraction_of_Positively_Charged_Residues", 
-                            'f-': "Fraction_of_Negatively_Charged_Residues", 
-                            'fcr': 'Fraction_of_Charged_Residues', 
-                            'h_numerical_enrichment': 'dSNP_enrichment', 
-                            'blob_charge_class': 'Blob_Das-Pappu_Class', 
-                            'U_diagram': 'Uversky_Diagram_Score', 
-                            'hydropathy': 'Normalized_Kyte-Doolittle_hydropathy'})
-    df['Kyte-Doolittle_hydropathy'] = df['Normalized_Kyte-Doolittle_hydropathy']*9-4.5
+    df = clean_df(df)
     
     #f = "##" + str(user_input) + "\n" + str(df.round(1).to_csv(index=False))
     f = str(df.round(1).to_csv(index=False))
