@@ -9,6 +9,8 @@ import numpy as np
 import time
 import io
 from matplotlib.backends.backend_svg import FigureCanvasSVG
+import urllib.parse
+import urllib.request
 
 from flask import Flask, render_template, request, Response, session, jsonify, send_file
 from flask_restful import Resource, Api
@@ -29,18 +31,19 @@ Session(app) #This stores the user input for further calls
 
 REQUEST_URL_snp = "https://www.ebi.ac.uk/proteins/api/variation"
 REQUEST_URL_features = "https://www.ebi.ac.uk/proteins/api/features"
-
+REQUEST_UNIPROT_ID_FROM_ENSEMBL = "https://www.uniprot.org/uploadlists/"
+   
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     form = InputForm(request.form) #reads the user input
 
     if request.method == "POST":
-
         #checks if the user has provided uniprot id or residue sequence
         if "action_u" in request.form.to_dict(): #if uniprot id
             # get the disorder information for a given sequence
             uniprot_id = form.uniprot_id.data.splitlines()
+
             if len(uniprot_id) != 1 or len(uniprot_id[0].split()) != 1:
                 return render_template("error.html",
                     title="More than one UniProt ID provided",
@@ -48,6 +51,32 @@ def index():
                     We only support the blobulation of one protein at a time.""")
 
             user_uniprot_id = uniprot_id[0].strip()
+
+            # Takes the input form, converts it to a dictionary, and requests the input type (from the dropdown menu selection) using the input_type key
+            request_dict = request.form.to_dict()
+            input_type = request_dict["input_type"]
+
+            types = {"hgnc_id":"HGNC_ID", "ensembl_id":"ENSEMBL_ID"}
+
+            for input_key in types:
+                if input_type == input_key:
+                    params = {
+                    'from': types[input_key],
+                    'to': 'ACC',
+                    'format': 'tab',
+                    'query': user_uniprot_id
+                    }
+                    ensembl_data = urllib.parse.urlencode(params)
+                    ensembl_data = ensembl_data.encode('utf-8')
+                    req = urllib.request.Request(REQUEST_UNIPROT_ID_FROM_ENSEMBL, ensembl_data)
+                    with urllib.request.urlopen(req) as f:
+                       response = f.read()
+                    database_return = response.decode('utf-8')
+                    print(database_return)
+                    listed_database_return = database_return.split()
+                    user_uniprot_id = listed_database_return[3]
+
+
             try:
                 response_d2p2 = requests.get(
                     f'http://d2p2.pro/api/seqid/["{user_uniprot_id}"]'

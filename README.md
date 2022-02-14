@@ -27,6 +27,8 @@ requests
 svglib
 biopython
 argparse
+reportlab
+flask (website version)
 ```
 
 #### Quick Install:
