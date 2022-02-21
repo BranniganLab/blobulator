@@ -417,21 +417,14 @@ if __name__ == "__main__":
     #df = compute("MSPQTETKASVGFKAGVKDYKLTYYTPEYETKDTDILAAFRVTPQPGVPPEEAGAAVAAESSTGTWTTVWTDGLTSLDRYKGRCYHIEPVAGEENQYICYVAYPLDLFEEGSVTNMFTSIVGNVFGFKALRALRLEDLRIPTAYVKTFQGPPHGIQVERDKLNKYGRPLLGCTIKPKLGLSAKNYGRAVYECLRGGLDFTKDDENVNSQPFMRWRDRFLFCAEAIYKSQAETGEIKGHYLNATAGTCEEMMKRAIFARELGVPIVMHDYLTGGFTANTSLAHYCRDNGLLLHIHRAMHAVIDRQKNHGIHFRVLAKALRMSGGDHIHSGTVVGKLEGERDITLGFVDLLRDDFIEKDRSRGIYFTQDWVSLPGVLPVASGGIHVWHMPALTEIFGDDSVLQFGGGTLGHPWGNAPGAVANRVALEACVQARNEGRDLAREGNEIIREACKWSPELAAACEVWKEIKFEFQAMDTL", 0.4, 1)
     
     parser = argparse.ArgumentParser(description='')
-<<<<<<< HEAD
-    parser.add_argument('--sequence', type=str, help='Input sequence', default=None)
-    parser.add_argument('--cutoff', type=float, help='Cutoff hydrophobicity (float between 0.00 and 1.00 inclusive)', default=0.4)
-    parser.add_argument('--minBlob', type=int, help='Mininmum blob length (integer from 1 to N)', default=4)
-    parser.add_argument('--oname', type=str, help='Name of output file', default="blobulated_")
-    parser.add_argument('--fasta', type=str, help='FASTA file with 1 or more sequences', default=None)
-    parser.add_argument('--DNA', type=bool, help='Inputs are DNA. Default=false', default=False)
-=======
+
     parser.add_argument('--sequence', type=str, help='Takes a single string of EITHER DNA or protein one-letter codes (no spaces).', default=None)
     parser.add_argument('--cutoff', type=float, help='Sets the cutoff hydrophobicity (floating point number between 0.00 and 1.00 inclusive). Defaults to 0.4', default=0.4)
     parser.add_argument('--minBlob', type=int, help='Mininmum blob length (integer greater than 1). Defaults to 4', default=4)
     parser.add_argument('--oname', type=str, help='Name of output file or path to output directory. Defaults to blobulated_.csv', default="blobulated_")
     parser.add_argument('--fasta', type=str, help='FASTA file with 1 or more sequences', default=None)
     parser.add_argument('--DNA', type=bool, help='Flag that says whether the inputs are DNA or protein. Defaults to false (protein)', default=False)
->>>>>>> 5cfb3754ec981250950f26409fa4d4baa10d4834
+
     args = parser.parse_args()
 
     if args.DNA:
