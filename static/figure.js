@@ -21,6 +21,7 @@ class ZFigure {
 			.attr("transform",
 				  "translate(" + this.MARGIN.left + "," + this.MARGIN.top + ")");
 		
+
 		return this
 	}
 	
@@ -125,6 +126,7 @@ class ZChart extends ZFigure{
 			this.add_snps(my_snps, seq, snp_tooltips, x)
 			this.update_snps(x)
 		}
+
 		
 		// Add brushing
 		var brush = d3.brushX()                 // Add the brush feature using the d3.brush function
@@ -134,6 +136,7 @@ class ZChart extends ZFigure{
 			.append("g")
 			  .attr("class", "brush")
 			  .call(brush);
+
 
 		// A function that sets idleTimeOut to null
 		var idleTimeout
@@ -362,7 +365,7 @@ class ZHydropathy extends ZChart{
 }
 
 class ZblobChart extends ZChart {
-		constructor(figID, data, snps, seq, snp_tooltips, num_residues) {
+	constructor(figID, data, snps, seq, snp_tooltips, num_residues) {
 		super(figID, data, snps, seq, snp_tooltips, num_residues);
 		this.add_psh_ylabel();
 		this.update_bars(data);
@@ -547,8 +550,11 @@ class ZblobChart extends ZChart {
 			}
 		  })
 		  .attr("width", x.bandwidth());
-		  
-		this.add_skyline(data, x, y)
+		  if (domain) {
+		  	this.add_skyline(data.slice(domain[0]-1,domain[1]), x, y)
+		  } else {
+		  	this.add_skyline(data, x, y)
+		  }
 	}
 
 
