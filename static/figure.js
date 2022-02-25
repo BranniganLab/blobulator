@@ -445,12 +445,17 @@ class ZblobChart extends ZChart {
 			.attr("fill", (d) => d[figID_to_var[this.figID]]);
 		
 		// Update/add the corresponding skyline, in a potentially ugly way
-		this.add_skyline(data, x, y);
+		this.add_skyline(data);
 		
 		return this;
 	}
 	
-	add_skyline(data, x, y) {
+	add_skyline(data) {
+		var x = this.x
+		var y = this.y
+		var domain = [x.domain()[0], x.domain()[x.domain().length-1]]
+		//console.log(domain)
+		data = data.slice(domain[0]-1,domain[1])
 		// We should have at least two data points to draw a line
 		if(data.length < 2) {
 			return;
@@ -479,7 +484,7 @@ class ZblobChart extends ZChart {
 		const last_resid = data[data.length-1].resid;
 		points.push({resid: last_resid,
 			height: data[data.length-1].domain_to_numbers});
-
+		console.log(points)
 
 		this.skyline = this.svg.append('g');
 		this.skyline.append("path")
@@ -498,6 +503,7 @@ class ZblobChart extends ZChart {
 					}
 				})
 				.y((d) => y(d.height)));
+
 
 		return this;
 	}
@@ -564,11 +570,7 @@ class ZblobChart extends ZChart {
 			}
 		  })
 		  .attr("width", x.bandwidth());
-		  if (domain) {
-		  	this.add_skyline(data.slice(domain[0]-1,domain[1]), x, y)
-		  } else {
-		  	this.add_skyline(data, x, y)
-		  }
+		this.add_skyline(data, x, y)
 	}
 
 
