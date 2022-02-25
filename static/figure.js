@@ -456,14 +456,15 @@ class ZblobChart extends ZChart {
 		var domain = [x.domain()[0], x.domain()[x.domain().length-1]]
 		//console.log(domain)
 		data = data.slice(domain[0]-1,domain[1])
+
+		// Do we already have a skyline? Remove it, since it might not be correct
+		if(this.skyline !== undefined) {
+			this.skyline.remove();
+		}
+
 		// We should have at least two data points to draw a line
 		if(data.length < 2) {
 			return;
-		}
-		
-		// Do we already have a skyline? Remove it
-		if(this.skyline !== undefined) {
-			this.skyline.remove();
 		}
 
 		// Start the line in the correct spot
@@ -484,7 +485,6 @@ class ZblobChart extends ZChart {
 		const last_resid = data[data.length-1].resid;
 		points.push({resid: last_resid,
 			height: data[data.length-1].domain_to_numbers});
-		console.log(points)
 
 		this.skyline = this.svg.append('g');
 		this.skyline.append("path")
@@ -503,7 +503,6 @@ class ZblobChart extends ZChart {
 					}
 				})
 				.y((d) => y(d.height)));
-
 
 		return this;
 	}
