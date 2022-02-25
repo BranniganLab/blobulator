@@ -29,6 +29,7 @@ SESSION_TYPE = 'filesystem'
 app.config.from_object(__name__)
 Session(app) #This stores the user input for further calls
 
+# URLs for API requests
 REQUEST_URL_snp = "https://www.ebi.ac.uk/proteins/api/variation"
 REQUEST_URL_features = "https://www.ebi.ac.uk/proteins/api/features"
 REQUEST_UNIPROT_ID_FROM_ENSEMBL = "https://www.uniprot.org/uploadlists/"
@@ -85,7 +86,7 @@ def index():
             except:
                 data_d2p2 = {user_uniprot_id: []}
 
-            # get the sequence and its name from uniprot database
+            # get the sequence and its name from uniprot database, perform error checks
             uniprot_params = {
                 "offset": 0,
                 "size": -1,
@@ -149,12 +150,13 @@ def index():
                 except IndexError:
                     disorder_residues = [0]
 
-            # do the blobulation
+            # Blobulation
             window = 3 
             session['sequence'] = str(my_seq) #set the current sequence variable
             my_initial_df = compute(
                 str(my_seq), float(0.4), 4, window=window, disorder_residues=disorder_residues
             )
+            #define the data frame (df)
             df = my_initial_df
             chart_data = df.round(3).to_dict(orient="records")
             chart_data = json.dumps(chart_data, indent=2)
@@ -174,7 +176,7 @@ def index():
                     activetab = '#result-tab'
                 )
 
-        else: #if the user inputs amino acid sequence
+        else: # if the user inputs amino acid sequence
             aa_sequence = form.aa_sequence.data.splitlines()
             if len(aa_sequence) > 1:
                 return render_template("error.html",
