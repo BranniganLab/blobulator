@@ -114,6 +114,7 @@ $(document).ready( function() {
 			});
 	}
 
+	// Drawing the plots to be displayed on the result page
 	function draw(data) {
 		const my_snp = {{ my_snp | safe }};
 		const my_seq = {{ my_seq | safe }};
@@ -173,7 +174,7 @@ $(document).ready( function() {
 		d3.selectAll("#mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox").on("change", function(){do_update(figs, data)});
 		
 
-		//download_data
+		// Mutate residue function
 		d3.select('#download_data_link').on('click', function() {
 			// If the box is check, I mutate the amino acid
 			// TODO: This code should not be duplicated
@@ -184,6 +185,7 @@ $(document).ready( function() {
 				my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
 			}
 
+			// Download data
 			$.ajax({
 				url: "/json",
 				type: "post",
