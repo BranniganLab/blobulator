@@ -257,7 +257,9 @@ class ZChart extends ZFigure{
 			.on("click", function(event, d){
 				document.getElementById("snp_id").value = d.resid;
 				document.getElementById("residue_type").value = d.alternativeSequence;
-				document.getElementById("mutatebox").click();
+				document.getElementById("mutatebox").click()
+				d3.select() 
+					.attr("fill", "pink");
 			})
 			.on("mouseover", function(event, d) {
 				d3.select(this)
@@ -271,7 +273,8 @@ class ZChart extends ZFigure{
 					.style("top", (event.pageY - 28) + "px");
 			})
 			.on("mouseout", function(event, d) {
-				d3.select(this).attr("fill", "black");
+				d3.select(this)
+					.attr("fill", "blue");
 				tooltip_snps.transition()
 					.duration(2000)
 					.style("opacity", 0)
