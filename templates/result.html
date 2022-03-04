@@ -15,6 +15,9 @@ $(document).ready( function() {
 	//tooltips
 	const hydropathy_tool_text = ("<p>The linear hydropathy uses a sliding, overlapping window approach to calculate the mean hydropathy for groups of 3 residues. This value is rescaled to lie between 0 (hydrophilic) and 1 (hydrophobic). This plot can help you identify how hydrophobicity varies along your sequence.</p>" +
 								"<p>Any stretch of 'minimum blob size' or more residues with mean hydropathy > 'hydropathy cutoff' is classified as a hydrophobic or “h” blob and any remaining stretch of four or more residues is classified as a non-hydrophobic linker or “p” blob.</p>")
+
+	const blob_track_text = "<p>Blobs are partitioned by two criteria - whether or not a contiguous stretch of residues are above the the hydropathy threshold set by the user, as well as if the total number of adjacent residues above the hydropathy threshold is greater than the minimum blob length. If a stretch is long enough to be a blob and above the hydropathy threshold, it is considered an <span style='color:#0071BC;'>h (hydrophobic) blob</span>. If not, it is considered a <span style='color:#F7931E;'>p (non-hydrophobic) blob</span>. If a group of non-hydrophobic residues is found between h blobs, but is not large enough to be considered a p blob, it is considered an <span style='color:#2DB11A;'>s (spacer) blob</span>.</p>"
+
 	const Das_Pappu_text = "<p>The Das-Pappu phase diagram provides a means to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. </p> <img src=\"/static/daspappu_graph.png\" width=\"425\" height=\"350\"> "+
 		"<p> <i> <b> Figure adapted from: </b> <a href=\"https://www.pnas.org/content/early/2013/07/29/1304749110\" target=\"_blank\"> Das RK, Pappu RV (2013) Conformations of intrinsically disordered proteins are influenced by linear sequence distributions of oppositely charged residues PNAS 110(33):13392–13397.</i> </p>"
 	const ncpr_tool_text = "<p>For each blob its net charge per residue (NCPR) is calculated. Each blob is evaluated based on its fraction of both positively and negatively charged residues. The darker blue a blob is shown here, the higher the fraction of positively charged residues are present within the blob. Alternatively, the darker red a blob is shown here, the higher the fraction of negatively charged residues are present within the blob. An even fraction of positive or negative, or a low fraction of any charged residues, results in a grey color.</p>"
@@ -134,6 +137,7 @@ $(document).ready( function() {
 
 		figs.blobFig = new ZblobChart("blobPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to blob type")
+			.add_tooltip(blob_track_text)
 			.add_BlobLegend();
 		
 		figs.globFig = new ZblobChart("globPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
