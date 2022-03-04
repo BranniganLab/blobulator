@@ -257,13 +257,12 @@ class ZChart extends ZFigure{
 			.on("click", function(event, d){
 				document.getElementById("snp_id").value = d.resid;
 				document.getElementById("residue_type").value = d.alternativeSequence;
-				document.getElementById("mutatebox").click()
-				d3.select() 
-					.attr("fill", "pink");
+				document.getElementById("mutatebox").click();
 			})
 			.on("mouseover", function(event, d) {
-				d3.select(this)
-					.attr("fill", "red");
+				if (document.getElementById("mutatebox").checked == false) {
+					d3.select(this).attr("fill", "red")
+				}
 				tooltip_snps.transition()
 					.on("start", () => tooltip_snps.style("display", "block"))
 					.duration(100)
@@ -273,8 +272,9 @@ class ZChart extends ZFigure{
 					.style("top", (event.pageY - 28) + "px");
 			})
 			.on("mouseout", function(event, d) {
-				d3.select(this)
-					.attr("fill", "blue");
+				if (document.getElementById("mutatebox").checked == false) {
+					d3.select(this).attr("fill", "black")
+				};
 				tooltip_snps.transition()
 					.duration(2000)
 					.style("opacity", 0)
