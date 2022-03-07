@@ -245,23 +245,31 @@ class ZChart extends ZFigure{
 	/* add_snps
 	*/
 	add_snps(my_snp, my_seq, tooltip_snps, x) {
-		var arc = d3.symbol().type(d3.symbolTriangle);
+		var triangle_symbol = d3.symbol().type(d3.symbolTriangle);
 		this.snps = this.plot.append('g')
 			.selectAll("rect")
 			.data(my_snp)
 			.enter()
 			.append("path")
-			.attr('d', arc)
+			.attr('d', triangle_symbol)
 			.attr("fill", 'black')
 			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 145)")
+			.attr("id", "snp_triangles")
 			.on("click", function(event, d){
 				document.getElementById("snp_id").value = d.resid;
 				document.getElementById("residue_type").value = d.alternativeSequence;
 				document.getElementById("mutatebox").click();
 			})
 			.on("mouseover", function(event, d) {
-				d3.select(this)
-					.attr("fill", "red");
+				if (document.getElementById("mutatebox").checked == false) {
+					d3.select(this).attr("fill", "red")
+					var mutatecheckbox = document.getElementById("mutatebox")
+					mutatecheckbox.addEventListener('change', function(){
+						if (mutatecheckbox.checked == false) {
+							d3.selectAll("#snp_triangles").attr("fill", "black")
+						}
+					});
+				}
 				tooltip_snps.transition()
 					.on("start", () => tooltip_snps.style("display", "block"))
 					.duration(100)
@@ -271,7 +279,9 @@ class ZChart extends ZFigure{
 					.style("top", (event.pageY - 28) + "px");
 			})
 			.on("mouseout", function(event, d) {
-				d3.select(this).attr("fill", "black");
+				if (document.getElementById("mutatebox").checked == false) {
+					d3.select(this).attr("fill", "black")
+				};
 				tooltip_snps.transition()
 					.duration(2000)
 					.style("opacity", 0)
@@ -484,7 +494,6 @@ class ZblobChart extends ZChart {
 		const last_resid = data[data.length-1].resid;
 		points.push({resid: last_resid,
 			height: data[data.length-1].domain_to_numbers});
-		console.log(points)
 
 		this.skyline = this.svg.append('g');
 		this.skyline.append("path")
