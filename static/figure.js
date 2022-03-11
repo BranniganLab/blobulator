@@ -17,6 +17,7 @@ class ZFigure {
 		  .append("svg")
 			.attr("width", this.WIDTH + this.MARGIN.left + this.MARGIN.right)
 			.attr("height", this.HEIGHT + this.MARGIN.top + this.MARGIN.bottom + 45)
+			.attr("figID", figID)
 		  .append("g")
 			.attr("transform",
 				  "translate(" + this.MARGIN.left + "," + this.MARGIN.top + ")");
@@ -76,10 +77,10 @@ class ZFigure {
 
 // Based on this tutorial: https://www.d3-graph-gallery.com/graph/interactivity_zoom.html
 class ZChart extends ZFigure{
-	static allInstances = [];
+	static allInstances = {};
 	constructor(figID, data, my_snps, seq, snp_tooltips) {
 
-		super(figID, data)
+		super(figID, data);
 
 		this.y = d3.scaleLinear()
 			.domain([0, 1])
@@ -90,7 +91,7 @@ class ZChart extends ZFigure{
 			.range([0, this.WIDTH])
 			.domain(data.map(d => d.resid ))
 			.padding(0.2);
-		var x = this.x
+		var x = this.x;
 		
 		if(my_snps == 0){
 			var snps = false
@@ -98,8 +99,6 @@ class ZChart extends ZFigure{
 			var snps = true
 		}
 		this.add_xAxis(snps, x)
-
-
 
 		// Add a clipPath: everything out of this area won't be drawn.
 		var clip = this.svg.append("defs").append("svg:clipPath")
@@ -130,79 +129,78 @@ class ZChart extends ZFigure{
 		}
 
 		
-		// Add brushing
-		var brush = d3.brushX()                 // Add the brush feature using the d3.brush function
+		// Add brush for zoom selection
+		this.brush = d3.brushX()                 // Add the brush feature using the d3.brush function
 			.extent( [ [0,0], [this.WIDTH, this.HEIGHT] ] ) // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
-			.on("end", updateChart) // Each time the brush selection changes, trigger the 'updateChart' function
+			.on("end", this.updateChart) // Each time the brush selection changes, trigger the 'updateChart' function
 		this.plot
 			.append("g")
 			  .attr("class", "brush")
-			  .call(brush);
-
-
-		// A function that sets idleTimeOut to null
-		var idleTimeout
-		function idled() { idleTimeout = null; }
+			  .call(this.brush);
 		
-		
-		
-		// A function that updates the chart for given boundaries
-		// Make "this." variables local variables so they can be used inside updateChart - clunky
-		var bars = this.bars
-		var plot = this.plot
-		var y = this.y
-		var width = this.WIDTH
-		var svg = this.svg
-		var xAxis = this.xAxis
-		var chart = this
-		const range = ([min, max]) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
-		function updateChart(event) {
-			const extent = event.selection
-			
-			// If no selection, back to initial coordinate. Otherwise, update X axis domain
-			if(!extent){
-			  if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-			  var newDomain = data.map(d => d.resid )
-			}else{
-			  var domain = [ scaleBandInvert(x)(extent[0]), scaleBandInvert(x)(extent[1]) ]
-			  var newDomain = range(domain)
-			  
-			  plot.select(".brush").call(brush.move, null) // This removes the grey brush area as soon as the selection has been done
-			}
-
-			//chart.do_zoom(data, extent, domain, newDomain, xAxis, width, 1000)
-			ZChart.allInstances.forEach(function(e){e.do_zoom(data, extent, domain, newDomain, xAxis, width, 1000)})
-				
-
-		}
-		
-		function scaleBandInvert(scale) {
-		  var domain = scale.domain();
-		  var paddingOuter = scale(domain[0]);
-		  var eachBand = scale.step();
-		  return function (value) {
-			var index = Math.floor(((value - paddingOuter) / eachBand));
-			return domain[Math.max(0,Math.min(index, domain.length-1))];
-		  }
-		}
-		
-		ZChart.allInstances.push(this);
+		// Save this instance of ZChart so an event handler can get to it later
+		ZChart.allInstances[this.figID] = this;
 		return this
 	}
+ 
+  
+	// NB: This is called as a static method, NOT as the method of a particular object instance.
+	//     So we don't know which ZFigure (or child class) instance is the correct one.
+	//     So we have to recover it using the "figID" attribute of the SVG element which we set earlier.
+	updateChart(event) {
+		function scaleBandInvert(scale) {
+			let domain = scale.domain();
+			let paddingOuter = scale(domain[0]);
+			let eachBand = scale.step();
+			return function (value) {
+			  let index = Math.floor(((value - paddingOuter) / eachBand));
+			  return domain[Math.max(0, Math.min(index, domain.length-1))];
+			}
+		}
+	
+		// A quick and dirty function to generate a sequence of integers, because of course JavaScript doesn't have that
+		const range = ([min, max]) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
+
+		// Recover the figID of the plot object related to this brush event
+		// (we saved it as an attribute to its svg element)
+		const figID = this.closest('svg').getAttribute('figID');
+		let fig = ZChart.allInstances[figID];
+
+		const extent = event.selection;
+		let domainArray, domainBounds;
+		
+		// If no selection, back to initial coordinate. Otherwise, update X axis domain
+		if(extent == null) {
+		  // if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+		  	domainArray = fig.data.map(d => d.resid);
+		  	domainBounds = [Math.min(...domainArray), Math.max(...domainArray)];
+		} else {
+		  	domainBounds = [scaleBandInvert(fig.x)(extent[0]), scaleBandInvert(fig.x)(extent[1])];
+		  	domainArray = range(domainBounds);
+			// Remove the grey brush area as soon as the selection has been done
+		  	fig.plot.select(".brush").call(fig.brush.move, null);
+		}
+
+		// Synchronize all the zooming in all the plots
+		Object.values(ZChart.allInstances).forEach(fig => fig.do_zoom(fig.data, extent, domainBounds, domainArray, fig.xAxis, fig.WIDTH, 1000));			
+
+	}
+	
 
 	do_zoom(data, extent, domain, arrDomain, xAxis, width, timing){
-		var x = this.x
-		var y = this.y
-		x.domain(arrDomain)
+		let x = this.x, y = this.y;
+		x.domain(arrDomain);
 		// Update axis and bar position
-		xAxis.transition().duration(timing).call(d3.axisBottom(x))
-		//this.update_bars(data, x, y)
-		this.zoom_bars(data, x, y, extent, domain)
+		xAxis.transition().duration(timing).call(d3.axisBottom(x));
+		this.update_bars(data, x, y);
+		this.zoom_bars(data, x, y, extent, domain);
 
-		this.update_xAxis(x)
-		if(this.snps){this.update_snps(x, extent, domain, width, timing)}
+		this.update_xAxis(x);
+		if(this.snps) {
+			this.update_snps(x, extent, domain, width, timing);
+		}
 
-		return this
+		return this;
 	}
 	
 	add_xAxis(snps, x){
@@ -237,8 +235,9 @@ class ZChart extends ZFigure{
 	
 	update_xAxis(x){
 		var tickPeriod = (Math.round((Math.round(x.domain().length/10))/10)*10)
-		this.xAxis.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) { return !((i+1) % 
-						   (tickPeriod) )})));
+		this.xAxis.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) {
+			return !((i+1) % (tickPeriod) )}
+			)));
 		return this
 	}
 	
@@ -461,15 +460,15 @@ class ZblobChart extends ZChart {
 	}
 	
 	add_skyline(data) {
-		var x = this.x
-		var y = this.y
-		var domain = [x.domain()[0], x.domain()[x.domain().length-1]]
-		//console.log(domain)
-		data = data.slice(domain[0]-1,domain[1])
+		var x = this.x;
+		var y = this.y;
+		var domain = [x.domain()[0], x.domain()[x.domain().length-1]];
+		data = data.slice(domain[0]-1,domain[1]);
 
 		// Do we already have a skyline? Remove it, since it might not be correct
+		this.svg.selectAll('.skyline').remove();
 		if(this.skyline !== undefined) {
-			this.skyline.remove();
+			this.skyline = undefined;
 		}
 
 		// We should have at least two data points to draw a line
@@ -496,7 +495,7 @@ class ZblobChart extends ZChart {
 		points.push({resid: last_resid,
 			height: data[data.length-1].domain_to_numbers});
 
-		this.skyline = this.svg.append('g');
+		this.skyline = this.svg.append('g').classed('skyline', true);
 		this.skyline.append("path")
 			.attr("class", "mypath")
 			.datum(points)
