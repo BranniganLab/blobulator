@@ -24,6 +24,7 @@ $(document).ready( function() {
 	const uversky_tool_text = "<p>For each blob its signed normal displacement from the line representing the boundary between ordered (natively folded) and disordered (natively unfolded) proteins on the Uversky diagram (shown below) is plotted. Calculated negative values (represented in orange) are ordered and positive values (shown in blue) are disordered and plotted on the visualization to the left. </p> <img src=\"/static/uversky_plot.png\" width=\"425\" height=\"260\" align=\"center\"> <p> <i> <b> The units on the X and Y axis represent the net charge and hydrophobicity of each blob, normalized on a 0 to 1 scale. Figure adapted from figure 5 in: </b> <a href=\"https://pubmed.ncbi.nlm.nih.gov/11025552/\" target=\"_blank\"> Uversky VN, Gillespie JR, Fink AL (2002) Why are \"natively unfolded\" proteins unstructured under physiologic conditions? </i> </p>"
 	const enrichment_tool_text = "<p>Here, blobs are colored based upon their predicted enrichment in disease associated SNPs (dSNPs), as defined by the results of a previous study. This idea was investigated in the context of proteins at various blob lengths and hydrophobicity cutoffs, the results of which are presented in a <a href=\"https://www.biorxiv.org/content/10.1101/2021.09.02.458776v1\" target=\"blank\"> forthcoming paper</a>, and from which the figure below is presented (Lohia, et al).</p> <img src=\"/static/dsnp_enrich.png\" width=\"450\" height=\"410\">"
 	const disorder_tool_text = "<p>For each blob its fraction of disordered residue is calculated. This disorder calculation is only available if the user uses the Uniprot ID, and uses information provided by the Database of Disordered Protein Prediction. <i> <a href=\"https://academic.oup.com/nar/article/41/D1/D508/1069637\" target=\"_blank\"> Oates et al., D2P2: database of disordered protein predictions, Nucleic Acids Research, Volume 41, Issue D1, 1 January 2013, Pages D508–D516, https://doi.org/10.1093/nar/gks1226</i></p>"
+	const zoom_tool_text = "<p>You can zoom into a region of the protein sequence by clicking and dragging on any of the charts. Zoom out by double-clicking on any chart.</p>"
 
 	//tooltip for SNPs link
 	let Tooltip_snps = d3.select("body")
@@ -133,31 +134,37 @@ $(document).ready( function() {
 	
 		figs.pathyFig = new ZHydropathy("pathyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Smoothed hydropathy per residue")
-			.add_tooltip(hydropathy_tool_text);
+			.add_tooltip(hydropathy_tool_text)
+			.add_zoomtip(zoom_tool_text);
 
 		figs.blobFig = new ZblobChart("blobPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to blob type")
 			.add_tooltip(blob_track_text)
+			.add_zoomtip(zoom_tool_text)
 			.add_BlobLegend();
 		
 		figs.globFig = new ZblobChart("globPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to globular tendency (Das-Pappu Phase)")
 			.add_tooltip(Das_Pappu_text)
+			.add_zoomtip(zoom_tool_text)
 			.add_GlobularLegend();
 
 		figs.ncprFig = new ZblobChart("ncprPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to net charge per residue")
 			.add_tooltip(ncpr_tool_text)
+			.add_zoomtip(zoom_tool_text)
 			.add_ContinuousLegend("RWB", {min: "-0.5", med: "0.0", max: "+0.5"});
 
 		figs.richFig = new ZblobChart("richPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to estimated mutation sensitivity")
 			.add_tooltip(enrichment_tool_text)
+			.add_zoomtip(zoom_tool_text)
 			.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"});
 
 		figs.uverskyFig = new ZblobChart("uverskyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to location on Uversky-Gillespie-Fink boundary plot")
 			.add_tooltip(uversky_tool_text)
+			.add_zoomtip(zoom_tool_text)
 			.add_ContinuousLegend("PuOr", {min: "More ordered", med: "", max: "More disordered"});
     
 		if (my_disorder == 0) {
@@ -168,6 +175,7 @@ $(document).ready( function() {
 			figs.disorderFig = new ZblobChart("disorderPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 				.add_title("Blobs colored according to disordered fraction")
 				.add_tooltip(disorder_tool_text)
+				.add_zoomtip(zoom_tool_text)
 				.add_ContinuousLegend("PuOr", {min: "0.0", med: "0.5", max: "1.0"});
 		}
 

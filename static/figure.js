@@ -72,6 +72,41 @@ class ZFigure {
 
 		return this;
 	}
+
+	/* add_zoomtip
+		FUNCTION: add_zoomtip
+		SHORT DESCRIPTION: add a small magnifying glass that provides zoom information to the user in a tooltip
+		INPUTS:
+			svg - a container for a graph (modified by the function directly)
+		RETURNS:
+			none
+	*/
+	add_zoomtip(content="Place Holder", xpos=this.WIDTH, ypos=this.MARGIN.top-30) {
+		this.zoomIcon = document.createElement("div");
+		this.zoomIcon.style.position = "absolute";
+		this.zoomIcon.style.top = ypos + "px";
+		this.zoomIcon.style.left = xpos + 0 + "px";
+		this.zoomIcon.style.font = "arial";
+		this.zoomIcon.style.cursor = "pointer";
+		this.zoomIcon.style.fontSize = 'xx-large';
+		this.zoomIcon.style.fill = "blue";
+		this.zoomIcon.innerText = '\u{2315}';
+		this.zoomIcon.type = "button";
+		this.zoomIcon.title = '<a onclick="$(this).closest(\'div.popover\').popover(\'hide\');" type="button" class="close" aria-hidden="true">&times;</a><br>';
+		this.zoomIcon.style.zIndex = "10"; // Put this element on top of the SVG
+		
+		$(this.zoomIcon).popover({
+			content: content, 
+			placement: "top", 
+			html: true,
+			sanitize: false,
+			container: 'body'
+		});
+
+		this.container.appendChild(this.zoomIcon);
+
+		return this;
+	}
 	
 }
 
