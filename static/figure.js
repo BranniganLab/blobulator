@@ -316,6 +316,9 @@ class ZChart extends ZFigure{
 				document.getElementById("snp_id").value = d.resid;
 				document.getElementById("residue_type").value = d.alternativeSequence;
 				document.getElementById("mutatebox").click();
+				if (document.getElementById("mutatebox").checked == true){
+					d3.select(this).attr("fill", "red");
+				}
 			})
 			.on("mouseover", function(event, d) {
 				if (document.getElementById("mutatebox").checked == false) {
