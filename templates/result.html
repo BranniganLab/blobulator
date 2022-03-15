@@ -105,6 +105,15 @@ $(document).ready( function() {
 			my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
 		} 
 
+		var snp_id_box = document.getElementById("snp_id")
+		var residue_type_box = document.getElementById("residue_type")
+		snp_id_box.addEventListener('change', function(){
+			d3.selectAll("#snp_triangles").attr("fill", "black")
+		});
+		residue_type_box.addEventListener('change', function(){
+			d3.selectAll("#snp_triangles").attr("fill", "black")
+		});
+
 		const d_value = d3.select("#domain_threshold_user").text();
 		const selectedValue = d3.select("#cutoff_user").text();
 		const m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, my_disorder: {{ my_disorder | tojson | safe }}};
