@@ -36,8 +36,8 @@ class ZFigure {
 		btn.id = "reset_zoom"
 		btn.type = "button";
 		btn.style.position = 'absolute';
-		btn.style.top = this.MARGIN.top + 200 + 'px';
-		btn.style.left = this.MARGIN.left + 145 + 'px';
+		btn.style.top = this.MARGIN.top + 401 + 'px';
+		btn.style.right = this.MARGIN.right - 60 + 'px';
 		btn.onclick = function () {
 			let fig = ZChart.allInstances[figID];
 			let domainArray_zoom = fig.data.map(d => d.resid);
