@@ -37,16 +37,14 @@ class ZFigure {
 		btn.innerHTML = "Reset Zoom";
 		btn.id = "reset_zoom"
 		btn.type = "button";
-		btn.style.position = 'absolute';
-		btn.style.top = this.HEIGHT * 3.1 + 'px';
-		btn.style.right = this.WIDTH/7 + 'px';
 		btn.onclick = function () {
 			let fig = ZChart.allInstances[figID];
 			let domainArray_zoom = fig.data.map(d => d.resid);
 		  	let domainBounds_zoom = [Math.min(...domainArray_zoom), Math.max(...domainArray_zoom)];
 		  	Object.values(ZChart.allInstances).forEach(fig => fig.do_zoom(fig.data, null, domainBounds_zoom, domainArray_zoom, fig.xAxis, fig.WIDTH, 1000));
 		 };
-		document.body.appendChild(btn);
+		var top_container = document.getElementById("result_main_container");
+		top_container.appendChild(btn);
 
 		return this;
 	}
