@@ -26,6 +26,8 @@ class ZFigure {
 		return this
 	}
 
+	// Code for the reset zoom button, appended to the hydropathy plot
+
 	add_zoomout_button(figID, data) {
 
 		this.figID = figID
@@ -36,8 +38,8 @@ class ZFigure {
 		btn.id = "reset_zoom"
 		btn.type = "button";
 		btn.style.position = 'absolute';
-		btn.style.top = this.MARGIN.top + 401 + 'px';
-		btn.style.right = this.MARGIN.right - 60 + 'px';
+		btn.style.top = this.HEIGHT * 3.1 + 'px';
+		btn.style.right = this.WIDTH/6 + 'px';
 		btn.onclick = function () {
 			let fig = ZChart.allInstances[figID];
 			let domainArray_zoom = fig.data.map(d => d.resid);
