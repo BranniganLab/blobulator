@@ -7,7 +7,7 @@
 - Fixed "ghost" SNP bug
 - Reordered tabs
 
-## Version 03.15.2022
+## Version 03.15.22
 - Added zooming function
 - Added reset zoom button
 - Added tooltips for zoom
