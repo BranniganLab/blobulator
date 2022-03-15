@@ -25,6 +25,29 @@ class ZFigure {
 
 		return this
 	}
+
+	// Code for the reset zoom button, appended to the hydropathy plot
+
+	add_zoomout_button(figID, data) {
+
+		this.figID = figID
+		this.data = data
+
+		var btn = document.createElement("button");
+		btn.innerHTML = "Reset Zoom";
+		btn.id = "reset_zoom"
+		btn.type = "button";
+		btn.onclick = function () {
+			let fig = ZChart.allInstances[figID];
+			let domainArray_zoom = fig.data.map(d => d.resid);
+		  	let domainBounds_zoom = [Math.min(...domainArray_zoom), Math.max(...domainArray_zoom)];
+		  	Object.values(ZChart.allInstances).forEach(fig => fig.do_zoom(fig.data, null, domainBounds_zoom, domainArray_zoom, fig.xAxis, fig.WIDTH, 1000));
+		 };
+		var top_container = document.getElementById("result_main_container");
+		top_container.appendChild(btn);
+
+		return this;
+	}
 	
 	add_title(title){
 	    // Creates the title
@@ -293,6 +316,9 @@ class ZChart extends ZFigure{
 				document.getElementById("snp_id").value = d.resid;
 				document.getElementById("residue_type").value = d.alternativeSequence;
 				document.getElementById("mutatebox").click();
+				if (document.getElementById("mutatebox").checked == true){
+					d3.select(this).attr("fill", "red");
+				}
 			})
 			.on("mouseover", function(event, d) {
 				if (document.getElementById("mutatebox").checked == false) {
