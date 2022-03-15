@@ -75,8 +75,12 @@ def index():
                     database_return = response.decode('utf-8')
                     print(database_return)
                     listed_database_return = database_return.split()
-                    user_uniprot_id = listed_database_return[3]
-
+                    try:
+                        user_uniprot_id = listed_database_return[3]
+                    except IndexError:
+                        return render_template("error.html",
+                            title="Ensembl ID Error:",
+                            message=f"""The Ensembl id you have entered ({params["query"]}) could not be found. If you're sure the ID is valid, please contact us with the ID and expected protein.""")
 
             try:
                 response_d2p2 = requests.get(
