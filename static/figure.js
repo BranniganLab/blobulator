@@ -25,6 +25,29 @@ class ZFigure {
 
 		return this
 	}
+
+	add_zoomout_button(figID, data) {
+
+		this.figID = figID
+		this.data = data
+
+		var btn = document.createElement("button");
+		btn.innerHTML = "Reset Zoom";
+		btn.id = "reset_zoom"
+		btn.type = "button";
+		btn.style.position = 'absolute';
+		btn.style.top = this.MARGIN.top + 200 + 'px';
+		btn.style.left = this.MARGIN.left + 145 + 'px';
+		btn.onclick = function () {
+			let fig = ZChart.allInstances[figID];
+			let domainArray_zoom = fig.data.map(d => d.resid);
+		  	let domainBounds_zoom = [Math.min(...domainArray_zoom), Math.max(...domainArray_zoom)];
+		  	Object.values(ZChart.allInstances).forEach(fig => fig.do_zoom(fig.data, null, domainBounds_zoom, domainArray_zoom, fig.xAxis, fig.WIDTH, 1000));
+		 };
+		document.body.appendChild(btn);
+
+		return this;
+	}
 	
 	add_title(title){
 	    // Creates the title

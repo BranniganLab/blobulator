@@ -133,6 +133,7 @@ $(document).ready( function() {
 		let figs = [];
 	
 		figs.pathyFig = new ZHydropathy("pathyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
+			.add_zoomout_button("pathyPlot", data)
 			.add_title("Smoothed hydropathy per residue")
 			.add_tooltip(hydropathy_tool_text)
 			.add_zoomtip(zoom_tool_text);
