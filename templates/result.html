@@ -1,24 +1,29 @@
 {% extends 'common.html' %}
 
+
 {% block css %}
 <style> @import "../static/style.css"; </style>
+<style> @import "../static/zoomStyle.css"; </style>
 {% endblock %}
 
 {% block scripts %}
-<script src="https://d3js.org/d3.v4.js"></script>
+<script src="https://d3js.org/d3.v6.js"></script>
 <script src="static/figure.js"></script>
 <script>
 $(document).ready( function() {
 	//--------------Javascript for plotting in d3-------------
 	//tooltips
-	const hydropathy_tool_text = ("<p>The linear hydropathy uses a sliding, overlapping window approach to calculate the mean hydropathy for groups of 3 residues. This value is rescaled to lie between 0 (hydrophilic) and 1 (hydrophobic). This plot can help you identify how hydrophobicity varies along your sequence.</p>" +
-								"<p>Any stretch of 'minimum blob size' or more residues with mean hydropathy > 'hydropathy cutoff' is classified as a hydrophobic or “h” blob and any remaining stretch of four or more residues is classified as a non-hydrophobic linker or “p” blob.</p>")
+	const hydropathy_tool_text = ("<p>Each residue is classified as hydrophobic or nonhydrophobic, depending on whether the Kyte–Dolittle hydropathy score is above or below the hydrophobicity threshold H<sup>*</sup>. H<sup>*</sup> is determined by the user, and the process of digitizatizing the residues based on whether their hydrophobicity falls above or below this cutoff is shown in the figure below:</p> <img src=\"/static/blobulation_digitization_figure.png\" width=\"225\" height=\"225\" align=\"center\">")
+
+	const blob_track_text = "<p> After the residues are digitized (see the previous tooltip), they are clustered into blobs as shown in the figure below: </p> <img src=\"/static/blobulation_concept_figure.png\" width=\"425\" height=\"250\" align=\"center\"> <p> The value of the \"minimum blob length\" slider determines L<sub>min</sub>. All tracks show residues in h-blobs, s-blobs, and p-blobs as the highest bars, medium bars, and lowest bars respectively. This track also colors the blobs by blob type: h-blobs are blue, p-blobs are orange, and s-blobs are green.h-groups are not indicated graphically, but are noted in the downloadable csv file. </p>"
+
 	const Das_Pappu_text = "<p>The Das-Pappu phase diagram provides a means to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. </p> <img src=\"/static/daspappu_graph.png\" width=\"425\" height=\"350\"> "+
 		"<p> <i> <b> Figure adapted from: </b> <a href=\"https://www.pnas.org/content/early/2013/07/29/1304749110\" target=\"_blank\"> Das RK, Pappu RV (2013) Conformations of intrinsically disordered proteins are influenced by linear sequence distributions of oppositely charged residues PNAS 110(33):13392–13397.</i> </p>"
 	const ncpr_tool_text = "<p>For each blob its net charge per residue (NCPR) is calculated. Each blob is evaluated based on its fraction of both positively and negatively charged residues. The darker blue a blob is shown here, the higher the fraction of positively charged residues are present within the blob. Alternatively, the darker red a blob is shown here, the higher the fraction of negatively charged residues are present within the blob. An even fraction of positive or negative, or a low fraction of any charged residues, results in a grey color.</p>"
-	const uversky_tool_text = "<p>For each blob its signed normal displacement from the line representing the boundary between ordered (natively folded) and disordered (natively unfolded) proteins on the Uversky diagram (shown below) is plotted. Calculated negative values (represented in orange) are ordered and positive values (shown in blue) are disordered and plotted on the visualization to the left. </p> <img src=\"/static/uversky_plot.png\" width=\"475\" height=\"325\"> <p> <i> <b> Figure adapted from: </b> <a href=\"https://pubmed.ncbi.nlm.nih.gov/11025552/\" target=\"_blank\"> Uversky VN, Gillespie JR, Fink AL (2002) Why are \"natively unfolded\" proteins unstructured under physiologic conditions? </i> </p>"
-	const enrichment_tool_text = "<p>Here, blobs are colored based upon their predicted enrichment in disease associated SNPs (dSNPs), as defined by the results of a previous study. This idea was investigated in the context of proteins at various blob lengths and hydrophobicity cutoffs, the results of which are presented in a <a href=\"https://www.biorxiv.org/content/10.1101/2021.09.02.458776v1\" target=\"blank\"> forthcoming paper</a>, and from which the figure below is presented (Lohia, et al).</p> <img src=\"/static/dsnp_enrich.png\" width=\"400\" height=\"375\">"
+	const uversky_tool_text = "<p>For each blob its signed normal displacement from the line representing the boundary between ordered (natively folded) and disordered (natively unfolded) proteins on the Uversky diagram (shown below) is plotted. Calculated negative values (represented in orange) are ordered and positive values (shown in blue) are disordered and plotted on the visualization to the left. </p> <img src=\"/static/uversky_plot.png\" width=\"425\" height=\"260\" align=\"center\"> <p> <i> <b> The units on the X and Y axis represent the net charge and hydrophobicity of each blob, normalized on a 0 to 1 scale. Figure adapted from figure 5 in: </b> <a href=\"https://pubmed.ncbi.nlm.nih.gov/11025552/\" target=\"_blank\"> Uversky VN, Gillespie JR, Fink AL (2002) Why are \"natively unfolded\" proteins unstructured under physiologic conditions? </i> </p>"
+	const enrichment_tool_text = "<p>Here, blobs are colored based upon their predicted enrichment in disease associated SNPs (dSNPs), as defined by the results of a previous study. This idea was investigated in the context of proteins at various blob lengths and hydrophobicity cutoffs, the results of which are presented in a <a href=\"https://www.biorxiv.org/content/10.1101/2021.09.02.458776v1\" target=\"blank\"> forthcoming paper</a>, and from which the figure below is presented (Lohia, et al).</p> <img src=\"/static/dsnp_enrich.png\" width=\"450\" height=\"410\">"
 	const disorder_tool_text = "<p>For each blob its fraction of disordered residue is calculated. This disorder calculation is only available if the user uses the Uniprot ID, and uses information provided by the Database of Disordered Protein Prediction. <i> <a href=\"https://academic.oup.com/nar/article/41/D1/D508/1069637\" target=\"_blank\"> Oates et al., D2P2: database of disordered protein predictions, Nucleic Acids Research, Volume 41, Issue D1, 1 January 2013, Pages D508–D516, https://doi.org/10.1093/nar/gks1226</i></p>"
+	const zoom_tool_text = "<p>You can zoom into a region of the protein sequence by clicking and dragging on any of the charts. Zoom out by double-clicking on any chart, or by clicking the Reset Zoom button.</p>"
 
 	//tooltip for SNPs link
 	let Tooltip_snps = d3.select("body")
@@ -84,7 +89,6 @@ $(document).ready( function() {
 				value.update_bars(data);
 			}
 			catch {
-	
 				console.log("Failed to update: " + key)
 			}
 		}
@@ -100,6 +104,15 @@ $(document).ready( function() {
 			my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
 		} 
 
+		var snp_id_box = document.getElementById("snp_id")
+		var residue_type_box = document.getElementById("residue_type")
+		snp_id_box.addEventListener('change', function(){
+			d3.selectAll("#snp_triangles").attr("fill", "black")
+		});
+		residue_type_box.addEventListener('change', function(){
+			d3.selectAll("#snp_triangles").attr("fill", "black")
+		});
+
 		const d_value = d3.select("#domain_threshold_user").text();
 		const selectedValue = d3.select("#cutoff_user").text();
 		const m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, my_disorder: {{ my_disorder | tojson | safe }}};
@@ -113,86 +126,66 @@ $(document).ready( function() {
 			});
 	}
 
+	// Drawing the plots to be displayed on the result page
 	function draw(data) {
 		const my_snp = {{ my_snp | safe }};
+		const my_seq = {{ my_seq | safe }};
+		var   my_cut = {{ my_cut | safe }}
 		const my_disorder = {{ my_disorder | tojson | safe }};
+		const domain_threshold_max = {{ domain_threshold_max | safe }};
+		if (my_disorder == "0") {
+			var snps = false
+		} else {
+			var snps = true
+		}
 		let figs = [];
-		figs.pathyFig = new Figure("pathyPlot", data)
+	
+		figs.pathyFig = new ZHydropathy("pathyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
+			.add_zoomout_button("pathyPlot", data)
 			.add_title("Smoothed hydropathy per residue")
 			.add_tooltip(hydropathy_tool_text)
-			.add_pathy_ylabel()
-			.add_cutoff_line({{ my_cut | safe }})
-			.build_barChart()
-			.add_yAxis()
-			.add_snps(my_snp, Tooltip_snps);
+			.add_zoomtip(zoom_tool_text);
 
-		figs.blobFig = new Figure("blobPlot", data)
+		figs.blobFig = new ZblobChart("blobPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to blob type")
-			.build_barChart()
-			.add_BlobLegend()
-			.add_snps(my_snp, Tooltip_snps)
-			.add_psh_ylabel()
-			.add_skyline();
+			.add_tooltip(blob_track_text)
+			.add_zoomtip(zoom_tool_text)
+			.add_BlobLegend();
 		
-		figs.globFig = new Figure("globPlot", data)
+		figs.globFig = new ZblobChart("globPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to globular tendency (Das-Pappu Phase)")
 			.add_tooltip(Das_Pappu_text)
-			.add_GlobularLegend()
-			.build_barChart()
-			.add_snps(my_snp, Tooltip_snps)
-			.add_psh_ylabel()
-			.add_skyline();
+			.add_zoomtip(zoom_tool_text)
+			.add_GlobularLegend();
 
-		figs.ncprFig = new Figure("ncprPlot", data)
+		figs.ncprFig = new ZblobChart("ncprPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to net charge per residue")
 			.add_tooltip(ncpr_tool_text)
-			.add_ContinuousLegend("RWB", {min: "-0.5", med: "0.0", max: "+0.5"})
-			.build_barChart()
-			.add_snps(my_snp, Tooltip_snps)
-			.add_psh_ylabel()
-			.add_skyline();
+			.add_zoomtip(zoom_tool_text)
+			.add_ContinuousLegend("RWB", {min: "-0.5", med: "0.0", max: "+0.5"});
 
-		figs.uverskyFig = new Figure("uverskyPlot", data)
-			.add_title("Blobs colored according to distance from Uversky boundary")
-			.add_tooltip(uversky_tool_text)
-			.add_ContinuousLegend("PuOr", {min: "-0.65", med: "0.05", max: "0.73"})
-			.build_barChart()
-			.add_snps(my_snp, Tooltip_snps)
-			.add_psh_ylabel()
-			.add_skyline();
-    
-		figs.richFig = new Figure("richPlot", data)
+		figs.richFig = new ZblobChart("richPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to estimated mutation sensitivity")
 			.add_tooltip(enrichment_tool_text)
-			.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"})
-			.build_barChart()
-			.add_snps(my_snp, Tooltip_snps)
-			.add_psh_ylabel()
-			.add_skyline()
+			.add_zoomtip(zoom_tool_text)
+			.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"});
 
-		const domain_threshold_max = {{ domain_threshold_max | safe }};
-		for(const fig of [figs.blobFig, figs.globFig, figs.pathyFig, figs.ncprFig, figs.uverskyFig, figs.richFig]) {
-			if (my_disorder == "0") {
-				fig.add_xAxis(domain_threshold_max);
-			} else {
-				fig.add_snp_xAxis(domain_threshold_max);
-			}
-		}		
-
-		if (my_disorder == "0") {
-			figs.disorderFig = new Figure("disorderPlot", data)
+		figs.uverskyFig = new ZblobChart("uverskyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
+			.add_title("Blobs colored according to location on Uversky-Gillespie-Fink boundary plot")
+			.add_tooltip(uversky_tool_text)
+			.add_zoomtip(zoom_tool_text)
+			.add_ContinuousLegend("PuOr", {min: "More ordered", med: "", max: "More disordered"});
+    
+		if (my_disorder == 0) {
+			figs.disorderFig = new ZFigure("disorderPlot", data)
 				.add_title("DISORDER UNAVAILABLE")
 				.add_tooltip("Disorder information is acquired from Uniprot. To see the disorder plot, please provide the Uniprot ID on the previous page.");
 		} else {
-			figs.disorderFig = new Figure("disorderPlot", data)
+			figs.disorderFig = new ZblobChart("disorderPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 				.add_title("Blobs colored according to disordered fraction")
 				.add_tooltip(disorder_tool_text)
-				.add_ContinuousLegend("PuOr", {min: "0.0", med: "0.5", max: "1.0"})
-				.build_barChart()
-				.add_snps(my_snp)
-				.add_psh_ylabel()
-				.add_snp_xAxis(domain_threshold_max)
-				.add_skyline();
+				.add_zoomtip(zoom_tool_text)
+				.add_ContinuousLegend("PuOr", {min: "0.0", med: "0.5", max: "1.0"});
 		}
 
 		var str_i = "Download plots!";
@@ -202,7 +195,7 @@ $(document).ready( function() {
 		d3.selectAll("#mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox").on("change", function(){do_update(figs, data)});
 		
 
-		//download_data
+		// Mutate residue function
 		d3.select('#download_data_link').on('click', function() {
 			// If the box is check, I mutate the amino acid
 			// TODO: This code should not be duplicated
@@ -211,8 +204,10 @@ $(document).ready( function() {
 				var snp_id = document.getElementById("snp_id").value;
 				var amino_acid = document.getElementById("residue_type").value;
 				my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
+				d3.select("").attr("fill", "pink");
 			}
 
+			// Download data
 			$.ajax({
 				url: "/json",
 				type: "post",
@@ -235,6 +230,9 @@ $(document).ready( function() {
 });
 
 </script>
+
+
+
 {% endblock %}
 
 {% block tablist %}
@@ -252,90 +250,79 @@ $(document).ready( function() {
 		<div class="text-center">
 			<h6> Uniprot ID: {{ my_uni_id | safe }}</h6>
 		</div>
-		
-		<!--The div id my_dataviz is the div container for ALL D3 visualization plots, color keys-->
-		<div id="my_dataviz" class="viz_track">
-			<!--This section contains the div containers for the sliders and the text entry box-->
-		<table width ="100%">
-			<col style="width:14%">
-			<col style="width:8%">
-			<col style="width:74%">
-			<tr>
-			<td> <div class="text-left">
-				Hydropathy cutoff:
-				<label style = "opacity: 0.0; display: none;">
-					<span id="cutoff_user"></span>
-				</label> </td>
-				<td> <input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001> </td>
-				<td> <input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001> </td> </tr>
-			</div>
-			
-			<tr>
-			<td> <div class="text-left">
-				Minimum blob size:
-				<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
-				</label> </td>
-				<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> </td>
-				<td> <input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider2" step=1> </td> </tr>
-			</div>
 
-			<div>
-				<tr> <td> <input type="checkbox" class="checkbox" id="mutatebox" value="True"> <label for="mutatebox">Mutate residue:</label> </td>
-				<!-- my_seq includes single quotes in the string so we have to do this subscripting here -->
-				<td> <select id="snp_id">
-				{% for residue in my_seq[1:-1] %}
-				<option value="{{ loop.index0 + 1 }}"> {{ loop.index0 + 1 }} ({{ residue }})</option>
-				{% endfor %}
-				 </select> </td>
-				<td> to
-				<select id="residue_type">
-					<option disabled>&mdash; Positive &mdash;</option>
-					<option selected="selected" value="R">R - Arg</option>
-					<option value="H">H - His</option>
-					<option value="K">K - Lys</option>
-					<option disabled> &mdash; Negative &mdash;</option> 
-					<option value="D">D - Asp</option>
-					<option value="E">E - Glu</option>
-					<option	disabled> &mdash; Polar &mdash;</option>
-					<option value="N">N - Asn</option>
-					<option value="Q">Q - Gln</option>
-					<option value="S">S - Ser</option>
-					<option value="T">T - Thr</option>
-					<option	disabled>&mdash; Hydrophobic &mdash;</option>
-					<option value="A">A - Ala</option>
-					<option value="I">I - Ile</option>
-					<option value="L">L - Leu</option>
-					<option value="M">M - Met</option>
-					<option value="F">F - Phe</option>
-					<option value="W">W - Trp</option>
-					<option value="Y">Y - Tyr</option>
-					<option value="V">V - Val</option>  
-					<option	disabled>&mdash; Other &mdash;</option>
-					<option value="C">C - Cys</option>
-					<option value="G">G - Gly</option>
-					<option value="P">P - Pro</option>
-				</select> </tr> </td>
-			</div>
-
-			<tr><td>
-			<!--<div class="wrap" role="group" aria-labelledby="multi-lbl" style="--a: -30; --b: 20; --min: -50; --max: 50">
-			  <div id="zoom">Residue Range</div>
-			  <label class="sr-only" for="a">fromRes</label>
-			  <input id="a" type="range" min="-50" value="-30" max="50"/>
-			  <label class="sr-only" for="b">toRes</label>
-			  <input id="b" type="range" min="-50" value="20" max="50"/>
-			</div>-->
-
-
-		</table>
-
-			<div class="text-left">
+		<div class="result-controls" id="result_main_container">
+			<table>
+				<col style="width:22%">
+				<col style="width:8%">
+				<!-- col style="width:50%" -->
+				<tr>
+				<td> <div class="text-left">
+					Hydropathy cutoff:
+					<label style = "opacity: 0.0; display: none;">
+						<span id="cutoff_user"></span>
+					</label> </td>
+					<td> <input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001> </td>
+					<td> <input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001> </td> </tr>
+				</div>
+				
+				<tr>
+				<td> <div class="text-left">
+					Minimum blob size:
+					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
+					</label> </td>
+					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> </td>
+					<td> <input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider2" step=1> </td> </tr>
+				</div>
+	
+				<div>
+					<tr> <td> <input type="checkbox" class="checkbox" id="mutatebox" value="True"> <label for="mutatebox">Mutate residue:</label> </td>
+					<!-- my_seq includes single quotes in the string so we have to do this subscripting here -->
+					<td> <select id="snp_id">
+					{% for residue in my_seq[1:-1] %}
+					<option value="{{ loop.index0 + 1 }}"> {{ loop.index0 + 1 }} ({{ residue }})</option>
+					{% endfor %}
+					 </select> </td>
+					<td> to
+					<select id="residue_type">
+						<option disabled>&mdash; Positive &mdash;</option>
+						<option selected="selected" value="R">R - Arg</option>
+						<option value="H">H - His</option>
+						<option value="K">K - Lys</option>
+						<option disabled> &mdash; Negative &mdash;</option> 
+						<option value="D">D - Asp</option>
+						<option value="E">E - Glu</option>
+						<option	disabled> &mdash; Polar &mdash;</option>
+						<option value="N">N - Asn</option>
+						<option value="Q">Q - Gln</option>
+						<option value="S">S - Ser</option>
+						<option value="T">T - Thr</option>
+						<option	disabled>&mdash; Hydrophobic &mdash;</option>
+						<option value="A">A - Ala</option>
+						<option value="I">I - Ile</option>
+						<option value="L">L - Leu</option>
+						<option value="M">M - Met</option>
+						<option value="F">F - Phe</option>
+						<option value="W">W - Trp</option>
+						<option value="Y">Y - Tyr</option>
+						<option value="V">V - Val</option>  
+						<option	disabled>&mdash; Other &mdash;</option>
+						<option value="C">C - Cys</option>
+						<option value="G">G - Gly</option>
+						<option value="P">P - Pro</option>
+					</select> </tr> </td>
+				</div>
+			</table>
 				<label style = "opacity: 0.0; display: none; position: relative;"> </label>
 				<button type="button" onclick="window.print();return false;">Download plots!</button>
 				<button type="button" id="download_data_link">Download data!</button>
-			</div>
+	</div>
+	
+		<!--The div id my_dataviz is the div container for ALL D3 visualization plots, color keys-->
+		<div id="my_dataviz" class="viz_track">
 
 		</div>
+
 	</div>
 </div>
 

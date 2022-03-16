@@ -1,0 +1,5 @@
+Residue_Number,Residue_Name,Window,Hydropathy_Cutoff,Minimum_Blob_Length,blob_length,Normalized_Mean_Blob_Hydropathy,Blob_Type,Blob_Index_Number,Blob_Das-Pappu_Class,Blob_NCPR,Fraction_of_Positively_Charged_Residues,Fraction_of_Negatively_Charged_Residues,Fraction_of_Charged_Residues,Uversky_Diagram_Score,dSNP_enrichment,Blob_Disorder,Normalized_Kyte-Doolittle_hydropathy,Kyte-Doolittle_hydropathy
+1,N,3,0.4,4,4,0.31666666666666665,p,p1,2,0.25,0.25,0.0,0.25,0.1751511433505078,0,0.0,0.1111111111111111,-3.5
+2,G,3,0.4,4,4,0.31666666666666665,p,p1,2,0.25,0.25,0.0,0.25,0.1751511433505078,0,0.0,0.4555555555555555,-0.40000000000000036
+3,A,3,0.4,4,4,0.31666666666666665,p,p1,2,0.25,0.25,0.0,0.25,0.1751511433505078,0,0.0,0.7,1.7999999999999998
+4,R,3,0.4,4,4,0.31666666666666665,p,p1,2,0.25,0.25,0.0,0.25,0.1751511433505078,0,0.0,0.0,-4.5

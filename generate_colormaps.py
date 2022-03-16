@@ -88,7 +88,7 @@ writeCMap(disorder_color,"disorderCMap.csv",-1, 1, res)
 
 
 
-
+# Generating the custom color maps for the plots
 cmap = LinearSegmentedColormap.from_list(
     "mycmap", [(0.0 / 1, "red"), ((0.5) / 1, "whitesmoke"), (1.0, "blue")]
 )

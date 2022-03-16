@@ -163,36 +163,21 @@ def uversky_diagram(x):
         return distance 
 
 # ..........................Define NCPR.........................................................#
-
-#file = open("ncprCMap.pkl", "rb")
-#ncprDict = pickle.load(file)
-#file.close()
 ncprDict = pd.read_csv("ncprCMap.csv", index_col=0)
 def lookupNCPR(x):
     val = x[0]
     return ncprDict.loc[np.round(val, 2)]
 
-
-#file = open("uverskyCMap.pkl", "rb")
-#uverskyDict = pickle.load(file)
-#file.close()
 uverskyDict = pd.read_csv("uverskyCMap.csv", index_col=0)
 def lookupUversky(x):
     val = x[0]
     return uverskyDict.loc[np.round(val, 2)]
 
-#file = open("disorderCMap.pkl", "rb")
-#disorderDict = pickle.load(file)
-#file.close()
 disorderDict = pd.read_csv("disorderCMap.csv", index_col=0)
 def lookupDisorder(x):
     val = x[0]
     return disorderDict.loc[np.round(val, 2)]
 
-
-#file = open("enrichCMap.pkl", "rb")
-#enrichDF = pd.read_pickle(file)
-#file.close()
 enrichDF = pd.read_csv("enrichCMap.csv", index_col=[0,1])
 def lookupEnrichment(x):
     cutoff = round(x[1], 2)
@@ -221,6 +206,50 @@ def h_blob_enrichments_numerical(x):
 def count_var(x, v):
     return x.values.tolist().count(v) / (x.shape[0] * 1.0)
 
+def get_hydrophobicity(x):
+    try: 
+        return properties_hydropathy[x]
+    except:
+        print(f'\n!!!ERROR: Residue {x} is not in my library of known amino acids!!!\n')
+        raise
+
+def clean_df(df):
+    #print (df.head)
+    #df = df.drop(range(0, 1))
+    del df['domain_pre']
+    del df['NCPR_color']
+    del df['blob_color']
+    del df["P_diagram"]
+    del df["uversky_color"]
+    del df["disorder_color"]
+    del df["hydropathy_3_window_mean"] 
+    del df["hydropathy_digitized"] 
+    #del df["hydropathy"]
+    del df["charge"]
+    del df["domain_to_numbers"]
+    df['resid'] = df['resid'].astype(int)
+    df = df[[ 'resid', 'seq_name', 'window', 'm_cutoff', 'domain_threshold', 'N', 'H', 'blobtype', 'domain', 'blob_charge_class', 'NCPR', 'f+', 'f-', 'fcr', 'U_diagram', 'h_numerical_enrichment', 'disorder', 'hydropathy']]
+    df = df.rename(columns={'seq_name': 'Residue_Name', 
+                            'resid': 'Residue_Number', 
+                            'disorder': 'Blob_Disorder', 
+                            'window': 'Window', 
+                            'm_cutoff': 'Hydropathy_Cutoff', 
+                            'domain_threshold': 'Minimum_Blob_Length', 
+                            'blobtype':'Blob_Type', 
+                            'H': 'Normalized_Mean_Blob_Hydropathy', 
+                            'domain': 'Blob_Index_Number', 
+                            'NCPR': 'Blob_NCPR', 
+                            'f+': "Fraction_of_Positively_Charged_Residues", 
+                            'f-': "Fraction_of_Negatively_Charged_Residues", 
+                            'fcr': 'Fraction_of_Charged_Residues', 
+                            'h_numerical_enrichment': 'dSNP_enrichment', 
+                            'blob_charge_class': 'Blob_Das-Pappu_Class', 
+                            'U_diagram': 'Uversky_Diagram_Score', 
+                            'hydropathy': 'Normalized_Kyte-Doolittle_hydropathy',
+                            'N': 'blob_length'})
+    df['Kyte-Doolittle_hydropathy'] = df['Normalized_Kyte-Doolittle_hydropathy']*9-4.5
+
+    return df
 
 def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
 
@@ -299,7 +328,7 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
 
     df = pd.DataFrame({"seq_name": seq_name, "resid": resid,})
     df["disorder"] = df["resid"].apply(lambda x: 1 if x in disorder_residues else 0 )
-    df["hydropathy"] = [ properties_hydropathy[x] for x in df["seq_name"]] 
+    df["hydropathy"] = [get_hydrophobicity(x) for x in df["seq_name"]]
     df["charge"] = [properties_charge[x] for x in df["seq_name"]]           
     df["charge"] = df["charge"].astype('int')
     df["window"] = window
@@ -371,9 +400,11 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
 
     return df
 
-def read_fasta(fname):
-    
-    if __name__ == "__main__":
+if __name__ == "__main__":
+
+    import argparse
+    from Bio import SeqIO
+    from Bio.Seq import Seq
 
     #For diagnostics/development benchmarking
     #import cProfile
@@ -385,10 +416,53 @@ def read_fasta(fname):
 
     #df = compute("MSPQTETKASVGFKAGVKDYKLTYYTPEYETKDTDILAAFRVTPQPGVPPEEAGAAVAAESSTGTWTTVWTDGLTSLDRYKGRCYHIEPVAGEENQYICYVAYPLDLFEEGSVTNMFTSIVGNVFGFKALRALRLEDLRIPTAYVKTFQGPPHGIQVERDKLNKYGRPLLGCTIKPKLGLSAKNYGRAVYECLRGGLDFTKDDENVNSQPFMRWRDRFLFCAEAIYKSQAETGEIKGHYLNATAGTCEEMMKRAIFARELGVPIVMHDYLTGGFTANTSLAHYCRDNGLLLHIHRAMHAVIDRQKNHGIHFRVLAKALRMSGGDHIHSGTVVGKLEGERDITLGFVDLLRDDFIEKDRSRGIYFTQDWVSLPGVLPVASGGIHVWHMPALTEIFGDDSVLQFGGGTLGHPWGNAPGAVANRVALEACVQARNEGRDLAREGNEIIREACKWSPELAAACEVWKEIKFEFQAMDTL", 0.4, 1)
     
+    parser = argparse.ArgumentParser(description='')
 
-        df = compute("MSPQTETKASVGFKAGVKDYKLTYYTPEYETKDTDILAAFRVTPQPGVPPEEAGAAVAAESSTGTWTTVWTDGLTSLDRYKGRCYHIEPVAGEENQYICYVAYPLDLFEEGSVTNMFTSIVGNVFGFKALRALRLEDLRIPTAYVKTFQGPPHGIQVERDKLNKYGRPLLGCTIKPKLGLSAKNYGRAVYECLRGGLDFTKDDENVNSQPFMRWRDRFLFCAEAIYKSQAETGEIKGHYLNATAGTCEEMMKRAIFARELGVPIVMHDYLTGGFTANTSLAHYCRDNGLLLHIHRAMHAVIDRQKNHGIHFRVLAKALRMSGGDHIHSGTVVGKLEGERDITLGFVDLLRDDFIEKDRSRGIYFTQDWVSLPGVLPVASGGIHVWHMPALTEIFGDDSVLQFGGGTLGHPWGNAPGAVANRVALEACVQARNEGRDLAREGNEIIREACKWSPELAAACEVWKEIKFEFQAMDTL", 0.4, 4)
-        df = df.rename(columns={'seq_name': 'res_name', 'm_cutoff': 'hydrophobicity_cutoff', 'domain_threshold':'minimum_blob_length', 'blobtype':'blob_hydrophobicty_class', 'N':'blob_length'})
+    parser.add_argument('--sequence', type=str, help='Takes a single string of EITHER DNA or protein one-letter codes (no spaces).', default=None)
+    parser.add_argument('--cutoff', type=float, help='Sets the cutoff hydrophobicity (floating point number between 0.00 and 1.00 inclusive). Defaults to 0.4', default=0.4)
+    parser.add_argument('--minBlob', type=int, help='Mininmum blob length (integer greater than 1). Defaults to 4', default=4)
+    parser.add_argument('--oname', type=str, help='Name of output file or path to output directory. Defaults to blobulated_.csv', default="blobulated_")
+    parser.add_argument('--fasta', type=str, help='FASTA file with 1 or more sequences', default=None)
+    parser.add_argument('--DNA', type=bool, help='Flag that says whether the inputs are DNA or protein. Defaults to false (protein)', default=False)
+
+    args = parser.parse_args()
+
+    if args.DNA:
+        print("REMINDER: The blobulator assumes all DNA inputs to be coding sequences and only translates up to the first stop codon.")
+        print("CAUTION: Do not mix DNA and protein sequences")
+    if (args.sequence!=None) & (args.fasta!=None):
+        print("ERROR: Input EITHER --sequence OR --fasta. NOT both.")
+
+    elif args.fasta:
+        print(f"Reading {args.fasta}")
+        for seq_record in SeqIO.parse(args.fasta, "fasta"):
+            print(f'Running: {seq_record.id}')
+            if args.DNA:
+                coding_dna = seq_record.seq
+                mrna = coding_dna.transcribe()
+                sequence = mrna.translate(to_stop=True)
+            else:
+                sequence = seq_record.seq
+
+            df = compute(sequence, args.cutoff, args.minBlob)
+            print(f"Writing output file to: {args.oname}{seq_record.id}.csv")
+            df = clean_df(df)
+            df.to_csv(f'{args.oname}{seq_record.id}.csv', index=False)
+
+    elif args.sequence:
+        print(f'Running...\nseq: {args.sequence}\ncutoff: {args.cutoff}\nminBlob: {args.minBlob}\nOutput to: {args.oname}')
+        if args.DNA:
+            coding_dna = Seq(args.sequence)
+            mrna = coding_dna.transcribe()
+            sequence = mrna.translate(to_stop=True)
+        else:
+            sequence = args.sequence
         
+        df = compute(sequence, args.cutoff, args.minBlob)
         print ("Writing output file")
-        df[['res_name', 'hydrophobicity_cutoff', 'minimum_blob_length', 'blob_hydrophobicty_class', 'blob_charge_class','blob_length']].to_csv("./blobulated.csv", index=False)
+        df = clean_df(df)
+        df.to_csv(args.oname, index=False)
+
         print("done")
+    else:
+        print("No sequence provided")

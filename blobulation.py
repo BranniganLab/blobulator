@@ -1,13 +1,16 @@
 import json
 from user_input_form import InputForm
 from amino_acids import properties_hydropathy
-from compute_blobs import compute
+from compute_blobs import (compute, clean_df)
+
 from compute_snps import pathogenic_snps
 import pandas as pd
 import numpy as np
 import time
 import io
 from matplotlib.backends.backend_svg import FigureCanvasSVG
+import urllib.parse
+import urllib.request
 
 from flask import Flask, render_template, request, Response, session, jsonify, send_file
 from flask_restful import Resource, Api
@@ -26,20 +29,22 @@ SESSION_TYPE = 'filesystem'
 app.config.from_object(__name__)
 Session(app) #This stores the user input for further calls
 
+# URLs for API requests
 REQUEST_URL_snp = "https://www.ebi.ac.uk/proteins/api/variation"
 REQUEST_URL_features = "https://www.ebi.ac.uk/proteins/api/features"
-
+REQUEST_UNIPROT_ID_FROM_ENSEMBL = "https://www.uniprot.org/uploadlists/"
+   
 
 @app.route("/", methods=["GET", "POST"])
 def index():
     form = InputForm(request.form) #reads the user input
 
     if request.method == "POST":
-
         #checks if the user has provided uniprot id or residue sequence
         if "action_u" in request.form.to_dict(): #if uniprot id
             # get the disorder information for a given sequence
             uniprot_id = form.uniprot_id.data.splitlines()
+
             if len(uniprot_id) != 1 or len(uniprot_id[0].split()) != 1:
                 return render_template("error.html",
                     title="More than one UniProt ID provided",
@@ -47,6 +52,36 @@ def index():
                     We only support the blobulation of one protein at a time.""")
 
             user_uniprot_id = uniprot_id[0].strip()
+
+            # Takes the input form, converts it to a dictionary, and requests the input type (from the dropdown menu selection) using the input_type key
+            request_dict = request.form.to_dict()
+            input_type = request_dict["input_type"]
+
+            types = {"hgnc_id":"HGNC_ID", "ensembl_id":"ENSEMBL_ID"}
+
+            for input_key in types:
+                if input_type == input_key:
+                    params = {
+                    'from': types[input_key],
+                    'to': 'ACC',
+                    'format': 'tab',
+                    'query': user_uniprot_id
+                    }
+                    ensembl_data = urllib.parse.urlencode(params)
+                    ensembl_data = ensembl_data.encode('utf-8')
+                    req = urllib.request.Request(REQUEST_UNIPROT_ID_FROM_ENSEMBL, ensembl_data)
+                    with urllib.request.urlopen(req) as f:
+                       response = f.read()
+                    database_return = response.decode('utf-8')
+                    print(database_return)
+                    listed_database_return = database_return.split()
+                    try:
+                        user_uniprot_id = listed_database_return[3]
+                    except IndexError:
+                        return render_template("error.html",
+                            title="Ensembl ID Error:",
+                            message=f"""The Ensembl id you have entered ({params["query"]}) could not be found. If you're sure the ID is valid, please contact us with the ID and expected protein.""")
+
             try:
                 response_d2p2 = requests.get(
                     f'http://d2p2.pro/api/seqid/["{user_uniprot_id}"]'
@@ -55,7 +90,7 @@ def index():
             except:
                 data_d2p2 = {user_uniprot_id: []}
 
-            # get the sequence and its name from uniprot database
+            # get the sequence and its name from uniprot database, perform error checks
             uniprot_params = {
                 "offset": 0,
                 "size": -1,
@@ -119,12 +154,13 @@ def index():
                 except IndexError:
                     disorder_residues = [0]
 
-            # do the blobulation
+            # Blobulation
             window = 3 
             session['sequence'] = str(my_seq) #set the current sequence variable
             my_initial_df = compute(
                 str(my_seq), float(0.4), 4, window=window, disorder_residues=disorder_residues
             )
+            #define the data frame (df)
             df = my_initial_df
             chart_data = df.round(3).to_dict(orient="records")
             chart_data = json.dumps(chart_data, indent=2)
@@ -144,7 +180,7 @@ def index():
                     activetab = '#result-tab'
                 )
 
-        else: #if the user inputs amino acid sequence
+        else: # if the user inputs amino acid sequence
             aa_sequence = form.aa_sequence.data.splitlines()
             if len(aa_sequence) > 1:
                 return render_template("error.html",
@@ -263,40 +299,7 @@ def calc_json():
         disorder_residues = list(my_disorder),
     )  # blobulation
     df = my_initial_df
-    #print (df.head)
-    #df = df.drop(range(0, 1))
-    del df['domain_pre']
-    del df['N']
-    del df['NCPR_color']
-    del df['blob_color']
-    del df["P_diagram"]
-    del df["uversky_color"]
-    del df["disorder_color"]
-    del df["hydropathy_3_window_mean"] 
-    del df["hydropathy_digitized"] 
-    #del df["hydropathy"]
-    del df["charge"]
-    del df["domain_to_numbers"]
-    df['resid'] = df['resid'].astype(int)
-    df = df[[ 'resid', 'seq_name', 'window', 'm_cutoff', 'domain_threshold', 'H', 'blobtype', 'domain', 'blob_charge_class', 'NCPR', 'f+', 'f-', 'fcr', 'U_diagram', 'h_numerical_enrichment', 'disorder', 'hydropathy']]
-    df = df.rename(columns={'seq_name': 'Residue_Name', 
-                            'resid': 'Residue_Number', 
-                            'disorder': 'Blob_Disorder', 
-                            'window': 'Window', 
-                            'm_cutoff': 'Hydropathy_Cutoff', 
-                            'domain_threshold': 'Minimum_Blob_Length', 
-                            'blobtype':'Blob_Type', 
-                            'H': 'Normalized_Mean_Blob_Hydropathy', 
-                            'domain': 'Blob_Index_Number', 
-                            'NCPR': 'Blob_NCPR', 
-                            'f+': "Fraction_of_Positively_Charged_Residues", 
-                            'f-': "Fraction_of_Negatively_Charged_Residues", 
-                            'fcr': 'Fraction_of_Charged_Residues', 
-                            'h_numerical_enrichment': 'dSNP_enrichment', 
-                            'blob_charge_class': 'Blob_Das-Pappu_Class', 
-                            'U_diagram': 'Uversky_Diagram_Score', 
-                            'hydropathy': 'Normalized_Kyte-Doolittle_hydropathy'})
-    df['Kyte-Doolittle_hydropathy'] = df['Normalized_Kyte-Doolittle_hydropathy']*9-4.5
+    df = clean_df(df)
     
     #f = "##" + str(user_input) + "\n" + str(df.round(1).to_csv(index=False))
     f = str(df.round(1).to_csv(index=False))
