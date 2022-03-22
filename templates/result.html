@@ -205,7 +205,6 @@ $(document).ready( function() {
 				var snp_id = document.getElementById("snp_id").value;
 				var amino_acid = document.getElementById("residue_type").value;
 				my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
-				d3.select("").attr("fill", "pink");
 			}
 
 			// Download data
