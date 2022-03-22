@@ -1,10 +1,7 @@
 # Protein Blobulator
+_Looking for the webinterface? Try here:_ https://www.blobulator.branniganlab.org/ 
+
 This tool identifies contiguous stretches of hydrophobic residues within a protein sequence. Any sequence of contiguous hydrophobic residues that is at least as long as the minimum blob length is considered an hydrophobic or h "blob". Any remaining segments that are at least as long as the minimum length are considered polar or p "blobs," while those that are shorter than the minimum blob length are considered separator or "s" residues.  Separator residues are very short stretches of non-hydrophobic residues that may be found between two h blobs.
-
-## Web Interface
-
-A web interface for this tool is currently under active development. The alpha version can be found at https://www.blobulator.branniganlab.org/
-
 
 ## Running locally:
 
