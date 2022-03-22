@@ -3,7 +3,7 @@ This tool identifies contiguous stretches of hydrophobic residues within a prote
 
 ## Web Interface
 
-A web interface for this tool is currently under active development. The alpha version can be found at https://www.blobulator.branniganlab.org/
+A web interface for this tool is currently under active development. The beta version can be found at https://www.blobulator.branniganlab.org/
 
 
 ## Running locally:
