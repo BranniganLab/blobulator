@@ -249,7 +249,6 @@ class ZChart extends ZFigure{
 		let x = this.x, y = this.y;
 		x.domain(arrDomain);
 		// Update axis and bar position
-		xAxis.transition().duration(timing).call(d3.axisBottom(x));
 		this.update_bars(data, x, y);
 		this.zoom_bars(data, x, y, extent, domain);
 
@@ -291,12 +290,28 @@ class ZChart extends ZFigure{
 		return this
 	}
 	
-	update_xAxis(x){
-		var tickPeriod = (Math.round((Math.round(x.domain().length/10))/10)*10)
-		this.xAxis.call(d3.axisBottom(x).tickValues(x.domain().filter(function(d, i) {
-			return !((i+1) % (tickPeriod) )}
-			)));
-		return this
+	update_xAxis(x) {
+		// Decide how many ticks to show based on how wide the domain is.
+		// Actually, we are choosing the interval between ticks.
+		const tickPeriod = Math.round((Math.round(x.domain().length/10))/10)*10;
+		let xAxisGenerator = d3.axisBottom(x);
+		let tickValues = x.domain().filter(function(d, i) {
+			return !((i+1) % tickPeriod);
+		});
+		xAxisGenerator.tickValues(tickValues);
+		// Generate tick labels from the tick values
+		let seq_name_by_resid = new Array();
+		// We have to create a map of resid to sequence because resid might not start at 1
+		for(let i = 0; i < this.data.length; i++) {
+			seq_name_by_resid[this.data[i].resid] = this.data[i].seq_name;
+		}
+		let tickLabels = tickValues.map((d, i) => {
+			return seq_name_by_resid[d] + d; // returns e.g. "A123"
+		});
+		xAxisGenerator.tickFormat((d, i) => tickLabels[i]);
+		// Actually call the axis generator to emit SVG elements
+		this.xAxis.call(xAxisGenerator);
+		return this;
 	}
 	
 	/* add_snps
@@ -396,6 +411,7 @@ class ZHydropathy extends ZChart{
 		this.data = data;
 		this.bars.data(data);
 		//console.log(this.bars.data())
+		this.update_xAxis(x); // because there might have been a mutation
 		this.bars.transition()
 			.duration(timing)
 			.attr("y", d => y(d.hydropathy_3_window_mean))
@@ -502,12 +518,13 @@ class ZblobChart extends ZChart {
 	update_bars(data, timing=1000, x=this.x, y=this.y) {
 		this.data = data;
 		this.bars.data(data);
-		
+
 		// Lookup table for color attribute of our data as a function of the plot name.
 		// E.g. The "globPlot" plot data stores colors in the "P_diagram" attribute of the data.
 		const figID_to_var = {'ZblobPlot': 'blob_color', 'blobPlot': 'blob_color', 'globPlot': 'P_diagram', 'ncprPlot': 'NCPR_color', 'richPlot': 'h_blob_enrichment',
 			'uverskyPlot': 'uversky_color', 'disorderPlot': 'disorder_color'};
 
+		this.update_xAxis(x); // because there migh have been a mutation
 		this.bars.transition()
 			.duration(timing)
 			.attr("y", (d) => y(d.domain_to_numbers))
