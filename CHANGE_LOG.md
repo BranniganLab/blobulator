@@ -1,5 +1,5 @@
 # Changes
-## Version 12.08.21
+## Version 0.8.0
 - Added plot colored by blob type
 - Updated Uversky plot tooltip
 - Misc text edits
@@ -7,7 +7,7 @@
 - Fixed "ghost" SNP bug
 - Reordered tabs
 
-## Version 03.15.22
+## Version 0.9.0
 - Added zooming function
 - Added reset zoom button
 - Added tooltips for zoom
