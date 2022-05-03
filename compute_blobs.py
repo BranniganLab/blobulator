@@ -180,13 +180,13 @@ def lookupDisorder(x):
 
 enrichDF = pd.read_csv("enrichCMap.csv", index_col=[0,1])
 def lookupEnrichment(x):
-    cutoff = round(x[1], 2)
+    max_hydrophobicity = round(x[1], 2)
     blob_length = x[0]
     blob_type = x[2]
     #check if blob type is h AND the cutoff/bloblength combination exists in the reference set
     if blob_type == 'h':
         try:
-            return enrichDF.color.loc[cutoff, blob_length]
+            return enrichDF.color.loc[max_hydrophobicity, blob_length]
         except KeyError:
             return "grey"
     else:
@@ -373,7 +373,7 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
     df["f+"] = domain_group["charge"].transform(lambda x: count_var(x, 1))
     df["f-"] = domain_group["charge"].transform(lambda x: count_var(x, -1))
     df["fcr"] = df["f-"] + df["f+"]
-    df['h_blob_enrichment'] = df[["N", "m_cutoff", "blobtype"]].apply(lookupEnrichment, axis=1)
+    df['h_blob_enrichment'] = df[["N", "H", "blobtype"]].apply(lookupEnrichment, axis=1)
     df['h_numerical_enrichment'] = df[["N", "m_cutoff", "blobtype"]].apply(lambda x: h_blob_enrichments_numerical(x), axis=1)
 
     df["blob_color"] = df[["domain", "hydropathy"]].apply(
