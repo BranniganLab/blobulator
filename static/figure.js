@@ -48,6 +48,23 @@ class ZFigure {
 
 		return this;
 	}
+
+	add_resetmutation_button() {
+
+	var btn = document.createElement("button");
+	btn.innerHTML = "Reset Mutations";
+	btn.id = "reset_mut"
+	btn.type = "button";
+	btn.onclick = function () {
+		if (document.getElementById("mutatebox").checked == true){
+			document.getElementById("mutatebox").click();	
+		};
+	}
+	var top_container = document.getElementById("result_main_container");
+	top_container.appendChild(btn);
+
+	return this;
+	}
 	
 	add_title(title){
 	    // Creates the title
@@ -328,10 +345,15 @@ class ZChart extends ZFigure{
 			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 145)")
 			.attr("id", "snp_triangles")
 			.on("click", function(event, d){
-				document.getElementById("snp_id").value = d.resid;
-				document.getElementById("residue_type").value = d.alternativeSequence;
-				document.getElementById("mutatebox").click();
-				if (document.getElementById("mutatebox").checked == true){
+				if (document.getElementById("mutatebox").checked == false){
+					document.getElementById("snp_id").value = d.resid;
+					document.getElementById("residue_type").value = d.alternativeSequence;
+					document.getElementById("mutatebox").click();
+			} else if (document.getElementById("mutatebox").checked == true){
+					document.getElementById("mutatebox").click();
+					document.getElementById("snp_id").value = d.resid;
+					document.getElementById("residue_type").value = d.alternativeSequence;
+					document.getElementById("mutatebox").click();
 					d3.select(this).attr("fill", "red");
 				}
 			})
