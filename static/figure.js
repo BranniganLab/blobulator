@@ -37,6 +37,7 @@ class ZFigure {
 		btn.innerHTML = "Reset Zoom";
 		btn.id = "reset_zoom"
 		btn.type = "button";
+		btn.space 
 		btn.onclick = function () {
 			let fig = ZChart.allInstances[figID];
 			let domainArray_zoom = fig.data.map(d => d.resid);
@@ -52,7 +53,7 @@ class ZFigure {
 	add_resetmutation_button() {
 
 	var btn = document.createElement("button");
-	btn.innerHTML = "Reset Mutations";
+	btn.innerHTML = "Reset Mutation";
 	btn.id = "reset_mut"
 	btn.type = "button";
 	btn.onclick = function () {
