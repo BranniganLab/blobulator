@@ -142,6 +142,7 @@ $(document).ready( function() {
 	
 		figs.pathyFig = new ZHydropathy("pathyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_zoomout_button("pathyPlot", data)
+			.add_mutation_button()
 			.add_resetmutation_button()
 			.add_title("Smoothed hydropathy per residue")
 			.add_tooltip(hydropathy_tool_text)
@@ -275,7 +276,7 @@ $(document).ready( function() {
 					<td> <input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider2" step=1> </td> </tr>
 				</div>
 	
-				<div>
+				<div id="mutations_container">
 					<tr> <td> <input type="checkbox" class="checkbox" id="mutatebox" value="True"> <label for="mutatebox">Mutate residue:</label> </td>
 					<!-- my_seq includes single quotes in the string so we have to do this subscripting here -->
 					<td> <select id="snp_id">
