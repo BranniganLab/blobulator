@@ -98,7 +98,7 @@ $(document).ready( function() {
 	function do_update(figs, data) {
         let my_seq = {{ my_seq | safe }};
 		// If the box is checked, I mutate the amino acid
-		if(d3.select("#mutatebox").property("checked")){
+		if(d3.selectAll("#mutatebox").property("checked")){
 			const snp_id = document.getElementById("snp_id").value;
 			const amino_acid = document.getElementById("residue_type").value;
 			my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
@@ -246,14 +246,14 @@ $(document).ready( function() {
 
 {% block tabcontent %}
 {% include 'common-tabcontent.html' %}
-<div class="tab-pane container" id="result">
+<div class="tab-pane-container" id="result">
     <div class="container">
 		<div class="text-center">
 			<h6> Uniprot ID: {{ my_uni_id | safe }}</h6>
 		</div>
 
 		<div class="result-controls" id="result_main_container">
-			<table>
+			<table id="results_table">
 				<col style="width:22%">
 				<col style="width:8%">
 				<!-- col style="width:50%" -->
@@ -276,8 +276,8 @@ $(document).ready( function() {
 					<td> <input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider2" step=1> </td> </tr>
 				</div>
 	
-				<div class="mutations_container">
-					<tr> <td> <input type="checkbox" class="checkbox" id="mutatebox" value="True"> <label for="mutatebox">Mutate residue:</label> </td>
+				<div>
+					<tr id="mutations_container"> <td> <input type="checkbox" class="checkbox" id="mutatebox" value="True"> <label for="mutatebox">Mutate residue:</label> </td>
 					<!-- my_seq includes single quotes in the string so we have to do this subscripting here -->
 					<td> <select id="snp_id">
 					{% for residue in my_seq[1:-1] %}

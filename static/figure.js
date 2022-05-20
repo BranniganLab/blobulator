@@ -58,7 +58,10 @@ class ZFigure {
 	btn.type = "button";
 	btn.style.margin = "4px";
 	btn.onclick = function () {
-		$(".mutations_container").clone().insertAfter(".mutations_container");
+		var $table = $("#results_table");
+		var $trLast = $table.find("tr:last")
+		var $trNew = $trLast.clone()
+		$trLast.after($trNew)
 	}
 	var top_container = document.getElementById("result_main_container");
 	top_container.appendChild(btn);
