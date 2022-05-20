@@ -181,6 +181,7 @@ def lookupDisorder(x):
 enrichDF = pd.read_csv("enrichCMap.csv", index_col=[0,1])
 def lookupEnrichment(x):
     max_hydrophobicity = round(x[1], 2)
+    print(x[1])
     blob_length = x[0]
     blob_type = x[2]
     #check if blob type is h AND the cutoff/bloblength combination exists in the reference set
