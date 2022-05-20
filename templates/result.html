@@ -276,7 +276,7 @@ $(document).ready( function() {
 					<td> <input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider2" step=1> </td> </tr>
 				</div>
 	
-				<div id="mutations_container">
+				<div class="mutations_container">
 					<tr> <td> <input type="checkbox" class="checkbox" id="mutatebox" value="True"> <label for="mutatebox">Mutate residue:</label> </td>
 					<!-- my_seq includes single quotes in the string so we have to do this subscripting here -->
 					<td> <select id="snp_id">

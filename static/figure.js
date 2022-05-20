@@ -58,11 +58,7 @@ class ZFigure {
 	btn.type = "button";
 	btn.style.margin = "4px";
 	btn.onclick = function () {
-		var container = document.getElementById('mutations_container')
-		var box = document.querySelector('#mutations_container');
-		var clone_box = box.cloneNode(true);
-		clone_box.id = 'mutatebox';
-		container.after(clone_box);
+		$(".mutations_container").clone().insertAfter(".mutations_container");
 	}
 	var top_container = document.getElementById("result_main_container");
 	top_container.appendChild(btn);
