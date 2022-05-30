@@ -179,15 +179,20 @@ def lookupDisorder(x):
     return disorderDict.loc[np.round(val, 2)]
 
 enrichDF = pd.read_csv("enrichCMap.csv", index_col=[0,1])
+enrichDF.to_csv("enrichment.txt")
+
 def lookupEnrichment(x):
     min_hydrophobicity = round(x[1], 2)
-    print(x[1])
     blob_length = x[0]
     blob_type = x[2]
     #check if blob type is h AND the cutoff/bloblength combination exists in the reference set
     if blob_type == 'h':
         try:
-            return enrichDF.color.loc[min_hydrophobicity, blob_length]
+            enrichment = enrichDF.Enrichment.loc[min_hydrophobicity, blob_length]
+            if enrichment > 0.001 and min_hydrophobicity < 0.2:
+                return enrichDF.color.loc[min_hydrophobicity, blob_length]
+            else:
+                return "rgb(144, 238, 144)"
         except KeyError:
             return "grey"
     else:

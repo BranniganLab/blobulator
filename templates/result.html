@@ -201,7 +201,7 @@ $(document).ready( function() {
 			// If the box is check, I mutate the amino acid
 			// TODO: This code should not be duplicated
 			var my_seq = {{ my_seq | safe }};
-			if(d3.select("#mutatebox").property("checked")) {
+			if(d3.selectAll("#mutatebox").property("checked")) {
 				var snp_id = document.getElementById("snp_id").value;
 				var amino_acid = document.getElementById("residue_type").value;
 				my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
@@ -291,7 +291,7 @@ $(document).ready( function() {
 						var $table = $("#results_table");
 						var $trLast = $table.find("tr:last");
     					$trLast.remove()
-    				}
+    					}
 				</script>
 
 				<div>
