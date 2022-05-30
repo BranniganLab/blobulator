@@ -274,7 +274,26 @@ $(document).ready( function() {
 					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> </td>
 					<td> <input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider2" step=1> </td> </tr>
 				</div>
-	
+
+				<script type="text/javascript">
+						function cloneRow() {
+						var btn = document.getElementById("add_mut");
+						btn.onclick = function () {
+							var $table = $("#results_table");
+							var $trLast = $table.find("tr:last");
+							var $trNew = $trLast.clone();
+							$trLast.after($trNew)
+						}
+						return this
+					}
+
+					function deleterow() {
+						var $table = $("#results_table");
+						var $trLast = $table.find("tr:last");
+    					$trLast.remove()
+    				}
+				</script>
+
 				<div>
 					<tr id="mutations_container"> <td> <input type="checkbox" class="checkbox" id="mutatebox" value="True"> <label for="mutatebox">Mutate residue:</label> </td>
 					<!-- my_seq includes single quotes in the string so we have to do this subscripting here -->
@@ -311,10 +330,10 @@ $(document).ready( function() {
 						<option value="G">G - Gly</option>
 						<option value="P">P - Pro</option>
 					</select> </td>
-					<td><button type="button" class="button hollow circle" data-quantity="plus" data-field="quantity">
+					<td><button type="button" class="button hollow circle" data-quantity="plus" data-field="quantity" id="add_mut" onclick="cloneRow()">
 				    <i class="fa fa-plus" aria-hidden="true"></i>
 				    </button></td>
-				    <td><button type="button" class="button hollow circle" data-quantity="minus" data-field="quantity">
+				    <td><button type="button" class="button hollow circle" data-quantity="minus" data-field="quantity" onclick="deleterow()">
 				    <i class="fa fa-minus" aria-hidden="true"></i></td>
 				</tr>
 				</div>
