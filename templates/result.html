@@ -142,7 +142,6 @@ $(document).ready( function() {
 	
 		figs.pathyFig = new ZHydropathy("pathyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_zoomout_button("pathyPlot", data)
-			//.add_mutation_button()
 			.add_resetmutation_button()
 			.add_title("Smoothed hydropathy per residue")
 			.add_tooltip(hydropathy_tool_text)
@@ -311,7 +310,13 @@ $(document).ready( function() {
 						<option value="C">C - Cys</option>
 						<option value="G">G - Gly</option>
 						<option value="P">P - Pro</option>
-					</select> </tr> </td>
+					</select> </td>
+					<td><button type="button" class="button hollow circle" data-quantity="plus" data-field="quantity">
+				    <i class="fa fa-plus" aria-hidden="true"></i>
+				    </button></td>
+				    <td><button type="button" class="button hollow circle" data-quantity="minus" data-field="quantity">
+				    <i class="fa fa-minus" aria-hidden="true"></i></td>
+				</tr>
 				</div>
 			</table>
 				<label style = "opacity: 0.0; display: none; position: relative;"> </label>
