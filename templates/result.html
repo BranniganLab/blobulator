@@ -277,21 +277,19 @@ $(document).ready( function() {
 
 				<script type="text/javascript">
 						function cloneRow() {
-						var btn = document.getElementById("add_mut");
-						btn.onclick = function () {
+							var btn = document.getElementById("add_mut");
 							var $table = $("#results_table");
 							var $trLast = $table.find("tr:last");
 							var $trNew = $trLast.clone();
-							$trLast.after($trNew)
+							$trLast.after($trNew);
+							return this
 						}
-						return this
-					}
 
-					function deleterow() {
-						var $table = $("#results_table");
-						var $trLast = $table.find("tr:last");
-    					$trLast.remove()
-    					}
+						function deleterow() {
+							var $table = $("#results_table");
+							var $trLast = $table.find("tr:last");
+	    					$trLast.remove();
+	    				}
 				</script>
 
 				<div>
@@ -333,7 +331,7 @@ $(document).ready( function() {
 					<td><button type="button" class="button hollow circle" data-quantity="plus" data-field="quantity" id="add_mut" onclick="cloneRow()">
 				    <i class="fa fa-plus" aria-hidden="true"></i>
 				    </button></td>
-				    <td><button type="button" class="button hollow circle" data-quantity="minus" data-field="quantity" onclick="deleterow()">
+				    <td><button type="button" class="button hollow circle" data-quantity="minus" data-field="quantity" id="sub_mut" onclick="deleterow()">
 				    <i class="fa fa-minus" aria-hidden="true"></i></td>
 				</tr>
 				</div>
