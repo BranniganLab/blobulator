@@ -281,9 +281,11 @@ $(document).ready( function() {
 							var btn = document.getElementById("add_mut");
 							var $table = $("#results_table");
 							var trLast = $table.find("tr:last");
+							console.log(trLast[0])
 							var trNew = trLast.clone();
 							trNew.attr("id", "mutations_container" + row_count);
 							trLast.before(trNew);
+							console.log(trNew[0]);
 							row_count += 1
 							return this
 						}
