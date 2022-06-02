@@ -50,6 +50,25 @@ class ZFigure {
 		return this;
 	}
 
+	// add_mutation_button() {
+
+	// var btn = document.createElement("button");
+	// btn.innerHTML = "Add Mutation";
+	// btn.id = "add_mut"
+	// btn.type = "button";
+	// btn.style.margin = "4px";
+	// btn.onclick = function () {
+	// 	var $table = $("#results_table");
+	// 	var $trLast = $table.find("tr:last");
+	// 	var $trNew = $trLast.clone();
+	// 	$trLast.after($trNew)
+	// }
+	// var top_container = document.getElementById("result_main_container");
+	// top_container.appendChild(btn);
+
+	// return this;
+	// }
+
 	add_resetmutation_button() {
 
 	var btn = document.createElement("button");

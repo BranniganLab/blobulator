@@ -98,7 +98,7 @@ $(document).ready( function() {
 	function do_update(figs, data) {
         let my_seq = {{ my_seq | safe }};
 		// If the box is checked, I mutate the amino acid
-		if(d3.selectAll("#mutatebox").property("checked")){
+		if(d3.selectAll(".mutatebox").property("checked")){
 			const snp_id = document.getElementById("snp_id").value;
 			const amino_acid = document.getElementById("residue_type").value;
 			my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
@@ -193,7 +193,7 @@ $(document).ready( function() {
 		var str_j = "Download data!";
 
 		// Set up UI element change handler
-		d3.selectAll("#mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox").on("change", function(){do_update(figs, data)});
+		d3.selectAll(".mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox").on("change", function(){do_update(figs, data)});
 		
 
 		// Mutate residue function
@@ -201,7 +201,7 @@ $(document).ready( function() {
 			// If the box is check, I mutate the amino acid
 			// TODO: This code should not be duplicated
 			var my_seq = {{ my_seq | safe }};
-			if(d3.selectAll("#mutatebox").property("checked")) {
+			if(d3.selectAll(".mutatebox").property("checked")) {
 				var snp_id = document.getElementById("snp_id").value;
 				var amino_acid = document.getElementById("residue_type").value;
 				my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
@@ -276,12 +276,15 @@ $(document).ready( function() {
 				</div>
 
 				<script type="text/javascript">
+					row_count = 0
 						function cloneRow() {
 							var btn = document.getElementById("add_mut");
 							var $table = $("#results_table");
-							var $trLast = $table.find("tr:last");
-							var $trNew = $trLast.clone();
-							$trLast.after($trNew);
+							var trLast = $table.find("tr:last");
+							var trNew = trLast.clone();
+							trNew.attr("id", "mutations_container" + row_count);
+							trLast.before(trNew);
+							row_count += 1
 							return this
 						}
 
@@ -293,15 +296,15 @@ $(document).ready( function() {
 				</script>
 
 				<div>
-					<tr id="mutations_container"> <td> <input type="checkbox" class="checkbox" id="mutatebox" value="True"> <label for="mutatebox">Mutate residue:</label> </td>
+					<tr id="mutations_container"> <td> <input type="checkbox" id="mutatebox" class="mutatebox" value="True"> <label for="mutatebox">Mutate residue:</label> </td>
 					<!-- my_seq includes single quotes in the string so we have to do this subscripting here -->
-					<td> <select id="snp_id">
+					<td> <select id="snp_id" class="snp_id">
 					{% for residue in my_seq[1:-1] %}
 					<option value="{{ loop.index0 + 1 }}"> {{ loop.index0 + 1 }} ({{ residue }})</option>
 					{% endfor %}
 					 </select> </td>
 					<td> to
-					<select id="residue_type">
+					<select id="residue_type" class="residue_type">
 						<option disabled>&mdash; Positive &mdash;</option>
 						<option selected="selected" value="R">R - Arg</option>
 						<option value="H">H - His</option>
@@ -328,10 +331,10 @@ $(document).ready( function() {
 						<option value="G">G - Gly</option>
 						<option value="P">P - Pro</option>
 					</select> </td>
-					<td><button type="button" class="button hollow circle" data-quantity="plus" data-field="quantity" id="add_mut" onclick="cloneRow()">
+					<td><button type="button" class="add_mut" data-quantity="plus" data-field="quantity" onclick="cloneRow()">
 				    <i class="fa fa-plus" aria-hidden="true"></i>
 				    </button></td>
-				    <td><button type="button" class="button hollow circle" data-quantity="minus" data-field="quantity" id="sub_mut" onclick="deleterow()">
+				    <td><button type="button" class="sub_mut" data-quantity="minus" data-field="quantity" onclick="deleterow()">
 				    <i class="fa fa-minus" aria-hidden="true"></i></td>
 				</tr>
 				</div>
