@@ -234,7 +234,7 @@ def clean_df(df):
     del df["charge"]
     del df["domain_to_numbers"]
     df['resid'] = df['resid'].astype(int)
-    df = df[[ 'resid', 'seq_name', 'window', 'm_cutoff', 'domain_threshold', 'N', 'H', 'min_h' 'blobtype', 'domain', 'blob_charge_class', 'NCPR', 'f+', 'f-', 'fcr', 'U_diagram', 'h_numerical_enrichment', 'disorder', 'hydropathy']]
+    df = df[[ 'resid', 'seq_name', 'window', 'm_cutoff', 'domain_threshold', 'N', 'H', 'min_h', 'blobtype', 'domain', 'blob_charge_class', 'NCPR', 'f+', 'f-', 'fcr', 'U_diagram', 'h_numerical_enrichment', 'disorder', 'hydropathy']]
     df = df.rename(columns={'seq_name': 'Residue_Name', 
                             'resid': 'Residue_Number', 
                             'disorder': 'Blob_Disorder', 
