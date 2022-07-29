@@ -16,3 +16,7 @@
 - compute_blobs.py accepts FASTA files
 - ENSEMBL functionality added
 - Additional comments added to backend scripts
+
+## Version 0.9.1
+- dSNP enrichment track bug fix
+- Clear mutation button added
