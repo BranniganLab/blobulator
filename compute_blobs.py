@@ -196,9 +196,10 @@ def lookupEnrichment(x):
 
 def h_blob_enrichments_numerical(x):
     cutoff = round(x[1], 2)
+    print(cutoff, x[0])
     if x[2] == 'h':
         try:
-            enrich_value = enrichDF[(cutoff, x[0])]
+            enrich_value = enrichDF.Enrichment.loc[cutoff, x[0]]
             return enrich_value
         except KeyError:
             return 0
@@ -378,7 +379,7 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
     df["f-"] = domain_group["charge"].transform(lambda x: count_var(x, -1))
     df["fcr"] = df["f-"] + df["f+"]
     df['h_blob_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lookupEnrichment, axis=1)
-    df['h_numerical_enrichment'] = df[["N", "m_cutoff", "blobtype"]].apply(lambda x: h_blob_enrichments_numerical(x), axis=1)
+    df['h_numerical_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lambda x: h_blob_enrichments_numerical(x), axis=1)
 
     df["blob_color"] = df[["domain", "hydropathy"]].apply(
         blob_diagram, axis=1)
