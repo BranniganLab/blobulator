@@ -196,7 +196,6 @@ def lookupEnrichment(x):
 
 def h_blob_enrichments_numerical(x):
     cutoff = round(x[1], 2)
-    print(cutoff, x[0])
     if x[2] == 'h':
         try:
             enrich_value = enrichDF.Enrichment.loc[cutoff, x[0]]
