@@ -179,14 +179,16 @@ def lookupDisorder(x):
     return disorderDict.loc[np.round(val, 2)]
 
 enrichDF = pd.read_csv("enrichCMap.csv", index_col=[0,1])
+enrichDF.to_csv("enrichment.txt")
+
 def lookupEnrichment(x):
-    cutoff = round(x[1], 2)
+    min_hydrophobicity = round(x[1], 2)
     blob_length = x[0]
     blob_type = x[2]
     #check if blob type is h AND the cutoff/bloblength combination exists in the reference set
     if blob_type == 'h':
         try:
-            return enrichDF.color.loc[cutoff, blob_length]
+            return enrichDF.color.loc[min_hydrophobicity, blob_length]
         except KeyError:
             return "grey"
     else:
@@ -196,7 +198,7 @@ def h_blob_enrichments_numerical(x):
     cutoff = round(x[1], 2)
     if x[2] == 'h':
         try:
-            enrich_value = enrichDF[(cutoff, x[0])]
+            enrich_value = enrichDF.Enrichment.loc[cutoff, x[0]]
             return enrich_value
         except KeyError:
             return 0
@@ -228,7 +230,7 @@ def clean_df(df):
     del df["charge"]
     del df["domain_to_numbers"]
     df['resid'] = df['resid'].astype(int)
-    df = df[[ 'resid', 'seq_name', 'window', 'm_cutoff', 'domain_threshold', 'N', 'H', 'blobtype', 'domain', 'blob_charge_class', 'NCPR', 'f+', 'f-', 'fcr', 'U_diagram', 'h_numerical_enrichment', 'disorder', 'hydropathy']]
+    df = df[[ 'resid', 'seq_name', 'window', 'm_cutoff', 'domain_threshold', 'N', 'H', 'min_h', 'blobtype', 'domain', 'blob_charge_class', 'NCPR', 'f+', 'f-', 'fcr', 'U_diagram', 'h_numerical_enrichment', 'disorder', 'hydropathy']]
     df = df.rename(columns={'seq_name': 'Residue_Name', 
                             'resid': 'Residue_Number', 
                             'disorder': 'Blob_Disorder', 
@@ -236,7 +238,8 @@ def clean_df(df):
                             'm_cutoff': 'Hydropathy_Cutoff', 
                             'domain_threshold': 'Minimum_Blob_Length', 
                             'blobtype':'Blob_Type', 
-                            'H': 'Normalized_Mean_Blob_Hydropathy', 
+                            'H': 'Normalized_Mean_Blob_Hydropathy',
+                            'min_h': 'Min_Blob_Hydropathy', 
                             'domain': 'Blob_Index_Number', 
                             'NCPR': 'Blob_NCPR', 
                             'f+': "Fraction_of_Positively_Charged_Residues", 
@@ -368,13 +371,14 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
 
     df["N"] = domain_group["resid"].transform("count")
     df["H"] = domain_group["hydropathy"].transform("mean")
+    df["min_h"] = domain_group["hydropathy"].transform("min")
     df["NCPR"] = domain_group["charge"].transform("mean")
     df["disorder"] = domain_group["disorder"].transform("mean")
     df["f+"] = domain_group["charge"].transform(lambda x: count_var(x, 1))
     df["f-"] = domain_group["charge"].transform(lambda x: count_var(x, -1))
     df["fcr"] = df["f-"] + df["f+"]
-    df['h_blob_enrichment'] = df[["N", "m_cutoff", "blobtype"]].apply(lookupEnrichment, axis=1)
-    df['h_numerical_enrichment'] = df[["N", "m_cutoff", "blobtype"]].apply(lambda x: h_blob_enrichments_numerical(x), axis=1)
+    df['h_blob_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lookupEnrichment, axis=1)
+    df['h_numerical_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lambda x: h_blob_enrichments_numerical(x), axis=1)
 
     df["blob_color"] = df[["domain", "hydropathy"]].apply(
         blob_diagram, axis=1)
@@ -443,7 +447,6 @@ if __name__ == "__main__":
                 sequence = mrna.translate(to_stop=True)
             else:
                 sequence = seq_record.seq
-
             df = compute(sequence, args.cutoff, args.minBlob)
             print(f"Writing output file to: {args.oname}{seq_record.id}.csv")
             df = clean_df(df)
@@ -466,3 +469,4 @@ if __name__ == "__main__":
         print("done")
     else:
         print("No sequence provided")
+
