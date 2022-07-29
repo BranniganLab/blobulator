@@ -188,11 +188,7 @@ def lookupEnrichment(x):
     #check if blob type is h AND the cutoff/bloblength combination exists in the reference set
     if blob_type == 'h':
         try:
-            enrichment = enrichDF.Enrichment.loc[min_hydrophobicity, blob_length]
-            if enrichment < 0.001 and min_hydrophobicity > 0.2:
-                return "rgb(144, 238, 144)"
-            else:
-                return enrichDF.color.loc[min_hydrophobicity, blob_length]
+            return enrichDF.color.loc[min_hydrophobicity, blob_length]
         except KeyError:
             return "grey"
     else:
