@@ -71,9 +71,8 @@ def index():
                     ensembl_data = ensembl_data.encode('utf-8')
                     req = urllib.request.Request(REQUEST_UNIPROT_ID_FROM_ENSEMBL, ensembl_data)
                     with urllib.request.urlopen(req) as f:
-                       response = f.read()
+                        response = f.read()
                     database_return = response.decode('utf-8')
-                    print(database_return)
                     listed_database_return = database_return.split()
                     try:
                         user_uniprot_id = listed_database_return[3]
