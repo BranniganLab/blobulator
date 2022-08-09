@@ -17,10 +17,16 @@ from flask_restful import Resource, Api
 from flask_cors import CORS
 from flask_session import Session
 import requests
+from requests.adapters import HTTPAdapter, Retry
+import re
+import zlib
+from xml.etree import ElementTree
+from urllib.parse import urlparse, parse_qs, urlencode
 
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPDF
 
+from importlib import reload
 
 app = Flask(__name__)
 
@@ -57,30 +63,16 @@ def index():
             request_dict = request.form.to_dict()
             input_type = request_dict["input_type"]
 
-            types = {"hgnc_id":"HGNC_ID", "ensembl_id":"ENSEMBL_ID"}
+            types = {"ensembl_id":"Ensembl"}
 
             for input_key in types:
-                if input_type == input_key:
-                    params = {
-                    'from': types[input_key],
-                    'to': 'ACC',
-                    'format': 'tab',
-                    'query': user_uniprot_id
-                    }
-                    ensembl_data = urllib.parse.urlencode(params)
-                    ensembl_data = ensembl_data.encode('utf-8')
-                    req = urllib.request.Request(REQUEST_UNIPROT_ID_FROM_ENSEMBL, ensembl_data)
-                    with urllib.request.urlopen(req) as f:
-                       response = f.read()
-                    database_return = response.decode('utf-8')
-                    print(database_return)
-                    listed_database_return = database_return.split()
-                    try:
-                        user_uniprot_id = listed_database_return[3]
-                    except IndexError:
-                        return render_template("error.html",
-                            title="Ensembl ID Error:",
-                            message=f"""The Ensembl id you have entered ({params["query"]}) could not be found. If you're sure the ID is valid, please contact us with the ID and expected protein.""")
+                ## If we've got a non-uniprot ID,
+                if input_type == input_key: 
+                    ## Convert to uniprot
+                    import uniprot_id_lookup
+                    reload(uniprot_id_lookup)
+                    converted_id = uniprot_id_lookup.results['results'][0]['to']['primaryAccession']
+                    user_uniprot_id = converted_id
 
             try:
                 response_d2p2 = requests.get(
