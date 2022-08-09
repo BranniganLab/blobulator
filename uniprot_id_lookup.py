@@ -13,6 +13,9 @@ form = InputForm(request.form) #reads the user input
 uniprot_id = form.uniprot_id.data.splitlines()
 user_uniprot_id = uniprot_id[0].strip()
 
+
+## Functions below call the uniprot ID converter to change an ID from Ensembl to Uniprot, this script is intended to be called by blobulation.py
+
 POLLING_INTERVAL = 3
 
 API_URL = "https://rest.uniprot.org"
