@@ -245,13 +245,13 @@ $(document).ready( function() {
 
 {% block tabcontent %}
 {% include 'common-tabcontent.html' %}
-<div class="tab-pane-container" id="result">
+<div class="tab-pane container" id="result">
     <div class="container">
 		<div class="text-center">
 			<h6> Uniprot ID: {{ my_uni_id | safe }}</h6>
 		</div>
 
-		<div class="result-controls" id="result_main_container">
+		<div class="result-controls" id="result_main_container", style="width:150%">
 			<table id="results_table">
 				<col style="width:22%">
 				<col style="width:8%">
