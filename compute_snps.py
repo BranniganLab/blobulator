@@ -22,8 +22,8 @@ def pathogenic_snps(variant_file):
 					if item['name'] == 'ClinVar' and each_line['begin'] not in resid:
 						xrefs.append(item)
 						resid.append(each_line['begin'])
-				genomicLocation.append(each_line['genomicLocation'])
-				alternativeSequence.append(each_line['alternativeSequence'])
+						genomicLocation.append(each_line['genomicLocation'])
+						alternativeSequence.append(each_line['alternativeSequence'])
 		except KeyError:
 			pass
 	df = pd.DataFrame(list(zip(resid, xrefs, genomicLocation, alternativeSequence)), 
