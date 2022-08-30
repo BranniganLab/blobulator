@@ -18,10 +18,10 @@ def pathogenic_snps(variant_file):
 
 			if ('Pathogenic' in sig_list) or ('Disease' in sig_list) or ('pathogenic' in sig_list) or ('disease' in sig_list):
 				#print(sig_list)
-				resid.append(each_line['begin'])
 				for item in each_line['xrefs']:
-					if item['name'] == 'dbSNP':
+					if item['name'] == 'ClinVar' and each_line['begin'] not in resid:
 						xrefs.append(item)
+						resid.append(each_line['begin'])
 				genomicLocation.append(each_line['genomicLocation'])
 				alternativeSequence.append(each_line['alternativeSequence'])
 		except KeyError:
@@ -30,8 +30,3 @@ def pathogenic_snps(variant_file):
                columns =['resid', 'xrefs', 'genomicLocation', 'alternativeSequence']) 
 	chart_data = df.to_dict(orient="records")
 	return json.dumps(chart_data, indent=2)
-
-
-
-
-
