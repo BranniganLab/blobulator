@@ -19,7 +19,7 @@ def pathogenic_snps(variant_file):
 			if ('Pathogenic' in sig_list) or ('Disease' in sig_list) or ('pathogenic' in sig_list) or ('disease' in sig_list):
 				#print(sig_list)
 				for item in each_line['xrefs']:
-					if item['name'] == 'ClinVar' and each_line['begin'] not in resid:
+					if item['name'] == 'dbSNP' and each_line['begin'] not in resid:
 						xrefs.append(item)
 						resid.append(each_line['begin'])
 						genomicLocation.append(each_line['genomicLocation'])
