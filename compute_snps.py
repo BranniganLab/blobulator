@@ -17,9 +17,11 @@ def pathogenic_snps(variant_file):
 				sig_list = each_line['clinicalSignificances'][0]['type']
 
 			if ('Pathogenic' in sig_list) or ('Disease' in sig_list) or ('pathogenic' in sig_list) or ('disease' in sig_list):
-				#print (sig_list)
+				#print(sig_list)
 				resid.append(each_line['begin'])
-				xrefs.append(each_line['xrefs'][0])
+				for item in each_line['xrefs']:
+					if item['name'] == 'dbSNP':
+						xrefs.append(item)
 				genomicLocation.append(each_line['genomicLocation'])
 				alternativeSequence.append(each_line['alternativeSequence'])
 		except KeyError:
