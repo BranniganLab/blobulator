@@ -116,7 +116,9 @@ $(document).ready( function() {
 
 		const d_value = d3.select("#domain_threshold_user").text();
 		const selectedValue = d3.select("#cutoff_user").text();
-		const m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, my_disorder: {{ my_disorder | tojson | safe }}};
+		var hydro_scale = document.getElementById("hydro_scales").value;
+		const m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, hydro_scale: hydro_scale, my_disorder: {{ my_disorder | tojson | safe }}};
+
 
 		$.post( "/postmethod", m_str , "json")
 			.then(function(data) {
@@ -131,7 +133,7 @@ $(document).ready( function() {
 	function draw(data) {
 		const my_snp = {{ my_snp | safe }};
 		const my_seq = {{ my_seq | safe }};
-		var   my_cut = {{ my_cut | safe }}
+		var   my_cut = {{ my_cut | safe }};
 		const my_disorder = {{ my_disorder | tojson | safe }};
 		const domain_threshold_max = {{ domain_threshold_max | safe }};
 		if (my_disorder == "0") {
@@ -194,7 +196,7 @@ $(document).ready( function() {
 		var str_j = "Download data!";
 
 		// Set up UI element change handler
-		d3.selectAll(".mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox").on("change", function(){do_update(figs, data)});
+		d3.selectAll(".mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales").on("change", function(){do_update(figs, data)});
 		
 
 		// Mutate residue function
@@ -257,25 +259,25 @@ $(document).ready( function() {
 				<col style="width:22%">
 				<col style="width:8%">
 				<!-- col style="width:50%" -->
-				<tr>
-				<td> <div class="text-left">
-					Hydropathy cutoff:
-					<label style = "opacity: 0.0; display: none;">
+				 <div text="left">
+				<tr><td>
+					Hydrophobicity Scale: 
+					<select id="hydro_scales" class="hydro_scales">
+						<option selected="selected" value="kyte_doolittle">Kyte and Doolittle</option>
+						<option value="eisenberg_weiss">Eisenberg and Weiss</option> </select> </td> </tr>
+					<tr><td>Hydropathy cutoff:<td>
+					<td><label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
 					</label> </td>
-					<td> <input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
-					<td style="height:80px"> <input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list">
-					<datalist id="aa_list">
-							<option>0</option>
-							<option>0.1</option>
-							<option>0.75</option>
-						</datalist></td></div></tr>
+					<td><input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
+					<td><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td></div></tr>
 				<tr>
 				<td> <div class="text-left">
 					Minimum blob size:
 					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
 					</label> </td>
-					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> </td>
+					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> 
+					</td>
 					<td> <input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider2" step=1> </td> </tr>
 				</div>
 

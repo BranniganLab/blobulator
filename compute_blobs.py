@@ -5,6 +5,7 @@ from amino_acids import (
     THREE_TO_ONE,
     properties_type,
     properties_hydropathy,
+    properties_hydropathy_eisenberg_weiss,
 )
 import matplotlib
 matplotlib.use('Agg')
@@ -25,7 +26,7 @@ pd.options.mode.chained_assignment = 'raise'
 # accessing the properties of the given sequence
 
 counter_s = 0  # this is global variable used for annotating domains in f3
-counter_p = 0  #
+counter_p = 0  
 counter_h = 0
 
 s_counter = 0 # this is global variable used for annotating domains in f4
@@ -208,9 +209,14 @@ def h_blob_enrichments_numerical(x):
 def count_var(x, v):
     return x.values.tolist().count(v) / (x.shape[0] * 1.0)
 
-def get_hydrophobicity(x):
+def get_hydrophobicity(x, hydro_scale):
+    print(hydro_scale)
+    if hydro_scale == "kyte_doolittle":
+        scale = properties_hydropathy
+    elif hydro_scale == "eisenberg_weiss":
+        scale = properties_hydropathy_eisenberg_weiss
     try: 
-        return properties_hydropathy[x]
+        return scale[x]
     except:
         print(f'\n!!!ERROR: Residue {x} is not in my library of known amino acids!!!\n')
         raise
@@ -254,7 +260,7 @@ def clean_df(df):
 
     return df
 
-def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
+def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=3, disorder_residues=[]):
 
     # give the numeric values to each domain
     def f3(x, domain_threshold):
@@ -331,7 +337,7 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
 
     df = pd.DataFrame({"seq_name": seq_name, "resid": resid,})
     df["disorder"] = df["resid"].apply(lambda x: 1 if x in disorder_residues else 0 )
-    df["hydropathy"] = [get_hydrophobicity(x) for x in df["seq_name"]]
+    df["hydropathy"] = [get_hydrophobicity(x, hydro_scale) for x in df["seq_name"]]
     df["charge"] = [properties_charge[x] for x in df["seq_name"]]           
     df["charge"] = df["charge"].astype('int')
     df["window"] = window
@@ -447,7 +453,7 @@ if __name__ == "__main__":
                 sequence = mrna.translate(to_stop=True)
             else:
                 sequence = seq_record.seq
-            df = compute(sequence, args.cutoff, args.minBlob)
+            df = compute(sequence, args.cutoff, args.minBlob, 'kyte_doolittle')
             print(f"Writing output file to: {args.oname}{seq_record.id}.csv")
             df = clean_df(df)
             df.to_csv(f'{args.oname}{seq_record.id}.csv', index=False)
@@ -461,7 +467,7 @@ if __name__ == "__main__":
         else:
             sequence = args.sequence
         
-        df = compute(sequence, args.cutoff, args.minBlob)
+        df = compute(sequence, args.cutoff, args.minBlob, 'kyte_doolittle')
         print ("Writing output file")
         df = clean_df(df)
         df.to_csv(args.oname, index=False)

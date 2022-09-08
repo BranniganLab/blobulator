@@ -76,15 +76,6 @@
 	opacity: 2.0;
 }
 
-datalist {
-    display: flex;
-    width: 40%;
-    justify-content: space-between;
-    color: red;
-    margin-top: -50px;
-}
-
-
 /*CSS styling for the bottom slider*/
 .myslider2 {
 	-webkit-appearance: none;
