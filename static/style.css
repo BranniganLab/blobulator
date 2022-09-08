@@ -46,7 +46,7 @@
 	-webkit-appearance: none;
 	/* Override default CSS styles */
 	appearance: none;
-	width: 30%;
+	width: 40%;
 	/* Full-width */
 	height: 20px;
 	/* Specified height */
@@ -76,12 +76,21 @@
 	opacity: 2.0;
 }
 
+datalist {
+    display: flex;
+    width: 40%;
+    justify-content: space-between;
+    color: red;
+    margin-top: -50px;
+}
+
+
 /*CSS styling for the bottom slider*/
 .myslider2 {
 	-webkit-appearance: none;
 	/* Override default CSS styles */
 	appearance: none;
-	width: 30%;
+	width: 40%;
 	/* Full-width */
 	height: 20px;
 	/* Specified height */

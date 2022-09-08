@@ -264,11 +264,11 @@ $(document).ready( function() {
 						<span id="cutoff_user"></span>
 					</label> </td>
 					<td> <input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
-					<td> <input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list">
+					<td style="height:80px"> <input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list">
 					<datalist id="aa_list">
 							<option>0</option>
-							<option>50</option>
-							<option>100</option>
+							<option>0.1</option>
+							<option>0.75</option>
 						</datalist></td></div></tr>
 				<tr>
 				<td> <div class="text-left">
