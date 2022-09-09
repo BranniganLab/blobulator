@@ -152,18 +152,18 @@ $(document).ready( function() {
 			.add_tooltip(blob_track_text)
 			.add_zoomtip(zoom_tool_text)
 			.add_BlobLegend();
-		
-		figs.globFig = new ZblobChart("globPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
-			.add_title("Blobs colored according to globular tendency (Das-Pappu Phase)")
-			.add_tooltip(Das_Pappu_text)
-			.add_zoomtip(zoom_tool_text)
-			.add_GlobularLegend();
 
 		figs.ncprFig = new ZblobChart("ncprPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to net charge per residue")
 			.add_tooltip(ncpr_tool_text)
 			.add_zoomtip(zoom_tool_text)
 			.add_ContinuousLegend("RWB", {min: "-0.5", med: "0.0", max: "+0.5"});
+		
+		figs.globFig = new ZblobChart("globPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
+			.add_title("Blobs colored according to globular tendency (Das-Pappu Phase)")
+			.add_tooltip(Das_Pappu_text)
+			.add_zoomtip(zoom_tool_text)
+			.add_GlobularLegend();
 
 		figs.richFig = new ZblobChart("richPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to estimated mutation sensitivity")
