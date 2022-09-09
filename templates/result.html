@@ -253,27 +253,40 @@ $(document).ready( function() {
 		<div class="text-center">
 			<h6> Uniprot ID: {{ my_uni_id | safe }}</h6>
 		</div>
-
 		<div class="result-controls" id="result_main_container", style="width:150%">
 			<table id="results_table">
-				<col style="width:22%">
-				<col style="width:8%">
+				<col style="width:13%">
+				<col style="width:7%">
 				<!-- col style="width:50%" -->
 				 <div text="left">
-				<tr><td>
-					Hydrophobicity Scale: 
-					<select id="hydro_scales" class="hydro_scales">
+				<tr><td>Hydrophobicity Scale:</td>
+					<td><select id="hydro_scales" class="hydro_scales">
 						<option selected="selected" value="kyte_doolittle">Kyte and Doolittle</option>
-						<option value="eisenberg_weiss">Eisenberg and Weiss</option> </select> </td> </tr>
-					<tr><td>Hydropathy cutoff:<td>
-					<td><label style = "opacity: 0.0; display: none;">
+						<option value="eisenberg_weiss">Eisenberg and Weiss</option></select></td>
+						<td><div><span class="residue-label" style=" left: 99%">I</span></div>
+							<div><span class="residue-label" style=" left: 96.7%">V</span></div>
+							<div><span class="residue-label" style=" left: 81.1%">F</span></div>
+							<div><span class="residue-label" style=" left: 71.1%">M</span></div>
+							<div><span class="residue-label" style=" left: 70%">A</span></div>
+							<div><span class="residue-label" style=" left: 45.6%">G</span></div>
+							<div><span class="residue-label" style=" left: 42.2%">D</span></div>
+							<div><span class="residue-label" style=" left: 41.1%">S</span></div>
+							<div><span class="residue-label" style=" left: 40%">W</span></div>
+							<div><span class="residue-label" style=" left: 35.5%">Y</span></div>
+							<div><span class="residue-label" style=" left: 32.2%">P</span></div>
+							<div><span class="residue-label" style=" left: 14.4%">H</span></div>
+							<div><span class="residue-label" style=" left: 11.1%; bottom: 20%">C, N, D</span></div>
+							<div><span class="residue-label" style=" left: 11.1%; bottom: 10%">E, Z, Q</span></div>
+							<div><span class="residue-label" style=" left: 11.1%">B</span></div>
+							<div><span class="residue-label" style=" left: 6.7%">K</span></div>
+							<div><span class="residue-label" style=" left: 0%">R</span></div></td></tr>
+					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
-					</label> </td>
+					</label></td>
 					<td><input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
 					<td><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td></div></tr>
 				<tr>
-				<td> <div class="text-left">
-					Minimum blob size:
+				<td>Minimum blob size:
 					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
 					</label> </td>
 					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> 
