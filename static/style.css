@@ -42,9 +42,8 @@
 td > div {
   position: relative;
   width:50%;
-  height: 5%;
   border-right: 1px solid #ccc;
-  bottom: 10px;
+  bottom: -10px;
 }
 
 .residue-label {
