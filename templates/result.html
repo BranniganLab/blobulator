@@ -31,6 +31,17 @@ $(document).ready( function() {
 		.attr("class", "tooltip")
 		.style("opacity", 0);
 
+	//Hydropathy slider ticks
+	const kyte_res = {"A": 1.800,"R": -4.500,"N": -3.500,"D": -3.500, "B": -3.5, "C": 2.500, "Q": -3.500, "E": -3.500, "Z": -3.5, "G": -0.400, "H": -3.200, "I": 4.500, "L": 3.800, "K": -3.900, "M": 1.900, "F": 2.800, "P": -1.600, "S": -0.800, "T": -0.700, "W": -0.900, "Y": -1.300, "V": 4.200} 
+	const eisenberg_res = {"I": 0.73, "F": 0.61, "V": 0.54, "L": 0.53, "W": 0.37, "M": 0.26, "A": 0.25, "G": 0.16, "C": 0.04, "Y": 0.02, "P": -0.07, "T": -0.18, "S": -0.26, "H": -0.40, "E": -0.62, "N": -0.64, "Q": -0.69, "D": -0.72, "K": -1.10, "R": -1.80}
+	for (const [key, value] of Object.entries(kyte_res)) {
+		let pos = ((value + 4.5) / 9.0) * 100
+		let res_letter = d3.select("td#hydro-labels")
+		.append("span")
+		.text(key)
+		.attr("class", "residue-label").style("left", pos.toString() + "%");
+	}	
+
 	//updates the slider/box value entered by the user
 	const cutoff_slider_value = document.getElementById("cutoff_user");
 	const cutoff_slider = document.getElementById("cutoff_user_slider");
@@ -263,7 +274,8 @@ $(document).ready( function() {
 					<td><select id="hydro_scales" class="hydro_scales">
 						<option selected="selected" value="kyte_doolittle">Kyte and Doolittle</option>
 						<option value="eisenberg_weiss">Eisenberg and Weiss</option></select></td>
-						<td style="height: 50px"><div><span class="residue-label" style=" left: 99%">I</span></div>
+						<td id="hydro-labels" style="height: 50px">
+						<!-- 	<div><span class="residue-label" style=" left: 99%">I</span></div>
 							<div><span class="residue-label" style=" left: 96.7%">V</span></div>
 							<div><span class="residue-label" style=" left: 81.1%">F</span></div>
 							<div><span class="residue-label" style=" left: 71.1%">M</span></div>
@@ -279,7 +291,7 @@ $(document).ready( function() {
 							<div><span class="residue-label" style=" left: 11.1%; bottom: -2px">E, Z, Q,</span></div>
 							<div><span class="residue-label" style=" left: 11.1%">B</span></div>
 							<div><span class="residue-label" style=" left: 6.7%">K</span></div>
-							<div><span class="residue-label" style=" left: 0%">R</span></div></td></tr>
+							<div><span class="residue-label" style=" left: 0%">R</span></div></td></tr> -->
 					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
 					</label></td>

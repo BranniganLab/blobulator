@@ -194,7 +194,7 @@ def index():
             # do the blobulation
             window = 3
             my_initial_df = compute(
-                str(my_seq), float(0.4), 4, hydro_scale, window=window
+                str(my_seq), float(0.4), 4, window=window
             )  # blobulation
             df = my_initial_df
             chart_data = df.round(3).to_dict(orient="records")
