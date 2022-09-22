@@ -529,6 +529,8 @@ class ZblobChart extends ZChart {
 			.attr("y", this.HEIGHT-5)
 			.attr("x", this.MARGIN.left-80)
 			.attr("transform", "rotate(0)")
+			.style("font-size", "17px")
+			.style("color", "orange")
 			.text("p");
 
 		var ylabel = this.svg.append("g").attr("id", "ylabel")
@@ -538,6 +540,8 @@ class ZblobChart extends ZChart {
 			.attr("y", this.HEIGHT - 37.5)
 			.attr("x", this.MARGIN.left - 80)
 			.attr("transform", "rotate(0)")
+			.style("font-size", "17px")
+			.style("color", "green")
 			.text("s");
 
 
@@ -548,6 +552,8 @@ class ZblobChart extends ZChart {
 			.attr("y", this.HEIGHT - 70)
 			.attr("x", this.MARGIN.left - 80)
 			.attr("transform", "rotate(0)")
+			.style("font-size", "17px")
+			.style("color", "blue")
 			.text("h");
 
 		//"SNPs" y-axis label for globular tendency plot
