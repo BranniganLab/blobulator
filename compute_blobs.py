@@ -61,7 +61,7 @@ def domain_to_numbers(x):
     elif x[0][0] == "h":
         return 0.6
     else:
-        return 0.3
+        return 0.4
 
 
 
