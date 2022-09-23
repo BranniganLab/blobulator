@@ -147,6 +147,13 @@ $(document).ready( function() {
 			.add_tooltip(hydropathy_tool_text)
 			.add_zoomtip(zoom_tool_text);
 
+		// Create the text "Blobs colored according to . . ."
+		let node = document.createElement("div");
+		node.style.position = "relative";
+		node.innerHTML += "<p style='text-align:center; font-size:20px; '>Blobs colored according to . . .</p>"
+		LabelHeader = document.getElementById("my_dataviz").appendChild(node);	
+
+
 		figs.blobFig = new ZblobChart("blobPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blobs colored according to blob type")
 			.add_tooltip(blob_track_text)
