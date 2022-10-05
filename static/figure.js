@@ -310,7 +310,8 @@ class ZChart extends ZFigure{
 		var num_residues = this.data.length
 		
 		this.xAxis = this.svg.append("g")
-						.attr("transform", "translate(0," + xaxisMargin + ")");
+						.attr("transform", "translate(0," + xaxisMargin + ")")
+						.style("font-size", "15px");
 						
 		this.update_xAxis(x)
 		
@@ -325,6 +326,7 @@ class ZChart extends ZFigure{
 			.attr("x", this.WIDTH / 2)
 			.attr("y", this.HEIGHT + bottomMargin)
 			.style("text-anchor", "middle")
+			.style("font-size", "17px")
 			.text("Residue")
 		
 		return this
@@ -529,7 +531,7 @@ class ZblobChart extends ZChart {
 			.attr("y", this.HEIGHT-5)
 			.attr("x", this.MARGIN.left-80)
 			.attr("transform", "rotate(0)")
-			.style("font-size", "17px")
+			.style("font-size", "15px")
 			.text("p");
 
 		var ylabel = this.svg.append("g").attr("id", "ylabel")
