@@ -611,7 +611,7 @@ class ZblobChart extends ZChart {
 			} 
 		}
 
-		// Last line segment
+		// Last line segment - add an extraneous data point to signify this
 		const last_resid = data[data.length-1].resid;
 		points.push({resid: last_resid,
 			height: data[data.length-1].domain_to_numbers});
@@ -624,9 +624,10 @@ class ZblobChart extends ZChart {
 			.attr("stroke", "grey")
 			.attr("stroke-width", 1.0)
 			.attr("d", d3.line()
-				.x(function (d) {
-					// Extend the final line segment all the way to the right
-					if(d.resid == last_resid) {
+				.x(function (d, index) {
+					// Extend the final line segment all the way to the right,
+					// if we are on that last extraneous data point
+					if(index == (points.length-1)) {
 						return x(d.resid) + x.bandwidth();
 					} else {
 						return x(d.resid);
