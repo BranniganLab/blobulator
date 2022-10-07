@@ -39,14 +39,24 @@
 	}
 }
 
+td > div {
+  position: relative;
+  width:50%;
+  border-right: 1px solid #ccc;
+  bottom: -10px;
+}
 
+.residue-label {
+  position: absolute;
+  font-size: 14px;
+}
 
 /*CSS styling for the top slider*/
 .myslider1 {
 	-webkit-appearance: none;
 	/* Override default CSS styles */
 	appearance: none;
-	width: 30%;
+	width: 50%;
 	/* Full-width */
 	height: 20px;
 	/* Specified height */
@@ -81,7 +91,7 @@
 	-webkit-appearance: none;
 	/* Override default CSS styles */
 	appearance: none;
-	width: 30%;
+	width: 50%;
 	/* Full-width */
 	height: 20px;
 	/* Specified height */
