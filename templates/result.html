@@ -33,6 +33,7 @@ $(document).ready( function() {
 
 	//Hydropathy slider ticks
 
+	// Get the current hydropathy scale, added event listener calls the update function if the hydropathy scale changes so the ticks update
 	var current_hydro_scale = document.getElementById("hydro_scales")
 	var sel_hydro_scale = current_hydro_scale.value
 	current_hydro_scale.addEventListener('change', function(){
@@ -41,14 +42,20 @@ $(document).ready( function() {
 		console.log(sel_hydro_scale)
 	});
 
+	// Function to update the ticks
 	function updateHydroscaleTicks(selected_hydro_scale) {
+	// Hydropathy scales (unnormalized) if a hydropathy scale is added in the future note that these dictionaries need to be ordered from highest to lowest value
+	// Parameter: selected_hydro_scale: (str) what hydropathy scale is currently selected? 
+	
 		const kyte_res = {"I": 4.500, "V": 4.200, "L": 3.800, "F": 2.800, "C": 2.500, "M": 1.900, "A": 1.800, "G": -0.400, "T": -0.700, "S": -0.800, "W": -0.900, "Y": -1.300, "P": -1.600, "H": -3.200, "N": -3.500, "B": -3.5,  "Q": -3.500, "E": -3.500, "Z": -3.5, "D": -3.500, "K": -3.900, "R": -4.500} 
 
 		const eisenberg_res = {"I": 0.73, "F": 0.61, "V": 0.54, "L": 0.53, "W": 0.37, "M": 0.26, "A": 0.25, "G": 0.16, "C": 0.04, "Y": 0.02, "P": -0.07, "T": -0.18, "S": -0.26, "H": -0.40, "E": -0.62, "N": -0.64, "Q": -0.69, "D": -0.72, "K": -1.10, "R": -1.80}
+
+	// Set initial variables
 		var res_letters = ""
 		var last_pos = 0
 		let px = 0
-
+	// Determine which scale we're using. Kyte-doolittle is the default because it's always how blobulation is initially calculated
 		if (selected_hydro_scale == "eisenberg_weiss") {
 			var res_dict = {}
 			for (const [key, value] of Object.entries(eisenberg_res)){
@@ -60,13 +67,14 @@ $(document).ready( function() {
 			for (const [key, value] of Object.entries(kyte_res)) {
 				var pos = ((value + 4.5) / 9.0) * 100
 				res_dict[key] = pos;
+			}
 		}
-		}
+	// Iterate through the dictionary of normalized values, assign each residue a position based on what value they fall on, and raise their vertical height if they are too close to the neighborign amino acid on the scale (their letters overlap)
 
 		for (const [key, value] of Object.entries(res_dict)){
 			if (last_pos == value || last_pos - 1.5 <= value) {
 				vert_height = ";bottom:" + px.toString() + "px>"
-				px += 11
+				px += 14
 			} else {
 				vert_height = ">"
 				px = 0;
@@ -76,9 +84,11 @@ $(document).ready( function() {
 			document.getElementById("hydro-labels").innerHTML = res_letters;
 		}
 	} 
+
+	// Call the function
 	updateHydroscaleTicks(sel_hydro_scale)
 
-	//updates the slider/box value entered by the user
+	// updates the slider/box value entered by the user
 	const cutoff_slider_value = document.getElementById("cutoff_user");
 	const cutoff_slider = document.getElementById("cutoff_user_slider");
 
@@ -310,24 +320,7 @@ $(document).ready( function() {
 					<td><select id="hydro_scales" class="hydro_scales">
 						<option selected="selected" value="kyte_doolittle">Kyte and Doolittle</option>
 						<option value="eisenberg_weiss">Eisenberg and Weiss</option></select></td>
-						<td id="hydro-labels" style="height: 50px">
-						<!-- 	<div><span class="residue-label" style=" left: 99%">I</span></div>
-							<div><span class="residue-label" style=" left: 96.7%">V</span></div>
-							<div><span class="residue-label" style=" left: 81.1%">F</span></div>
-							<div><span class="residue-label" style=" left: 71.1%">M</span></div>
-							<div><span class="residue-label" style=" left: 70%">A</span></div>
-							<div><span class="residue-label" style=" left: 45.6%">G</span></div>
-							<div><span class="residue-label" style=" left: 42.2%">D</span></div>
-							<div><span class="residue-label" style=" left: 41.1%; bottom: -2px">S</span></div>
-							<div><span class="residue-label" style=" left: 40%">W</span></div>
-							<div><span class="residue-label" style=" left: 35.5%">Y</span></div>
-							<div><span class="residue-label" style=" left: 32.2%">P</span></div>
-							<div><span class="residue-label" style=" left: 14.4%">H</span></div>
-							<div><span class="residue-label" style=" left: 11.1%; bottom: 12px">C, N, D,</span></div>
-							<div><span class="residue-label" style=" left: 11.1%; bottom: -2px">E, Z, Q,</span></div>
-							<div><span class="residue-label" style=" left: 11.1%">B</span></div>
-							<div><span class="residue-label" style=" left: 6.7%">K</span></div>
-							<div><span class="residue-label" style=" left: 0%">R</span></div></td></tr> -->
+						<td id="hydro-labels" style="height: 90px">
 					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
 					</label></td>
