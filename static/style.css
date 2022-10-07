@@ -56,7 +56,7 @@ td > div {
 	-webkit-appearance: none;
 	/* Override default CSS styles */
 	appearance: none;
-	width: 50%;
+	width: 100%;
 	/* Full-width */
 	height: 20px;
 	/* Specified height */
@@ -86,38 +86,14 @@ td > div {
 	opacity: 2.0;
 }
 
-/*CSS styling for the bottom slider*/
-.myslider2 {
-	-webkit-appearance: none;
-	/* Override default CSS styles */
-	appearance: none;
-	width: 50%;
-	/* Full-width */
-	height: 20px;
-	/* Specified height */
-	background: #d3d3d3;
-	/* Grey background */
-	outline: none;
-	/* Remove outline */
-	opacity: 0.7;
-	/* Set transparency (for mouse-over effects on hover) */
-	-webkit-transition: .2s;
-	/* 0.2 seconds transition on hover */
-	transition: opacity .2s;
+#hydro-labels {
+	height: 90px;
+	width: 100%;
+	position: relative;
 }
 
-/*CSS styling for the bottom slider button*/
-.myslider2::-webkit-slider-thumb {
-	-webkit-appearance: none;
-	cursor: pointer;
-	background: #007BFF;
-	border-radius: 20px;
-	width: 20px;
-	height: 20px;
-}
-
-.myslider2:hover {
-	opacity: 2.0;
-}
-
+.residue-label {
+	display: inline-block;
+	border: none;
+	width: 2em;
 }

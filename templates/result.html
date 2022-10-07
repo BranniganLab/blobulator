@@ -79,7 +79,7 @@ $(document).ready( function() {
 				vert_height = ">"
 				px = 0;
 			}
-			res_letters += "<div><span class= " + "residue-label" + " style= left:" + value.toString() + "%" + vert_height + key.toString() + "</span></div> "
+            res_letters += `<div class="residue-label" style="left: ${value}%; bottom: ${px}px">${key}</div>`;
 			last_pos = value;
 			document.getElementById("hydro-labels").innerHTML = res_letters;
 		}
@@ -316,7 +316,7 @@ $(document).ready( function() {
 		<div class="text-center">
 			<h6> Uniprot ID: {{ my_uni_id | safe }}</h6>
 		</div>
-		<div class="result-controls" id="result_main_container", style="width:150%">
+		<div class="result-controls" id="result_main_container">
 			<table id="results_table">
 				<col style="width:13%">
 				<col style="width:7%">
@@ -326,7 +326,7 @@ $(document).ready( function() {
 					<td><select id="hydro_scales" class="hydro_scales">
 						<option selected="selected" value="kyte_doolittle">Kyte and Doolittle</option>
 						<option value="eisenberg_weiss">Eisenberg and Weiss</option></select></td>
-						<td id="hydro-labels" style="height: 90px">
+						<td id="hydro-labels">
 					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
 					</label></td>
@@ -338,7 +338,7 @@ $(document).ready( function() {
 					</label> </td>
 					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> 
 					</td>
-					<td> <input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider2" step=1> </td> </tr>
+					<td> <input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider1" step=1> </td> </tr>
 				</div>
 
 				<script type="text/javascript">
