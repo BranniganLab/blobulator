@@ -781,6 +781,10 @@ class ZblobChart extends ZChart {
 				this.add_colorbar("PuOr", width, height, min, max, this.WIDTH, this.HEIGHT,
 					{ med: med, cend: '#7f3b08', cq3: '#ee9d3c', cmid: '#f6f6f7', ctop: '#2d004b' });
 				break;
+			case "OrPu":
+				this.add_colorbar("OrPU", width, height, min, max, this.WIDTH, this.HEIGHT,
+					{ med: med, cend: '#2d004b', cmid: '#f6f6f7', cq1: '#ee9d3c', ctop: '#7f3b08' });
+				break;
 			case "RWB":
 				//Color bar key to the right of the enrichment plot.
 				this.add_colorbar("RWB", width, height, min, max, this.WIDTH, this.HEIGHT,
