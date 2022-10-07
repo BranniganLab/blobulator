@@ -210,7 +210,6 @@ def count_var(x, v):
     return x.values.tolist().count(v) / (x.shape[0] * 1.0)
 
 def get_hydrophobicity(x, hydro_scale):
-    print(hydro_scale)
     if hydro_scale == "kyte_doolittle":
         scale = properties_hydropathy
     elif hydro_scale == "eisenberg_weiss":
