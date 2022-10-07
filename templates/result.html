@@ -32,15 +32,51 @@ $(document).ready( function() {
 		.style("opacity", 0);
 
 	//Hydropathy slider ticks
-	const kyte_res = {"A": 1.800,"R": -4.500,"N": -3.500,"D": -3.500, "B": -3.5, "C": 2.500, "Q": -3.500, "E": -3.500, "Z": -3.5, "G": -0.400, "H": -3.200, "I": 4.500, "L": 3.800, "K": -3.900, "M": 1.900, "F": 2.800, "P": -1.600, "S": -0.800, "T": -0.700, "W": -0.900, "Y": -1.300, "V": 4.200} 
-	const eisenberg_res = {"I": 0.73, "F": 0.61, "V": 0.54, "L": 0.53, "W": 0.37, "M": 0.26, "A": 0.25, "G": 0.16, "C": 0.04, "Y": 0.02, "P": -0.07, "T": -0.18, "S": -0.26, "H": -0.40, "E": -0.62, "N": -0.64, "Q": -0.69, "D": -0.72, "K": -1.10, "R": -1.80}
-	for (const [key, value] of Object.entries(kyte_res)) {
-		let pos = ((value + 4.5) / 9.0) * 100
-		let res_letter = d3.select("td#hydro-labels")
-		.append("span")
-		.text(key)
-		.attr("class", "residue-label").style("left", pos.toString() + "%");
-	}	
+
+	var current_hydro_scale = document.getElementById("hydro_scales")
+	var sel_hydro_scale = current_hydro_scale.value
+	current_hydro_scale.addEventListener('change', function(){
+		sel_hydro_scale = current_hydro_scale.value
+		updateHydroscaleTicks(sel_hydro_scale.toString())
+		console.log(sel_hydro_scale)
+	});
+
+	function updateHydroscaleTicks(selected_hydro_scale) {
+		const kyte_res = {"I": 4.500, "V": 4.200, "L": 3.800, "F": 2.800, "C": 2.500, "M": 1.900, "A": 1.800, "G": -0.400, "T": -0.700, "S": -0.800, "W": -0.900, "Y": -1.300, "P": -1.600, "H": -3.200, "N": -3.500, "B": -3.5,  "Q": -3.500, "E": -3.500, "Z": -3.5, "D": -3.500, "K": -3.900, "R": -4.500} 
+
+		const eisenberg_res = {"I": 0.73, "F": 0.61, "V": 0.54, "L": 0.53, "W": 0.37, "M": 0.26, "A": 0.25, "G": 0.16, "C": 0.04, "Y": 0.02, "P": -0.07, "T": -0.18, "S": -0.26, "H": -0.40, "E": -0.62, "N": -0.64, "Q": -0.69, "D": -0.72, "K": -1.10, "R": -1.80}
+		var res_letters = ""
+		var last_pos = 0
+		let px = 0
+
+		if (selected_hydro_scale == "eisenberg_weiss") {
+			var res_dict = {}
+			for (const [key, value] of Object.entries(eisenberg_res)){
+				var pos = (value + 1.8) / 2.53 * 100
+				res_dict[key] = pos;
+			}
+		} else {
+			var res_dict = {}
+			for (const [key, value] of Object.entries(kyte_res)) {
+				var pos = ((value + 4.5) / 9.0) * 100
+				res_dict[key] = pos;
+		}
+		}
+
+		for (const [key, value] of Object.entries(res_dict)){
+			if (last_pos == value || last_pos - 1.5 <= value) {
+				vert_height = ";bottom:" + px.toString() + "px>"
+				px += 11
+			} else {
+				vert_height = ">"
+				px = 0;
+			}
+			res_letters += "<div><span class= " + "residue-label" + " style= left:" + value.toString() + "%" + vert_height + key.toString() + "</span></div> "
+			last_pos = value;
+			document.getElementById("hydro-labels").innerHTML = res_letters;
+		}
+	} 
+	updateHydroscaleTicks(sel_hydro_scale)
 
 	//updates the slider/box value entered by the user
 	const cutoff_slider_value = document.getElementById("cutoff_user");
