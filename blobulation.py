@@ -224,6 +224,7 @@ def index():
 def api_id():
     """This can be used for api calling {blobulator_link}/api/query?my_seq=AAAA&domain_threshold=24&cutoff=0.5&my_disorder=2,3"""
     my_seq  = str(request.args['my_seq'])
+    hydro_scale = str(request.args['hydro_scale'])
     domain_threshold  = request.args['domain_threshold']
     cutoff  = request.args['cutoff']
     my_disorder  = request.args['my_disorder']
@@ -251,6 +252,7 @@ def get_post():
     my_seq  = request.form['my_seq']
     domain_threshold  = request.form['domain_threshold']
     cutoff  = request.form['cutoff']
+    hydro_scale = request.form['hydro_scale']
     my_disorder  = request.form['my_disorder']
     my_disorder  = list(map(int, my_disorder.split(",")))
     window = 3
@@ -258,6 +260,7 @@ def get_post():
         str(my_seq),
         float(cutoff),
         float(domain_threshold),
+        str(hydro_scale),
         window=window,
         disorder_residues = list(my_disorder),
     )  # blobulation
@@ -326,6 +329,7 @@ def calc_plot():
     else:
         #my_seq  = request.form['my_seq']
         my_seq = session.get('sequence')
+        hydro_scale = request.args['hydro_scale']
         domain_threshold  = request.args['domain_threshold']
         cutoff  = request.args['cutoff']
         my_disorder  = [0]
@@ -333,6 +337,7 @@ def calc_plot():
         fig = compute(
             str(my_seq),
             float(cutoff),
+            hydro_scale,
             float(domain_threshold),
             window=window, my_plot =True,disorder_residues = list(my_disorder)
         )  # blobulation

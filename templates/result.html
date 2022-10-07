@@ -31,12 +31,70 @@ $(document).ready( function() {
 		.attr("class", "tooltip")
 		.style("opacity", 0);
 
-	//updates the slider/box value entered by the user
+	//Hydropathy slider ticks
+
+	// Get the current hydropathy scale, added event listener calls the update function if the hydropathy scale changes so the ticks update
+	var current_hydro_scale = document.getElementById("hydro_scales")
+	var sel_hydro_scale = current_hydro_scale.value
+	current_hydro_scale.addEventListener('change', function(){
+		sel_hydro_scale = current_hydro_scale.value
+		updateHydroscaleTicks(sel_hydro_scale.toString())
+		console.log(sel_hydro_scale)
+	});
+
+	// Function to update the ticks
+	function updateHydroscaleTicks(selected_hydro_scale) {
+	// Hydropathy scales (unnormalized) if a hydropathy scale is added in the future note that these dictionaries need to be ordered from highest to lowest value
+	// Parameter: selected_hydro_scale: (str) what hydropathy scale is currently selected? 
+	
+		const kyte_res = {"I": 4.500, "V": 4.200, "L": 3.800, "F": 2.800, "C": 2.500, "M": 1.900, "A": 1.800, "G": -0.400, "T": -0.700, "S": -0.800, "W": -0.900, "Y": -1.300, "P": -1.600, "H": -3.200, "N": -3.500, "B": -3.5,  "Q": -3.500, "E": -3.500, "Z": -3.5, "D": -3.500, "K": -3.900, "R": -4.500} 
+
+		const eisenberg_res = {"I": 0.73, "F": 0.61, "V": 0.54, "L": 0.53, "W": 0.37, "M": 0.26, "A": 0.25, "G": 0.16, "C": 0.04, "Y": 0.02, "P": -0.07, "T": -0.18, "S": -0.26, "H": -0.40, "E": -0.62, "N": -0.64, "Q": -0.69, "D": -0.72, "K": -1.10, "R": -1.80}
+
+	// Set initial variables
+		var res_letters = ""
+		var last_pos = 0
+		let px = 0
+	// Determine which scale we're using. Kyte-doolittle is the default because it's always how blobulation is initially calculated
+		if (selected_hydro_scale == "eisenberg_weiss") {
+			var res_dict = {}
+			for (const [key, value] of Object.entries(eisenberg_res)){
+				var pos = (value + 1.8) / 2.53 * 100
+				res_dict[key] = pos;
+			}
+		} else {
+			var res_dict = {}
+			for (const [key, value] of Object.entries(kyte_res)) {
+				var pos = ((value + 4.5) / 9.0) * 100
+				res_dict[key] = pos;
+			}
+		}
+	// Iterate through the dictionary of normalized values, assign each residue a position based on what value they fall on, and raise their vertical height if they are too close to the neighborign amino acid on the scale (their letters overlap)
+
+		for (const [key, value] of Object.entries(res_dict)){
+			if (last_pos == value || last_pos - 1.5 <= value) {
+				vert_height = ";bottom:" + px.toString() + "px>"
+				px += 14
+			} else {
+				vert_height = ">"
+				px = 0;
+			}
+			res_letters += "<div><span class= " + "residue-label" + " style= left:" + value.toString() + "%" + vert_height + key.toString() + "</span></div> "
+			last_pos = value;
+			document.getElementById("hydro-labels").innerHTML = res_letters;
+		}
+	} 
+
+	// Call the function
+	updateHydroscaleTicks(sel_hydro_scale)
+
+	// updates the slider/box value entered by the user
 	const cutoff_slider_value = document.getElementById("cutoff_user");
 	const cutoff_slider = document.getElementById("cutoff_user_slider");
 
 	//Cutoff Box
 	const cutoff_box = document.getElementById("cutoff_user_box");
+
 
 	//Threshold Slider
 	const domain_threshold_value = document.getElementById("domain_threshold_user");
@@ -115,7 +173,9 @@ $(document).ready( function() {
 
 		const d_value = d3.select("#domain_threshold_user").text();
 		const selectedValue = d3.select("#cutoff_user").text();
-		const m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, my_disorder: {{ my_disorder | tojson | safe }}};
+		var hydro_scale = document.getElementById("hydro_scales").value;
+		const m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, hydro_scale: hydro_scale, my_disorder: {{ my_disorder | tojson | safe }}};
+
 
 		$.post( "/postmethod", m_str , "json")
 			.then(function(data) {
@@ -130,7 +190,7 @@ $(document).ready( function() {
 	function draw(data) {
 		const my_snp = {{ my_snp | safe }};
 		const my_seq = {{ my_seq | safe }};
-		var   my_cut = {{ my_cut | safe }}
+		var   my_cut = {{ my_cut | safe }};
 		const my_disorder = {{ my_disorder | tojson | safe }};
 		const domain_threshold_max = {{ domain_threshold_max | safe }};
 		if (my_disorder == "0") {
@@ -152,8 +212,7 @@ $(document).ready( function() {
 		node.style.position = "relative";
 		node.innerHTML += "<p style='text-align:center; font-size:25px; '>Blobs colored according to . . .</p>"
 		LabelHeader = document.getElementById("my_dataviz").appendChild(node);	
-
-
+    
 		figs.blobFig = new ZblobChart("blobPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blob type")
 			.add_tooltip(blob_track_text)
@@ -200,7 +259,7 @@ $(document).ready( function() {
 		var str_j = "Download data!";
 
 		// Set up UI element change handler
-		d3.selectAll(".mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox").on("change", function(){do_update(figs, data)});
+		d3.selectAll(".mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales").on("change", function(){do_update(figs, data)});
 		
 
 		// Mutate residue function
@@ -257,28 +316,28 @@ $(document).ready( function() {
 		<div class="text-center">
 			<h6> Uniprot ID: {{ my_uni_id | safe }}</h6>
 		</div>
-
 		<div class="result-controls" id="result_main_container", style="width:150%">
 			<table id="results_table">
-				<col style="width:22%">
-				<col style="width:8%">
+				<col style="width:13%">
+				<col style="width:7%">
 				<!-- col style="width:50%" -->
-				<tr>
-				<td> <div class="text-left">
-					Hydropathy cutoff:
-					<label style = "opacity: 0.0; display: none;">
+				 <div text="left">
+				<tr><td>Hydrophobicity Scale:</td>
+					<td><select id="hydro_scales" class="hydro_scales">
+						<option selected="selected" value="kyte_doolittle">Kyte and Doolittle</option>
+						<option value="eisenberg_weiss">Eisenberg and Weiss</option></select></td>
+						<td id="hydro-labels" style="height: 90px">
+					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
-					</label> </td>
-					<td> <input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001> </td>
-					<td> <input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001> </td> </tr>
-				</div>
-				
+					</label></td>
+					<td><input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
+					<td><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td></div></tr>
 				<tr>
-				<td> <div class="text-left">
-					Minimum blob size:
+				<td>Minimum blob size:
 					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
 					</label> </td>
-					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> </td>
+					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> 
+					</td>
 					<td> <input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider2" step=1> </td> </tr>
 				</div>
 
