@@ -89,6 +89,20 @@ $(document).ready( function() {
 	// Call the function
 	updateHydroscaleTicks(sel_hydro_scale)
 
+	// Add event listeners for each of the ticks, on click update the hydropathy input and slider
+
+	var all_res = document.getElementsByClassName("residue-label")
+	console.log(all_res[1])
+
+	for (var i = 0; i < all_res.length; i += 1) {
+		(function () {
+			console.log(all_res[i])
+			all_res[i].addEventListener("click", function() {
+				console.log("clicked!");
+			}, false);
+		})
+	}
+
 	// updates the slider/box value entered by the user
 	const cutoff_slider_value = document.getElementById("cutoff_user");
 	const cutoff_slider = document.getElementById("cutoff_user_slider");
