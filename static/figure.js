@@ -93,6 +93,18 @@ class ZFigure {
 	    // Creates the title
 		this.svg.append("text")
 			.attr("x", this.WIDTH / 2)
+			.attr("y", this.MARGIN.top - 5)
+			.style("text-anchor", "middle")
+			.text(title)
+			.attr("font-size", "20px")
+
+		return this;
+	}
+
+		add_smoothed_hydro_title(title){
+	    // Creates the title
+		this.svg.append("text")
+			.attr("x", this.WIDTH / 2)
 			.attr("y", this.MARGIN.top - 25)
 			.style("text-anchor", "middle")
 			.text(title)
@@ -529,7 +541,7 @@ class ZblobChart extends ZChart {
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
 			.attr("y", this.HEIGHT-22)
-			.attr("x", this.MARGIN.left-80)
+			.attr("x", this.MARGIN.left-65)
 			.attr("transform", "rotate(0)")
 			.style("font-size", "17px")
 			.text("p");
@@ -539,7 +551,7 @@ class ZblobChart extends ZChart {
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
 			.attr("y", this.HEIGHT - 50.25)
-			.attr("x", this.MARGIN.left - 80)
+			.attr("x", this.MARGIN.left - 65)
 			.attr("transform", "rotate(0)")
 			.style("font-size", "17px")
 			.text("s");
@@ -550,7 +562,7 @@ class ZblobChart extends ZChart {
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
 			.attr("y", this.HEIGHT - 78.5)
-			.attr("x", this.MARGIN.left - 80)
+			.attr("x", this.MARGIN.left - 65)
 			.attr("transform", "rotate(0)")
 			.style("font-size", "17px")
 			.text("h");
