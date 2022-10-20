@@ -39,6 +39,7 @@
 	}
 }
 
+
 td > div {
   position: relative;
   width:50%;
@@ -87,6 +88,7 @@ td > div {
 }
 
 #hydro-labels {
+	cursor: pointer;
 	height: 90px;
 	width: 100%;
 	position: relative;
@@ -95,5 +97,5 @@ td > div {
 .residue-label {
 	display: inline-block;
 	border: none;
-	width: 2em;
+	width: 1em;
 }
