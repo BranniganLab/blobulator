@@ -93,6 +93,18 @@ class ZFigure {
 	    // Creates the title
 		this.svg.append("text")
 			.attr("x", this.WIDTH / 2)
+			.attr("y", this.MARGIN.top - 5)
+			.style("text-anchor", "middle")
+			.text(title)
+			.attr("font-size", "20px")
+
+		return this;
+	}
+
+		add_smoothed_hydro_title(title){
+	    // Creates the title
+		this.svg.append("text")
+			.attr("x", this.WIDTH / 2)
 			.attr("y", this.MARGIN.top - 25)
 			.style("text-anchor", "middle")
 			.text(title)
