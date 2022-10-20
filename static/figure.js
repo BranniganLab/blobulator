@@ -529,7 +529,7 @@ class ZblobChart extends ZChart {
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
 			.attr("y", this.HEIGHT-22)
-			.attr("x", this.MARGIN.left-80)
+			.attr("x", this.MARGIN.left-65)
 			.attr("transform", "rotate(0)")
 			.style("font-size", "17px")
 			.text("p");
@@ -539,7 +539,7 @@ class ZblobChart extends ZChart {
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
 			.attr("y", this.HEIGHT - 50.25)
-			.attr("x", this.MARGIN.left - 80)
+			.attr("x", this.MARGIN.left - 65)
 			.attr("transform", "rotate(0)")
 			.style("font-size", "17px")
 			.text("s");
@@ -550,7 +550,7 @@ class ZblobChart extends ZChart {
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
 			.attr("y", this.HEIGHT - 78.5)
-			.attr("x", this.MARGIN.left - 80)
+			.attr("x", this.MARGIN.left - 65)
 			.attr("transform", "rotate(0)")
 			.style("font-size", "17px")
 			.text("h");
