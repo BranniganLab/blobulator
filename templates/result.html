@@ -183,13 +183,13 @@ $(document).ready( function() {
 			.add_GlobularLegend();
 
 		figs.richFig = new ZblobChart("richPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
-			.add_title("Estimated mutation sensitivity")
+			.add_title("Enrichment of deleterious mutations in blobs with similar properties")
 			.add_tooltip(enrichment_tool_text)
 			.add_zoomtip(zoom_tool_text)
 			.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"});
 
 		figs.uverskyFig = new ZblobChart("uverskyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
-			.add_title("Mean hydrophobicity and mean net charge")
+			.add_title("Signed distance from order/disorder boundary")
 			.add_tooltip(uversky_tool_text)
 			.add_zoomtip(zoom_tool_text)
 			.add_ContinuousLegend("PuOr", {min: "More ordered", med: "", max: "More disordered"});
@@ -200,7 +200,7 @@ $(document).ready( function() {
 				.add_tooltip("Disorder information is acquired from Uniprot. To see the disorder plot, please provide the Uniprot ID on the previous page.");
 		} else {
 			figs.disorderFig = new ZblobChart("disorderPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
-				.add_title("Ordered fraction")
+				.add_title("Predicted structured fraction")
 				.add_tooltip(disorder_tool_text)
 				.add_zoomtip(zoom_tool_text)
 				.add_ContinuousLegend("OrPu", {min: "0.0", med: "0.5", max: "1.0"});
