@@ -27,6 +27,7 @@
 /* Sliders and controls for result graphs ("Hydropathy cutoff" and the like) */
 .result-controls {
 	background-color: white;
+	width: 85vw;
 	padding: 1em;
 	z-index: 100;
 	display: inline-block;
@@ -90,7 +91,7 @@ td > div {
 #hydro-labels {
 	cursor: pointer;
 	height: 90px;
-	width: 100%;
+	width: 70%;
 	position: relative;
 }
 
