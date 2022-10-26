@@ -36,6 +36,7 @@
 	.result-controls {
 		position: sticky;
 		top: 0;
+		width: 85vw;
 	}
 }
 
