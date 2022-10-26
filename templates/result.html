@@ -262,8 +262,8 @@ $(document).ready( function() {
         // Parameter: selected_hydro_scale: (str) what hydropathy scale is currently selected?
 	
 		const kyte_res = {"I": 4.500, "V": 4.200, "L": 3.800, "F": 2.800, "C": 2.500, "M": 1.900, "A": 1.800, "G": -0.400,
-            "T": -0.700, "S": -0.800, "W": -0.900, "Y": -1.300, "P": -1.600, "H": -3.200, "N": -3.500, "B": -3.5,  "Q": -3.500,
-            "E": -3.500, "Z": -3.5, "D": -3.500, "K": -3.900, "R": -4.500}
+            "T": -0.700, "S": -0.800, "W": -0.900, "Y": -1.300, "P": -1.600, "H": -3.200, "N": -3.500, "Q": -3.500,
+            "E": -3.500, "D": -3.500, "K": -3.900, "R": -4.500}
 		const eisenberg_res = {"I": 0.73, "F": 0.61, "V": 0.54, "L": 0.53, "W": 0.37, "M": 0.26, "A": 0.25, "G": 0.16,
             "C": 0.04, "Y": 0.02, "P": -0.07, "T": -0.18, "S": -0.26, "H": -0.40, "E": -0.62, "N": -0.64, "Q": -0.69,
             "D": -0.72, "K": -1.10, "R": -1.80}
@@ -344,7 +344,7 @@ $(document).ready( function() {
 		<div class="text-center">
 			<h6> Uniprot ID: {{ my_uni_id | safe }}</h6>
 		</div>
-		<div class="result-controls" id="result_main_container">
+		<div class="result-controls" id="result_main_container" style="width:110%">
 			<table id="results_table">
 				<col style="width:13%">
 				<col style="width:7%">
