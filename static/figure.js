@@ -105,7 +105,7 @@ class ZFigure {
 	    // Creates the title
 		this.svg.append("text")
 			.attr("x", this.WIDTH / 2)
-			.attr("y", this.MARGIN.top - 25)
+			.attr("y", this.MARGIN.top - 35)
 			.style("text-anchor", "middle")
 			.text(title)
 			.attr("font-size", "20px")
