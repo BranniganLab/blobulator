@@ -30,20 +30,21 @@
 	padding: 1em;
 	z-index: 100;
 	display: inline-block;
+	empty-cells: show;
 }
 
 @media not print {
 	.result-controls {
 		position: sticky;
 		top: 0;
-		width: 85vw;
+		width: 100vw;
 	}
 }
 
 
 td > div {
   position: relative;
-  width:50%;
+  width:40%;
   border-right: 1px solid #ccc;
   bottom: -10px;
 }
