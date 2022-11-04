@@ -182,6 +182,12 @@ def lookupDisorder(x):
 enrichDF = pd.read_csv("enrichCMap.csv", index_col=[0,1])
 enrichDF.to_csv("enrichment.txt")
 
+enrichDF_p = pd.read_csv("enrichCMap_p.csv", index_col=[0,1])
+enrichDF_p.to_csv("enrichment_p.txt")
+
+enrichDF_s = pd.read_csv("enrichCMap_s.csv", index_col=[0,1])
+enrichDF_s.to_csv("enrichment_s.txt")
+
 def lookupEnrichment(x):
     min_hydrophobicity = round(x[1], 2)
     blob_length = x[0]
@@ -190,6 +196,16 @@ def lookupEnrichment(x):
     if blob_type == 'h':
         try:
             return enrichDF.color.loc[min_hydrophobicity, blob_length]
+        except KeyError:
+            return "grey"
+    elif blob_type == 'p':
+        try:
+            return enrichDF_p.color.loc[min_hydrophobicity, blob_length]
+        except KeyError:
+            return "grey"
+    elif blob_type == 's':
+        try:
+            return enrichDF_s.color.loc[min_hydrophobicity, blob_length]
         except KeyError:
             return "grey"
     else:
