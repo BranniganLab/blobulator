@@ -121,7 +121,34 @@ class ZFigure {
 		RETURNS:
 			none
 	*/
-	add_tooltip(content="Place Holder", xpos=this.WIDTH, ypos=this.MARGIN.top-20) {
+	add_tooltip(content="Place Holder", xpos=this.WIDTH, ypos=this.MARGIN.top + 3) {
+		this.infoIcon = document.createElement("div");
+		this.infoIcon.style.position = "absolute";
+		this.infoIcon.style.top = ypos + "px";
+		this.infoIcon.style.left = xpos + 30 + "px";
+		this.infoIcon.style.font = "arial";
+		this.infoIcon.style.cursor = "pointer";
+		this.infoIcon.style.fontSize = "larger";
+		this.infoIcon.style.fill = "blue";
+		this.infoIcon.innerText = '\u{24D8}';
+		this.infoIcon.type = "button";
+		this.infoIcon.title = '<a onclick="$(this).closest(\'div.popover\').popover(\'hide\');" type="button" class="close" aria-hidden="true">&times;</a><br>';
+		this.infoIcon.style.zIndex = "10"; // Put this element on top of the SVG
+		
+		$(this.infoIcon).popover({
+			content: content, 
+			placement: "top", 
+			html: true,
+			sanitize: false,
+			container: 'body'
+		});
+
+		this.container.appendChild(this.infoIcon);
+
+		return this;
+	}
+
+	add_tooltip_hydropathy(content="Place Holder", xpos=this.WIDTH, ypos=this.MARGIN.top - 25) {
 		this.infoIcon = document.createElement("div");
 		this.infoIcon.style.position = "absolute";
 		this.infoIcon.style.top = ypos + "px";
@@ -156,7 +183,34 @@ class ZFigure {
 		RETURNS:
 			none
 	*/
-	add_zoomtip(content="Place Holder", xpos=this.WIDTH, ypos=this.MARGIN.top-30) {
+	add_zoomtip(content="Place Holder", xpos=this.WIDTH, ypos=this.MARGIN.top - 6) {
+		this.zoomIcon = document.createElement("div");
+		this.zoomIcon.style.position = "absolute";
+		this.zoomIcon.style.top = ypos + "px";
+		this.zoomIcon.style.left = xpos + 0 + "px";
+		this.zoomIcon.style.font = "arial";
+		this.zoomIcon.style.cursor = "pointer";
+		this.zoomIcon.style.fontSize = 'xx-large';
+		this.zoomIcon.style.fill = "blue";
+		this.zoomIcon.innerText = '\u{2315}';
+		this.zoomIcon.type = "button";
+		this.zoomIcon.title = '<a onclick="$(this).closest(\'div.popover\').popover(\'hide\');" type="button" class="close" aria-hidden="true">&times;</a><br>';
+		this.zoomIcon.style.zIndex = "10"; // Put this element on top of the SVG
+		
+		$(this.zoomIcon).popover({
+			content: content, 
+			placement: "top", 
+			html: true,
+			sanitize: false,
+			container: 'body'
+		});
+
+		this.container.appendChild(this.zoomIcon);
+
+		return this;
+	}
+
+	add_zoomtip_hydropathy(content="Place Holder", xpos=this.WIDTH, ypos=this.MARGIN.top - 34) {
 		this.zoomIcon = document.createElement("div");
 		this.zoomIcon.style.position = "absolute";
 		this.zoomIcon.style.top = ypos + "px";
@@ -184,6 +238,8 @@ class ZFigure {
 	}
 	
 }
+	
+
 
 // Based on this tutorial: https://www.d3-graph-gallery.com/graph/interactivity_zoom.html
 class ZChart extends ZFigure{
