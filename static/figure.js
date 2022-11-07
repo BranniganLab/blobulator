@@ -462,7 +462,6 @@ class ZChart extends ZFigure{
 				tooltip_snps.html(`<a href="https://www.ncbi.nlm.nih.gov/snp/${d.xrefs.id}" target="_blank">${d.xrefs.id}</a>, ${my_seq[d.resid-1]}${d.resid}${d.alternativeSequence}`)
 					.style("left", (event.pageX) + 10 + "px")
 					.style("top", (event.pageY - 28) + "px");
-				console.log(d)
 			})
 			.on("mouseout", function(event, d) {
 				if (document.getElementById("mutatebox").checked == false) {
