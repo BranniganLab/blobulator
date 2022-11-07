@@ -459,7 +459,7 @@ class ZChart extends ZFigure{
 					.on("start", () => tooltip_snps.style("display", "block"))
 					.duration(100)
 					.style("opacity", 0.9);
-				tooltip_snps.html(`<a href="${d.xrefs.url}" target="_blank">${d.xrefs.id}</a>, ${my_seq[d.resid-1]}${d.resid}${d.alternativeSequence}`)
+				tooltip_snps.html(`<a href="https://www.ncbi.nlm.nih.gov/snp/${d.xrefs.id}" target="_blank">${d.xrefs.id}</a>, ${my_seq[d.resid-1]}${d.resid}${d.alternativeSequence}`)
 					.style("left", (event.pageX) + 10 + "px")
 					.style("top", (event.pageY - 28) + "px");
 			})
