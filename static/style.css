@@ -52,6 +52,7 @@ td > div {
 .residue-label {
   position: absolute;
   font-size: 14px;
+  font-family: "Courier New";
 }
 
 /*CSS styling for the top slider*/
