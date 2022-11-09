@@ -307,7 +307,7 @@ $(document).ready( function() {
 					var current_slider = document.getElementById("cutoff_user_slider");
 					var current_cutoff = document.getElementById("cutoff_user")
 					//var res_value = parseInt(all_res[i].style.left)*0.01;
-					let res_value = Math.round(res_dict[all_res[i].innerHTML])/100
+					let res_value = Math.round((res_dict[all_res[i].innerHTML] * 10))/1000
 					current_slider.value = res_value;
 					current_cutoff_box.value = res_value;
 					current_cutoff.innerHTML = res_value;
