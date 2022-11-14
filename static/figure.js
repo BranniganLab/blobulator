@@ -500,14 +500,16 @@ class ZHydropathy extends ZChart{
 		
 		// Add Y axis			
 		this.svg.append("g")
+			.style("font-size", "14px")
 			.call(d3.axisLeft(this.y));
 			
 		//Creates the "Mean Hydropathy" y-axis label for Smoothed hydropathy per residue
 		this.svg.append("text")
-			.attr("class", "y label")
+			.style("font-size", "17px")
+			.attr("class", "pathy-y-label")
 			.attr("text-anchor", "middle")
 			.attr("x", 0 - (this.HEIGHT / 2))
-			.attr("y", this.MARGIN.left - 80)
+			.attr("y", this.MARGIN.left - 87)
 			.attr("transform", "rotate(-90)")
 			.text("Mean Hydropathy");
 			
