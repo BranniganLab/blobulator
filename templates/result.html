@@ -111,6 +111,14 @@ $(document).ready( function() {
 			const snp_id = document.getElementById("snp_id").value;
 			const amino_acid = document.getElementById("residue_type").value;
 			my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
+			var star_symbol = d3.symbol().type(d3.symbolStar);
+			console.log(snp_id)
+			//The below doesn't recognize this.plot, returns undefined
+			this.plot.append('g')
+				.selectAll("rect")
+				.data(snp_id)
+				.attr('d', star_symbol)
+				.attr("transform", (d) => "translate(" + (x(snp_id) + x.bandwidth()/2) + ", 145)");
 		} 
 
 		var snp_id_box = document.getElementById("snp_id")
@@ -313,6 +321,7 @@ $(document).ready( function() {
 					current_cutoff.innerHTML = res_value;
 					const e = new Event("change");
 					current_cutoff_box.dispatchEvent(e);
+
 				}, false);
 				all_res[i].addEventListener("mouseover", function () {
 					all_res[i].style.color = "red";
