@@ -286,15 +286,16 @@ $(document).ready( function() {
         for (const [key, value] of Object.entries(chosen_scale)) {
             res_dict[key] = (value - min_val) / span * 100;
         }
-	    // Iterate through the dictionary of normalized values, assign each residue a position based on what value they fall on, and raise their vertical height if they are too close to the neighborign amino acid on the scale (their letters overlap)
-	    var offset = 0.5
+	    // Iterate through the dictionary of normalized values, assign each residue a position based on what value they fall on, and raise their vertical height if they are too close to the neighboring amino acid on the scale (their letters overlap)
+	    // var offset = 0.5
 		for (const [key, value] of Object.entries(res_dict)){
 			if (last_pos == value || last_pos - 1.5 <= value) {
 				px += 14
 			} else {
 				px = 0;
 			}
-            res_letters += `<div class="residue-label" style="left: ${value-offset}%; bottom: ${px}px">${key}</div>`;
+			var offset = (value - 0.45) / 1.002
+            res_letters += `<div class="residue-label" style="left: ${offset}%; bottom: ${px}px">${key}</div>`;
 			last_pos = value;
 		}
 	    	document.getElementById("hydro-labels").innerHTML = res_letters;
