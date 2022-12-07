@@ -392,7 +392,7 @@ class ZChart extends ZFigure{
 		}
 		this.svg.append("text")
 			.attr("x", this.WIDTH / 2)
-			.attr("y", this.HEIGHT + bottomMargin + 20)
+			.attr("y", this.HEIGHT + bottomMargin + 12)
 			.style("text-anchor", "middle")
 			.style("font-size", "17px")
 			.text("Residue")
