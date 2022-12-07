@@ -161,7 +161,7 @@ $(document).ready( function() {
 		// Create the text "Blobs colored according to . . ."
 		let node = document.createElement("div");
 		node.style.position = "relative";
-		node.innerHTML += "<p style='text-align:center; font-size:25px; '>Blobs colored according to . . .</p>"
+		node.innerHTML += "<br><br><p style='text-align:center; font-size:25px; '>Blobs colored according to . . .</p>"
 		LabelHeader = document.getElementById("my_dataviz").appendChild(node);	
     
 		figs.blobFig = new ZblobChart("blobPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
