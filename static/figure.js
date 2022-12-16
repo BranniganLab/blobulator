@@ -288,6 +288,9 @@ class ZChart extends ZFigure{
 			.attr("width", x.bandwidth())
 			.attr("x", (d) => x(d.resid))
 			.attr("y", d => this.HEIGHT);
+
+		// Add the mutation indicators
+		this.add_mut_indicator(seq, x)
 			
 		if (snps) {
 			this.add_snps(my_snps, seq, snp_tooltips, x)
@@ -490,9 +493,60 @@ class ZChart extends ZFigure{
 				return translation
 			});
 		
-		return this
+		return this;
 	}
-}
+
+	add_mut_indicator(my_seq, x) {
+		var mutatecheckbox = document.getElementById("mutatebox")
+		var mutated_res_num = document.getElementById("snp_id")
+		var star_symbol = d3.symbol().type(d3.symbolStar)
+		var mut_symb_data = []
+		for(var i = 1; i <= my_seq.length; ++i) {
+			var symb_dict = {'resid' : i}
+			mut_symb_data.push(symb_dict)
+		}
+		this.mut_ind = this.plot.append('g')
+			.selectAll("rect")
+			.data(mut_symb_data)
+			.enter()
+			.append("path")
+			.attr('d', star_symbol)
+			.attr("fill", "red")
+			.attr("opacity", "0.0")
+			.attr("class", "mutation_indicator")
+			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 145)")
+
+		
+
+		mutatecheckbox.addEventListener("change", function() {
+			if (mutatecheckbox.checked == true) {
+				var selected_mutation = mutated_res_num.value
+				var stars = document.getElementsByClassName("mutation_indicator")
+				for (var j = 0; j < (my_seq.length * 7); j += my_seq.length) {
+					var star = stars[selected_mutation - 1 + j]
+					d3.select(star).attr("opacity", "1.0");
+				}
+			} else {
+				d3.selectAll(".mutation_indicator").attr("opacity", "0.0");
+			}
+		});
+		mutated_res_num.addEventListener("change", function() {
+			d3.selectAll(".mutation_indicator").attr("opacity", "0.0")
+			if (mutatecheckbox.checked == true) {
+				var selected_mutation = mutated_res_num.value
+				var stars = document.getElementsByClassName("mutation_indicator")
+				for (var j = 0; j < (my_seq.length * 7); j += my_seq.length) {
+					var star = stars[selected_mutation - 1 + j]
+					d3.select(star).attr("opacity", "1.0");
+				}
+			} else {
+				d3.selectAll(".mutation_indicator").attr("opacity", "0.0");
+			}
+		});
+	};
+};
+
+
 
 class ZHydropathy extends ZChart{
 	constructor(figID, data, snps, seq, snp_tooltips, cutoff_init=0.4) {

@@ -222,6 +222,7 @@ $(document).ready( function() {
 				var snp_id = document.getElementById("snp_id").value;
 				var amino_acid = document.getElementById("residue_type").value;
 				my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
+
 			}
 
 			// Download data
@@ -314,6 +315,7 @@ $(document).ready( function() {
 					current_cutoff.innerHTML = res_value;
 					const e = new Event("change");
 					current_cutoff_box.dispatchEvent(e);
+
 				}, false);
 				all_res[i].addEventListener("mouseover", function () {
 					all_res[i].style.color = "red";
@@ -395,6 +397,7 @@ $(document).ready( function() {
 							var $trLast = $table.find("tr:last");
 	    					$trLast.remove();
 	    				}
+
 				</script>
 
 				<div>
