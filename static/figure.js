@@ -515,6 +515,8 @@ class ZChart extends ZFigure{
 			.attr("class", "mutation_indicator")
 			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 145)")
 
+		
+
 		mutatecheckbox.addEventListener("change", function() {
 			if (mutatecheckbox.checked == true) {
 				var mutated_res_num = document.getElementById("snp_id")
