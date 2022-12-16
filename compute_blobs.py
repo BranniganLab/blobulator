@@ -319,6 +319,16 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
                 s_counter = 0
                 return x[1]#
 
+    def calculate_smoothed_hydropathy(hydropath):
+        """Calculates the smoothed hydropathy of a given residue with its two ajacent neighbors
+            
+            Arguments:
+                hydropath(int): The hydropathy for a given residue
+            NOTE: This function makes sue of the center=True pandas rolling argument to ensure the residue in question is at the center of smoothing calculation
+            It is important to run the regression test to check that the smoothed hydropathy is expected (see github Wiki/Regression Checklist for instructions on how to perform this test."""
+        smoothed_hydropath = hydropath.rolling(window=3, min_periods=0, center=True).mean()
+        return smoothed_hydropath
+
     window_factor = int((window - 1) / 2)
     seq_start = 1  # starting resid for the seq
     resid_range = range(seq_start, len(seq) + 1 + seq_start)
@@ -339,8 +349,7 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
     df["domain_threshold"] = domain_threshold
 
     #........................calcutes three residue moving window mean............................#
-    df["hydropathy_3_window_mean"] = (df["hydropathy"].rolling(window=window, min_periods=0).mean())
-
+    df["hydropathy_3_window_mean"] = calculate_smoothed_hydropathy(df["hydropathy"])
 
     df["hydropathy_digitized"] = [ 1 if x > cutoff else 0 if np.isnan(x)  else -1 for x in df["hydropathy_3_window_mean"]]
     #define continous stretch of residues
