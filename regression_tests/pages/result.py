@@ -9,15 +9,18 @@ from typing import List
 class BlobulatorResultPage:
     def __init__(self, page: Page) -> None:
         self.page = page
+        self.snps = page.locator("id=snp_triangles")
+        self.tab = page.locator("id=result-tab")
+        self.uniprot_id = page.get_by_text("Uniprot ID:")
+        self.mutate_box = page.locator("#mutatebox")
 
-    #     self.result_links = page.locator('a[data-testid="result-title-a"]')
-    #     self.search_input = page.locator('#search_form_input')
+    def click_nth_snp(self, N: int) -> None:
+        self.snps.nth(N).wait_for()
+        return self.snps.nth(N).click()
 
-    # def result_link_titles(self) -> List[str]:
-    #     self.result_links.nth(4).wait_for()
-    #     return self.result_links.all_text_contents()
-
-    # def result_link_titles_contain_phrase(self, phrase: str, minimum: int = 1) -> bool:
-    #     titles = self.result_link_titles()
-    #     matches = [t for t in titles if phrase.lower() in t.lower()]
-    #     return len(matches) >= minimum
+    def get_nth_snp_tooltip(self, N: int) -> None:
+        self.snps.nth(N).wait_for()
+        self.snps.nth(N).hover(force=True)
+        the_tooltip = self.page.locator("#tooltip")
+        the_text = the_tooltip.all_text_contents()
+        return the_text
