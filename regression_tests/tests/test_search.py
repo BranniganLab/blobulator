@@ -41,13 +41,19 @@ def test_snp_button(page: Page, uniprot_results: BlobulatorResultPage):
     # given the results page is loaded
     result_page = uniprot_results
 
+    snp_id = 1
     # When you click on a SNP
-    result_page.click_nth_snp(1)
-    tooltip_text = result_page.get_nth_snp_tooltip(1)
+    result_page.click_nth_snp(snp_id)
+    _, from_resid, to_res = result_page.get_mutation(snp_id)
+
     # Expect the mutate box to be checked
     expect(result_page.mutate_box).to_be_checked()
 
     # And the mutation drop down matches the SNP
-    print(tooltip_text)
+    expect(result_page.page.locator("#snp_id")).to_have_value(from_resid)
 
     # And the mutate-to field matches the SNP
+    expect(result_page.page.locator("#residue_type")).to_have_value(to_res)
+
+    # And the snp triangle to be red
+    expect(result_page.snps.nth(snp_id)).to_have_attribute("fill", "red")
