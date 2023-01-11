@@ -14,6 +14,10 @@ class BlobulatorResultPage:
         self.uniprot_id = page.get_by_text("Uniprot ID:")
         self.mutate_box = page.locator("#mutatebox")
         self.cutoff_input = page.locator("#cutoff_user_box")
+        self.hydropathy_slider = page.locator("id=cutoff_user_slider")
+        self.hydropathy_field = page.locator("id=cutoff_user_box")
+        self.mouse = page.mouse
+        self.hydropathy_line = page.get_by_role("presentation")
 
     def click_nth_snp(self, N: int) -> None:
         self.snps.nth(N).wait_for()
