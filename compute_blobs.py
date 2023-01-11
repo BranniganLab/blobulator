@@ -390,7 +390,7 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
         domain_to_numbers, axis=1)
 
     # ..........................Define domain names.........................................................#
-    df['domain'] =  df['domain'].groupby(df['domain'].ne(df['domain'].shift()).cumsum()).apply(lambda x: f3(x, domain_threshold))
+    df['domain'] =  df['domain'].groupby(df['domain'].ne(df['domain'].shift()).cumsum(), group_keys=False).apply(lambda x: f3(x, domain_threshold))
     counts_group_length = df['domain'].value_counts().to_dict()#
     
 
