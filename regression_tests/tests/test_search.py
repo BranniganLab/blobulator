@@ -5,6 +5,7 @@ These tests cover basic Blobulation
 from pages.result import BlobulatorResultPage
 from pages.newquery import BlobulatorNewQuery
 from playwright.sync_api import expect, Page, BrowserContext
+from time import sleep
 
 
 def test_basic_blobulator_search(
@@ -66,8 +67,8 @@ def test_hydropathy_slider(page: Page, uniprot_results: BlobulatorResultPage):
     result_page = uniprot_results
 
     # Get initial conditions
-    cutoff_indicator_y = result_page.hydropathy_line.get_attribute("y1")
-    print(cutoff_indicator_y)
+    result_page.blob_bars.nth(10).wait_for()
+    hline_y_init = result_page.hydropathy_line.get_attribute("y1")
 
     # When the hydropathy slider is set to 0.2
     result_page.hydropathy_slider.hover()
@@ -91,8 +92,11 @@ def test_hydropathy_slider(page: Page, uniprot_results: BlobulatorResultPage):
         hydropathy = float(result_page.hydropathy_field.input_value())
 
     result_page.mouse.up()
+    sleep(1)
 
     # Expect the cutoff indicator has moved down
+    hline_y_current = result_page.hydropathy_line.get_attribute("y1")
+    assert float(hline_y_current) > float(hline_y_init)
 
     # Expect the numerical input is updated to 0.2
     expect(result_page.hydropathy_field).to_have_value(str(target_hydropathy))
