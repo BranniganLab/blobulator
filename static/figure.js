@@ -430,7 +430,7 @@ class ZChart extends ZFigure{
 	/* add_snps
 	*/
 	add_snps(my_snp, my_seq, tooltip_snps, x) {
-		var triangle_symbol = d3.symbol().type(d3.symbolTriangle);
+		var triangle_symbol = d3.symbol().type(d3.symbolTriangle).size(64);
 		this.snps = this.plot.append('g')
 			.selectAll("rect")
 			.data(my_snp)
@@ -499,7 +499,7 @@ class ZChart extends ZFigure{
 	add_mut_indicator(my_seq, x) {
 		var mutatecheckbox = document.getElementById("mutatebox")
 		var mutated_res_num = document.getElementById("snp_id")
-		var star_symbol = d3.symbol().type(d3.symbolStar)
+		var star_symbol = d3.symbol().type(d3.symbolDiamond).size(128)
 		var mut_symb_data = []
 		for(var i = 1; i <= my_seq.length; ++i) {
 			var symb_dict = {'resid' : i}
@@ -514,7 +514,7 @@ class ZChart extends ZFigure{
 			.attr("fill", "red")
 			.attr("opacity", "0.0")
 			.attr("class", "mutation_indicator")
-			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 145)")
+			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 148.5)")
 
 		
 
