@@ -146,6 +146,13 @@ def index():
                 except IndexError:
                     disorder_residues = [0]
 
+            try:
+                protein_name = seq_file[0]['features'][0]['description']
+                user_uniprot_name = "Protein Details: " + str(protein_name)
+            except IndexError:
+                user_uniprot_name = ''
+
+
             # Blobulation
             window = 3 
             session['sequence'] = str(my_seq) #set the current sequence variable
@@ -169,7 +176,8 @@ def index():
                     domain_threshold=4,
                     domain_threshold_max=len(str(my_seq)),
                     my_disorder = str(disorder_residues).strip('[]'),
-                    activetab = '#result-tab'
+                    activetab = '#result-tab',
+                    my_name = user_uniprot_name
                 )
 
         else: # if the user inputs amino acid sequence
