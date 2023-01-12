@@ -367,6 +367,10 @@ class ZChart extends ZFigure{
 		if(this.snps) {
 			this.update_snps(x, extent, domain, width, timing);
 		}
+		if (this.mut_ind){
+			this.update_indicators(x, extent, domain, width, timing)
+		}
+
 
 		return this;
 	}
@@ -544,6 +548,24 @@ class ZChart extends ZFigure{
 			}
 		});
 	};
+
+	update_indicators(x, extent, domain, width, timing=1000){
+	this.mut_ind.transition()
+		.duration(timing)
+		.attr("transform", function(d){
+			if(extent && d.resid>domain[1]){
+				var translation = ("translate("+ 2*width+", 148.5)")
+			}else if(extent && d.resid<domain[0]){
+				var translation = ("translate(" + -width + ", 148.5)");
+			}else{
+				var translation = ("translate(" + (x(d.resid) + x.bandwidth()/2) + ", 148.5)");
+			}
+			return translation
+		});
+	
+	return this;
+}
+
 };
 
 
