@@ -148,7 +148,10 @@ def index():
 
             try:
                 protein_name = seq_file[0]['features'][0]['description']
-                user_uniprot_name = "Protein Details: " + str(protein_name)
+                if len(protein_name) == 0:
+                    user_uniprot_name = ""
+                else:
+                    user_uniprot_name = "Protein Details: " + str(protein_name)
             except IndexError:
                 user_uniprot_name = ''
 
