@@ -17,7 +17,8 @@ class BlobulatorResultPage:
         self.hydropathy_slider = page.locator("id=cutoff_user_slider")
         self.hydropathy_field = page.locator("id=cutoff_user_box")
         self.mouse = page.mouse
-        self.hydropathy_line = page.get_by_role("presentation")
+        self.hydropathy_line = page.get_by_test_id("cutoffline")
+        self.blob_bars = page.locator("id=barChartblobPlot")
 
     def click_nth_snp(self, N: int) -> None:
         self.snps.nth(N).wait_for()
