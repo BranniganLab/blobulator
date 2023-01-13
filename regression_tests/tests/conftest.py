@@ -14,7 +14,7 @@ def search_page(page: Page, url: str) -> BlobulatorNewQuery:
     return BlobulatorNewQuery(page, url)
 
 
-@pytest.fixture(params=["https://www.blobulator.branniganlab.org"])
+@pytest.fixture(params=["http://127.0.0.1:5000"])
 def url(request):
     return request.param
 
