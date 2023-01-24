@@ -377,9 +377,9 @@ class ZChart extends ZFigure{
 	
 	add_xAxis(snps, x){
 		if (snps) {
-			var xaxisMargin = this.HEIGHT + 15
+			var xaxisMargin = this.HEIGHT + 20
 		} else {
-			var xaxisMargin = this.HEIGHT
+			var xaxisMargin = this.HEIGHT + 20
 		}
 
 		var num_residues = this.data.length
@@ -395,7 +395,7 @@ class ZChart extends ZFigure{
 		if (snps) {
 			var bottomMargin = this.MARGIN.bottom + 25
 		} else {
-			var bottomMargin = this.MARGIN.bottom
+			var bottomMargin = this.MARGIN.bottom + 25
 		}
 		this.svg.append("text")
 			.attr("x", this.WIDTH / 2)
