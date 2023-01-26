@@ -182,6 +182,12 @@ def lookupDisorder(x):
 enrichDF = pd.read_csv("../data/enrichCMap.csv", index_col=[0,1])
 enrichDF.to_csv("../data/enrichment.txt")
 
+enrichDF_p = pd.read_csv("enrichCMap_p.csv", index_col=[0,1])
+enrichDF_p.to_csv("enrichment_p.txt")
+
+enrichDF_s = pd.read_csv("enrichCMap_s.csv", index_col=[0,1])
+enrichDF_s.to_csv("enrichment_s.txt")
+
 def lookupEnrichment(x):
     min_hydrophobicity = round(x[1], 2)
     blob_length = x[0]
@@ -190,6 +196,16 @@ def lookupEnrichment(x):
     if blob_type == 'h':
         try:
             return enrichDF.color.loc[min_hydrophobicity, blob_length]
+        except KeyError:
+            return "grey"
+    elif blob_type == 'p':
+        try:
+            return enrichDF_p.color.loc[min_hydrophobicity, blob_length]
+        except KeyError:
+            return "grey"
+    elif blob_type == 's':
+        try:
+            return enrichDF_s.color.loc[min_hydrophobicity, blob_length]
         except KeyError:
             return "grey"
     else:
@@ -324,6 +340,18 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
                 s_counter = 0
                 return x[1]#
 
+    def calculate_smoothed_hydropathy(hydropath):
+        """Calculates the smoothed hydropathy of a given residue with its two ajacent neighbors
+            
+            Arguments:
+                hydropath(int): The hydropathy for a given residue
+
+            NOTE: This function makes sue of the center=True pandas rolling argument to ensure the residue in question is at the center of smoothing calculation
+            It is important to run the regression test to check that the smoothed hydropathy is expected (see github Wiki/Regression Checklist for instructions on how to perform this test."""
+        smoothed_hydropath = hydropath.rolling(window=3, min_periods=0, center=True).mean()
+        return smoothed_hydropath
+
+
     window_factor = int((window - 1) / 2)
     seq_start = 1  # starting resid for the seq
     resid_range = range(seq_start, len(seq) + 1 + seq_start)
@@ -344,7 +372,7 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
     df["domain_threshold"] = domain_threshold
 
     #........................calcutes three residue moving window mean............................#
-    df["hydropathy_3_window_mean"] = (df["hydropathy"].rolling(window=window, min_periods=0).mean())
+    df["hydropathy_3_window_mean"] = calculate_smoothed_hydropathy(df["hydropathy"])
 
 
     df["hydropathy_digitized"] = [ 1 if x > cutoff else 0 if np.isnan(x)  else -1 for x in df["hydropathy_3_window_mean"]]
@@ -362,7 +390,7 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
         domain_to_numbers, axis=1)
 
     # ..........................Define domain names.........................................................#
-    df['domain'] =  df['domain'].groupby(df['domain'].ne(df['domain'].shift()).cumsum()).apply(lambda x: f3(x, domain_threshold))
+    df['domain'] =  df['domain'].groupby(df['domain'].ne(df['domain'].shift()).cumsum(), group_keys=False).apply(lambda x: f3(x, domain_threshold))
     counts_group_length = df['domain'].value_counts().to_dict()#
     
 

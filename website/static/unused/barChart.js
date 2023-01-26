@@ -234,25 +234,6 @@ class hydropathyPlot extends barChart {
 		add_pathy_ylabel();
 		update_bars();
 	}
-
-	add_pathy_ylabel() {
-		//Creates the "Mean Hydropathy" y-axis label for Smoothed hydropathy per residue
-		this.svg.append("text")
-			.attr("class", "y label")
-			.attr("text-anchor", "middle")
-			.attr("x", 0 - (this.GLOBAL_HEIGHT / 2))
-			.attr("y", this.MARGIN.left - 80)
-			.attr("transform", "rotate(-90)")
-			.text("Mean Hydropathy");
-
-		return this;
-	}
-
-	add_yAxis() {
-		this.svg.append("g") //the y axis is drawn only for plot 1
-				.call(d3.axisLeft(this.y));
-		return this
-	}
 	
 	add_cutoff_line(my_cut=0.4, x=this.x, y=this.y) {
 		this.cut_line = this.svg.append('g')

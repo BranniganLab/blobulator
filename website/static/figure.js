@@ -121,7 +121,34 @@ class ZFigure {
 		RETURNS:
 			none
 	*/
-	add_tooltip(content="Place Holder", xpos=this.WIDTH, ypos=this.MARGIN.top-20) {
+	add_tooltip(content="Place Holder", xpos=this.WIDTH, ypos=this.MARGIN.top + 3) {
+		this.infoIcon = document.createElement("div");
+		this.infoIcon.style.position = "absolute";
+		this.infoIcon.style.top = ypos + "px";
+		this.infoIcon.style.left = xpos + 30 + "px";
+		this.infoIcon.style.font = "arial";
+		this.infoIcon.style.cursor = "pointer";
+		this.infoIcon.style.fontSize = "larger";
+		this.infoIcon.style.fill = "blue";
+		this.infoIcon.innerText = '\u{24D8}';
+		this.infoIcon.type = "button";
+		this.infoIcon.title = '<a onclick="$(this).closest(\'div.popover\').popover(\'hide\');" type="button" class="close" aria-hidden="true">&times;</a><br>';
+		this.infoIcon.style.zIndex = "10"; // Put this element on top of the SVG
+		
+		$(this.infoIcon).popover({
+			content: content, 
+			placement: "top", 
+			html: true,
+			sanitize: false,
+			container: 'body'
+		});
+
+		this.container.appendChild(this.infoIcon);
+
+		return this;
+	}
+
+	add_tooltip_hydropathy(content="Place Holder", xpos=this.WIDTH, ypos=this.MARGIN.top - 25) {
 		this.infoIcon = document.createElement("div");
 		this.infoIcon.style.position = "absolute";
 		this.infoIcon.style.top = ypos + "px";
@@ -156,7 +183,34 @@ class ZFigure {
 		RETURNS:
 			none
 	*/
-	add_zoomtip(content="Place Holder", xpos=this.WIDTH, ypos=this.MARGIN.top-30) {
+	add_zoomtip(content="Place Holder", xpos=this.WIDTH, ypos=this.MARGIN.top - 6) {
+		this.zoomIcon = document.createElement("div");
+		this.zoomIcon.style.position = "absolute";
+		this.zoomIcon.style.top = ypos + "px";
+		this.zoomIcon.style.left = xpos + 0 + "px";
+		this.zoomIcon.style.font = "arial";
+		this.zoomIcon.style.cursor = "pointer";
+		this.zoomIcon.style.fontSize = 'xx-large';
+		this.zoomIcon.style.fill = "blue";
+		this.zoomIcon.innerText = '\u{2315}';
+		this.zoomIcon.type = "button";
+		this.zoomIcon.title = '<a onclick="$(this).closest(\'div.popover\').popover(\'hide\');" type="button" class="close" aria-hidden="true">&times;</a><br>';
+		this.zoomIcon.style.zIndex = "10"; // Put this element on top of the SVG
+		
+		$(this.zoomIcon).popover({
+			content: content, 
+			placement: "top", 
+			html: true,
+			sanitize: false,
+			container: 'body'
+		});
+
+		this.container.appendChild(this.zoomIcon);
+
+		return this;
+	}
+
+	add_zoomtip_hydropathy(content="Place Holder", xpos=this.WIDTH, ypos=this.MARGIN.top - 34) {
 		this.zoomIcon = document.createElement("div");
 		this.zoomIcon.style.position = "absolute";
 		this.zoomIcon.style.top = ypos + "px";
@@ -184,6 +238,8 @@ class ZFigure {
 	}
 	
 }
+	
+
 
 // Based on this tutorial: https://www.d3-graph-gallery.com/graph/interactivity_zoom.html
 class ZChart extends ZFigure{
@@ -232,6 +288,9 @@ class ZChart extends ZFigure{
 			.attr("width", x.bandwidth())
 			.attr("x", (d) => x(d.resid))
 			.attr("y", d => this.HEIGHT);
+
+		// Add the mutation indicators
+		this.add_mut_indicator(seq, x)
 			
 		if (snps) {
 			this.add_snps(my_snps, seq, snp_tooltips, x)
@@ -308,15 +367,19 @@ class ZChart extends ZFigure{
 		if(this.snps) {
 			this.update_snps(x, extent, domain, width, timing);
 		}
+		if (this.mut_ind){
+			this.update_indicators(x, extent, domain, width, timing)
+		}
+
 
 		return this;
 	}
 	
 	add_xAxis(snps, x){
 		if (snps) {
-			var xaxisMargin = this.HEIGHT + 15
+			var xaxisMargin = this.HEIGHT + 20
 		} else {
-			var xaxisMargin = this.HEIGHT
+			var xaxisMargin = this.HEIGHT + 20
 		}
 
 		var num_residues = this.data.length
@@ -332,11 +395,11 @@ class ZChart extends ZFigure{
 		if (snps) {
 			var bottomMargin = this.MARGIN.bottom + 25
 		} else {
-			var bottomMargin = this.MARGIN.bottom
+			var bottomMargin = this.MARGIN.bottom + 25
 		}
 		this.svg.append("text")
 			.attr("x", this.WIDTH / 2)
-			.attr("y", this.HEIGHT + bottomMargin)
+			.attr("y", this.HEIGHT + bottomMargin + 12)
 			.style("text-anchor", "middle")
 			.style("font-size", "17px")
 			.text("Residue")
@@ -371,7 +434,7 @@ class ZChart extends ZFigure{
 	/* add_snps
 	*/
 	add_snps(my_snp, my_seq, tooltip_snps, x) {
-		var triangle_symbol = d3.symbol().type(d3.symbolTriangle);
+		var triangle_symbol = d3.symbol().type(d3.symbolTriangle).size(64);
 		this.snps = this.plot.append('g')
 			.selectAll("rect")
 			.data(my_snp)
@@ -403,7 +466,7 @@ class ZChart extends ZFigure{
 					.on("start", () => tooltip_snps.style("display", "block"))
 					.duration(100)
 					.style("opacity", 0.9);
-				tooltip_snps.html(`<a href="${d.xrefs.url}" target="_blank">${d.xrefs.id}</a>, ${my_seq[d.resid-1]}${d.resid}${d.alternativeSequence}`)
+				tooltip_snps.html(`<a href="https://www.ncbi.nlm.nih.gov/snp/${d.xrefs.id}" target="_blank">${d.xrefs.id}</a>, ${my_seq[d.resid-1]}${d.resid}${d.alternativeSequence}`)
 					.style("left", (event.pageX) + 10 + "px")
 					.style("top", (event.pageY - 28) + "px");
 			})
@@ -434,9 +497,78 @@ class ZChart extends ZFigure{
 				return translation
 			});
 		
-		return this
+		return this;
 	}
+
+	add_mut_indicator(my_seq, x) {
+		var mutatecheckbox = document.getElementById("mutatebox")
+		var mutated_res_num = document.getElementById("snp_id")
+		var star_symbol = d3.symbol().type(d3.symbolDiamond).size(128)
+		var mut_symb_data = []
+		for(var i = 1; i <= my_seq.length; ++i) {
+			var symb_dict = {'resid' : i}
+			mut_symb_data.push(symb_dict)
+		}
+		this.mut_ind = this.plot.append('g')
+			.selectAll("rect")
+			.data(mut_symb_data)
+			.enter()
+			.append("path")
+			.attr('d', star_symbol)
+			.attr("fill", "red")
+			.attr("opacity", "0.0")
+			.attr("class", "mutation_indicator")
+			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 148.5)")
+
+		
+
+		mutatecheckbox.addEventListener("change", function() {
+			if (mutatecheckbox.checked == true) {
+				var selected_mutation = mutated_res_num.value
+				var stars = document.getElementsByClassName("mutation_indicator")
+				for (var j = 0; j < (my_seq.length * 7); j += my_seq.length) {
+					var star = stars[selected_mutation - 1 + j]
+					d3.select(star).attr("opacity", "1.0");
+				}
+			} else {
+				d3.selectAll(".mutation_indicator").attr("opacity", "0.0");
+			}
+		});
+		mutated_res_num.addEventListener("change", function() {
+			d3.selectAll(".mutation_indicator").attr("opacity", "0.0")
+			if (mutatecheckbox.checked == true) {
+				var selected_mutation = mutated_res_num.value
+				var stars = document.getElementsByClassName("mutation_indicator")
+				for (var j = 0; j < (my_seq.length * 7); j += my_seq.length) {
+					var star = stars[selected_mutation - 1 + j]
+					d3.select(star).attr("opacity", "1.0");
+				}
+			} else {
+				d3.selectAll(".mutation_indicator").attr("opacity", "0.0");
+			}
+		});
+	};
+
+	update_indicators(x, extent, domain, width, timing=1000){
+	this.mut_ind.transition()
+		.duration(timing)
+		.attr("transform", function(d){
+			if(extent && d.resid>domain[1]){
+				var translation = ("translate("+ 2*width+", 148.5)")
+			}else if(extent && d.resid<domain[0]){
+				var translation = ("translate(" + -width + ", 148.5)");
+			}else{
+				var translation = ("translate(" + (x(d.resid) + x.bandwidth()/2) + ", 148.5)");
+			}
+			return translation
+		});
+	
+	return this;
 }
+
+};
+
+
 
 class ZHydropathy extends ZChart{
 	constructor(figID, data, snps, seq, snp_tooltips, cutoff_init=0.4) {
@@ -444,14 +576,16 @@ class ZHydropathy extends ZChart{
 		
 		// Add Y axis			
 		this.svg.append("g")
+			.style("font-size", "14px")
 			.call(d3.axisLeft(this.y));
 			
 		//Creates the "Mean Hydropathy" y-axis label for Smoothed hydropathy per residue
 		this.svg.append("text")
-			.attr("class", "y label")
+			.style("font-size", "17px")
+			.attr("class", "pathy-y-label")
 			.attr("text-anchor", "middle")
 			.attr("x", 0 - (this.HEIGHT / 2))
-			.attr("y", this.MARGIN.left - 80)
+			.attr("y", this.MARGIN.left - 87)
 			.attr("transform", "rotate(-90)")
 			.text("Mean Hydropathy");
 			
@@ -671,18 +805,30 @@ class ZblobChart extends ZChart {
 			.attr('width', keysize)
 			.attr('height', keysize)
 			.style("fill", "#0071BC")
+		legend.append("text")
+			.attr("x", this.WIDTH + offset + 6)
+			.attr("y", this.MARGIN.top + 20)
+			.text("h").style("font-size", "15px").style("fill", "white")
 		legend.append("rect")
 			.attr("x", this.WIDTH + offset)
 			.attr("y", this.MARGIN.top + 35)
 			.attr('width', keysize)
 			.attr('height', keysize)
-			.style("fill", "#F7931E")
+			.style("fill", "#2DB11A")
+		legend.append("text")
+			.attr("x", this.WIDTH + offset + 6)
+			.attr("y", this.MARGIN.top + 50)
+			.text("s").style("font-size", "15px").style("fill", "white")
 		legend.append("rect")
 			.attr("x", this.WIDTH + offset)
 			.attr("y", this.MARGIN.top + 65)
 			.attr('width', keysize)
 			.attr('height', keysize)
-			.style("fill", "#2DB11A")
+			.style("fill", "#F7931E")
+		legend.append("text")
+			.attr("x", this.WIDTH + offset + 6)
+			.attr("y", this.MARGIN.top + 79)
+			.text("p").style("font-size", "15px").style("fill", "white")
 				
 		//Text that appears to the right of the key    
 		legend.append("text")
@@ -691,11 +837,11 @@ class ZblobChart extends ZChart {
 			.attr("alignment-baseline", "middle")
 		legend.append("text")
 			.attr("x", this.WIDTH + 50)
-			.attr("y", this.MARGIN.top + 45).text("Hydrophilic blob").style("font-size", "15px")
+			.attr("y", this.MARGIN.top + 45).text("Short blob").style("font-size", "15px")
 			.attr("alignment-baseline", "middle")
 		legend.append("text")
 			.attr("x", this.WIDTH + 50)
-			.attr("y", this.MARGIN.top + 75).text("Short blob").style("font-size", "15px")
+			.attr("y", this.MARGIN.top + 75).text("Hydrophilic blob").style("font-size", "15px")
 			.attr("alignment-baseline", "middle")
 		return this;
 	}

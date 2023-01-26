@@ -155,13 +155,13 @@ $(document).ready( function() {
 			.add_zoomout_button("pathyPlot", data)
 			.add_resetmutation_button()
 			.add_smoothed_hydro_title("Smoothed hydropathy per residue")
-			.add_tooltip(hydropathy_tool_text)
-			.add_zoomtip(zoom_tool_text);
+			.add_tooltip_hydropathy(hydropathy_tool_text)
+			.add_zoomtip_hydropathy(zoom_tool_text);
 
 		// Create the text "Blobs colored according to . . ."
 		let node = document.createElement("div");
 		node.style.position = "relative";
-		node.innerHTML += "<p style='text-align:center; font-size:25px; '>Blobs colored according to . . .</p>"
+		node.innerHTML += "<br><br><p style='text-align:center; font-size:25px; '>Blobs colored according to . . .</p>"
 		LabelHeader = document.getElementById("my_dataviz").appendChild(node);	
     
 		figs.blobFig = new ZblobChart("blobPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
@@ -200,10 +200,10 @@ $(document).ready( function() {
 				.add_tooltip("Disorder information is acquired from Uniprot. To see the disorder plot, please provide the Uniprot ID on the previous page.");
 		} else {
 			figs.disorderFig = new ZblobChart("disorderPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
-				.add_title("Predicted structured fraction")
+				.add_title("Predicted disordered fraction")
 				.add_tooltip(disorder_tool_text)
 				.add_zoomtip(zoom_tool_text)
-				.add_ContinuousLegend("OrPu", {min: "0.0", med: "0.5", max: "1.0"});
+				.add_ContinuousLegend("PuOr", {min: "0.0", med: "0.5", max: "1.0"});
 		}
 
 		var str_i = "Download plots!";
@@ -222,6 +222,7 @@ $(document).ready( function() {
 				var snp_id = document.getElementById("snp_id").value;
 				var amino_acid = document.getElementById("residue_type").value;
 				my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
+
 			}
 
 			// Download data
@@ -253,7 +254,6 @@ $(document).ready( function() {
 	current_hydro_scale.addEventListener('change', function(){
 		sel_hydro_scale = current_hydro_scale.value
 		updateHydroscaleTicks(sel_hydro_scale.toString())
-		console.log(sel_hydro_scale)
 	});
 
 	// Function to update the ticks
@@ -287,14 +287,16 @@ $(document).ready( function() {
         for (const [key, value] of Object.entries(chosen_scale)) {
             res_dict[key] = (value - min_val) / span * 100;
         }
-	    // Iterate through the dictionary of normalized values, assign each residue a position based on what value they fall on, and raise their vertical height if they are too close to the neighborign amino acid on the scale (their letters overlap)
+	    // Iterate through the dictionary of normalized values, assign each residue a position based on what value they fall on, and raise their vertical height if they are too close to the neighboring amino acid on the scale (their letters overlap)
+	    // var offset = 0.5
 		for (const [key, value] of Object.entries(res_dict)){
 			if (last_pos == value || last_pos - 1.5 <= value) {
 				px += 14
 			} else {
 				px = 0;
 			}
-            res_letters += `<div class="residue-label" style="left: ${value}%; bottom: ${px}px">${key}</div>`;
+			var offset = (value - 0.45) / 1.002
+            res_letters += `<div class="residue-label" style="left: ${offset}%; bottom: ${px}px">${key}</div>`;
 			last_pos = value;
 		}
 	    	document.getElementById("hydro-labels").innerHTML = res_letters;
@@ -306,12 +308,14 @@ $(document).ready( function() {
 					var current_cutoff_box = document.getElementById("cutoff_user_box");
 					var current_slider = document.getElementById("cutoff_user_slider");
 					var current_cutoff = document.getElementById("cutoff_user")
-					var res_value = parseInt(all_res[i].style.left)*0.01;
+					//var res_value = parseInt(all_res[i].style.left)*0.01;
+					let res_value = Math.round((res_dict[all_res[i].innerHTML] * 10))/1000
 					current_slider.value = res_value;
 					current_cutoff_box.value = res_value;
 					current_cutoff.innerHTML = res_value;
 					const e = new Event("change");
 					current_cutoff_box.dispatchEvent(e);
+
 				}, false);
 				all_res[i].addEventListener("mouseover", function () {
 					all_res[i].style.color = "red";
@@ -342,6 +346,8 @@ $(document).ready( function() {
 <div class="tab-pane container" id="result">
     <div class="container">
 		<div class="text-center">
+			<h6>{{ my_name | safe }}</h6>
+			<h6>{{ my_length | safe }}</h6>
 			<h6> Uniprot ID: {{ my_uni_id | safe }}</h6>
 		</div>
 		<div class="result-controls" id="result_main_container">
@@ -393,6 +399,7 @@ $(document).ready( function() {
 							var $trLast = $table.find("tr:last");
 	    					$trLast.remove();
 	    				}
+
 				</script>
 
 				<div>
