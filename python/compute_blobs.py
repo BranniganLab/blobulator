@@ -182,11 +182,11 @@ def lookupDisorder(x):
 enrichDF = pd.read_csv("../data/enrichCMap.csv", index_col=[0,1])
 enrichDF.to_csv("../data/enrichment.txt")
 
-enrichDF_p = pd.read_csv("enrichCMap_p.csv", index_col=[0,1])
-enrichDF_p.to_csv("enrichment_p.txt")
+enrichDF_p = pd.read_csv("../data/enrichCMap_p.csv", index_col=[0,1])
+enrichDF_p.to_csv("../data/enrichment_p.txt")
 
-enrichDF_s = pd.read_csv("enrichCMap_s.csv", index_col=[0,1])
-enrichDF_s.to_csv("enrichment_s.txt")
+enrichDF_s = pd.read_csv("../data/enrichCMap_s.csv", index_col=[0,1])
+enrichDF_s.to_csv("../data/enrichment_s.txt")
 
 def lookupEnrichment(x):
     min_hydrophobicity = round(x[1], 2)
