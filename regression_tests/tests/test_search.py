@@ -62,37 +62,22 @@ def test_snp_button(page: Page, uniprot_results: BlobulatorResultPage):
 
 
 # After adjusting the hydropathy slider
-def test_hydropathy_slider(page: Page, uniprot_results: BlobulatorResultPage):
+def test_hydropathy_slider(page: Page, asynuclein_results: BlobulatorResultPage):
     # given the results page is loaded
-    result_page = uniprot_results
+    result_page = asynuclein_results
 
     # Get initial conditions
     result_page.blob_bars.nth(10).wait_for()
     hline_y_init = result_page.hydropathy_line.get_attribute("y1")
+    blob_res10 = result_page.blob_bars.nth(10)
+    res10_height_init = blob_res10.get_attribute("height")
+
+    # Sanity check: the blob should initially be orange
+    expect(blob_res10).to_have_attribute("fill", "rgb(247, 147, 30)")
 
     # When the hydropathy slider is set to 0.2
-    result_page.hydropathy_slider.hover()
-    result_page.mouse.down()
-
     target_hydropathy = 0.2
-    hydropathy = 0.4
-    current_x = 10000
-    prev_x = 0
-    while hydropathy != target_hydropathy:
-        step = abs(current_x - prev_x) / 2
-
-        prev_x = current_x
-
-        if hydropathy < target_hydropathy:
-            current_x += step
-        else:
-            current_x -= step
-
-        result_page.mouse.move(current_x, 0)
-        hydropathy = float(result_page.hydropathy_field.input_value())
-
-    result_page.mouse.up()
-    sleep(1)
+    result_page.set_pathy_slider(target_hydropathy)
 
     # Expect the cutoff indicator has moved down
     hline_y_current = result_page.hydropathy_line.get_attribute("y1")
@@ -100,8 +85,12 @@ def test_hydropathy_slider(page: Page, uniprot_results: BlobulatorResultPage):
 
     # Expect the numerical input is updated to 0.2
     expect(result_page.hydropathy_field).to_have_value(str(target_hydropathy))
-    # Expect the blob chart to change heights
-    # Expect the blob chart to change colors
+
+    # Expect the blob chart residue 10 to change heights
+    assert blob_res10.get_attribute("height") > res10_height_init
+
+    # Expect the blob chart residue 10 to now be blue
+    expect(blob_res10).to_have_attribute("fill", "rgb(0, 113, 188)")
 
 
 # Given the results page is loaded with P37840

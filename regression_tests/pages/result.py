@@ -4,6 +4,7 @@ This module contains BlobulatorResultPage
 
 from playwright.sync_api import Page
 from typing import List
+from time import sleep
 
 
 class BlobulatorResultPage:
@@ -38,3 +39,27 @@ class BlobulatorResultPage:
         from_resid = mutation[1:-1]
         to_res = mutation[-1]
         return from_res, from_resid, to_res
+
+    def set_pathy_slider(self, target_hydropathy):
+        self.hydropathy_slider.hover()
+        self.mouse.down()
+
+        right = 1000
+        left = 0
+        hydropathy = -1
+
+        while hydropathy != target_hydropathy:
+                       
+            midpoint = (left+right) / 2
+            self.mouse.move(midpoint, 0)
+            hydropathy = float(self.hydropathy_field.input_value())
+
+            if hydropathy < target_hydropathy:
+                left = midpoint
+            else:
+                right = midpoint       
+
+        self.mouse.up()
+        sleep(1)
+        return
+

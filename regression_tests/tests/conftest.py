@@ -23,6 +23,9 @@ def url(request):
 def uniprot_id(request):
     return request.param
 
+@pytest.fixture(params=[])
+def uniprot_(request):
+    return request.param
 
 @pytest.fixture
 def uniprot_results(
@@ -31,5 +34,17 @@ def uniprot_results(
 
     search_page.load()
     page = search_page.uniprot_search(uniprot_id, context)
+
+    return BlobulatorResultPage(page)
+
+
+@pytest.fixture
+def asynuclein_results(
+    context: BrowserContext, search_page: Page, uniprot_id: str
+) -> BlobulatorResultPage:
+
+    search_page.load()
+    asynuclein_uniprot = "P37840"
+    page = search_page.uniprot_search(asynuclein_uniprot, context)
 
     return BlobulatorResultPage(page)
