@@ -10,6 +10,7 @@ def pathogenic_snps(variant_file):
 	genomicLocation = []
 	alternativeSequence = []
 	for each_line in variant_file:
+		print(each_line['alternativeSequence'])
 		try:
 			try:
 				sig_list = each_line['clinicalSignificances'].split(',')
@@ -17,9 +18,8 @@ def pathogenic_snps(variant_file):
 				sig_list = each_line['clinicalSignificances'][0]['type']
 
 			if ('Pathogenic' in sig_list) or ('Disease' in sig_list) or ('pathogenic' in sig_list) or ('disease' in sig_list):
-				#print(sig_list)
 				for item in each_line['xrefs']:
-					if item['name'] == 'dbSNP' and each_line['begin'] not in resid:
+					if item['name'] == 'dbSNP' and each_line['begin'] not in resid and each_line['alternativeSequence'] != "*":
 						xrefs.append(item)
 						resid.append(each_line['begin'])
 						genomicLocation.append(each_line['genomicLocation'])
