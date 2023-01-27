@@ -10,7 +10,6 @@ def pathogenic_snps(variant_file):
 	genomicLocation = []
 	alternativeSequence = []
 	for each_line in variant_file:
-		print(each_line['alternativeSequence'])
 		try:
 			try:
 				sig_list = each_line['clinicalSignificances'].split(',')
