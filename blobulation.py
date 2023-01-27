@@ -58,6 +58,7 @@ def index():
                     We only support the blobulation of one protein at a time.""")
 
             user_uniprot_id = uniprot_id[0].strip()
+            user_uniprot_id_original = uniprot_id[0].strip()
 
             # Takes the input form, converts it to a dictionary, and requests the input type (from the dropdown menu selection) using the input_type key
             request_dict = request.form.to_dict()
@@ -73,6 +74,9 @@ def index():
                     reload(uniprot_id_lookup)
                     converted_id = uniprot_id_lookup.results['results'][0]['to']['primaryAccession']
                     user_uniprot_id = converted_id
+                    original_accession = str(types[input_key]) + " ID: " + user_uniprot_id_original
+                else:
+                    original_accession = ""
 
             try:
                 response_d2p2 = requests.get(
@@ -150,10 +154,15 @@ def index():
                 protein_name = seq_file[0]['features'][0]['description']
                 if len(protein_name) == 0:
                     user_uniprot_name = ""
+                    user_uniprot_entry = ""
                 else:
                     user_uniprot_name = "Protein Details: " + str(protein_name)
+                    user_uniprot_entry = "Uniprot Entry: " + str(seq_file[0]['entryName'])
             except IndexError:
                 user_uniprot_name = ''
+                user_uniprot_entry = ''
+
+
 
             # Blobulation
             window = 3 
@@ -180,7 +189,9 @@ def index():
                     domain_threshold_max=len(str(my_seq)),
                     my_disorder = str(disorder_residues).strip('[]'),
                     activetab = '#result-tab',
-                    my_name = user_uniprot_name
+                    my_name = user_uniprot_name,
+                    my_entry_name = user_uniprot_entry,
+                    my_original_id = original_accession
                 )
 
         else: # if the user inputs amino acid sequence
