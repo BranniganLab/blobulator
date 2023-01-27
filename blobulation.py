@@ -155,7 +155,6 @@ def index():
             except IndexError:
                 user_uniprot_name = ''
 
-
             # Blobulation
             window = 3 
             session['sequence'] = str(my_seq) #set the current sequence variable
@@ -174,6 +173,7 @@ def index():
                     my_cut=0.4,
                     my_snp=snps_json,
                     my_uni_id="'%s'" % user_uniprot_id,
+                    my_uni_id_stripped= "%s" % user_uniprot_id,
                     my_seq="'%s'" % my_seq,
                     my_seq_download="%s" % my_seq,
                     domain_threshold=4,
@@ -217,7 +217,7 @@ def index():
                 form=form,
                 my_cut=0.4,
                 my_snp="[]",
-                my_uni_id="'%s'" % form.seq_name.data,
+                my_uni_id="%s" % form.seq_name.data,
                 my_seq="'%s'" % my_seq,
                 my_seq_download="%s" % my_seq,
                 domain_threshold=4,
