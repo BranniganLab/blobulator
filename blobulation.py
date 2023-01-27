@@ -58,6 +58,7 @@ def index():
                     We only support the blobulation of one protein at a time.""")
 
             user_uniprot_id = uniprot_id[0].strip()
+            user_uniprot_id_original = uniprot_id[0].strip()
 
             # Takes the input form, converts it to a dictionary, and requests the input type (from the dropdown menu selection) using the input_type key
             request_dict = request.form.to_dict()
@@ -73,6 +74,9 @@ def index():
                     reload(uniprot_id_lookup)
                     converted_id = uniprot_id_lookup.results['results'][0]['to']['primaryAccession']
                     user_uniprot_id = converted_id
+                    original_accession = str(types[input_key]) + " ID: " + user_uniprot_id_original
+                else:
+                    original_accession = ""
 
             try:
                 response_d2p2 = requests.get(
@@ -150,10 +154,14 @@ def index():
                 protein_name = seq_file[0]['features'][0]['description']
                 if len(protein_name) == 0:
                     user_uniprot_name = ""
+                    user_uniprot_entry = ""
                 else:
                     user_uniprot_name = "Protein Details: " + str(protein_name)
+                    user_uniprot_entry = "Uniprot Entry: " + str(seq_file[0]['entryName'])
             except IndexError:
                 user_uniprot_name = ''
+                user_uniprot_entry = ''
+
 
 
             # Blobulation
@@ -174,13 +182,16 @@ def index():
                     my_cut=0.4,
                     my_snp=snps_json,
                     my_uni_id="'%s'" % user_uniprot_id,
+                    my_uni_id_stripped= "%s" % user_uniprot_id,
                     my_seq="'%s'" % my_seq,
                     my_seq_download="%s" % my_seq,
                     domain_threshold=4,
                     domain_threshold_max=len(str(my_seq)),
                     my_disorder = str(disorder_residues).strip('[]'),
                     activetab = '#result-tab',
-                    my_name = user_uniprot_name
+                    my_name = user_uniprot_name,
+                    my_entry_name = user_uniprot_entry,
+                    my_original_id = original_accession
                 )
 
         else: # if the user inputs amino acid sequence
@@ -217,7 +228,7 @@ def index():
                 form=form,
                 my_cut=0.4,
                 my_snp="[]",
-                my_uni_id="'%s'" % form.seq_name.data,
+                my_uni_id="%s" % form.seq_name.data,
                 my_seq="'%s'" % my_seq,
                 my_seq_download="%s" % my_seq,
                 domain_threshold=4,
