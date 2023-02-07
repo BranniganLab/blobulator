@@ -72,9 +72,14 @@ def index():
                     ## Convert to uniprot
                     import uniprot_id_lookup
                     reload(uniprot_id_lookup)
-                    converted_id = uniprot_id_lookup.results['results'][0]['to']['primaryAccession']
-                    user_uniprot_id = converted_id
-                    original_accession = str(types[input_key]) + " ID: " + user_uniprot_id_original
+                    try:
+                        converted_id = uniprot_id_lookup.results['results'][0]['to']['primaryAccession']
+                        user_uniprot_id = converted_id
+                        original_accession = str(types[input_key]) + " ID: " + user_uniprot_id_original
+                    except:
+                        return render_template("error.html",
+                        title="ID Error",
+                        message="""There seems to be an error with the ID you've entered. Check your ID and try again.""")
                 else:
                     original_accession = ""
 
