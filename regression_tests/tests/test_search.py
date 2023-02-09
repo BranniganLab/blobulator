@@ -93,26 +93,89 @@ def test_hydropathy_slider(page: Page, asynuclein_results: BlobulatorResultPage)
     expect(blob_res10).to_have_attribute("fill", "rgb(0, 113, 188)")
 
 
-# Given the results page is loaded with P37840
-# When the hydropathy slider is set to 0.6
-# Expect the numerical input is updated to 0.2
-# Expect the cutoff indicator has moved up
-# Expect the blob chart to change heights
-# Expect the blob chart to change colors
+def test_hydropathy_slider_2(page: Page, asynuclein_results: BlobulatorResultPage):
+    # given the results page is loaded
+    result_page = asynuclein_results
+
+    # Get initial conditions
+    result_page.blob_bars.nth(25).wait_for()
+    hline_y_init = result_page.hydropathy_line.get_attribute("y1")
+    blob_res25 = result_page.blob_bars.nth(25)
+    res25_height_init = blob_res25.get_attribute("height")
+
+    # Sanity check: the blob should initially be blue
+    expect(blob_res25).to_have_attribute("fill", "rgb(0, 113, 188)")
+
+    # When the hydropathy slider is set to 0.6
+    target_hydropathy = 0.6
+    result_page.set_pathy_slider(target_hydropathy)
+
+    # Expect the cutoff indicator has moved down
+    hline_y_current = result_page.hydropathy_line.get_attribute("y1")
+    assert float(hline_y_current) > float(hline_y_init)
+
+    # Expect the numerical input is updated to 0.6
+    expect(result_page.hydropathy_field).to_have_value(str(target_hydropathy))
+
+    # Expect the blob chart residue 25 to change heights
+    assert blob_res25.get_attribute("height") > res25_height_init
+
+    # Expect the blob chart residue 25 to now be orange
+    expect(blob_res25).to_have_attribute("fill", "rgb(247, 147, 30)")
 
 
-# After adjusting the blob size slider
-# Given the results page is loaded with P37840
-# When the blob size slider is set to 10
-# Expect the numerical input is updated to 10
-# Expect the blob chart to change heights
-# Expect the blob chart to change colors
+def test_lmin_slider(page: Page, asynuclein_results: BlobulatorResultPage)
+    # Given the results page is loaded
+    result_page = asynuclein_results
 
-# Given the results page is loaded with P37840
-# When the blob size slider is set to 1
-# Expect the numerical input is updated to 1
-# Expect the blob chart to change heights
-# Expect the blob chart to change colors
+    # Get initial conditions
+    result_page.blob_bars.nth(4).wait_for()
+    hline_y_init = result_page.hydropathy_line.get_attribute("y1")
+    blob_res4 = result_page.blob_bars.nth(4)
+    res4_height_init = blob_res4.get_attribute("height")
+
+    # Sanity check: the blob should initially be blue
+    expect(blob_res4).to_have_attribute("fill", "rgb(0, 113, 188)")
+
+    # When the blob size slider is set to 10
+    target_length = 10
+    result_page.set_lmin_slider(target_length)
+
+    # Expect the numerical input is updated to 10
+    expect(result_page.lmin_field).to_have_value(str(target_length))
+
+    # Expect the blob chart residue 10 to change heights
+    assert blob_res4.get_attribute("height") > res4_height_init
+
+    # Expect the blob chart residue 10 to now be orange
+    expect(blob_res4).to_have_attribute("fill", "rgb(247, 147, 30)")
+
+
+def test_lmin_slider_2(page: Page, asynuclein_results: BlobulatorResultPage)
+    # Given the results page is loaded
+    result_page = asynuclein_results
+
+    # Get initial conditions
+    result_page.blob_bars.nth(128).wait_for()
+    hline_y_init = result_page.hydropathy_line.get_attribute("y1")
+    blob_res128 = result_page.blob_bars.nth(128)
+    res128_height_init = blob_res128.get_attribute("height")
+
+    # Sanity check: the blob should initially be orange
+    expect(blob_res128).to_have_attribute("fill", "rgb(247, 147, 30)")
+
+    # When the blob size slider is set to 10
+    target_length = 1
+    result_page.set_lmin_slider(target_length)
+
+    # Expect the numerical input is updated to 10
+    expect(result_page.lmin_field).to_have_value(str(target_length))
+
+    # Expect the blob chart residue 10 to change heights
+    assert blob_res128.get_attribute("height") > res4_height_init
+
+    # Expect the blob chart residue 10 to now be blue
+    expect(blob_res128).to_have_attribute("fill", "rgb(0, 113, 188)")
 
 
 # After adjusting the hydropathy numerical input
@@ -123,7 +186,7 @@ def test_hydropathy_slider(page: Page, asynuclein_results: BlobulatorResultPage)
 # Expect the blob chart to change colors
 
 # Given the results page is loaded with P37840
-# When the hydropathy numerical input is set to 10
+# When the hydropathy numerical input is set to 1.0
 # Expect the hydropathy slider moves right
 # Expect the blob chart to change heights
 # Expect the blob chart to change colors

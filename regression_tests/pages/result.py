@@ -20,6 +20,8 @@ class BlobulatorResultPage:
         self.mouse = page.mouse
         self.hydropathy_line = page.get_by_test_id("cutoffline")
         self.blob_bars = page.locator("id=barChartblobPlot")
+        self.lmin_slider = page.locator("id=domain_threshold_user_slider")
+        self.lmin_field = page.locator("id=domain_threshold_user_box")
 
     def click_nth_snp(self, N: int) -> None:
         self.snps.nth(N).wait_for()
@@ -55,6 +57,29 @@ class BlobulatorResultPage:
             hydropathy = float(self.hydropathy_field.input_value())
 
             if hydropathy < target_hydropathy:
+                left = midpoint
+            else:
+                right = midpoint       
+
+        self.mouse.up()
+        sleep(1)
+        return
+
+    def set_lmin_slider(self, target_length):
+        self.lmin_slider.hover()
+        self.mouse.down()
+
+        right = 1000
+        left = 0
+        length = -1
+
+        while length != target_length:
+                       
+            midpoint = (left+right) / 2
+            self.mouse.move(midpoint, 0)
+            length = float(self.lmin_field.input_value())
+
+            if length < target_length:
                 left = midpoint
             else:
                 right = midpoint       
