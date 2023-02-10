@@ -394,7 +394,7 @@ class ZChart extends ZFigure{
 		//Creates the "Residue" x-axis label
 		if (snps) {
 			var bottomMargin = this.MARGIN.bottom + 25
-		} else {
+		}else{
 			var bottomMargin = this.MARGIN.bottom + 25
 		}
 		this.svg.append("text")
@@ -410,7 +410,7 @@ class ZChart extends ZFigure{
 	update_xAxis(x) {
 		// Decide how many ticks to show based on how wide the domain is.
 		// Actually, we are choosing the interval between ticks.
-		const tickPeriod = Math.round((Math.round(x.domain().length/10))/10)*10;
+		const tickPeriod = ((Math.round(x.domain().length/10))/10)*10;
 		let xAxisGenerator = d3.axisBottom(x);
 		let tickValues = x.domain().filter(function(d, i) {
 			return !((i+1) % tickPeriod);
