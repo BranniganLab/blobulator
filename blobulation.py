@@ -39,7 +39,7 @@ Session(app) #This stores the user input for further calls
 REQUEST_URL_snp = "https://www.ebi.ac.uk/proteins/api/variation"
 REQUEST_URL_features = "https://www.ebi.ac.uk/proteins/api/features"
 REQUEST_UNIPROT_ID_FROM_ENSEMBL = "https://www.uniprot.org/uploadlists/"
-   
+REQUEST_URL_coordinates = "https://www.ebi.ac.uk/proteins/api/coordinates"
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -167,7 +167,25 @@ def index():
                 user_uniprot_name = ''
                 user_uniprot_entry = ''
 
+            get_coords = requests.get(
+                REQUEST_URL_coordinates,
+                params=uniprot_params,
+                headers={"Accept": "application/json"},
+            )
 
+            # HTTP status code 200 means the request was successful
+            if get_coords.status_code != 200:
+                return render_template("error.html",
+                    title="Error getting genomic coordinates from UniProt",
+                    message="""There was an error retrieving SNP data from UniProt""")
+
+            seq_file_coords = get_coords.json()
+            hg_identifier = 'Genomic Location: ' + str(seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['chromosome']) + ': ' + str(seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['start']) + '-'+ str(seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['end'])
+
+            # if seq_file_snp:
+            #     snps_json = pathogenic_snps (seq_file_snp[0]["features"]) #filters the disease causing SNPs
+            # else:
+            #     snps_json = "[]"
 
             # Blobulation
             window = 3 
@@ -196,7 +214,8 @@ def index():
                     activetab = '#result-tab',
                     my_name = user_uniprot_name,
                     my_entry_name = user_uniprot_entry,
-                    my_original_id = original_accession
+                    my_original_id = original_accession,
+                    my_hg_value = hg_identifier
                 )
 
         else: # if the user inputs amino acid sequence
