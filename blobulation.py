@@ -189,7 +189,7 @@ def index():
             # else:
             #     snps_json = "[]"
 
-
+            #Blobulation
             window = 3 
             session['sequence'] = str(my_seq) #set the current sequence variable
             my_initial_df = compute(
