@@ -131,7 +131,7 @@ def index():
             seq_file_snp = get_snp.json()
 
             if seq_file_snp:
-                snps_json = pathogenic_snps (seq_file_snp[0]["features"]) #filters the disease causing SNPs
+                snps_json = pathogenic_snps(seq_file_snp[0]["features"]) #filters the disease causing SNPs
             else:
                 snps_json = "[]"
             my_seq = seq_file[0]["sequence"]
@@ -180,14 +180,16 @@ def index():
                     message="""There was an error retrieving SNP data from UniProt""")
 
             seq_file_coords = get_coords.json()
-            hg_identifier = 'Genomic Location: ' + str(seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['chromosome']) + ': ' + str(seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['start']) + '-'+ str(seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['end'])
-
+            try:
+                hg_identifier = 'Genomic Location: ' + str(seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['chromosome']) + ': ' + str(seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['start']) + '-'+ str(seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['end'])
+            except:
+                hg_identifier = ""
             # if seq_file_snp:
             #     snps_json = pathogenic_snps (seq_file_snp[0]["features"]) #filters the disease causing SNPs
             # else:
             #     snps_json = "[]"
 
-            # Blobulation
+
             window = 3 
             session['sequence'] = str(my_seq) #set the current sequence variable
             my_initial_df = compute(
