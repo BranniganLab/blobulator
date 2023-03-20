@@ -478,6 +478,15 @@ class ZChart extends ZFigure{
 					.duration(2000)
 					.style("opacity", 0)
 					.on("end", () => tooltip_snps.style("display", "none"));
+			})
+			.on("contextmenu", function(event, d){
+				document.getElementById("mutatebox").click();
+				document.getElementById("snp_id").value = d.resid;
+				document.getElementById("residue_type").value = d.alternativeSequence;
+				document.getElementById("mutatebox").click();
+				if (document.getElementById("mutatebox").checked == true){
+					d3.select(this).attr("fill", "red");
+				}
 			});
 
 		return this;
