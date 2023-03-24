@@ -352,6 +352,7 @@ $(document).ready( function() {
 			<h6>{{ my_entry_name | safe}}<h6>
 			<h6>{{ my_hg_value | safe}}<h6>
 			<h6> ID: <a href="https://www.uniprot.org/uniprotkb/{{ my_uni_id_stripped | safe }}/entry" target="_blank"> {{ my_uni_id_stripped | safe }}</a></h6>
+			<button onclick="introJs().start()" type="button">Step-by-step walkthrough of this result page</button>
 		</div>
 		<div class="result-controls" id="result_main_container">
 			<table id="results_table">
@@ -360,11 +361,12 @@ $(document).ready( function() {
 <!-- 			<col style="width:50%">
 				<col style="width:20%"> -->
 				 <div text="left">
-				<tr><td>Hydrophobicity Scale:</td>
+				<tr data-intro="Use these controls to specify what sort of blobs you like." data-step="1">
+					<td>Hydrophobicity Scale:</td>
 					<td><select id="hydro_scales" class="hydro_scales">
 						<option selected="selected" value="kyte_doolittle">Kyte and Doolittle</option>
 						<option value="eisenberg_weiss">Eisenberg and Weiss</option></select></td>
-						<td id="hydro-labels" class="hydro_labels" style="width: 43%"></td>
+						<td data-intro="You can click these letters!" data-step="2" id="hydro-labels" class="hydro_labels" style="width: 43%"></td>
 					<td>&nbsp;</td></tr>
 					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
@@ -406,7 +408,8 @@ $(document).ready( function() {
 				</script>
 
 				<div>
-					<tr id="mutations_container"> <td> <input type="checkbox" id="mutatebox" class="mutatebox" value="True"> <label for="mutatebox">Mutate residue:</label> </td>
+					<tr data-intro="What if this protein had a mutation? How would it affect the blobs? Find out here!" data-step="3"
+					id="mutations_container"> <td> <input type="checkbox" id="mutatebox" class="mutatebox" value="True"> <label for="mutatebox">Mutate residue:</label> </td>
 					<!-- my_seq includes single quotes in the string so we have to do this subscripting here -->
 					<td> <select id="snp_id" class="snp_id">
 					{% for residue in my_seq[1:-1] %}
