@@ -221,16 +221,18 @@ def index():
                 )
 
         else: # if the user inputs amino acid sequence
-            aa_sequence = form.aa_sequence.data.splitlines()
-            if len(aa_sequence) > 1:
-                return render_template("error.html",
-                    title="More than one sequence provided",
-                    message="""It looks like you are querying about more than one sequence.
-                    We only support one sequence at a time.""")
+            aa_sequence_list = form.aa_sequence.data.splitlines()
+            aa_sequence = "".join([str(item) for item in aa_sequence_list])
+            # if len(aa_sequence) > 1:
+            #     return render_template("error.html",
+            #         title="More than one sequence provided",
+            #         message="""It looks like you are querying about more than one sequence.
+            #         We only support one sequence at a time.""")
 
             # Make everything upper case 
-            my_seq = aa_sequence[0].strip().upper()
+            my_seq = aa_sequence.strip().upper()
             session['sequence'] = str(my_seq)
+
 
 
             # Ensure that all characters in sequence actually represent amino acids
