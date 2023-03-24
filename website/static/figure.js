@@ -377,9 +377,9 @@ class ZChart extends ZFigure{
 	
 	add_xAxis(snps, x){
 		if (snps) {
-			var xaxisMargin = this.HEIGHT + 20
+			var xaxisMargin = this.HEIGHT + 22
 		} else {
-			var xaxisMargin = this.HEIGHT + 20
+			var xaxisMargin = this.HEIGHT + 22
 		}
 
 		var num_residues = this.data.length
@@ -394,7 +394,7 @@ class ZChart extends ZFigure{
 		//Creates the "Residue" x-axis label
 		if (snps) {
 			var bottomMargin = this.MARGIN.bottom + 25
-		} else {
+		}else{
 			var bottomMargin = this.MARGIN.bottom + 25
 		}
 		this.svg.append("text")
@@ -410,7 +410,7 @@ class ZChart extends ZFigure{
 	update_xAxis(x) {
 		// Decide how many ticks to show based on how wide the domain is.
 		// Actually, we are choosing the interval between ticks.
-		const tickPeriod = Math.round((Math.round(x.domain().length/10))/10)*10;
+		const tickPeriod = ((Math.round(x.domain().length/10))/10)*10;
 		let xAxisGenerator = d3.axisBottom(x);
 		let tickValues = x.domain().filter(function(d, i) {
 			return !((i+1) % tickPeriod);
@@ -434,7 +434,7 @@ class ZChart extends ZFigure{
 	/* add_snps
 	*/
 	add_snps(my_snp, my_seq, tooltip_snps, x) {
-		var triangle_symbol = d3.symbol().type(d3.symbolTriangle).size(64);
+		var triangle_symbol = d3.symbol().type(d3.symbolTriangle).size(60);
 		this.snps = this.plot.append('g')
 			.selectAll("rect")
 			.data(my_snp)
@@ -442,7 +442,7 @@ class ZChart extends ZFigure{
 			.append("path")
 			.attr('d', triangle_symbol)
 			.attr("fill", 'black')
-			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 145)")
+			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 147)")
 			.attr("id", "snp_triangles")
 			.on("click", function(event, d){
 				document.getElementById("snp_id").value = d.resid;
@@ -478,6 +478,15 @@ class ZChart extends ZFigure{
 					.duration(2000)
 					.style("opacity", 0)
 					.on("end", () => tooltip_snps.style("display", "none"));
+			})
+			.on("contextmenu", function(event, d){
+				document.getElementById("mutatebox").click();
+				document.getElementById("snp_id").value = d.resid;
+				document.getElementById("residue_type").value = d.alternativeSequence;
+				document.getElementById("mutatebox").click();
+				if (document.getElementById("mutatebox").checked == true){
+					d3.select(this).attr("fill", "red");
+				}
 			});
 
 		return this;
@@ -488,11 +497,11 @@ class ZChart extends ZFigure{
 			.duration(timing)
 			.attr("transform", function(d){
 				if(extent && d.resid>domain[1]){
-					var translation = ("translate("+ 2*width+", 145)")
+					var translation = ("translate("+ 2*width+", 147)")
 				}else if(extent && d.resid<domain[0]){
-					var translation = ("translate(" + -width + ", 145)");
+					var translation = ("translate(" + -width + ", 147)");
 				}else{
-					var translation = ("translate(" + (x(d.resid) + x.bandwidth()/2) + ", 145)");
+					var translation = ("translate(" + (x(d.resid) + x.bandwidth()/2) + ", 147)");
 				}
 				return translation
 			});
@@ -503,7 +512,7 @@ class ZChart extends ZFigure{
 	add_mut_indicator(my_seq, x) {
 		var mutatecheckbox = document.getElementById("mutatebox")
 		var mutated_res_num = document.getElementById("snp_id")
-		var star_symbol = d3.symbol().type(d3.symbolDiamond).size(128)
+		var star_symbol = d3.symbol().type(d3.symbolDiamond).size(120)
 		var mut_symb_data = []
 		for(var i = 1; i <= my_seq.length; ++i) {
 			var symb_dict = {'resid' : i}
@@ -518,7 +527,7 @@ class ZChart extends ZFigure{
 			.attr("fill", "red")
 			.attr("opacity", "0.0")
 			.attr("class", "mutation_indicator")
-			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 148.5)")
+			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 150.5)")
 
 		
 
