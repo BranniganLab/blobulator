@@ -3,7 +3,7 @@ import json
 import os
 import sys
 
-sys.path.insert(0, '../python/')
+sys.path.insert(0, '../library/')
 
 from user_input_form import InputForm
 from amino_acids import properties_hydropathy
