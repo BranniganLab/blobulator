@@ -164,29 +164,29 @@ def uversky_diagram(x):
         return distance 
 
 # ..........................Define NCPR.........................................................#
-ncprDict = pd.read_csv("ncprCMap.csv", index_col=0)
+ncprDict = pd.read_csv("../data/ncprCMap.csv", index_col=0)
 def lookupNCPR(x):
     val = x[0]
     return ncprDict.loc[np.round(val, 2)]
 
-uverskyDict = pd.read_csv("uverskyCMap.csv", index_col=0)
+uverskyDict = pd.read_csv("../data/uverskyCMap.csv", index_col=0)
 def lookupUversky(x):
     val = x[0]
     return uverskyDict.loc[np.round(val, 2)]
 
-disorderDict = pd.read_csv("disorderCMap.csv", index_col=0)
+disorderDict = pd.read_csv("../data/disorderCMap.csv", index_col=0)
 def lookupDisorder(x):
     val = x[0]
     return disorderDict.loc[np.round(val, 2)]
 
-enrichDF = pd.read_csv("enrichCMap.csv", index_col=[0,1])
-enrichDF.to_csv("enrichment.txt")
+enrichDF = pd.read_csv("../data/enrichCMap.csv", index_col=[0,1])
+enrichDF.to_csv("../data/enrichment.txt")
 
-enrichDF_p = pd.read_csv("enrichCMap_p.csv", index_col=[0,1])
-enrichDF_p.to_csv("enrichment_p.txt")
+enrichDF_p = pd.read_csv("../data/enrichCMap_p.csv", index_col=[0,1])
+enrichDF_p.to_csv("../data/enrichment_p.txt")
 
-enrichDF_s = pd.read_csv("enrichCMap_s.csv", index_col=[0,1])
-enrichDF_s.to_csv("enrichment_s.txt")
+enrichDF_s = pd.read_csv("../data/enrichCMap_s.csv", index_col=[0,1])
+enrichDF_s.to_csv("../data/enrichment_s.txt")
 
 def lookupEnrichment(x):
     min_hydrophobicity = round(x[1], 2)

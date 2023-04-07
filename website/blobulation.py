@@ -1,9 +1,15 @@
 import json
+
+import os
+import sys
+
+sys.path.insert(0, '../library/')
+
 from user_input_form import InputForm
 from amino_acids import properties_hydropathy
 from compute_blobs import (compute, clean_df)
-
 from compute_snps import pathogenic_snps
+
 import pandas as pd
 import numpy as np
 import time
@@ -28,7 +34,10 @@ from reportlab.graphics import renderPDF
 
 from importlib import reload
 
-app = Flask(__name__)
+
+
+template_dir = os.path.abspath('../website/templates')
+app = Flask(__name__, template_folder=template_dir)
 
 CORS(app)  # To allow direct AJAX calls
 SESSION_TYPE = 'filesystem'
