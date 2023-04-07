@@ -445,12 +445,15 @@ class ZChart extends ZFigure{
 			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 147)")
 			.attr("id", "snp_triangles")
 			.on("click", function(event, d){
+				if (document.getElementById("mutatebox").checked == true){
+					document.getElementById("mutatebox").click();
+				};
 				document.getElementById("snp_id").value = d.resid;
 				document.getElementById("residue_type").value = d.alternativeSequence;
 				document.getElementById("mutatebox").click();
 				if (document.getElementById("mutatebox").checked == true){
 					d3.select(this).attr("fill", "red");
-				}
+				};
 			})
 			.on("mouseover", function(event, d) {
 				if (document.getElementById("mutatebox").checked == false) {
@@ -479,15 +482,6 @@ class ZChart extends ZFigure{
 					.style("opacity", 0)
 					.on("end", () => tooltip_snps.style("display", "none"));
 			})
-			.on("contextmenu", function(event, d){
-				document.getElementById("mutatebox").click();
-				document.getElementById("snp_id").value = d.resid;
-				document.getElementById("residue_type").value = d.alternativeSequence;
-				document.getElementById("mutatebox").click();
-				if (document.getElementById("mutatebox").checked == true){
-					d3.select(this).attr("fill", "red");
-				}
-			});
 
 		return this;
 	}
