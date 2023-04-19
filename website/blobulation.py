@@ -190,7 +190,6 @@ def index():
 
             seq_file_coords = get_coords.json()
             try:
-                print(seq_file_coords)
                 gn_chrom = seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['chromosome']
                 gn_start = seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['exon'][0]['genomeLocation']['begin']['position']
                 gn_end = seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['exon'][0]['genomeLocation']['end']['position']
