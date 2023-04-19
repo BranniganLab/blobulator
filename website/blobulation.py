@@ -195,7 +195,7 @@ def index():
                 gn_start = seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['exon'][0]['genomeLocation']['begin']['position']
                 gn_end = seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['exon'][0]['genomeLocation']['end']['position']
                 strand_sign = '+' if np.sign(gn_start - gn_end) == 1 else '-'
-                hg_identifier = 'Genomic Location (longest transcript): ' + str(gn_chrom) + ': ' + str(gn_start) + '-'+ str(gn_end) + " (" + strand_sign + ")"
+                hg_identifier = 'Genomic Location (GRCh Build 38, longest transcript): ' + str(gn_chrom) + ': ' + str(gn_start) + '-'+ str(gn_end) + " (" + strand_sign + ")"
             except:
                 hg_identifier = ""
 
