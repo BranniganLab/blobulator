@@ -190,6 +190,7 @@ def index():
 
             seq_file_coords = get_coords.json()
             try:
+                print(seq_file_coords)
                 gn_chrom = seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['chromosome']
                 gn_start = seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['exon'][0]['genomeLocation']['begin']['position']
                 gn_end = seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['exon'][0]['genomeLocation']['end']['position']
@@ -197,7 +198,7 @@ def index():
                 hg_identifier = 'Genomic Location (longest transcript): ' + str(gn_chrom) + ': ' + str(gn_start) + '-'+ str(gn_end) + " (" + strand_sign + ")"
             except:
                 hg_identifier = ""
-                print(hg_identifier)
+
             # if seq_file_snp:
             #     snps_json = pathogenic_snps (seq_file_snp[0]["features"]) #filters the disease causing SNPs
             # else:
