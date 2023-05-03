@@ -37,7 +37,7 @@ Using conda:
 ```
 conda create --name blobulator_env python=3.9
 conda activate blobulator_env
-pip install -r requirements.txt
+pip install -r library/requirements.txt
 ```
 
 ### Running through an internet browser:
