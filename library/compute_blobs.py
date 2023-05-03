@@ -56,7 +56,16 @@ scalarMap = matplotlib.cm.ScalarMappable(norm=cNorm, cmap=cmap_u)
 cval = scalarMap.to_rgba(0)
 
 def domain_to_numbers(x):
-    """convert domains to bar height for javascript display"""
+    """
+    A function that assigns heights to each residue for output tracks based on what type of blob they fall into
+
+    Arguments:
+        x (array): An array containing the the type of blob that each residue falls into
+
+    Returns:
+        int: height for each residue
+
+    """
     if x[0][0] == "p":
         return 0.2
     elif x[0][0] == "h":
@@ -69,6 +78,13 @@ def domain_to_numbers(x):
 
 # ..........................Define phase diagram.........................................................#
 def phase_diagram(x):
+    """
+    A function that assigns colors to blobs based on their Das-Pappu class
+
+    Arguments:
+        x (array): An array containing the fraction of positive and negative residues per blob
+    """
+
     fcr = x[1]
     ncpr = x[0]
     fp = x[2]
@@ -104,6 +120,13 @@ def phase_diagram(x):
 
 
 def phase_diagram_class(x):
+    """
+    A function to assign numerical values to blobs based on their Das-Pappu class
+
+    Arguments:
+        x (array): An array containing the fraction of positive and negative residues per blob
+    """
+
     fcr = x[1]
     ncpr = x[0]
     fp = x[2]
@@ -141,7 +164,12 @@ def phase_diagram_class(x):
 # ..........................Define colors for each blob type.........................................................#
 
 def blob_diagram(x):
-    """convert domains to colors for blob figure"""
+    """
+    A function that colors blobs based on their blob types
+
+    Arguments:
+        x (array): An array containing the the type of blob that each residue falls into
+    """
     if x[0][0] == "p":
         return "#F7931E"
     elif x[0][0] == "h":
@@ -151,6 +179,15 @@ def blob_diagram(x):
 
 # ..........................Define phase diagram.........................................................#
 def uversky_diagram(x):
+    """
+    A function that calculates the distance from the disorder/order boundary for each blob on the uversky diagram
+
+    Arguments:
+        x (array): An array containing the fraction of positive and negative residues per blob
+
+    Returns:
+        distance (int): the distance of each blob from the from the disorder/order boundary on the uversky diagram
+    """
     h = x[1]*1.0
     ncpr = abs(x[0])
     c = 0.413 # intercept of diagram
@@ -166,16 +203,45 @@ def uversky_diagram(x):
 # ..........................Define NCPR.........................................................#
 ncprDict = pd.read_csv("../data/ncprCMap.csv", index_col=0)
 def lookupNCPR(x):
+    """
+    A function that returns the color for each blob based on its NCPR
+
+    Arguments:
+        x (array): An array containing the fraction of positive and negative residues per blob
+
+    Returns:
+        color (str): a string containing the color value for each residue based on the ncpr of the blob that it's contained in
+    """
+
     val = x[0]
     return ncprDict.loc[np.round(val, 2)]
 
 uverskyDict = pd.read_csv("../data/uverskyCMap.csv", index_col=0)
 def lookupUversky(x):
+    """
+    A function that returns the color for each blob based on its distance from the disorder/order boundary for on the uversky diagram
+
+    Arguments:
+        x (array): An array containing the uversky distances for each residue by blob
+
+    Returns:
+        color (str): a string containing the color value for each residue based on the distance from the uversky diagram's disorder/order boundary line of the blob that it's contained in
+    """
+
     val = x[0]
     return uverskyDict.loc[np.round(val, 2)]
 
 disorderDict = pd.read_csv("../data/disorderCMap.csv", index_col=0)
 def lookupDisorder(x):
+    """
+    A function that returns the color for each blob based on how disordered it is, determined by the Uniprot accession
+
+    Arguments:
+        x (array): An array containing the disorder value for each residue by blob
+
+    Returns:
+        color (str): a string containing the color value for each residue based on how disordered the blob that contains it is predicted to be
+    """
     val = x[0]
     return disorderDict.loc[np.round(val, 2)]
 
@@ -189,6 +255,15 @@ enrichDF_s = pd.read_csv("../data/enrichCMap_s.csv", index_col=[0,1])
 enrichDF_s.to_csv("../data/enrichment_s.txt")
 
 def lookupEnrichment(x):
+    """
+    A function that returns the color for each blob based on how sensitive to mutation it is predicted to be
+
+    Arguments:
+        x (array): An array containing the predicted mutation sensitivity value for each residue by blob
+
+    Returns:
+        color (str): a string containing the color value for each residue based on sensitive to mutation the blob that contains it is estimated to be
+    """
     min_hydrophobicity = round(x[1], 2)
     blob_length = x[0]
     blob_type = x[2]
@@ -212,6 +287,15 @@ def lookupEnrichment(x):
         return "grey"
 
 def h_blob_enrichments_numerical(x):
+    """
+    A function that returns the color for each h-blob based on how sensitive to mutation it is predicted to be
+
+    Arguments:
+        x (array): An array containing the predicted mutation sensitivity value for each residue for each h-blob
+
+    Returns:
+        color (str): a string containing the color value for each residue based on sensitive to mutation the blob that contains it is estimated to be, if it's an h-blob
+    """
     cutoff = round(x[1], 2)
     if x[2] == 'h':
         try:
@@ -223,9 +307,29 @@ def h_blob_enrichments_numerical(x):
         return 0
 
 def count_var(x, v):
+    """
+    A counting function
+
+    Arguments:
+        x (array): An array containing the predicted mutation sensitivity value for each residue by blob
+        v (int): how many to count
+
+    Returns:
+        int: the total count for each value
+    """
     return x.values.tolist().count(v) / (x.shape[0] * 1.0)
 
 def get_hydrophobicity(x, hydro_scale):
+    """
+    A function that returns the hydrophobicity per residue based on which scale the user has selected
+
+    Arguments:
+        x (array): An array containing the predicted mutation sensitivity value for each residue by blob
+        hydro_scale (str): the hydrophobicity scale as selected by the user
+
+    Returns:
+        hydrophobicity (int): the hydrophobicity for a given residue in the selected scale
+    """
     if hydro_scale == "kyte_doolittle":
         scale = properties_hydropathy
     elif hydro_scale == "eisenberg_weiss":
@@ -237,6 +341,15 @@ def get_hydrophobicity(x, hydro_scale):
         raise
 
 def clean_df(df):
+    """
+    A function removes unnecessary columns from a given dataframe
+
+    Arguments:
+        df (dataframe): A pandas dataframe
+
+    Returns:
+        df (dataframe): A cleaned pandas dataframe
+    """
     #print (df.head)
     #df = df.drop(range(0, 1))
     del df['domain_pre']
@@ -276,9 +389,25 @@ def clean_df(df):
     return df
 
 def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=3, disorder_residues=[]):
+    """
+    A function that runs the blobulation algorithm
 
-    # give the numeric values to each domain
+    Arguments:
+        seq (str): A sequence of amino acids
+        cutoff (float): the user-selected cutoff
+        domain_threshold (int): the minimum length cutoff
+        hydro_scale (str): the selected hydrophobicity scale
+        window (int): the smoothing window for calculating residue hydrophobicity
+        disorder_residues (list): known disorder values for each residue
+
+    Returns:
+        df (dataframe): A dataframe containing the output from blobulation
+    """
+
     def f3(x, domain_threshold):
+        """
+        A function that gives the numeric values to each domain
+        """
         global counter_s
         global counter_p
         global counter_h
@@ -313,8 +442,10 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
                 return x + str(counter_s)#
 
 
-    # gives the alphabetic names to each domain
     def f4(x, domain_threshold, counts_group_length):
+        """
+        A function that gives the alphabetic names to each domain
+        """
         global counter_domain_naming
         global s_counter
         if x[1][0] == 'p':
@@ -502,4 +633,3 @@ if __name__ == "__main__":
         print("done")
     else:
         print("No sequence provided")
-
