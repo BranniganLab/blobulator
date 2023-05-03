@@ -435,6 +435,7 @@ class ZChart extends ZFigure{
 	*/
 	add_snps(my_snp, my_seq, tooltip_snps, x) {
 		var triangle_symbol = d3.symbol().type(d3.symbolTriangle).size(60);
+		var mutatecheckbox = document.getElementById("mutatebox");
 		this.snps = this.plot.append('g')
 			.selectAll("rect")
 			.data(my_snp)
@@ -445,25 +446,17 @@ class ZChart extends ZFigure{
 			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 147)")
 			.attr("id", "snp_triangles")
 			.on("click", function(event, d){
-				if (document.getElementById("mutatebox").checked == true){
-					document.getElementById("mutatebox").click();
+				d3.select(this).attr("fill", "red")
+				if (mutatecheckbox.checked == true){
+					mutatecheckbox.click().duration(25);
 				};
 				document.getElementById("snp_id").value = d.resid;
 				document.getElementById("residue_type").value = d.alternativeSequence;
-				document.getElementById("mutatebox").click();
-				if (document.getElementById("mutatebox").checked == true){
-					d3.select(this).attr("fill", "red");
-				};
+				mutatecheckbox.click().duration(50);
 			})
 			.on("mouseover", function(event, d) {
-				if (document.getElementById("mutatebox").checked == false) {
+				if (mutatecheckbox.checked == false) {
 					d3.select(this).attr("fill", "red")
-					var mutatecheckbox = document.getElementById("mutatebox")
-					mutatecheckbox.addEventListener('change', function(){
-						if (mutatecheckbox.checked == false) {
-							d3.selectAll("#snp_triangles").attr("fill", "black")
-						}
-					});
 				}
 				tooltip_snps.transition()
 					.on("start", () => tooltip_snps.style("display", "block"))
@@ -478,10 +471,15 @@ class ZChart extends ZFigure{
 					d3.select(this).attr("fill", "black")
 				};
 				tooltip_snps.transition()
-					.duration(2000)
+					.duration(200)
 					.style("opacity", 0)
 					.on("end", () => tooltip_snps.style("display", "none"));
-			})
+			});
+			mutatecheckbox.addEventListener('change', function(){
+				if (mutatecheckbox.checked == false) {
+					d3.selectAll("#snp_triangles").attr("fill", "black")
+				}
+			});
 
 		return this;
 	}
@@ -523,15 +521,18 @@ class ZChart extends ZFigure{
 			.attr("class", "mutation_indicator")
 			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 150.5)")
 
-		
-
 		mutatecheckbox.addEventListener("change", function() {
 			if (mutatecheckbox.checked == true) {
 				var selected_mutation = mutated_res_num.value
-				var stars = document.getElementsByClassName("mutation_indicator")
+				var diamonds = document.getElementsByClassName("mutation_indicator")
 				for (var j = 0; j < (my_seq.length * 7); j += my_seq.length) {
-					var star = stars[selected_mutation - 1 + j]
-					d3.select(star).attr("opacity", "1.0");
+					var diamond = diamonds[selected_mutation - 1 + j]
+					d3.select(diamond).attr("opacity", "1.0")			
+					.on("click", function(event, d){
+						if (mutatecheckbox.checked == true) {
+							mutatecheckbox.click().duration(25);
+						};
+					});
 				}
 			} else {
 				d3.selectAll(".mutation_indicator").attr("opacity", "0.0");
@@ -541,10 +542,10 @@ class ZChart extends ZFigure{
 			d3.selectAll(".mutation_indicator").attr("opacity", "0.0")
 			if (mutatecheckbox.checked == true) {
 				var selected_mutation = mutated_res_num.value
-				var stars = document.getElementsByClassName("mutation_indicator")
+				var diamonds = document.getElementsByClassName("mutation_indicator")
 				for (var j = 0; j < (my_seq.length * 7); j += my_seq.length) {
-					var star = stars[selected_mutation - 1 + j]
-					d3.select(star).attr("opacity", "1.0");
+					var diamond = diamonds[selected_mutation - 1 + j]
+					d3.select(diamond).attr("opacity", "1.0");
 				}
 			} else {
 				d3.selectAll(".mutation_indicator").attr("opacity", "0.0");
