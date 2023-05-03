@@ -115,13 +115,13 @@ $(document).ready( function() {
 
 		var snp_id_box = document.getElementById("snp_id")
 		var residue_type_box = document.getElementById("residue_type")
+		var mutatecheckbox = document.getElementById("mutatebox")
 		snp_id_box.addEventListener('change', function(){
 			d3.selectAll("#snp_triangles").attr("fill", "black")
 		});
 		residue_type_box.addEventListener('change', function(){
 			d3.selectAll("#snp_triangles").attr("fill", "black")
 		});
-
 		const d_value = d3.select("#domain_threshold_user").text();
 		const selectedValue = d3.select("#cutoff_user").text();
 		var hydro_scale = document.getElementById("hydro_scales").value;
