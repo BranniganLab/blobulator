@@ -37,7 +37,7 @@ Using conda:
 ```
 conda create --name blobulator_env python=3.9
 conda activate blobulator_env
-pip install -r requirements.txt
+pip install -r library/requirements.txt
 ```
 
 ### Running through an internet browser:
@@ -50,6 +50,7 @@ python blobulation.py
 #### Basic usage:
 Open a terminal in the blobulator directory and run:
 ```
+cd /path/to/blobulator/library
 python3 compute_blobs.py --sequence AFRPGAGQPPRRKECTPEVEEGV --oname ./my_blobulation.csv
 ```
 This will blobulate the sequence "AFRPGAGQPPRRKECTPEVEEGV" and write the result to my_blobulation.csv
@@ -70,16 +71,17 @@ You may specify additional paramters using the following options:
 - Place a fasta file with one or more sequences in any directory (Note: they must all be DNA or protein sequences)
 - Open a terminal in the blobulator directory and run:
 ```
-python3 compute_blobs.py --fasta /relative/path/to/my_sequences.fasta --oname ./relative/path/to/outputs/
+python3 compute_blobs.py --fasta ./relative/path/to/my_sequences.fasta --oname ./relative/path/to/outputs/
 ```
 - This will blobulate all sequences in my_sequences.fasta (assuming they are protein sequences) and output the results to the outputs folder prefixed by their sequence id.
 
 #### Example:
-There is a fasta file in blobulation/Batch called ls_orchid.fasta that contains the coding sequences of several orchid proteins.
+There is a fasta file in blobulation/example called b_subtilis.fasta that contains the sequences of several proteins from Bacillus subtilis.
 To blobulate all those proteins with a cutoff of 0.4 and a minimum blob size of 4, we run:
 ```
-mkdir ./Batch/Outputs
-python3 compute_blobs.py --fasta ./Batch/ls_orchid.fasta --DNA True --cutoff 0.4 --minBlob 4 --oname ./Batch/Outputs/
+cd /path/to/blobulator/library
+mkdir outputs
+python3 compute_blobs.py --fasta ../example/b_subtilis.fasta --cutoff 0.4 --minBlob 4 --oname outputs/
 ```
 
 ### CSV Outputs:
