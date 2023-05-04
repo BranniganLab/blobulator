@@ -406,7 +406,15 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
 
     def f3(x, domain_threshold):
         """
-        A function that gives the numeric values to each domain
+        A function that gives the numeric values to each set of residues comprising the blobs
+        
+        Arguments: 
+            x (array): An array containing the blob types of each residue
+            domain_threshold (int): minimum length (L_min) provided by the user
+
+        Returns:
+            Digitized sequence of str giving the length of each given blob
+
         """
         global counter_s
         global counter_p
@@ -439,12 +447,21 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
                 counter_h=counter_h-1
                 return x + str((counter_s))
             else:
-                return x + str(counter_s)#
+                return x + str(counter_s)
 
 
     def f4(x, domain_threshold, counts_group_length):
         """
-        A function that gives the alphabetic names to each domain
+        A function that gives the alphabetic names to each set of residues comprising the blobs
+ 
+        Arguments: 
+            x (array): An array containing the blob types of each residue
+            domain_threshold (int): minimum length (L_min) provided by the user
+            counts_group_length (int): the length of each given blob in the sequence
+
+        Returns:
+            Digitized sequence of str outlining the blobs
+
         """
         global counter_domain_naming
         global s_counter
