@@ -1,9 +1,15 @@
 import json
+
+import os
+import sys
+
+sys.path.insert(0, '../library/')
+
 from user_input_form import InputForm
 from amino_acids import properties_hydropathy
 from compute_blobs import (compute, clean_df)
-
 from compute_snps import pathogenic_snps
+
 import pandas as pd
 import numpy as np
 import time
@@ -28,7 +34,10 @@ from reportlab.graphics import renderPDF
 
 from importlib import reload
 
-app = Flask(__name__)
+
+
+template_dir = os.path.abspath('../website/templates')
+app = Flask(__name__, template_folder=template_dir)
 
 CORS(app)  # To allow direct AJAX calls
 SESSION_TYPE = 'filesystem'
@@ -39,7 +48,7 @@ Session(app) #This stores the user input for further calls
 REQUEST_URL_snp = "https://www.ebi.ac.uk/proteins/api/variation"
 REQUEST_URL_features = "https://www.ebi.ac.uk/proteins/api/features"
 REQUEST_UNIPROT_ID_FROM_ENSEMBL = "https://www.uniprot.org/uploadlists/"
-   
+REQUEST_URL_coordinates = "https://www.ebi.ac.uk/proteins/api/coordinates"
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -58,6 +67,7 @@ def index():
                     We only support the blobulation of one protein at a time.""")
 
             user_uniprot_id = uniprot_id[0].strip()
+            user_uniprot_id_original = uniprot_id[0].strip()
 
             # Takes the input form, converts it to a dictionary, and requests the input type (from the dropdown menu selection) using the input_type key
             request_dict = request.form.to_dict()
@@ -71,8 +81,16 @@ def index():
                     ## Convert to uniprot
                     import uniprot_id_lookup
                     reload(uniprot_id_lookup)
-                    converted_id = uniprot_id_lookup.results['results'][0]['to']['primaryAccession']
-                    user_uniprot_id = converted_id
+                    try:
+                        converted_id = uniprot_id_lookup.results['results'][0]['to']['primaryAccession']
+                        user_uniprot_id = converted_id
+                        original_accession = str(types[input_key]) + " ID: " + user_uniprot_id_original
+                    except:
+                        return render_template("error.html",
+                        title="ID Error",
+                        message="""There seems to be an error with the ID you've entered. Check your ID and try again.""")
+                else:
+                    original_accession = ""
 
             try:
                 response_d2p2 = requests.get(
@@ -122,7 +140,7 @@ def index():
             seq_file_snp = get_snp.json()
 
             if seq_file_snp:
-                snps_json = pathogenic_snps (seq_file_snp[0]["features"]) #filters the disease causing SNPs
+                snps_json = pathogenic_snps(seq_file_snp[0]["features"]) #filters the disease causing SNPs
             else:
                 snps_json = "[]"
             my_seq = seq_file[0]["sequence"]
@@ -146,7 +164,46 @@ def index():
                 except IndexError:
                     disorder_residues = [0]
 
-            # Blobulation
+            try:
+                protein_name = seq_file[0]['features'][0]['description']
+                if len(protein_name) == 0:
+                    user_uniprot_name = ""
+                    user_uniprot_entry = ""
+                else:
+                    user_uniprot_name = "Protein Details: " + str(protein_name)
+                    user_uniprot_entry = "Uniprot Entry: " + str(seq_file[0]['entryName'])
+            except IndexError:
+                user_uniprot_name = ''
+                user_uniprot_entry = ''
+
+            get_coords = requests.get(
+                REQUEST_URL_coordinates,
+                params=uniprot_params,
+                headers={"Accept": "application/json"},
+            )
+
+            # HTTP status code 200 means the request was successful
+            if get_coords.status_code != 200:
+                return render_template("error.html",
+                    title="Error getting genomic coordinates from UniProt",
+                    message="""There was an error retrieving SNP data from UniProt""")
+
+            seq_file_coords = get_coords.json()
+            try:
+                gn_chrom = seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['chromosome']
+                gn_start = seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['exon'][0]['genomeLocation']['begin']['position']
+                gn_end = seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['exon'][0]['genomeLocation']['end']['position']
+                strand_sign = '+' if np.sign(gn_start - gn_end) == 1 else '-'
+                hg_identifier = 'Genomic Location (GRCh Build 38, longest transcript): ' + str(gn_chrom) + ': ' + str(gn_start) + '-'+ str(gn_end) + " (" + strand_sign + ")"
+            except:
+                hg_identifier = ""
+
+            # if seq_file_snp:
+            #     snps_json = pathogenic_snps (seq_file_snp[0]["features"]) #filters the disease causing SNPs
+            # else:
+            #     snps_json = "[]"
+
+            #Blobulation
             window = 3 
             session['sequence'] = str(my_seq) #set the current sequence variable
             my_initial_df = compute(
@@ -164,25 +221,32 @@ def index():
                     my_cut=0.4,
                     my_snp=snps_json,
                     my_uni_id="'%s'" % user_uniprot_id,
+                    my_uni_id_linked= "ID: <a href=https://www.uniprot.org/uniprotkb/" + user_uniprot_id + ' target="_blank">' + user_uniprot_id + '</a>',
                     my_seq="'%s'" % my_seq,
                     my_seq_download="%s" % my_seq,
                     domain_threshold=4,
                     domain_threshold_max=len(str(my_seq)),
                     my_disorder = str(disorder_residues).strip('[]'),
-                    activetab = '#result-tab'
+                    activetab = '#result-tab',
+                    my_name = user_uniprot_name,
+                    my_entry_name = user_uniprot_entry,
+                    my_original_id = original_accession,
+                    my_hg_value = hg_identifier
                 )
 
         else: # if the user inputs amino acid sequence
-            aa_sequence = form.aa_sequence.data.splitlines()
-            if len(aa_sequence) > 1:
-                return render_template("error.html",
-                    title="More than one sequence provided",
-                    message="""It looks like you are querying about more than one sequence.
-                    We only support one sequence at a time.""")
+            aa_sequence_list = form.aa_sequence.data.splitlines()
+            aa_sequence = "".join([str(item) for item in aa_sequence_list])
+            # if len(aa_sequence) > 1:
+            #     return render_template("error.html",
+            #         title="More than one sequence provided",
+            #         message="""It looks like you are querying about more than one sequence.
+            #         We only support one sequence at a time.""")
 
             # Make everything upper case 
-            my_seq = aa_sequence[0].strip().upper()
+            my_seq = aa_sequence.strip().upper()
             session['sequence'] = str(my_seq)
+
 
 
             # Ensure that all characters in sequence actually represent amino acids
@@ -207,6 +271,7 @@ def index():
                 my_cut=0.4,
                 my_snp="[]",
                 my_uni_id="'%s'" % form.seq_name.data,
+                my_uni_id_stripped="ID: " + form.seq_name.data,
                 my_seq="'%s'" % my_seq,
                 my_seq_download="%s" % my_seq,
                 domain_threshold=4,

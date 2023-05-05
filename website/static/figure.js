@@ -367,15 +367,19 @@ class ZChart extends ZFigure{
 		if(this.snps) {
 			this.update_snps(x, extent, domain, width, timing);
 		}
+		if (this.mut_ind){
+			this.update_indicators(x, extent, domain, width, timing)
+		}
+
 
 		return this;
 	}
 	
 	add_xAxis(snps, x){
 		if (snps) {
-			var xaxisMargin = this.HEIGHT + 15
+			var xaxisMargin = this.HEIGHT + 22
 		} else {
-			var xaxisMargin = this.HEIGHT
+			var xaxisMargin = this.HEIGHT + 22
 		}
 
 		var num_residues = this.data.length
@@ -390,8 +394,8 @@ class ZChart extends ZFigure{
 		//Creates the "Residue" x-axis label
 		if (snps) {
 			var bottomMargin = this.MARGIN.bottom + 25
-		} else {
-			var bottomMargin = this.MARGIN.bottom
+		}else{
+			var bottomMargin = this.MARGIN.bottom + 25
 		}
 		this.svg.append("text")
 			.attr("x", this.WIDTH / 2)
@@ -406,7 +410,7 @@ class ZChart extends ZFigure{
 	update_xAxis(x) {
 		// Decide how many ticks to show based on how wide the domain is.
 		// Actually, we are choosing the interval between ticks.
-		const tickPeriod = Math.round((Math.round(x.domain().length/10))/10)*10;
+		const tickPeriod = ((Math.round(x.domain().length/10))/10)*10;
 		let xAxisGenerator = d3.axisBottom(x);
 		let tickValues = x.domain().filter(function(d, i) {
 			return !((i+1) % tickPeriod);
@@ -430,7 +434,8 @@ class ZChart extends ZFigure{
 	/* add_snps
 	*/
 	add_snps(my_snp, my_seq, tooltip_snps, x) {
-		var triangle_symbol = d3.symbol().type(d3.symbolTriangle);
+		var triangle_symbol = d3.symbol().type(d3.symbolTriangle).size(60);
+		var mutatecheckbox = document.getElementById("mutatebox");
 		this.snps = this.plot.append('g')
 			.selectAll("rect")
 			.data(my_snp)
@@ -438,25 +443,20 @@ class ZChart extends ZFigure{
 			.append("path")
 			.attr('d', triangle_symbol)
 			.attr("fill", 'black')
-			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 145)")
+			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 147)")
 			.attr("id", "snp_triangles")
 			.on("click", function(event, d){
+				d3.select(this).attr("fill", "red")
+				if (mutatecheckbox.checked == true){
+					mutatecheckbox.click().duration(25);
+				};
 				document.getElementById("snp_id").value = d.resid;
 				document.getElementById("residue_type").value = d.alternativeSequence;
-				document.getElementById("mutatebox").click();
-				if (document.getElementById("mutatebox").checked == true){
-					d3.select(this).attr("fill", "red");
-				}
+				mutatecheckbox.click().duration(50);
 			})
 			.on("mouseover", function(event, d) {
-				if (document.getElementById("mutatebox").checked == false) {
+				if (mutatecheckbox.checked == false) {
 					d3.select(this).attr("fill", "red")
-					var mutatecheckbox = document.getElementById("mutatebox")
-					mutatecheckbox.addEventListener('change', function(){
-						if (mutatecheckbox.checked == false) {
-							d3.selectAll("#snp_triangles").attr("fill", "black")
-						}
-					});
 				}
 				tooltip_snps.transition()
 					.on("start", () => tooltip_snps.style("display", "block"))
@@ -471,9 +471,14 @@ class ZChart extends ZFigure{
 					d3.select(this).attr("fill", "black")
 				};
 				tooltip_snps.transition()
-					.duration(2000)
+					.duration(200)
 					.style("opacity", 0)
 					.on("end", () => tooltip_snps.style("display", "none"));
+			});
+			mutatecheckbox.addEventListener('change', function(){
+				if (mutatecheckbox.checked == false) {
+					d3.selectAll("#snp_triangles").attr("fill", "black")
+				}
 			});
 
 		return this;
@@ -484,11 +489,11 @@ class ZChart extends ZFigure{
 			.duration(timing)
 			.attr("transform", function(d){
 				if(extent && d.resid>domain[1]){
-					var translation = ("translate("+ 2*width+", 145)")
+					var translation = ("translate("+ 2*width+", 147)")
 				}else if(extent && d.resid<domain[0]){
-					var translation = ("translate(" + -width + ", 145)");
+					var translation = ("translate(" + -width + ", 147)");
 				}else{
-					var translation = ("translate(" + (x(d.resid) + x.bandwidth()/2) + ", 145)");
+					var translation = ("translate(" + (x(d.resid) + x.bandwidth()/2) + ", 147)");
 				}
 				return translation
 			});
@@ -499,7 +504,7 @@ class ZChart extends ZFigure{
 	add_mut_indicator(my_seq, x) {
 		var mutatecheckbox = document.getElementById("mutatebox")
 		var mutated_res_num = document.getElementById("snp_id")
-		var star_symbol = d3.symbol().type(d3.symbolStar)
+		var star_symbol = d3.symbol().type(d3.symbolDiamond).size(120)
 		var mut_symb_data = []
 		for(var i = 1; i <= my_seq.length; ++i) {
 			var symb_dict = {'resid' : i}
@@ -514,17 +519,20 @@ class ZChart extends ZFigure{
 			.attr("fill", "red")
 			.attr("opacity", "0.0")
 			.attr("class", "mutation_indicator")
-			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 145)")
-
-		
+			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 150.5)")
 
 		mutatecheckbox.addEventListener("change", function() {
 			if (mutatecheckbox.checked == true) {
 				var selected_mutation = mutated_res_num.value
-				var stars = document.getElementsByClassName("mutation_indicator")
+				var diamonds = document.getElementsByClassName("mutation_indicator")
 				for (var j = 0; j < (my_seq.length * 7); j += my_seq.length) {
-					var star = stars[selected_mutation - 1 + j]
-					d3.select(star).attr("opacity", "1.0");
+					var diamond = diamonds[selected_mutation - 1 + j]
+					d3.select(diamond).attr("opacity", "1.0")			
+					.on("click", function(event, d){
+						if (mutatecheckbox.checked == true) {
+							mutatecheckbox.click().duration(25);
+						};
+					});
 				}
 			} else {
 				d3.selectAll(".mutation_indicator").attr("opacity", "0.0");
@@ -534,16 +542,34 @@ class ZChart extends ZFigure{
 			d3.selectAll(".mutation_indicator").attr("opacity", "0.0")
 			if (mutatecheckbox.checked == true) {
 				var selected_mutation = mutated_res_num.value
-				var stars = document.getElementsByClassName("mutation_indicator")
+				var diamonds = document.getElementsByClassName("mutation_indicator")
 				for (var j = 0; j < (my_seq.length * 7); j += my_seq.length) {
-					var star = stars[selected_mutation - 1 + j]
-					d3.select(star).attr("opacity", "1.0");
+					var diamond = diamonds[selected_mutation - 1 + j]
+					d3.select(diamond).attr("opacity", "1.0");
 				}
 			} else {
 				d3.selectAll(".mutation_indicator").attr("opacity", "0.0");
 			}
 		});
 	};
+
+	update_indicators(x, extent, domain, width, timing=1000){
+	this.mut_ind.transition()
+		.duration(timing)
+		.attr("transform", function(d){
+			if(extent && d.resid>domain[1]){
+				var translation = ("translate("+ 2*width+", 148.5)")
+			}else if(extent && d.resid<domain[0]){
+				var translation = ("translate(" + -width + ", 148.5)");
+			}else{
+				var translation = ("translate(" + (x(d.resid) + x.bandwidth()/2) + ", 148.5)");
+			}
+			return translation
+		});
+	
+	return this;
+}
+
 };
 
 
