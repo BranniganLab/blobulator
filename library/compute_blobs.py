@@ -83,6 +83,9 @@ def phase_diagram(x):
 
     Arguments:
         x (array): An array containing the fraction of positive and negative residues per blob
+
+    Returns:
+        color (str): the rgb value for each residue bar based on its Das-Pappu class
     """
 
     fcr = x[1]
@@ -125,6 +128,9 @@ def phase_diagram_class(x):
 
     Arguments:
         x (array): An array containing the fraction of positive and negative residues per blob
+
+    Returns:
+        region (str): returns the number associated to the Das-Pappu class for each residue
     """
 
     fcr = x[1]
@@ -169,6 +175,9 @@ def blob_diagram(x):
 
     Arguments:
         x (array): An array containing the the type of blob that each residue falls into
+
+    Returns:
+        color (str): color for each residue based on its blob type
     """
     if x[0][0] == "p":
         return "#F7931E"
