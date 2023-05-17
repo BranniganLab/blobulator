@@ -23,3 +23,8 @@
 
 ## Version 0.9.2
 - Hydropathy smoothing step bug fix
+
+## Version 0.9.3
+- Species, genomic location added to result page
+- Uniprot ID is now hyperlinked
+- custom SNP diamonds clickable
