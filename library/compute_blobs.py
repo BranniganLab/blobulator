@@ -508,7 +508,6 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
         smoothed_hydropath = hydropath.rolling(window=3, min_periods=0, center=True).mean()
         return smoothed_hydropath
 
-
     window_factor = int((window - 1) / 2)
     seq_start = 1  # starting resid for the seq
     resid_range = range(seq_start, len(seq) + 1 + seq_start)
@@ -530,8 +529,6 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
 
     #........................calcutes three residue moving window mean............................#
     df["hydropathy_3_window_mean"] = calculate_smoothed_hydropathy(df["hydropathy"])
-
-
     df["hydropathy_digitized"] = [ 1 if x > cutoff else 0 if np.isnan(x)  else -1 for x in df["hydropathy_3_window_mean"]]
     #define continous stretch of residues
     df["domain_pre"] = (df["hydropathy_digitized"].groupby(df["hydropathy_digitized"].ne(df["hydropathy_digitized"].shift()).cumsum()).transform("count"))
