@@ -5,6 +5,7 @@ from amino_acids import (
     THREE_TO_ONE,
     properties_type,
     properties_hydropathy,
+    properties_hydropathy_eisenberg_weiss,
 )
 import matplotlib
 matplotlib.use('Agg')
@@ -25,7 +26,7 @@ pd.options.mode.chained_assignment = 'raise'
 # accessing the properties of the given sequence
 
 counter_s = 0  # this is global variable used for annotating domains in f3
-counter_p = 0  #
+counter_p = 0  
 counter_h = 0
 
 s_counter = 0 # this is global variable used for annotating domains in f4
@@ -55,19 +56,38 @@ scalarMap = matplotlib.cm.ScalarMappable(norm=cNorm, cmap=cmap_u)
 cval = scalarMap.to_rgba(0)
 
 def domain_to_numbers(x):
-    """convert domains to bar height for javascript display"""
+    """
+    A function that assigns heights to each residue for output tracks based on what type of blob they fall into
+
+    Arguments:
+        x (array): An array containing the the type of blob that each residue falls into
+
+    Returns:
+        int: height for each residue
+
+    """
     if x[0][0] == "p":
         return 0.2
     elif x[0][0] == "h":
         return 0.6
     else:
-        return 0.3
+        return 0.4
 
 
 
 
 # ..........................Define phase diagram.........................................................#
 def phase_diagram(x):
+    """
+    A function that assigns colors to blobs based on their Das-Pappu class
+
+    Arguments:
+        x (array): An array containing the fraction of positive and negative residues per blob
+
+    Returns:
+        color (str): the rgb value for each residue bar based on its Das-Pappu class
+    """
+
     fcr = x[1]
     ncpr = x[0]
     fp = x[2]
@@ -103,6 +123,16 @@ def phase_diagram(x):
 
 
 def phase_diagram_class(x):
+    """
+    A function to assign numerical values to blobs based on their Das-Pappu class
+
+    Arguments:
+        x (array): An array containing the fraction of positive and negative residues per blob
+
+    Returns:
+        region (str): returns the number associated to the Das-Pappu class for each residue
+    """
+
     fcr = x[1]
     ncpr = x[0]
     fp = x[2]
@@ -140,7 +170,15 @@ def phase_diagram_class(x):
 # ..........................Define colors for each blob type.........................................................#
 
 def blob_diagram(x):
-    """convert domains to colors for blob figure"""
+    """
+    A function that colors blobs based on their blob types
+
+    Arguments:
+        x (array): An array containing the the type of blob that each residue falls into
+
+    Returns:
+        color (str): color for each residue based on its blob type
+    """
     if x[0][0] == "p":
         return "#F7931E"
     elif x[0][0] == "h":
@@ -150,6 +188,15 @@ def blob_diagram(x):
 
 # ..........................Define phase diagram.........................................................#
 def uversky_diagram(x):
+    """
+    A function that calculates the distance from the disorder/order boundary for each blob on the uversky diagram
+
+    Arguments:
+        x (array): An array containing the fraction of positive and negative residues per blob
+
+    Returns:
+        distance (int): the distance of each blob from the from the disorder/order boundary on the uversky diagram
+    """
     h = x[1]*1.0
     ncpr = abs(x[0])
     c = 0.413 # intercept of diagram
@@ -163,25 +210,69 @@ def uversky_diagram(x):
         return distance 
 
 # ..........................Define NCPR.........................................................#
-ncprDict = pd.read_csv("ncprCMap.csv", index_col=0)
+ncprDict = pd.read_csv("../data/ncprCMap.csv", index_col=0)
 def lookupNCPR(x):
+    """
+    A function that returns the color for each blob based on its NCPR
+
+    Arguments:
+        x (array): An array containing the fraction of positive and negative residues per blob
+
+    Returns:
+        color (str): a string containing the color value for each residue based on the ncpr of the blob that it's contained in
+    """
+
     val = x[0]
     return ncprDict.loc[np.round(val, 2)]
 
-uverskyDict = pd.read_csv("uverskyCMap.csv", index_col=0)
+uverskyDict = pd.read_csv("../data/uverskyCMap.csv", index_col=0)
 def lookupUversky(x):
+    """
+    A function that returns the color for each blob based on its distance from the disorder/order boundary for on the uversky diagram
+
+    Arguments:
+        x (array): An array containing the uversky distances for each residue by blob
+
+    Returns:
+        color (str): a string containing the color value for each residue based on the distance from the uversky diagram's disorder/order boundary line of the blob that it's contained in
+    """
+
     val = x[0]
     return uverskyDict.loc[np.round(val, 2)]
 
-disorderDict = pd.read_csv("disorderCMap.csv", index_col=0)
+disorderDict = pd.read_csv("../data/disorderCMap.csv", index_col=0)
 def lookupDisorder(x):
+    """
+    A function that returns the color for each blob based on how disordered it is, determined by the Uniprot accession
+
+    Arguments:
+        x (array): An array containing the disorder value for each residue by blob
+
+    Returns:
+        color (str): a string containing the color value for each residue based on how disordered the blob that contains it is predicted to be
+    """
     val = x[0]
     return disorderDict.loc[np.round(val, 2)]
 
-enrichDF = pd.read_csv("enrichCMap.csv", index_col=[0,1])
-enrichDF.to_csv("enrichment.txt")
+enrichDF = pd.read_csv("../data/enrichCMap.csv", index_col=[0,1])
+enrichDF.to_csv("../data/enrichment.txt")
+
+enrichDF_p = pd.read_csv("../data/enrichCMap_p.csv", index_col=[0,1])
+enrichDF_p.to_csv("../data/enrichment_p.txt")
+
+enrichDF_s = pd.read_csv("../data/enrichCMap_s.csv", index_col=[0,1])
+enrichDF_s.to_csv("../data/enrichment_s.txt")
 
 def lookupEnrichment(x):
+    """
+    A function that returns the color for each blob based on how sensitive to mutation it is predicted to be
+
+    Arguments:
+        x (array): An array containing the predicted mutation sensitivity value for each residue by blob
+
+    Returns:
+        color (str): a string containing the color value for each residue based on sensitive to mutation the blob that contains it is estimated to be
+    """
     min_hydrophobicity = round(x[1], 2)
     blob_length = x[0]
     blob_type = x[2]
@@ -191,10 +282,29 @@ def lookupEnrichment(x):
             return enrichDF.color.loc[min_hydrophobicity, blob_length]
         except KeyError:
             return "grey"
+    elif blob_type == 'p':
+        try:
+            return enrichDF_p.color.loc[min_hydrophobicity, blob_length]
+        except KeyError:
+            return "grey"
+    elif blob_type == 's':
+        try:
+            return enrichDF_s.color.loc[min_hydrophobicity, blob_length]
+        except KeyError:
+            return "grey"
     else:
         return "grey"
 
 def h_blob_enrichments_numerical(x):
+    """
+    A function that returns the color for each h-blob based on how sensitive to mutation it is predicted to be
+
+    Arguments:
+        x (array): An array containing the predicted mutation sensitivity value for each residue for each h-blob
+
+    Returns:
+        color (str): a string containing the color value for each residue based on sensitive to mutation the blob that contains it is estimated to be, if it's an h-blob
+    """
     cutoff = round(x[1], 2)
     if x[2] == 'h':
         try:
@@ -206,16 +316,49 @@ def h_blob_enrichments_numerical(x):
         return 0
 
 def count_var(x, v):
+    """
+    A counting function
+
+    Arguments:
+        x (array): An array containing the predicted mutation sensitivity value for each residue by blob
+        v (int): how many to count
+
+    Returns:
+        int: the total count for each value
+    """
     return x.values.tolist().count(v) / (x.shape[0] * 1.0)
 
-def get_hydrophobicity(x):
+def get_hydrophobicity(x, hydro_scale):
+    """
+    A function that returns the hydrophobicity per residue based on which scale the user has selected
+
+    Arguments:
+        x (array): An array containing the predicted mutation sensitivity value for each residue by blob
+        hydro_scale (str): the hydrophobicity scale as selected by the user
+
+    Returns:
+        hydrophobicity (int): the hydrophobicity for a given residue in the selected scale
+    """
+    if hydro_scale == "kyte_doolittle":
+        scale = properties_hydropathy
+    elif hydro_scale == "eisenberg_weiss":
+        scale = properties_hydropathy_eisenberg_weiss
     try: 
-        return properties_hydropathy[x]
+        return scale[x]
     except:
         print(f'\n!!!ERROR: Residue {x} is not in my library of known amino acids!!!\n')
         raise
 
 def clean_df(df):
+    """
+    A function removes unnecessary columns from a given dataframe
+
+    Arguments:
+        df (dataframe): A pandas dataframe
+
+    Returns:
+        df (dataframe): A cleaned pandas dataframe
+    """
     #print (df.head)
     #df = df.drop(range(0, 1))
     del df['domain_pre']
@@ -254,10 +397,34 @@ def clean_df(df):
 
     return df
 
-def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
+def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=3, disorder_residues=[]):
+    """
+    A function that runs the blobulation algorithm
 
-    # give the numeric values to each domain
+    Arguments:
+        seq (str): A sequence of amino acids
+        cutoff (float): the user-selected cutoff
+        domain_threshold (int): the minimum length cutoff
+        hydro_scale (str): the selected hydrophobicity scale
+        window (int): the smoothing window for calculating residue hydrophobicity
+        disorder_residues (list): known disorder values for each residue
+
+    Returns:
+        df (dataframe): A dataframe containing the output from blobulation
+    """
+
     def f3(x, domain_threshold):
+        """
+        A function that gives the numeric values to each set of residues comprising the blobs
+        
+        Arguments: 
+            x (array): An array containing the blob types of each residue
+            domain_threshold (int): minimum length (L_min) provided by the user
+
+        Returns:
+            Digitized sequence of str giving the length of each given blob
+
+        """
         global counter_s
         global counter_p
         global counter_h
@@ -289,11 +456,22 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
                 counter_h=counter_h-1
                 return x + str((counter_s))
             else:
-                return x + str(counter_s)#
+                return x + str(counter_s)
 
 
-    # gives the alphabetic names to each domain
     def f4(x, domain_threshold, counts_group_length):
+        """
+        A function that gives the alphabetic names to each set of residues comprising the blobs
+ 
+        Arguments: 
+            x (array): An array containing the blob types of each residue
+            domain_threshold (int): minimum length (L_min) provided by the user
+            counts_group_length (int): the length of each given blob in the sequence
+
+        Returns:
+            Digitized sequence of str outlining the blobs
+
+        """
         global counter_domain_naming
         global s_counter
         if x[1][0] == 'p':
@@ -324,6 +502,7 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
             
             Arguments:
                 hydropath(int): The hydropathy for a given residue
+
             NOTE: This function makes sue of the center=True pandas rolling argument to ensure the residue in question is at the center of smoothing calculation
             It is important to run the regression test to check that the smoothed hydropathy is expected (see github Wiki/Regression Checklist for instructions on how to perform this test."""
         smoothed_hydropath = hydropath.rolling(window=3, min_periods=0, center=True).mean()
@@ -341,7 +520,7 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
 
     df = pd.DataFrame({"seq_name": seq_name, "resid": resid,})
     df["disorder"] = df["resid"].apply(lambda x: 1 if x in disorder_residues else 0 )
-    df["hydropathy"] = [get_hydrophobicity(x) for x in df["seq_name"]]
+    df["hydropathy"] = [get_hydrophobicity(x, hydro_scale) for x in df["seq_name"]]
     df["charge"] = [properties_charge[x] for x in df["seq_name"]]           
     df["charge"] = df["charge"].astype('int')
     df["window"] = window
@@ -350,7 +529,6 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
 
     #........................calcutes three residue moving window mean............................#
     df["hydropathy_3_window_mean"] = calculate_smoothed_hydropathy(df["hydropathy"])
-
     df["hydropathy_digitized"] = [ 1 if x > cutoff else 0 if np.isnan(x)  else -1 for x in df["hydropathy_3_window_mean"]]
     #define continous stretch of residues
     df["domain_pre"] = (df["hydropathy_digitized"].groupby(df["hydropathy_digitized"].ne(df["hydropathy_digitized"].shift()).cumsum()).transform("count"))
@@ -366,7 +544,7 @@ def compute(seq, cutoff, domain_threshold, window=3, disorder_residues=[]):
         domain_to_numbers, axis=1)
 
     # ..........................Define domain names.........................................................#
-    df['domain'] =  df['domain'].groupby(df['domain'].ne(df['domain'].shift()).cumsum()).apply(lambda x: f3(x, domain_threshold))
+    df['domain'] =  df['domain'].groupby(df['domain'].ne(df['domain'].shift()).cumsum(), group_keys=False).apply(lambda x: f3(x, domain_threshold))
     counts_group_length = df['domain'].value_counts().to_dict()#
     
 
@@ -456,7 +634,7 @@ if __name__ == "__main__":
                 sequence = mrna.translate(to_stop=True)
             else:
                 sequence = seq_record.seq
-            df = compute(sequence, args.cutoff, args.minBlob)
+            df = compute(sequence, args.cutoff, args.minBlob, 'kyte_doolittle')
             print(f"Writing output file to: {args.oname}{seq_record.id}.csv")
             df = clean_df(df)
             df.to_csv(f'{args.oname}{seq_record.id}.csv', index=False)
@@ -470,7 +648,7 @@ if __name__ == "__main__":
         else:
             sequence = args.sequence
         
-        df = compute(sequence, args.cutoff, args.minBlob)
+        df = compute(sequence, args.cutoff, args.minBlob, 'kyte_doolittle')
         print ("Writing output file")
         df = clean_df(df)
         df.to_csv(args.oname, index=False)
@@ -478,4 +656,3 @@ if __name__ == "__main__":
         print("done")
     else:
         print("No sequence provided")
-

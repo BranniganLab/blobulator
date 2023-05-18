@@ -2,8 +2,8 @@
 
 
 {% block css %}
-<style> @import "../static/style.css"; </style>
-<style> @import "../static/zoomStyle.css"; </style>
+<style> @import "static/style.css"; </style>
+<style> @import "static/zoomStyle.css"; </style>
 {% endblock %}
 
 {% block scripts %}
@@ -22,7 +22,7 @@ $(document).ready( function() {
 	const ncpr_tool_text = "<p>For each blob its net charge per residue (NCPR) is calculated. Each blob is evaluated based on its fraction of both positively and negatively charged residues. The darker blue a blob is shown here, the higher the fraction of positively charged residues are present within the blob. Alternatively, the darker red a blob is shown here, the higher the fraction of negatively charged residues are present within the blob. An even fraction of positive or negative, or a low fraction of any charged residues, results in a grey color.</p>"
 	const uversky_tool_text = "<p>For each blob its signed normal displacement from the line representing the boundary between ordered (natively folded) and disordered (natively unfolded) proteins on the Uversky diagram (shown below) is plotted. Calculated negative values (represented in orange) are ordered and positive values (shown in blue) are disordered and plotted on the visualization to the left. </p> <img src=\"/static/uversky_plot.png\" width=\"425\" height=\"260\" align=\"center\"> <p> <i> <b> The units on the X and Y axis represent the net charge and hydrophobicity of each blob, normalized on a 0 to 1 scale. Figure adapted from figure 5 in: </b> <a href=\"https://pubmed.ncbi.nlm.nih.gov/11025552/\" target=\"_blank\"> Uversky VN, Gillespie JR, Fink AL (2002) Why are \"natively unfolded\" proteins unstructured under physiologic conditions? </i> </p>"
 	const enrichment_tool_text = "<p>Here, blobs are colored based upon their predicted enrichment in disease associated SNPs (dSNPs), as defined by the results of a previous study. This idea was investigated in the context of proteins at various blob lengths and hydrophobicity cutoffs (see figure below), the results of which are presented in <a href=\"https://www.pnas.org/doi/10.1073/pnas.2116267119\" target=\"blank\">this paper</a> (Lohia, et al 2022).</p> <img src=\"/static/dsnp_enrich.png\" width=\"450\" height=\"410\"><p> <span style='color:#90EE90;'>"
-	const disorder_tool_text = "<p>For each blob its fraction of disordered residue is calculated. This disorder calculation is only available if the user uses the Uniprot ID, and uses information provided by the Database of Disordered Protein Prediction. <i> <a href=\"https://academic.oup.com/nar/article/41/D1/D508/1069637\" target=\"_blank\"> Oates et al., D2P2: database of disordered protein predictions, Nucleic Acids Research, Volume 41, Issue D1, 1 January 2013, Pages D508–D516, https://doi.org/10.1093/nar/gks1226</i></p>"
+	const disorder_tool_text = "<p>For each blob its fraction of ordered and disordered residues is calculated. Dark orange corresponds to a high fraction of ordered residues. This disorder calculation is only available if the user uses the Uniprot ID, and uses information provided by the Database of Disordered Protein Prediction. <i> <a href=\"https://academic.oup.com/nar/article/41/D1/D508/1069637\" target=\"_blank\"> Oates et al., D2P2: database of disordered protein predictions, Nucleic Acids Research, Volume 41, Issue D1, 1 January 2013, Pages D508–D516, https://doi.org/10.1093/nar/gks1226</i></p>"
 	const zoom_tool_text = "<p>You can zoom into a region of the protein sequence by clicking and dragging on any of the charts. Zoom out by double-clicking on any chart, or by clicking the Reset Zoom button.</p>"
 
 	//tooltip for SNPs link
@@ -31,12 +31,21 @@ $(document).ready( function() {
 		.attr("class", "tooltip")
 		.style("opacity", 0);
 
-	//updates the slider/box value entered by the user
+
+
+	// Call the function
+	updateHydroscaleTicks(sel_hydro_scale)
+
+	// Add event listeners for each of the ticks, on click update the hydropathy input and slider
+
+
+	// updates the slider/box value entered by the user
 	const cutoff_slider_value = document.getElementById("cutoff_user");
 	const cutoff_slider = document.getElementById("cutoff_user_slider");
 
 	//Cutoff Box
 	const cutoff_box = document.getElementById("cutoff_user_box");
+
 
 	//Threshold Slider
 	const domain_threshold_value = document.getElementById("domain_threshold_user");
@@ -106,16 +115,18 @@ $(document).ready( function() {
 
 		var snp_id_box = document.getElementById("snp_id")
 		var residue_type_box = document.getElementById("residue_type")
+		var mutatecheckbox = document.getElementById("mutatebox")
 		snp_id_box.addEventListener('change', function(){
 			d3.selectAll("#snp_triangles").attr("fill", "black")
 		});
 		residue_type_box.addEventListener('change', function(){
 			d3.selectAll("#snp_triangles").attr("fill", "black")
 		});
-
 		const d_value = d3.select("#domain_threshold_user").text();
 		const selectedValue = d3.select("#cutoff_user").text();
-		const m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, my_disorder: {{ my_disorder | tojson | safe }}};
+		var hydro_scale = document.getElementById("hydro_scales").value;
+		const m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, hydro_scale: hydro_scale, my_disorder: {{ my_disorder | tojson | safe }}};
+
 
 		$.post( "/postmethod", m_str , "json")
 			.then(function(data) {
@@ -130,7 +141,7 @@ $(document).ready( function() {
 	function draw(data) {
 		const my_snp = {{ my_snp | safe }};
 		const my_seq = {{ my_seq | safe }};
-		var   my_cut = {{ my_cut | safe }}
+		var   my_cut = {{ my_cut | safe }};
 		const my_disorder = {{ my_disorder | tojson | safe }};
 		const domain_threshold_max = {{ domain_threshold_max | safe }};
 		if (my_disorder == "0") {
@@ -143,36 +154,42 @@ $(document).ready( function() {
 		figs.pathyFig = new ZHydropathy("pathyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_zoomout_button("pathyPlot", data)
 			.add_resetmutation_button()
-			.add_title("Smoothed hydropathy per residue")
-			.add_tooltip(hydropathy_tool_text)
-			.add_zoomtip(zoom_tool_text);
+			.add_smoothed_hydro_title("Smoothed hydropathy per residue")
+			.add_tooltip_hydropathy(hydropathy_tool_text)
+			.add_zoomtip_hydropathy(zoom_tool_text);
 
+		// Create the text "Blobs colored according to . . ."
+		let node = document.createElement("div");
+		node.style.position = "relative";
+		node.innerHTML += "<br><br><p style='text-align:center; font-size:25px; '>Blobs colored according to . . .</p>"
+		LabelHeader = document.getElementById("my_dataviz").appendChild(node);	
+    
 		figs.blobFig = new ZblobChart("blobPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
-			.add_title("Blobs colored according to blob type")
+			.add_title("Blob type")
 			.add_tooltip(blob_track_text)
 			.add_zoomtip(zoom_tool_text)
 			.add_BlobLegend();
+
+		figs.ncprFig = new ZblobChart("ncprPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
+			.add_title("Net charge per residue")
+			.add_tooltip(ncpr_tool_text)
+			.add_zoomtip(zoom_tool_text)
+			.add_ContinuousLegend("RWB", {min: "-0.5", med: "0.0", max: "+0.5"});
 		
 		figs.globFig = new ZblobChart("globPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
-			.add_title("Blobs colored according to globular tendency (Das-Pappu Phase)")
+			.add_title("Globular tendency")
 			.add_tooltip(Das_Pappu_text)
 			.add_zoomtip(zoom_tool_text)
 			.add_GlobularLegend();
 
-		figs.ncprFig = new ZblobChart("ncprPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
-			.add_title("Blobs colored according to net charge per residue")
-			.add_tooltip(ncpr_tool_text)
-			.add_zoomtip(zoom_tool_text)
-			.add_ContinuousLegend("RWB", {min: "-0.5", med: "0.0", max: "+0.5"});
-
 		figs.richFig = new ZblobChart("richPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
-			.add_title("Blobs colored according to estimated mutation sensitivity")
+			.add_title("Enrichment of deleterious mutations in blobs with similar properties")
 			.add_tooltip(enrichment_tool_text)
 			.add_zoomtip(zoom_tool_text)
 			.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"});
 
 		figs.uverskyFig = new ZblobChart("uverskyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
-			.add_title("Blobs colored according to location on Uversky-Gillespie-Fink boundary plot")
+			.add_title("Signed distance from order/disorder boundary")
 			.add_tooltip(uversky_tool_text)
 			.add_zoomtip(zoom_tool_text)
 			.add_ContinuousLegend("PuOr", {min: "More ordered", med: "", max: "More disordered"});
@@ -183,7 +200,7 @@ $(document).ready( function() {
 				.add_tooltip("Disorder information is acquired from Uniprot. To see the disorder plot, please provide the Uniprot ID on the previous page.");
 		} else {
 			figs.disorderFig = new ZblobChart("disorderPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
-				.add_title("Blobs colored according to predicted disordered fraction")
+				.add_title("Predicted disordered fraction")
 				.add_tooltip(disorder_tool_text)
 				.add_zoomtip(zoom_tool_text)
 				.add_ContinuousLegend("PuOr", {min: "0.0", med: "0.5", max: "1.0"});
@@ -193,7 +210,7 @@ $(document).ready( function() {
 		var str_j = "Download data!";
 
 		// Set up UI element change handler
-		d3.selectAll(".mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox").on("change", function(){do_update(figs, data)});
+		d3.selectAll(".mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales").on("change", function(){do_update(figs, data)});
 		
 
 		// Mutate residue function
@@ -205,6 +222,7 @@ $(document).ready( function() {
 				var snp_id = document.getElementById("snp_id").value;
 				var amino_acid = document.getElementById("residue_type").value;
 				my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
+
 			}
 
 			// Download data
@@ -227,6 +245,86 @@ $(document).ready( function() {
 			});
 		});  
 	}
+
+		//Hydropathy slider ticks
+
+	// Get the current hydropathy scale, added event listener calls the update function if the hydropathy scale changes so the ticks update
+	var current_hydro_scale = document.getElementById("hydro_scales")
+	var sel_hydro_scale = current_hydro_scale.value
+	current_hydro_scale.addEventListener('change', function(){
+		sel_hydro_scale = current_hydro_scale.value
+		updateHydroscaleTicks(sel_hydro_scale.toString())
+	});
+
+	// Function to update the ticks
+	function updateHydroscaleTicks(selected_hydro_scale) {
+        // Hydropathy scales (unnormalized) if a hydropathy scale is added in the future note that these dictionaries need to be ordered from highest to lowest value
+        // Parameter: selected_hydro_scale: (str) what hydropathy scale is currently selected?
+	
+		const kyte_res = {"I": 4.500, "V": 4.200, "L": 3.800, "F": 2.800, "C": 2.500, "M": 1.900, "A": 1.800, "G": -0.400,
+            "T": -0.700, "S": -0.800, "W": -0.900, "Y": -1.300, "P": -1.600, "H": -3.200, "N": -3.500, "Q": -3.500,
+            "E": -3.500, "D": -3.500, "K": -3.900, "R": -4.500}
+		const eisenberg_res = {"I": 0.73, "F": 0.61, "V": 0.54, "L": 0.53, "W": 0.37, "M": 0.26, "A": 0.25, "G": 0.16,
+            "C": 0.04, "Y": 0.02, "P": -0.07, "T": -0.18, "S": -0.26, "H": -0.40, "E": -0.62, "N": -0.64, "Q": -0.69,
+            "D": -0.72, "K": -1.10, "R": -1.80}
+
+        let chosen_scale;
+        if(selected_hydro_scale == "eisenberg_weiss") {
+            chosen_scale = eisenberg_res;
+        } else {
+            chosen_scale = kyte_res;
+        }
+
+		let res_letters = "";
+		let last_pos = 0;
+		let px = 0;
+        let res_dict = {};
+        // Normalize hydropathy values on a 0-100 scale, to be used as x-coordinates in the UI
+        let vals = Object.values(chosen_scale);
+        // Math.max/min don't take arrays, so we have to extract the values with the "..." operator
+        let min_val = Math.min(...vals);
+        let span = Math.max(...vals) - min_val;
+        for (const [key, value] of Object.entries(chosen_scale)) {
+            res_dict[key] = (value - min_val) / span * 100;
+        }
+	    // Iterate through the dictionary of normalized values, assign each residue a position based on what value they fall on, and raise their vertical height if they are too close to the neighboring amino acid on the scale (their letters overlap)
+	    // var offset = 0.5
+		for (const [key, value] of Object.entries(res_dict)){
+			if (last_pos == value || last_pos - 1.5 <= value) {
+				px += 14
+			} else {
+				px = 0;
+			}
+			var offset = (value - 0.45) / 1.002
+            res_letters += `<div class="residue-label" style="left: ${offset}%; bottom: ${px}px">${key}</div>`;
+			last_pos = value;
+		}
+	    	document.getElementById("hydro-labels").innerHTML = res_letters;
+
+	    var all_res = document.getElementsByClassName("residue-label")
+
+		for (let i = 0; i < all_res.length; i++) {
+				all_res[i].addEventListener("click", function() {
+					var current_cutoff_box = document.getElementById("cutoff_user_box");
+					var current_slider = document.getElementById("cutoff_user_slider");
+					var current_cutoff = document.getElementById("cutoff_user")
+					//var res_value = parseInt(all_res[i].style.left)*0.01;
+					let res_value = Math.round((res_dict[all_res[i].innerHTML] * 10))/1000
+					current_slider.value = res_value;
+					current_cutoff_box.value = res_value;
+					current_cutoff.innerHTML = res_value;
+					const e = new Event("change");
+					current_cutoff_box.dispatchEvent(e);
+
+				}, false);
+				all_res[i].addEventListener("mouseover", function () {
+					all_res[i].style.color = "red";
+				});
+				all_res[i].addEventListener("mouseout", function () {
+					all_res[i].style.color = "black";
+				});
+		}
+	}
 });
 
 </script>
@@ -248,31 +346,41 @@ $(document).ready( function() {
 <div class="tab-pane container" id="result">
     <div class="container">
 		<div class="text-center">
-			<h6> Uniprot ID: {{ my_uni_id | safe }}</h6>
+			<h6>{{ my_name | safe }}</h6>
+			<h6>{{ my_length | safe }}</h6>
+			<h6>{{ my_original_id | safe }}</h6>
+			<h6>{{ my_entry_name | safe}}<h6>
+			<h6>{{ my_hg_value | safe}}<h6>
+			<h6>{{ my_uni_id_linked | safe}}</h6>
+			<h6>{{ my_uni_id_stripped | safe}}</h6>
 		</div>
-
-		<div class="result-controls" id="result_main_container", style="width:150%">
+		<div class="result-controls" id="result_main_container">
 			<table id="results_table">
-				<col style="width:22%">
-				<col style="width:8%">
-				<!-- col style="width:50%" -->
-				<tr>
-				<td> <div class="text-left">
-					Hydropathy cutoff:
-					<label style = "opacity: 0.0; display: none;">
+				<col style="width:13%">
+				<col style="width:7%">
+<!-- 			<col style="width:50%">
+				<col style="width:20%"> -->
+				 <div text="left">
+				<tr><td>Hydrophobicity Scale:</td>
+					<td><select id="hydro_scales" class="hydro_scales">
+						<option selected="selected" value="kyte_doolittle">Kyte and Doolittle</option>
+						<option value="eisenberg_weiss">Eisenberg and Weiss</option></select></td>
+						<td id="hydro-labels" class="hydro_labels" style="width: 43%"></td>
+					<td>&nbsp;</td></tr>
+					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
-					</label> </td>
-					<td> <input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001> </td>
-					<td> <input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001> </td> </tr>
-				</div>
-				
+					</label></td>
+					<td><input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
+					<td style="width: 43%"><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td>
+					<td>&nbsp;</td></div></tr>
 				<tr>
-				<td> <div class="text-left">
-					Minimum blob size:
+				<td>Minimum blob size:
 					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
 					</label> </td>
-					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> </td>
-					<td> <input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider2" step=1> </td> </tr>
+					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> 
+					</td>
+					<td style="width: 43%"><input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider1" step=1> </td>
+				<td>&nbsp;</td></tr>
 				</div>
 
 				<script type="text/javascript">
@@ -295,6 +403,7 @@ $(document).ready( function() {
 							var $trLast = $table.find("tr:last");
 	    					$trLast.remove();
 	    				}
+
 				</script>
 
 				<div>

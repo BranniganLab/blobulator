@@ -72,6 +72,33 @@ properties_hydropathy = {
     "U": 0,
     "X": -0.0,
 }
+
+properties_hydropathy_eisenberg_weiss = {
+    "I": 0.73,
+    "F": 0.61,
+    "V": 0.54,
+    "L": 0.53,
+    "W": 0.37,
+    "M": 0.26,
+    "A": 0.25,
+    "G": 0.16,
+    "C": 0.04,
+    "Y": 0.02,
+    "P": -0.07,
+    "T": -0.18,
+    "S": -0.26,
+    "H": -0.40,
+    "E": -0.62,
+    "N": -0.64,
+    "Q": -0.69,
+    "D": -0.72,
+    "K": -1.10,
+    "R": -1.80,
+    "U": 0,
+    "X": -0.0,
+}
+
+
 properties_charge = {
     "A": 0.0,
     "R": +1.0,
@@ -130,3 +157,8 @@ for key, value in properties_hydropathy.items():
     properties_hydropathy[key] = (
         value + 4.5
     ) / 9.0  # The Kyte and dolittle hydropathy is scaled to fit between 0 and 1.
+
+for key, value in properties_hydropathy_eisenberg_weiss.items():
+    properties_hydropathy_eisenberg_weiss[key] = (
+        value + 1.8
+    ) / 2.53  # The Eisenberg and weiss hydropathy is scaled to fit between 0 and 1.

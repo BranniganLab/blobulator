@@ -30,23 +30,37 @@
 	padding: 1em;
 	z-index: 100;
 	display: inline-block;
+	empty-cells: show;
 }
 
 @media not print {
 	.result-controls {
 		position: sticky;
 		top: 0;
+		width: 100vw;
 	}
 }
 
 
+td > div {
+  position: relative;
+  width:40%;
+  border-right: 1px solid #ccc;
+  bottom: -10px;
+}
+
+.residue-label {
+  position: absolute;
+  font-size: 14px;
+  font-family: "Courier";
+}
 
 /*CSS styling for the top slider*/
 .myslider1 {
 	-webkit-appearance: none;
 	/* Override default CSS styles */
 	appearance: none;
-	width: 30%;
+	width: 100%;
 	/* Full-width */
 	height: 20px;
 	/* Specified height */
@@ -59,7 +73,6 @@
 	-webkit-transition: .2s;
 	/* 0.2 seconds transition on hover */
 	transition: opacity .2s;
-
 }
 
 /*CSS styling for the top slider button*/
@@ -68,46 +81,24 @@
 	cursor: pointer;
 	background: #007BFF;
 	border-radius: 20px;
-	width: 20px;
-	height: 20px;
+	width: 1px;
+	height: 1px;
+	transform:  scale(20);
 }
 
 .myslider1:hover {
 	opacity: 2.0;
 }
 
-/*CSS styling for the bottom slider*/
-.myslider2 {
-	-webkit-appearance: none;
-	/* Override default CSS styles */
-	appearance: none;
-	width: 30%;
-	/* Full-width */
-	height: 20px;
-	/* Specified height */
-	background: #d3d3d3;
-	/* Grey background */
-	outline: none;
-	/* Remove outline */
-	opacity: 0.7;
-	/* Set transparency (for mouse-over effects on hover) */
-	-webkit-transition: .2s;
-	/* 0.2 seconds transition on hover */
-	transition: opacity .2s;
-}
-
-/*CSS styling for the bottom slider button*/
-.myslider2::-webkit-slider-thumb {
-	-webkit-appearance: none;
+#hydro-labels {
 	cursor: pointer;
-	background: #007BFF;
-	border-radius: 20px;
-	width: 20px;
-	height: 20px;
+	height: 90px;
+	width: 100%;
+	position: relative;
 }
 
-.myslider2:hover {
-	opacity: 2.0;
-}
-
+.residue-label {
+	display: inline-block;
+	border: none;
+	width: 1em;
 }
