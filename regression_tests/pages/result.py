@@ -12,7 +12,7 @@ class BlobulatorResultPage:
         self.page = page
         self.snps = page.locator("id=snp_triangles")
         self.tab = page.locator("id=result-tab")
-        self.uniprot_id = page.get_by_text("Uniprot ID:")
+        self.uniprot_id = page.get_by_text("ID:")
         self.mutate_box = page.locator("#mutatebox")
         self.cutoff_input = page.locator("#cutoff_user_box")
         self.hydropathy_slider = page.locator("id=cutoff_user_slider")

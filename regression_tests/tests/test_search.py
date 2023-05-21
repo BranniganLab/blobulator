@@ -61,8 +61,20 @@ def test_snp_button(page: Page, uniprot_results: BlobulatorResultPage):
     expect(result_page.snps.nth(snp_id)).to_have_attribute("fill", "red")
 
 
+def test_blobulation(page: Page, asynuclein_results: BlobulatorResultPage):
+    # given the results page is loaded
+    result_page = asynuclein_results
+
+    # When the 10th residue is loaded...
+    result_page.blob_bars.nth(10).wait_for()
+    blob_res10 = result_page.blob_bars.nth(10)
+
+    # it should initially be orange
+    expect(blob_res10).to_have_attribute("fill", "rgb(247, 147, 30)")
+
+
 # After adjusting the hydropathy slider
-def test_hydropathy_slider(page: Page, asynuclein_results: BlobulatorResultPage):
+def test_hydropathy_slider_1(page: Page, asynuclein_results: BlobulatorResultPage):
     # given the results page is loaded
     result_page = asynuclein_results
 
@@ -71,9 +83,6 @@ def test_hydropathy_slider(page: Page, asynuclein_results: BlobulatorResultPage)
     hline_y_init = result_page.hydropathy_line.get_attribute("y1")
     blob_res10 = result_page.blob_bars.nth(10)
     res10_height_init = blob_res10.get_attribute("height")
-
-    # Sanity check: the blob should initially be orange
-    expect(blob_res10).to_have_attribute("fill", "rgb(247, 147, 30)")
 
     # When the hydropathy slider is set to 0.2
     target_hydropathy = 0.2
