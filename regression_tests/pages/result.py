@@ -18,7 +18,7 @@ class BlobulatorResultPage:
         self.hydropathy_slider = page.locator("id=cutoff_user_slider")
         self.hydropathy_field = page.locator("id=cutoff_user_box")
         self.mouse = page.mouse
-        self.hydropathy_line = page.get_by_test_id("cutoffline")
+        self.hydropathy_line = page.locator("id=cutoffline")
         self.blob_bars = page.locator("id=barChartblobPlot")
         self.lmin_slider = page.locator("id=domain_threshold_user_slider")
         self.lmin_field = page.locator("id=domain_threshold_user_box")
@@ -46,7 +46,7 @@ class BlobulatorResultPage:
         self.hydropathy_slider.hover()
         self.mouse.down()
 
-        right = 1000
+        right = 5000
         left = 0
         hydropathy = -1
 

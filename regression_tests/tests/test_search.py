@@ -82,6 +82,7 @@ def test_hydropathy_slider_1(page: Page, asynuclein_results: BlobulatorResultPag
     result_page.blob_bars.nth(10).wait_for()
     hline_y_init = result_page.hydropathy_line.get_attribute("y1")
     blob_res10 = result_page.blob_bars.nth(10)
+
     res10_height_init = blob_res10.get_attribute("height")
 
     # When the hydropathy slider is set to 0.2

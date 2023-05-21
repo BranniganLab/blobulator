@@ -623,6 +623,7 @@ class ZHydropathy extends ZChart{
 			.attr("x2", this.WIDTH)
 			.attr("y1", y(my_cut))
 			.attr("y2", y(my_cut))
+			.attr("id", "cutoffline")
 
 		return this;
 	}
