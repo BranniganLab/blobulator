@@ -155,7 +155,7 @@ def test_lmin_slider(page: Page, asynuclein_results: BlobulatorResultPage):
     expect(result_page.lmin_field).to_have_value(str(target_length))
 
     # Expect the blob chart residue 10 to change heights
-    assert blob_res4.get_attribute("height") > res4_height_init
+    assert float(blob_res4.get_attribute("height")) > float(res4_height_init)
 
     # Expect the blob chart residue 10 to now be orange
     expect(blob_res4).to_have_attribute("fill", "rgb(247, 147, 30)")
@@ -168,7 +168,7 @@ def test_lmin_slider_2(page: Page, asynuclein_results: BlobulatorResultPage):
     # Get initial conditions
     result_page.blob_bars.nth(128).wait_for()
     hline_y_init = result_page.hydropathy_line.get_attribute("y1")
-    blob_res128 = result_page.blob_bars.nth(128)
+    blob_res128 = result_page.blob_bars.nth(127)
     res128_height_init = blob_res128.get_attribute("height")
 
     # Sanity check: the blob should initially be orange
@@ -182,7 +182,7 @@ def test_lmin_slider_2(page: Page, asynuclein_results: BlobulatorResultPage):
     expect(result_page.lmin_field).to_have_value(str(target_length))
 
     # Expect the blob chart residue 10 to change heights
-    assert blob_res128.get_attribute("height") > res4_height_init
+    assert float(blob_res128.get_attribute("height")) > float(res128_height_init)
 
     # Expect the blob chart residue 10 to now be blue
     expect(blob_res128).to_have_attribute("fill", "rgb(0, 113, 188)")
