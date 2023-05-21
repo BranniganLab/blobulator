@@ -11,10 +11,8 @@ __all__ = [
 "amino_acids",
 "compute_blobs",
 "compute_snps",
-"generate_colormaps",
 ]
 
 from .amino_acids import *
 from .compute_blobs import *
 from .compute_snps import *
-from .generate_colormaps import *
