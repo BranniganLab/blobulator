@@ -115,12 +115,12 @@ dfMI = blob_length_cutoff_enrichment.set_index(["Hydrophobicity cutoff", "Blob l
 #Special function for enrichment prediction color which requires the cutoff
 dfMI["color"] = ""
 errCount = 0
-for _, the_row in dfMI.iterrows():
+for idx, the_row in dfMI.iterrows():
     try:
         enrich_value = the_row["Enrichment "]
         m_color = scalarMap_enrich.to_rgba(enrich_value)
         theColor = "rgb" + str(tuple([255 * x for x in m_color[:-1]]))
-        the_row["color"] = theColor
+        dfMI.loc[idx, "color"] = theColor
     except KeyError:
         errCount = errCount+1
 print(f'Num errors: {errCount}')
