@@ -616,15 +616,13 @@ class ZHydropathy extends ZChart{
 	add_cutoff_line(my_cut=0.4, x=this.x, y=this.y) {
 		this.cut_line = this.plot.append('g')
 			.append("line")
-			.attr("data-testid", "cutoffline")
 			.attr("fill", "none")
 			.attr("stroke", "steelblue")
 			.attr("stroke-width", 1.5)
 			.attr("x1", 0)
 			.attr("x2", this.WIDTH)
 			.attr("y1", y(my_cut))
-			.attr("y2", y(my_cut));
-			
+			.attr("y2", y(my_cut))
 
 		return this;
 	}
@@ -680,8 +678,8 @@ class ZblobChart extends ZChart {
 		ylabel.append("text")
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
-			.attr("y", this.HEIGHT - 50.25)
-			.attr("x", this.MARGIN.left - 65)
+			.attr("y", this.HEIGHT-22)
+			.attr("x", this.MARGIN.left-65)
 			.attr("transform", "rotate(0)")
 			.style("font-size", "17px")
 			.text("p");
@@ -690,7 +688,7 @@ class ZblobChart extends ZChart {
 		ylabel.append("text")
 			.attr("class", "y label")
 			.attr("text-anchor", "middle")
-			.attr("y", this.HEIGHT - 22)
+			.attr("y", this.HEIGHT - 50.25)
 			.attr("x", this.MARGIN.left - 65)
 			.attr("transform", "rotate(0)")
 			.style("font-size", "17px")
@@ -817,7 +815,6 @@ class ZblobChart extends ZChart {
 			.text("h").style("font-size", "15px").style("fill", "white")
 		legend.append("rect")
 			.attr("x", this.WIDTH + offset)
-<<<<<<< Updated upstream
 			.attr("y", this.MARGIN.top + 35)
 			.attr('width', keysize)
 			.attr('height', keysize)
@@ -836,18 +833,6 @@ class ZblobChart extends ZChart {
 			.attr("x", this.WIDTH + offset + 6)
 			.attr("y", this.MARGIN.top + 79)
 			.text("p").style("font-size", "15px").style("fill", "white")
-=======
-			.attr("y", this.MARGIN.top + 65)
-			.attr('width', keysize)
-			.attr('height', keysize)
-			.style("fill", "#2DB11A")
-		legend.append("rect")
-			.attr("x", this.WIDTH + offset)
-			.attr("y", this.MARGIN.top + 35)
-			.attr('width', keysize)
-			.attr('height', keysize)
-			.style("fill", "#F7931E")
->>>>>>> Stashed changes
 				
 		//Text that appears to the right of the key    
 		legend.append("text")
@@ -856,19 +841,11 @@ class ZblobChart extends ZChart {
 			.attr("alignment-baseline", "middle")
 		legend.append("text")
 			.attr("x", this.WIDTH + 50)
-<<<<<<< Updated upstream
 			.attr("y", this.MARGIN.top + 45).text("Short blob").style("font-size", "15px")
 			.attr("alignment-baseline", "middle")
 		legend.append("text")
 			.attr("x", this.WIDTH + 50)
 			.attr("y", this.MARGIN.top + 75).text("Hydrophilic blob").style("font-size", "15px")
-=======
-			.attr("y", this.MARGIN.top + 75).text("Short blob").style("font-size", "15px")
-			.attr("alignment-baseline", "middle")
-		legend.append("text")
-			.attr("x", this.WIDTH + 50)
-			.attr("y", this.MARGIN.top + 45).text("Hydrophilic blob").style("font-size", "15px")
->>>>>>> Stashed changes
 			.attr("alignment-baseline", "middle")
 		return this;
 	}
@@ -1053,6 +1030,5 @@ class ZblobChart extends ZChart {
 	}
 
 }
-
 
 

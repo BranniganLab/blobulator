@@ -1,14 +1,10 @@
 import json
 
 import os
-import sys
-
-sys.path.insert(0, '../library/')
-
 from user_input_form import InputForm
-from amino_acids import properties_hydropathy
-from compute_blobs import (compute, clean_df)
-from compute_snps import pathogenic_snps
+from blobulator.amino_acids import properties_hydropathy
+from blobulator.compute_blobs import (compute, clean_df)
+from blobulator.compute_snps import pathogenic_snps
 
 import pandas as pd
 import numpy as np
