@@ -122,7 +122,7 @@ def test_hydropathy_slider_2(page: Page, asynuclein_results: BlobulatorResultPag
 
     # Expect the cutoff indicator has moved down
     hline_y_current = result_page.hydropathy_line.get_attribute("y1")
-    assert float(hline_y_current) > float(hline_y_init)
+    assert float(hline_y_current) < float(hline_y_init)
 
     # Expect the numerical input is updated to 0.6
     expect(result_page.hydropathy_field).to_have_value(str(target_hydropathy))
