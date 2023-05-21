@@ -1,12 +1,17 @@
 import pandas as pd
 import numpy as np
-from amino_acids import (
+from .amino_acids import (
     properties_charge,
     THREE_TO_ONE,
     properties_type,
     properties_hydropathy,
     properties_hydropathy_eisenberg_weiss,
 )
+
+from importlib.resources import files
+
+blob_path = files("blobulator").joinpath("data")
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -210,7 +215,9 @@ def uversky_diagram(x):
         return distance 
 
 # ..........................Define NCPR.........................................................#
-ncprDict = pd.read_csv("../data/ncprCMap.csv", index_col=0)
+fname = blob_path.joinpath("ncprCMap.csv")
+ncprDict = pd.read_csv(fname, index_col=0)
+
 def lookupNCPR(x):
     """
     A function that returns the color for each blob based on its NCPR
@@ -225,7 +232,9 @@ def lookupNCPR(x):
     val = x[0]
     return ncprDict.loc[np.round(val, 2)]
 
-uverskyDict = pd.read_csv("../data/uverskyCMap.csv", index_col=0)
+
+fname = blob_path.joinpath("uverskyCMap.csv")
+uverskyDict = pd.read_csv(fname, index_col=0)
 def lookupUversky(x):
     """
     A function that returns the color for each blob based on its distance from the disorder/order boundary for on the uversky diagram
@@ -240,7 +249,8 @@ def lookupUversky(x):
     val = x[0]
     return uverskyDict.loc[np.round(val, 2)]
 
-disorderDict = pd.read_csv("../data/disorderCMap.csv", index_col=0)
+fname = blob_path.joinpath("disorderCMap.csv")
+disorderDict = pd.read_csv(fname, index_col=0)
 def lookupDisorder(x):
     """
     A function that returns the color for each blob based on how disordered it is, determined by the Uniprot accession
@@ -254,14 +264,17 @@ def lookupDisorder(x):
     val = x[0]
     return disorderDict.loc[np.round(val, 2)]
 
-enrichDF = pd.read_csv("../data/enrichCMap.csv", index_col=[0,1])
-enrichDF.to_csv("../data/enrichment.txt")
+fname = blob_path.joinpath("enrichCMap.csv")
+enrichDF = pd.read_csv(fname, index_col=[0, 1])
+#enrichDF.to_csv("../data/enrichment.txt")
 
-enrichDF_p = pd.read_csv("../data/enrichCMap_p.csv", index_col=[0,1])
-enrichDF_p.to_csv("../data/enrichment_p.txt")
+fname = blob_path.joinpath("enrichCMap_p.csv")
+enrichDF_p = pd.read_csv(fname, index_col=[0, 1])
+#enrichDF_p.to_csv("../data/enrichment_p.txt")
 
-enrichDF_s = pd.read_csv("../data/enrichCMap_s.csv", index_col=[0,1])
-enrichDF_s.to_csv("../data/enrichment_s.txt")
+fname = blob_path.joinpath("enrichCMap_s.csv")
+enrichDF_s = pd.read_csv(fname, index_col=[0, 1])
+#enrichDF_s.to_csv("../data/enrichment_s.txt")
 
 def lookupEnrichment(x):
     """
