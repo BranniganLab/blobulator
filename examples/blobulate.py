@@ -1,3 +1,17 @@
+"""
+A command-line utility for blobulating. Especially useful for fasta files. 
+Demonstrates most blobulator functionality.
+
+Arguments:
+  -h, --help           show this help message and exit
+  --sequence SEQUENCE  Takes a single string of EITHER DNA or protein one-letter codes (no spaces).
+  --cutoff CUTOFF      Sets the cutoff hydrophobicity (floating point number between 0.00 and 1.00 inclusive).
+                       Defaults to 0.4
+  --minBlob MINBLOB    Mininmum blob length (integer greater than 1). Defaults to 4
+  --oname ONAME        Name of output file or path to output directory. Defaults to blobulated_.csv
+  --fasta FASTA        FASTA file with 1 or more sequences
+  --DNA DNA            Flag that says whether the inputs are DNA or protein. Defaults to false (protein)
+"""
 if __name__ == "__main__":
 
     import argparse
@@ -57,7 +71,7 @@ if __name__ == "__main__":
         else:
             sequence = args.sequence
         
-        df = compute(sequence, args.cutoff, args.minBlob, 'kyte_doolittle')
+        df = blobulator.compute(sequence, args.cutoff, args.minBlob, 'kyte_doolittle')
         print ("Writing output file")
         df = blobulator.clean_df(df)
         df.to_csv(args.oname, index=False)
