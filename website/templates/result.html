@@ -206,9 +206,6 @@ $(document).ready( function() {
 				.add_ContinuousLegend("PuOr", {min: "0.0", med: "0.5", max: "1.0"});
 		}
 
-		var str_i = "Print Screen";
-		var str_j = "Download data!";
-
 		// Set up UI element change handler
 		d3.selectAll(".mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales").on("change", function(){do_update(figs, data)});
 		
@@ -446,7 +443,7 @@ $(document).ready( function() {
 				</div>
 			</table>
 				<label style = "opacity: 0.0; display: none; position: relative;"> </label>
-				<button type="button" onclick="window.print();return false;">Download plots!</button>
+				<button type="button" onclick="window.print();return false;">Print Screen</button>
 				<button type="button" id="download_data_link">Download data!</button>
 	</div>
 	
