@@ -33,8 +33,10 @@ If you get an error installing pycairo, try ```conda install pycairo``` and retr
 ### Running through an internet browser:
 Note: this option is identical to the website version, but may run faster:
 ```
-python3 [your_local_path]/website/blobulation.py
+cd [local_path_to_repository]/website
+python3 blobulation.py
 ```
+If a browser doesn't open automatically, copy the url from the terminal into a browser.
 
 ### Scripting:
 [**Work in progress**]
@@ -45,9 +47,8 @@ A sample "hello world" is as follows:
 ```
     import blobulator
 
-    # A very simple oligopeptide
+    # A very simple oligopeptide and standard settings
     sequence = "RRRRRRRRRIIIIIIIII"
-
     cutoff = 0.4
     min_blob = 4
     hscale = "kyte_doolittle"
