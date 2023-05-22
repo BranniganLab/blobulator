@@ -120,15 +120,15 @@ def test_hydropathy_slider_2(page: Page, asynuclein_results: BlobulatorResultPag
     target_hydropathy = 0.6
     result_page.set_pathy_slider(target_hydropathy)
 
-    # Expect the cutoff indicator has moved down
+    # Expect the cutoff indicator has moved up
     hline_y_current = result_page.hydropathy_line.get_attribute("y1")
     assert float(hline_y_current) < float(hline_y_init)
 
     # Expect the numerical input is updated to 0.6
     expect(result_page.hydropathy_field).to_have_value(str(target_hydropathy))
 
-    # Expect the blob chart residue 25 to change heights
-    assert blob_res25.get_attribute("height") > res25_height_init
+    # Expect the blob chart residue 25 to be shorter
+    assert blob_res25.get_attribute("height") < res25_height_init
 
     # Expect the blob chart residue 25 to now be orange
     expect(blob_res25).to_have_attribute("fill", "rgb(247, 147, 30)")
