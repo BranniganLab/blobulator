@@ -1,5 +1,5 @@
 # Protein Blobulator
-_Looking for the web interface? Try here:_ https://www.blobulator.branniganlab.org/ 
+_Looking for the web interface? Find it here:_ https://www.blobulator.branniganlab.org/ 
 
 This tool identifies contiguous stretches of hydrophobic residues within a protein sequence. Any sequence of contiguous hydrophobic residues that is at least as long as the minimum blob length is considered an hydrophobic or h "blob". Any remaining segments that are at least as long as the minimum length are considered polar or p "blobs," while those that are shorter than the minimum blob length are considered separator or "s" residues.  Separator residues are very short stretches of non-hydrophobic residues that may be found between two h blobs.
 
@@ -11,47 +11,64 @@ This tool identifies contiguous stretches of hydrophobic residues within a prote
 ```
 Python 3.9+
 ```
-#### Python dependencies:
-```
-wtforms
-pandas
-matplotlib
-flask
-flask_restful
-flask_cors
-flask_session
-requests
-svglib
-biopython
-argparse
-reportlab
-flask (website version)
-```
+
 
 #### Quick Install:
-Download from github:
-```
-git clone https://github.com/BranniganLab/blobulator
-```
-Using conda:
+[**Optional**] Create a conda environment:
 ```
 conda create --name blobulator_env python=3.9
 conda activate blobulator_env
-pip install -r library/requirements.txt
 ```
+[**Optional**; Required for local website hosting. Contains sample scripts] Download the repository:
+```
+git clone https://github.com/BranniganLab/blobulator
+```
+**Install with pip**
+```
+pip install git+https://github.com/BranniganLab/blobulator@packaging
+```
+**Known issue:**
+If you get an error installing pycairo, try ```conda install pycairo``` and retry the above.
 
 ### Running through an internet browser:
 Note: this option is identical to the website version, but may run faster:
 ```
-python blobulation.py
+python3 [your_local_path]/website/blobulation.py
 ```
 
-### Running from the command line:
+### Scripting:
+[**Work in progress**]
+
+Sample scripts can be found in the examples directory.
+
+A sample "hello world" is as follows:
+```
+    import blobulator
+
+    # A very simple oligopeptide
+    sequence = "RRRRRRRRRIIIIIIIII"
+
+    cutoff = 0.4
+    min_blob = 4
+    hscale = "kyte_doolittle"
+
+    # Do the blobulation
+    blobDF = blobulator.compute(sequence, cutoff, min_blob, hscale)
+    
+    # Cleanup the dataframe (make it more human-readable)
+    blobDF = blobulator.clean_df(blobDF)
+    
+    # Save it as a csv for later use
+    oname = "hello_blob.csv"
+    blobDF.to_csv(oname, index=False)
+```
+
+
+### Using the command-line utility blobulate.py:
 #### Basic usage:
 Open a terminal in the blobulator directory and run:
 ```
-cd /path/to/blobulator/library
-python3 compute_blobs.py --sequence AFRPGAGQPPRRKECTPEVEEGV --oname ./my_blobulation.csv
+python3 examples/blobulate.py --sequence AFRPGAGQPPRRKECTPEVEEGV --oname ./my_blobulation.csv
 ```
 This will blobulate the sequence "AFRPGAGQPPRRKECTPEVEEGV" and write the result to my_blobulation.csv
 
@@ -71,7 +88,7 @@ You may specify additional paramters using the following options:
 - Place a fasta file with one or more sequences in any directory (Note: they must all be DNA or protein sequences)
 - Open a terminal in the blobulator directory and run:
 ```
-python3 compute_blobs.py --fasta ./relative/path/to/my_sequences.fasta --oname ./relative/path/to/outputs/
+python3 examples/blobulate.py --fasta ./relative/path/to/my_sequences.fasta --oname ./relative/path/to/outputs/
 ```
 - This will blobulate all sequences in my_sequences.fasta (assuming they are protein sequences) and output the results to the outputs folder prefixed by their sequence id.
 
@@ -79,9 +96,8 @@ python3 compute_blobs.py --fasta ./relative/path/to/my_sequences.fasta --oname .
 There is a fasta file in blobulation/example called b_subtilis.fasta that contains the sequences of several proteins from Bacillus subtilis.
 To blobulate all those proteins with a cutoff of 0.4 and a minimum blob size of 4, we run:
 ```
-cd /path/to/blobulator/library
 mkdir outputs
-python3 compute_blobs.py --fasta ../example/b_subtilis.fasta --cutoff 0.4 --minBlob 4 --oname outputs/
+python3 examples/blobulate.py --fasta ../example/b_subtilis.fasta --cutoff 0.4 --minBlob 4 --oname outputs/
 ```
 
 ### CSV Outputs:
