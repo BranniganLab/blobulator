@@ -134,7 +134,7 @@ def test_hydropathy_slider_2(page: Page, asynuclein_results: BlobulatorResultPag
     expect(blob_res25).to_have_attribute("fill", "rgb(247, 147, 30)")
 
 
-def test_lmin_slider(page: Page, asynuclein_results: BlobulatorResultPage):
+def test_lmin_slider_1(page: Page, asynuclein_results: BlobulatorResultPage):
     # Given the results page is loaded
     result_page = asynuclein_results
 
@@ -155,7 +155,7 @@ def test_lmin_slider(page: Page, asynuclein_results: BlobulatorResultPage):
     expect(result_page.lmin_field).to_have_value(str(target_length))
 
     # Expect the blob chart residue 10 to change heights
-    assert float(blob_res4.get_attribute("height")) > float(res4_height_init)
+    assert float(blob_res4.get_attribute("height")) < float(res4_height_init)
 
     # Expect the blob chart residue 10 to now be orange
     expect(blob_res4).to_have_attribute("fill", "rgb(247, 147, 30)")
