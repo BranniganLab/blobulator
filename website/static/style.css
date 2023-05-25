@@ -102,3 +102,9 @@ td > div {
 	border: none;
 	width: 1em;
 }
+
+@media print {
+	body {-webkit-print-color-adjust: exact;
+				margin: 0mm 40mm 0mm 0mm;
+	}
+}
