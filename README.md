@@ -19,7 +19,7 @@ Python 3.9+
 conda create --name blobulator_env python=3.9
 conda activate blobulator_env
 ```
-[**Optional**; Required for local website hosting. Contains sample scripts] Download the repository:
+[**For website and sample scripts**] Download the repository:
 ```
 git clone https://github.com/BranniganLab/blobulator
 ```
@@ -31,19 +31,15 @@ pip install git+https://github.com/BranniganLab/blobulator@packaging
 If you get an error installing pycairo, try ```conda install pycairo``` and retry the above.
 
 ### Running through an internet browser:
-Note: this option is identical to the website version, but may run faster:
+Note: this option is identical to the website version, but is hosted on your local machine:
 ```
-cd [local_path_to_repository]/website
+cd [path_to_repository]/website
 python3 blobulation.py
 ```
 If a browser doesn't open automatically, copy the url from the terminal into a browser.
 
-### Scripting:
-[**Work in progress**]
+### Scripting - Hello, World:
 
-Sample scripts can be found in the examples directory.
-
-A sample "hello world" is as follows:
 ```
     import blobulator
 
@@ -63,13 +59,14 @@ A sample "hello world" is as follows:
     oname = "hello_blob.csv"
     blobDF.to_csv(oname, index=False)
 ```
+Additional sample scripts can be found in the repository examples directory.
 
 
 ### Using the command-line utility blobulate.py:
 #### Basic usage:
 Open a terminal in the blobulator directory and run:
 ```
-python3 examples/blobulate.py --sequence AFRPGAGQPPRRKECTPEVEEGV --oname ./my_blobulation.csv
+python3 [path_to_repository]/examples/blobulate.py --sequence AFRPGAGQPPRRKECTPEVEEGV --oname ./my_blobulation.csv
 ```
 This will blobulate the sequence "AFRPGAGQPPRRKECTPEVEEGV" and write the result to my_blobulation.csv
 
@@ -89,7 +86,7 @@ You may specify additional paramters using the following options:
 - Place a fasta file with one or more sequences in any directory (Note: they must all be DNA or protein sequences)
 - Open a terminal in the blobulator directory and run:
 ```
-python3 examples/blobulate.py --fasta ./relative/path/to/my_sequences.fasta --oname ./relative/path/to/outputs/
+python3 [path_to_repository]/examples/blobulate.py --fasta ./relative/path/to/my_sequences.fasta --oname ./relative/path/to/outputs/
 ```
 - This will blobulate all sequences in my_sequences.fasta (assuming they are protein sequences) and output the results to the outputs folder prefixed by their sequence id.
 
@@ -98,7 +95,7 @@ There is a fasta file in blobulation/example called b_subtilis.fasta that contai
 To blobulate all those proteins with a cutoff of 0.4 and a minimum blob size of 4, we run:
 ```
 mkdir outputs
-python3 examples/blobulate.py --fasta ../example/b_subtilis.fasta --cutoff 0.4 --minBlob 4 --oname outputs/
+python3 [path_to_repository]/examples/blobulate.py --fasta ../example/b_subtilis.fasta --cutoff 0.4 --minBlob 4 --oname outputs/
 ```
 
 ### CSV Outputs:
