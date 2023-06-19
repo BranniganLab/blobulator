@@ -221,9 +221,15 @@ def lookupNCPR(x):
     Returns:
         color (str): a string containing the color value for each residue based on the ncpr of the blob that it's contained in
     """
-
-    val = x[0]
-    return ncprDict.loc[np.round(val, 2)]
+    import matplotlib
+    from matplotlib.colors import LinearSegmentedColormap
+    cmap = LinearSegmentedColormap.from_list("mycmap", [(0.0 / 1, "red"), ((0.5) / 1, "whitesmoke"), (1.0, "blue")])
+    norm = matplotlib.colors.Normalize(vmin=-0.2, vmax=0.2)
+    
+    fraction = np.round(x[0], 2)
+    
+    returned_rgb = matplotlib.colors.to_rgba(cmap(norm(fraction)))
+    return "rgb(" + str(returned_rgb[0] * 255) + "," + str(returned_rgb[1] * 255) + "," + str(returned_rgb[2] * 255) + ")"
 
 uverskyDict = pd.read_csv("../data/uverskyCMap.csv", index_col=0)
 def lookupUversky(x):
