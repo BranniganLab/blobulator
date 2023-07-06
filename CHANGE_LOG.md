@@ -34,3 +34,6 @@
 - Custom SNP diamonds clickable
 - SNP mutations from uniprot now include rs numbers with clickable links
 - X-axis labels prevented from overlapping when zoomed
+
+## Version 0.9.4
+- NCPR track bug fix
