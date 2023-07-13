@@ -332,6 +332,7 @@ $(document).ready( function() {
 
 {% block tablist %}
 {% include 'common-tablist.html' %}
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <li class="nav-item">
     <a href="#result" id="result-tab" class="nav-link" data-toggle="tab">Result</a>
 </li>
@@ -351,7 +352,7 @@ $(document).ready( function() {
 			<h6>{{ my_uni_id_linked | safe}}</h6>
 			<h6>{{ my_uni_id_stripped | safe}}</h6>
 		</div>
-		<div class="result-controls" id="result_main_container">
+		<div class="result-controls" id="result_main_container" style="overflow-x: auto">
 			<table id="results_table">
 				<col style="width:13%">
 				<col style="width:7%">
@@ -362,13 +363,13 @@ $(document).ready( function() {
 					<td><select id="hydro_scales" class="hydro_scales">
 						<option selected="selected" value="kyte_doolittle">Kyte and Doolittle</option>
 						<option value="eisenberg_weiss">Eisenberg and Weiss</option></select></td>
-						<td id="hydro-labels" class="hydro_labels" style="width: 43%"></td>
+						<td id="hydro-labels" class="hydro_labels" style="width: 50%"></td>
 					<td>&nbsp;</td></tr>
 					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
 					</label></td>
 					<td><input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
-					<td style="width: 43%"><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td>
+					<td style="width: 50%"><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td>
 					<td>&nbsp;</td></div></tr>
 				<tr>
 				<td>Minimum blob size:
@@ -376,7 +377,7 @@ $(document).ready( function() {
 					</label> </td>
 					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> 
 					</td>
-					<td style="width: 43%"><input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider1" step=1> </td>
+					<td style="width: 50%"><input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider1" step=1> </td>
 				<td>&nbsp;</td></tr>
 				</div>
 
