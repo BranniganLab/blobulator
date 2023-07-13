@@ -1,6 +1,5 @@
 {% extends 'common.html' %}
 
-
 {% block css %}
 <style> @import "static/style.css"; </style>
 <style> @import "static/zoomStyle.css"; </style>
@@ -326,13 +325,10 @@ $(document).ready( function() {
 
 </script>
 
-
-
 {% endblock %}
 
 {% block tablist %}
 {% include 'common-tablist.html' %}
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <li class="nav-item">
     <a href="#result" id="result-tab" class="nav-link" data-toggle="tab">Result</a>
 </li>
@@ -341,6 +337,7 @@ $(document).ready( function() {
 
 {% block tabcontent %}
 {% include 'common-tabcontent.html' %}
+
 <div class="tab-pane container" id="result">
     <div class="container">
 		<div class="text-center">
