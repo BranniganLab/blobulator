@@ -25,6 +25,15 @@
 - Hydropathy smoothing step bug fix
 
 ## Version 0.9.3
+- Hydropathy scale now shows where amino acids fall on the given scale
+- These letters can be clicked to update the cutoff
+- Eisenberg and Weiss hydropathy scale added
 - Species, genomic location added to result page
 - Uniprot ID is now hyperlinked
-- custom SNP diamonds clickable
+- Custom mutations are indicated by diamond shapes
+- Custom SNP diamonds clickable
+- SNP mutations from uniprot now include rs numbers with clickable links
+- X-axis labels prevented from overlapping when zoomed
+
+## Version 0.9.4
+- NCPR track bug fix
