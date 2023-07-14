@@ -25,7 +25,7 @@ git clone https://github.com/BranniganLab/blobulator
 ```
 **Install with pip**
 ```
-pip install git+https://github.com/BranniganLab/blobulator@packaging
+pip install git+https://github.com/BranniganLab/blobulator
 ```
 **Known issue:**
 If you get an error installing pycairo, try ```conda install pycairo``` and retry the above.
