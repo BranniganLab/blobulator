@@ -13,30 +13,27 @@
 proc readBlobulationCSV {fname} {
 	set file [open $fname r]
 	set fileData [read $file]
-	set lines [split $fileData "\n"]
+	set data [split $fileData "\n"]
 	close $file
 
-	return $lines
+	return $data
+}
+
+proc readColumn {data, colIdx} {
+	set column {}
+	foreach row $data {
+		set rowList [split $row ","]
+		set value [lindex $datacol $colIdx]
+		lappend column $value
+}
+
+	return $column
 }
 
 
-
-
-
-set b [llength $datarow]
 
 # Add blob type elements to list
-set counter 1
-foreach {row} $datarow {
-	set listofElements [list [lindex $datarow $counter]]
-	set datacol [split $listofElements ","]
-	set onlyIndex6 [lindex $datacol 6]
-	lappend col6 $onlyIndex6
-	incr counter
-	unset listofElements
-	unset onlyIndex6
-	unset datacol
-}
+
 
 puts "The blobs in this protein are: $col6"
 puts "There are [expr [llength $col6] -1] residues in this protein!"
