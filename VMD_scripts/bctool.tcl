@@ -1,4 +1,14 @@
-#BLOB TYPE COLORER (BTC) TOOL
+# bctool.tcl
+#
+# Abstract
+# This file contains the functions necessary to read,
+# parse, and visualize blobulation data.
+# For more information about blobulation, see:
+# https://www.blobulator.branniganlab.org/
+# Or the GitHub repository:
+# https://github.com/BranniganLab/blobulator
+#
+# Copyright Grace Brannigan, Rutgers University Camden
 
 # Read file that user wishes to analyze
 set file [open "Lysozyme_blobulated.csv" r]
