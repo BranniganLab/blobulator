@@ -19,11 +19,11 @@ proc readBlobulationCSV {fname} {
 	return $data
 }
 
-proc readColumn {data, colIdx} {
+proc readColumn {data colIdx} {
 	set column {}
 	foreach row $data {
 		set rowList [split $row ","]
-		set value [lindex $datacol $colIdx]
+		set value [lindex $rowList $colIdx]
 		lappend column $value
 	}
 
@@ -31,7 +31,7 @@ proc readColumn {data, colIdx} {
 }
 
 set fname "blobs.csv"
-set blobCol 9
+set blobCol 8
 set blobData [readBlobulationCSV $fname]
 set blobs [readColumn $blobData $blobCol]
 
