@@ -25,18 +25,20 @@ proc readColumn {data, colIdx} {
 		set rowList [split $row ","]
 		set value [lindex $datacol $colIdx]
 		lappend column $value
-}
+	}
 
 	return $column
 }
 
+set fname "blobs.csv"
+set blobCol 9
+set blobData [readBlobulationCSV $fname]
+set blobs [readColumn $blobData $blobCol]
 
 
-# Add blob type elements to list
 
-
-puts "The blobs in this protein are: $col6"
-puts "There are [expr [llength $col6] -1] residues in this protein!"
+puts "The blobs in this protein are: $blobs"
+puts "There are [expr [llength $blobs] -1] residues in this protein!"
 
 #---------COLOR BY BLOB TYPE-----------
 #set HTYPE 0 ---> these create an error in the code
