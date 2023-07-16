@@ -26,8 +26,17 @@ proc readColumn {data colIdx} {
 		set value [lindex $rowList $colIdx]
 		lappend column $value
 	}
-
+	set column [lreplace $column 0 0]
 	return $column
+}
+
+proc assignVals {values resids mol field} {
+	foreach id $resids {
+		set res [atomselect top "resid $id"]
+		set val [lindex $values $id]
+		$res set $field $val
+		$res delete
+	}
 }
 
 set fname "blobs.csv"
@@ -35,8 +44,6 @@ set blobCol 8
 set blobData [readBlobulationCSV $fname]
 set blobs [readColumn $blobData $blobCol]
 
-set indexCol 9
-set blobIdcs [readColumn $blobData $indexCol]
 
 puts "The blobs in this protein are: $blobs"
 puts "There are [expr [llength $blobs]] residues in this protein!"
@@ -48,37 +55,11 @@ puts "User values will be $userVals"
 
 set protein [atomselect top protein]
 set resids [lsort -unique [$protein get resid]]
-foreach id $resids {
-	set res [atomselect top "resid $id"]
-	set val [lindex $userVals $id]
-	$res set user $val
-	$res delete
-}
+assignVals $userVals $resids top user
 
-#-----------COLOR BY BLOB INDEX------------
-set a 0
-set b 1
-set c 3
-set d 4
-set k 0
 
-foreach {blobtype} $newcol6 {
-	set blobBefore [lindex $newcol6 $a]
-	set blobAfter [lindex $newcol6 $b]
-	if {$blobAfter==$blobBefore} {
-		set sel [atomselect top "resid $a"]
-		$sel set user2 $k
-		puts "Coloring same index..."
-		$sel delete
-	}  else  {
-		set sel [atomselect top "resid $a"]
-		$sel set user2 $k
-		puts "Coloring new index..."
-		$sel delete
-		incr k
-	}
-	incr a
-	incr b
-	mol modcolor 0 0 User2		;# USER CHANGES MOL ID HERE ***
-}
 
+
+set indexCol 9
+set blobIdcs [readColumn $blobData $indexCol]
+set numericalIdcs [lmap idx $blobIdcs {regexp -all -inline -- {[0-9]+} $idx}]
