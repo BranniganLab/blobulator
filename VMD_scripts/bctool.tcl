@@ -35,8 +35,6 @@ set blobCol 8
 set blobData [readBlobulationCSV $fname]
 set blobs [readColumn $blobData $blobCol]
 
-
-
 puts "The blobs in this protein are: $blobs"
 puts "There are [expr [llength $blobs]] residues in this protein!"
 
@@ -44,8 +42,15 @@ set blobMap [dict create h 0 p 1 s 2 "" ""]
 set userVals [lmap blb $blobs {dict get $blobMap $blb}]
 puts "User values will be $userVals"
 
-mol modcolor 0 0 User		;# USER CHANGES MOL ID HERE ***
 
+set protein [atomselect top protein]
+set resids [lsort -unique [$alphaCarbons get resid]]
+foreach id $resids {
+	set res [atomselect top "resid $resid"]
+	$res set user [lindex $userVals $resid]
+	$res delete
+}
+mol modcolor 0 0 User		;# USER CHANGES MOL ID HERE ***
 
 #----------SHOW BLOB INDEX NUMBER---------
 set j 1
