@@ -44,22 +44,19 @@ set blobCol 8
 set blobData [readBlobulationCSV $fname]
 set blobs [readColumn $blobData $blobCol]
 
-
 puts "The blobs in this protein are: $blobs"
 puts "There are [expr [llength $blobs]] residues in this protein!"
 
-set blobMap [dict create h 0 p 1 s 2 "" ""]
+set blobMap [dict create h 1 p 2 s 3 "" ""]
 set userVals [lmap blb $blobs {dict get $blobMap $blb}]
 puts "User values will be $userVals"
-
 
 set protein [atomselect top protein]
 set resids [lsort -unique [$protein get resid]]
 assignVals $userVals $resids top user
 
-
-
-
 set indexCol 9
 set blobIdcs [readColumn $blobData $indexCol]
 set numericalIdcs [lmap idx $blobIdcs {regexp -all -inline -- {[0-9]+} $idx}]
+puts "Assigning user2 values: $numericalIdcs"
+assignVals $numericalIdcs $resids top user2
