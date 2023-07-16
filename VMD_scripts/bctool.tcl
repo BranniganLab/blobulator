@@ -38,39 +38,12 @@ set blobs [readColumn $blobData $blobCol]
 
 
 puts "The blobs in this protein are: $blobs"
-puts "There are [expr [llength $blobs] -1] residues in this protein!"
+puts "There are [expr [llength $blobs]] residues in this protein!"
 
-#---------COLOR BY BLOB TYPE-----------
-#set HTYPE 0 ---> these create an error in the code
-#set PTYPE 1
-#set STYPE 2
+set blobMap [dict create h 0 p 1 s 2 "" ""]
+set userVals [lmap blb $blobs {dict get $blobMap $blb}]
+puts "User values will be $userVals"
 
-set newcol6 [linsert $col6 0 0]
-set i 1
-foreach {blob} $newcol6 {
-	set checkBlob [lindex $newcol6 $i]
-	if {$checkBlob=="h"} {
-		set sel [atomselect top "resid $i"]
-		$sel set user 0
-		puts "resid $i is a h blob"
-		$sel delete
-	}
-
-	if {$checkBlob=="p"} {
-		set sel [atomselect top "resid $i"]
-		$sel set user 1
-		puts "resid $i is an p blob"
-		$sel delete
-	}
-
-	if {$checkBlob=="s"} {
-		set sel [atomselect top "resid $i"]
-		$sel set user 2
-		puts "resid $i is an s blob"
-		$sel delete
-	}
-	incr i
-}
 mol modcolor 0 0 User		;# USER CHANGES MOL ID HERE ***
 
 
