@@ -55,6 +55,7 @@ set protein [atomselect top protein]
 set resids [lsort -unique [$protein get resid]]
 assignVals $userVals $resids top user
 
+
 set indexCol 9
 set blobIdcs [readColumn $blobData $indexCol]
 set numericalIdcs [lmap idx $blobIdcs {regexp -all -inline -- {[0-9]+} $idx}]
