@@ -35,6 +35,9 @@ set blobCol 8
 set blobData [readBlobulationCSV $fname]
 set blobs [readColumn $blobData $blobCol]
 
+set indexCol 9
+set blobIdcs [readColumn $blobData $indexCol]
+
 puts "The blobs in this protein are: $blobs"
 puts "There are [expr [llength $blobs]] residues in this protein!"
 
@@ -51,21 +54,6 @@ foreach id $resids {
 	$res set user $val
 	$res delete
 }
-#----------SHOW BLOB INDEX NUMBER---------
-set j 1
-foreach {row} $datarow {
-	set listofElements2 [list [lindex $datarow $j]]
-	set datacol2 [split $listofElements2 ","]
-	set onlyIndex7 [lindex $datacol2 7]
-	lappend col7 $onlyIndex7
-	incr j
-	unset listofElements2
-	unset onlyIndex7
-	unset datacol2
-}
-
-puts "The blob index numbers are: $col7"
-unset col7
 
 #-----------COLOR BY BLOB INDEX------------
 set a 0
@@ -94,8 +82,3 @@ foreach {blobtype} $newcol6 {
 	mol modcolor 0 0 User2		;# USER CHANGES MOL ID HERE ***
 }
 
-#UNSET COL6 AND NEWCOL6 IF YOU WISH TO RUN SCRIPT AGAIN
-unset col6
-unset newcol6
-
-close $file
