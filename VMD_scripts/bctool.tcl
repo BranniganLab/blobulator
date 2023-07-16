@@ -44,14 +44,13 @@ puts "User values will be $userVals"
 
 
 set protein [atomselect top protein]
-set resids [lsort -unique [$alphaCarbons get resid]]
+set resids [lsort -unique [$protein get resid]]
 foreach id $resids {
-	set res [atomselect top "resid $resid"]
-	$res set user [lindex $userVals $resid]
+	set res [atomselect top "resid $id"]
+	set val [lindex $userVals $id]
+	$res set user $val
 	$res delete
 }
-mol modcolor 0 0 User		;# USER CHANGES MOL ID HERE ***
-
 #----------SHOW BLOB INDEX NUMBER---------
 set j 1
 foreach {row} $datarow {
