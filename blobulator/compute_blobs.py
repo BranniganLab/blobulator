@@ -216,7 +216,7 @@ def uversky_diagram(x):
 
 # ..........................Define NCPR.........................................................#
 
-
+def lookupNCPR(x):
 
     """
     A function that returns the color for each blob based on its NCPR
