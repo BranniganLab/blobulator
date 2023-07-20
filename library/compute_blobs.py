@@ -223,7 +223,7 @@ def lookupNCPR(x):
     import matplotlib
     from matplotlib.colors import LinearSegmentedColormap
     cmap = LinearSegmentedColormap.from_list("mycmap", [(0.0 / 1, "red"), ((0.5) / 1, "whitesmoke"), (1.0, "blue")])
-    norm = matplotlib.colors.Normalize(vmin=-0.5, vmax=0.5)
+    norm = matplotlib.colors.Normalize(vmin=-0.2, vmax=0.2)
     
     fraction = np.round(x[0], 2)
     
