@@ -39,25 +39,50 @@ proc assignVals {values resids mol field} {
 	}
 }
 
-set fname "blobs.csv"
-set blobCol 8
-set blobData [readBlobulationCSV $fname]
-set blobs [readColumn $blobData $blobCol]
+proc range {from to} {
+	if {$to>$from} {concat [range $from [incr to -1]] $to}
+}
 
-puts "The blobs in this protein are: $blobs"
-puts "There are [expr [llength $blobs]] residues in this protein!"
+proc dict_getwithdefault {D args} {
+	if {[dict exists $D {*}[lrange $args 0 end-1]]} then {
+		dict get $D {*}[lrange $args 0 end-1]
+	} else {
+		lindex $args end
+	}
+}
 
 set blobMap [dict create h 1 p 2 s 3 "" ""]
 set userVals [lmap blb $blobs {dict get $blobMap $blb}]
 puts "User values will be $userVals"
 
-set protein [atomselect top protein]
-set resids [lsort -unique [$protein get resid]]
-assignVals $userVals $resids top user
+proc get_blobs {fname atomsel} {
+	set seqCol 1
+	set blobCol 8
+	set indexCol 9
+	set blobMap [dict create h 1 p 2 s 3 "" ""]
 
+	set blobData [readBlobulationCSV $fname]
+	set blobs [readColumn $blobData $blobCol]
 
-set indexCol 9
-set blobIdcs [readColumn $blobData $indexCol]
-set numericalIdcs [lmap idx $blobIdcs {regexp -all -inline -- {[0-9]+} $idx}]
-puts "Assigning user2 values: $numericalIdcs"
-assignVals $numericalIdcs $resids top user2
+	puts "The blobs in this protein are: $blobs"
+	puts "There are [expr [llength $blobs]] residues in this blobulation."
+
+	set blobSeq [string map {" " ""} [readColumn $blobData $seqCol]]
+	set pdbSeq [get_sequence $atomsel]
+
+	if {$blobSeq ne $pdbSeq} {
+		puts "WARNING: the sequence that was blobulated appears different from the sequence of the provided selection!"
+		puts "Blobulated sequence: $blobSeq"
+		puts "Selection sequence: $pdbSeq"
+	}
+
+	set userVals [lmap blb $blobs {dict get $blobMap $blb}]
+	puts "User values will be $userVals"
+	set residues [lsort -unique [$atomsel get residue]]
+	assignVals $userVals $residues [$atomsel molid] user 
+
+	set blobIdcs [readColumn $blobData $indexCol]
+	set numericalIdcs [lmap idx $blobIdcs {regexp -all -inline -- {[0-9]+} $idx}]
+	puts "Assigning user2 values: $numericalIdcs"
+	assignVals $numericalIdcs $residues [$atomsel molid] user2 
+}
