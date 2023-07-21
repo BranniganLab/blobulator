@@ -51,9 +51,18 @@ proc dict_getwithdefault {D args} {
 	}
 }
 
-set blobMap [dict create h 1 p 2 s 3 "" ""]
-set userVals [lmap blb $blobs {dict get $blobMap $blb}]
-puts "User values will be $userVals"
+proc get_sequence {atomsel} {
+	set seqMap [dict create GLY G ALA A VAL V PHE F PRO P MET M ILE I LEU L ASP D GLU E LYS K ARG R SER S THR T TYR Y HIS H CYS C ASN N GLN Q TRP W]
+
+	set resids [lsort -unique [$atomsel get resid]]
+	set molid [$atomsel molid]
+	set chainid [lsort -unique [$atomsel get chain]]
+	set cleanSelection [atomselect $molid "chain $chainid and name CA and resid $resids"]
+	set resnames [$cleanSelection get resname]
+	set sequence [lmap resname $resnames {dict_getwithdefault $seqMap $resname "X"}]
+
+	return [string map {" " ""} $sequence]
+}
 
 proc get_blobs {fname atomsel} {
 	set seqCol 1
