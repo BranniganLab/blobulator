@@ -30,12 +30,26 @@ proc readColumn {data colIdx} {
 	return $column
 }
 
-proc assignVals {values resids mol field} {
-	foreach id $resids {
-		set res [atomselect top "resid $id"]
-		set val [lindex $values $id]
+proc assignVals {values residues mol field {seltext ""}} {
+	if {$seltext ne ""} {
+		set seltext "and $seltext"
+	}
+	set idx 0
+	set last [lindex $residues 0]
+	foreach id $residues {
+		set step [expr $id - $last]
+		if {$step>1} {
+			puts "WARNING: apparent gap detected between residues $last and $id. Skipping $step blobulated residues."
+			set idx [expr $idx + $step]
+		}
+		set selection "residue $id $seltext"
+		puts $selection
+		set res [atomselect $mol $selection]
+		set val [lindex $values $idx]
 		$res set $field $val
 		$res delete
+		incr idx
+		set last $id
 	}
 }
 
