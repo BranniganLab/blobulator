@@ -43,7 +43,6 @@ proc assignVals {values residues mol field {seltext ""}} {
 			set idx [expr $idx + $step]
 		}
 		set selection "residue $id $seltext"
-		puts $selection
 		set res [atomselect $mol $selection]
 		set val [lindex $values $idx]
 		$res set $field $val
