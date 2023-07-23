@@ -1,12 +1,17 @@
 import pandas as pd
 import numpy as np
-from amino_acids import (
+from .amino_acids import (
     properties_charge,
     THREE_TO_ONE,
     properties_type,
     properties_hydropathy,
     properties_hydropathy_eisenberg_weiss,
 )
+
+from importlib.resources import files
+
+blob_path = files("blobulator").joinpath("data")
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -210,7 +215,9 @@ def uversky_diagram(x):
         return distance 
 
 # ..........................Define NCPR.........................................................#
+
 def lookupNCPR(x):
+
     """
     A function that returns the color for each blob based on its NCPR
 
@@ -223,6 +230,7 @@ def lookupNCPR(x):
     import matplotlib
     from matplotlib.colors import LinearSegmentedColormap
     cmap = LinearSegmentedColormap.from_list("mycmap", [(0.0 / 1, "red"), ((0.5) / 1, "whitesmoke"), (1.0, "blue")])
+
     norm = matplotlib.colors.Normalize(vmin=-0.2, vmax=0.2)
     
     fraction = np.round(x[0], 2)
@@ -230,7 +238,9 @@ def lookupNCPR(x):
     returned_rgb = matplotlib.colors.to_rgba(cmap(norm(fraction)))
     return "rgb(" + str(returned_rgb[0] * 255) + "," + str(returned_rgb[1] * 255) + "," + str(returned_rgb[2] * 255) + ")"
 
-uverskyDict = pd.read_csv("../data/uverskyCMap.csv", index_col=0)
+
+fname = blob_path.joinpath("uverskyCMap.csv")
+uverskyDict = pd.read_csv(fname, index_col=0)
 def lookupUversky(x):
     """
     A function that returns the color for each blob based on its distance from the disorder/order boundary for on the uversky diagram
@@ -245,7 +255,8 @@ def lookupUversky(x):
     val = x[0]
     return uverskyDict.loc[np.round(val, 2)]
 
-disorderDict = pd.read_csv("../data/disorderCMap.csv", index_col=0)
+fname = blob_path.joinpath("disorderCMap.csv")
+disorderDict = pd.read_csv(fname, index_col=0)
 def lookupDisorder(x):
     """
     A function that returns the color for each blob based on how disordered it is, determined by the Uniprot accession
@@ -259,14 +270,17 @@ def lookupDisorder(x):
     val = x[0]
     return disorderDict.loc[np.round(val, 2)]
 
-enrichDF = pd.read_csv("../data/enrichCMap.csv", index_col=[0,1])
-enrichDF.to_csv("../data/enrichment.txt")
+fname = blob_path.joinpath("enrichCMap.csv")
+enrichDF = pd.read_csv(fname, index_col=[0, 1])
+#enrichDF.to_csv("../data/enrichment.txt")
 
-enrichDF_p = pd.read_csv("../data/enrichCMap_p.csv", index_col=[0,1])
-enrichDF_p.to_csv("../data/enrichment_p.txt")
+fname = blob_path.joinpath("enrichCMap_p.csv")
+enrichDF_p = pd.read_csv(fname, index_col=[0, 1])
+#enrichDF_p.to_csv("../data/enrichment_p.txt")
 
-enrichDF_s = pd.read_csv("../data/enrichCMap_s.csv", index_col=[0,1])
-enrichDF_s.to_csv("../data/enrichment_s.txt")
+fname = blob_path.joinpath("enrichCMap_s.csv")
+enrichDF_s = pd.read_csv(fname, index_col=[0, 1])
+#enrichDF_s.to_csv("../data/enrichment_s.txt")
 
 def lookupEnrichment(x):
     """
@@ -596,68 +610,4 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
 
     return df
 
-if __name__ == "__main__":
 
-    import argparse
-    from Bio import SeqIO
-    from Bio.Seq import Seq
-
-    #For diagnostics/development benchmarking
-    #import cProfile
-
-    #seq = "MAQILPIRFQEHLQLQNLGINPANIGFSTLTMESDKFICIREKVGEQAQVVIIDMNDPSNPIRRPISADSAIMNPASKVIALKAGKTLQIFNIEMKSKMKAHTMTDDVTFWKWISLNTVALVTDNAVYHWSMEGESQPVKMFDRHSSLAGCQIINYRTDAKQKWLLLTGISAQQNRVVGAMQLYSVDRKVSQPIEGHAASFAQFKMEGNAEESTLFCFAVRGQAGGKLHIIEVGTPPTGNQPFPKKAVDVFFPPEAQNDFPVAMQISEKHDVVFLITKYGYIHLYDLETGTCIYMNRISGETIFVTAPHEATAGIIGVNRKGQVLSVCVEEENIIPYITNVLQNPDLALRMAVRNNLAGAEELFARKFNALFAQGNYSEAAKVAANAPKGILRTPDTIRRFQSVPAQPGQTSPLLQYFGILLDQGQLNKYESLELCRPVLQQGRKQLLEKWLKEDKLECSEELGDLVKSVDPTLALSVYLRANVPNKVIQCFAETGQVQKIVLYAKKVGYTPDWIFLLRNVMRISPDQGQQFAQMLVQDEEPLADITQIVDVFMEYNLIQQCTAFLLDALKNNRPSEGPLQTRLLEMNLMHAPQVADAILGNQMFTHYDRAHIAQLCEKAGLLQRALEHFTDLYDIKRAVVHTHLLNPEWLVNYFGSLSVEDSLECLRAMLSANIRQNLQICVQVASKYHEQLSTQSLIELFESFKSFEGLFYFLGSIVNFSQDPDVHFKYIQAACKTGQIKEVERICRESNCYDPERVKNFLKEAKLTDQLPLIIVCDRFDFVHDLVLYLYRNNLQKYIEIYVQKVNPSRLPVVIGGLLDVDCSEDVIKNLILVVRGQFSTDELVAEVEKRNRLKLLLPWLEARIHEGCEEPATHNALAKIYIDSNNNPERFLRENPYYDSRVVGKYCEKRDPHLACVAYERGQCDLELINVCNENSLFKSLSRYLVRRKDPELWGSVLLESNPYRRPLIDQVVQTALSETQDPEEVSVTVKAFMTADLPNELIELLEKIVLDNSVFSEHRNLQNLLILTAIKADRTRVMEYINRLDNYDAPDIANIAISNELFEEAFAIFRKFDVNTSAVQVLIEHIGNLDRAYEFAERCNEPAVWSQLAKAQLQKGMVKEAIDSYIKADDPSSYMEVVQAANTSGNWEELVKYLQMARKKARESYVETELIFALAKTNRLAELEEFINGPNNAHIQQVGDRCYDEKMYDAAKLLYNNVSNFGRLASTLVHLGEYQAAVDGARKANSTRTWKEVCFACVDGKEFRLAQMCGLHIVVHADELEELINYYQDRGYFEELITMLEAALGLERAHMGMFTELAILYSKFKPQKMREHLELFWSRVNIPKVLRAAEQAHLWAELVFLYDKYEEYDNAIITMMNHPTDAWKEGQFKDIITKVANVELYYRAIQFYLEFKPLLLNDLLMVLSPRLDHTRAVNYFSKVKQLPLVKPYLRSVQNHNNKSVNESLNNLFITEEDYQALRTSIDAYDNFDNISLAQRLEKHELIEFRRIAAYLFKGNNRWKQSVELCKKDSLYKDAMQYASESKDTELAEELLQWFLQEEKRECFGACLFTCYDLLRPDVVLETAWRHNIMDFAMPYFIQVMKEYLTKVDKLDASESLRKEEEQATETQPIVYGQPQLMLTAGPSVAVPPQAPFGYGYTAPPYGQPQPGFGYSM"
-    #cProfile.run("compute(seq, 0.4, 4)")
-    #for i in range(1,len(seq), 5):
-     #   cProfile.run("compute(seq[0:i], 0.4, 4)")
-
-    #df = compute("MSPQTETKASVGFKAGVKDYKLTYYTPEYETKDTDILAAFRVTPQPGVPPEEAGAAVAAESSTGTWTTVWTDGLTSLDRYKGRCYHIEPVAGEENQYICYVAYPLDLFEEGSVTNMFTSIVGNVFGFKALRALRLEDLRIPTAYVKTFQGPPHGIQVERDKLNKYGRPLLGCTIKPKLGLSAKNYGRAVYECLRGGLDFTKDDENVNSQPFMRWRDRFLFCAEAIYKSQAETGEIKGHYLNATAGTCEEMMKRAIFARELGVPIVMHDYLTGGFTANTSLAHYCRDNGLLLHIHRAMHAVIDRQKNHGIHFRVLAKALRMSGGDHIHSGTVVGKLEGERDITLGFVDLLRDDFIEKDRSRGIYFTQDWVSLPGVLPVASGGIHVWHMPALTEIFGDDSVLQFGGGTLGHPWGNAPGAVANRVALEACVQARNEGRDLAREGNEIIREACKWSPELAAACEVWKEIKFEFQAMDTL", 0.4, 1)
-    
-    parser = argparse.ArgumentParser(description='')
-
-    parser.add_argument('--sequence', type=str, help='Takes a single string of EITHER DNA or protein one-letter codes (no spaces).', default=None)
-    parser.add_argument('--cutoff', type=float, help='Sets the cutoff hydrophobicity (floating point number between 0.00 and 1.00 inclusive). Defaults to 0.4', default=0.4)
-    parser.add_argument('--minBlob', type=int, help='Mininmum blob length (integer greater than 1). Defaults to 4', default=4)
-    parser.add_argument('--oname', type=str, help='Name of output file or path to output directory. Defaults to blobulated_.csv', default="blobulated_")
-    parser.add_argument('--fasta', type=str, help='FASTA file with 1 or more sequences', default=None)
-    parser.add_argument('--DNA', type=bool, help='Flag that says whether the inputs are DNA or protein. Defaults to false (protein)', default=False)
-
-    args = parser.parse_args()
-
-    if args.DNA:
-        print("REMINDER: The blobulator assumes all DNA inputs to be coding sequences and only translates up to the first stop codon.")
-        print("CAUTION: Do not mix DNA and protein sequences")
-    if (args.sequence!=None) & (args.fasta!=None):
-        print("ERROR: Input EITHER --sequence OR --fasta. NOT both.")
-
-    elif args.fasta:
-        print(f"Reading {args.fasta}")
-        for seq_record in SeqIO.parse(args.fasta, "fasta"):
-            print(f'Running: {seq_record.id}')
-            if args.DNA:
-                coding_dna = seq_record.seq
-                mrna = coding_dna.transcribe()
-                sequence = mrna.translate(to_stop=True)
-            else:
-                sequence = seq_record.seq
-            df = compute(sequence, args.cutoff, args.minBlob, 'kyte_doolittle')
-            print(f"Writing output file to: {args.oname}{seq_record.id}.csv")
-            df = clean_df(df)
-            df.to_csv(f'{args.oname}{seq_record.id}.csv', index=False)
-
-    elif args.sequence:
-        print(f'Running...\nseq: {args.sequence}\ncutoff: {args.cutoff}\nminBlob: {args.minBlob}\nOutput to: {args.oname}')
-        if args.DNA:
-            coding_dna = Seq(args.sequence)
-            mrna = coding_dna.transcribe()
-            sequence = mrna.translate(to_stop=True)
-        else:
-            sequence = args.sequence
-        
-        df = compute(sequence, args.cutoff, args.minBlob, 'kyte_doolittle')
-        print ("Writing output file")
-        df = clean_df(df)
-        df.to_csv(args.oname, index=False)
-
-        print("done")
-    else:
-        print("No sequence provided")

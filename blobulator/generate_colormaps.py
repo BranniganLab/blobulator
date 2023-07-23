@@ -9,8 +9,12 @@ from random import random
 import matplotlib as mpl
 from matplotlib.lines import Line2D
 
-import os 
 
+
+
+from importlib.resources import files
+
+blob_path = files("blobulator").joinpath("data")
 
 ## COLOR MAPS
 
@@ -27,7 +31,8 @@ cNorm = matplotlib.colors.Normalize(vmin=-0.3, vmax=0.3) #re-wrapping normalizat
 scalarMap = matplotlib.cm.ScalarMappable(norm=cNorm, cmap=cmap_u)
 cval = scalarMap.to_rgba(0)
 
-blob_length_cutoff_enrichment = pd.read_csv('./Table_S1.csv')
+fname = blob_path.joinpath("Table_S1.csv")
+blob_length_cutoff_enrichment = pd.read_csv(fname)
 dict_enrich = dict(zip(zip(blob_length_cutoff_enrichment['Hydrophobicity cutoff'], blob_length_cutoff_enrichment['Blob length']), blob_length_cutoff_enrichment['Enrichment ']))
 
 
@@ -85,19 +90,18 @@ def enrichment_color(enrich_value):
     return "rgb" + str(tuple([255 * x for x in m_color[:-1]]))
 
 
-df = pd.read_csv('./Table_S1.csv')
 
-dfMI = df.set_index(["Hydrophobicity cutoff", "Blob length"])
+dfMI = blob_length_cutoff_enrichment.set_index(["Hydrophobicity cutoff", "Blob length"])
 
 #Special function for enrichment prediction color which requires the cutoff
 dfMI["color"] = ""
 errCount = 0
-for i in range(df.shape[0]):
+for idx, the_row in dfMI.iterrows():
     try:
-        enrich_value = df.loc[i, "Enrichment "]
+        enrich_value = the_row["Enrichment "]
         m_color = scalarMap_enrich.to_rgba(enrich_value)
         theColor = "rgb" + str(tuple([255 * x for x in m_color[:-1]]))
-        dfMI["color"].iloc[i] = theColor
+        dfMI.loc[idx, "color"] = theColor
     except KeyError:
         errCount = errCount+1
 print(f'Num errors: {errCount}')
