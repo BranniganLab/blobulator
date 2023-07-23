@@ -3,6 +3,23 @@
 # Abstract
 # This file contains the functions necessary to read,
 # parse, and visualize blobulation data.
+#
+# To use:
+# Load your protein of choice into a vmd session and open the tkconsole
+# Source this file using:
+#	source /path/to/bctool.tcl
+# Get the protein sequence using:
+# 	set protSel [atomselect top "protein"]
+#	get_sequence $protSel
+# Copy and paste the sequence into the blobulator and blobulate according to your needs
+# Download the data using the "Download Data" button on the website
+# Copy the data to your working directory
+# Import the blobulation data using:
+#	getBlobs my_blobulation.csv $protSel
+# Visualize according to your needs. 
+# User will contain 1=hydrophobic blob, 2=polar blob, 3=short blob
+# User2 will contain the blob id number
+#
 # For more information about blobulation, see:
 # https://www.blobulator.branniganlab.org/
 # Or the GitHub repository:
