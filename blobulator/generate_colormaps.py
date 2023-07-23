@@ -17,9 +17,6 @@ from importlib.resources import files
 blob_path = files("blobulator").joinpath("data")
 
 ## COLOR MAPS
-cmap = LinearSegmentedColormap.from_list(
-    "mycmap", [(0.0 / 1, "red"), ((0.5) / 1, "whitesmoke"), (1.0, "blue")]
-)
 
 vmax=2.5
 cmap_enrich = LinearSegmentedColormap.from_list('mycmap', [(0/ vmax, 'red'), (1./vmax, 'whitesmoke'), (vmax / vmax, 'blue')])
@@ -44,18 +41,6 @@ def uversky_color(x):
     m_color = scalarMap.to_rgba(ncpr)
     return "rgb" + str(tuple([255 * x for x in m_color[:-1]]))
 
-def NCPR_color(x):
-    ncpr = x[0]
-    #Setting the limts of the ncpr graph to 0.5 and -0.5, any number higher or lower will be considered max
-    if ncpr > 0.5:
-        ncpr = 1
-    if ncpr < -0.5:
-        ncpr = -1
-    ncpr_normalized = (ncpr + 1.0) / 2
-    m_color = cmap(ncpr_normalized)
-
-    return "rgb" + str(tuple([255 * x for x in m_color[:-1]]))
-
 def disorder_color(x):
     ncpr = x[0]
     m_color = cmap_disorder(ncpr)
@@ -64,8 +49,6 @@ def disorder_color(x):
 def enrichment_color(enrich_value):
     m_color = scalarMap_enrich.to_rgba(enrich_value)
     return "rgb" + str(tuple([255 * x for x in m_color[:-1]]))
-
-
 
 
 def writeCMap(func, fname, vmin, vmax, res):
@@ -85,8 +68,6 @@ def writeCMap(func, fname, vmin, vmax, res):
 res = 2 #this determines the resolution in terms of the number of decimal places
 
 writeCMap(uversky_color, "uverskyCMap.csv", -1, 1, res)
-
-writeCMap(NCPR_color, "ncprCMap.csv", -1, 1, res)
 
 writeCMap(disorder_color,"disorderCMap.csv",-1, 1, res)
 
