@@ -33,11 +33,21 @@
 	empty-cells: show;
 }
 
+.page-container {
+		width: 90vw;
+}
+
 @media not print {
 	.result-controls {
 		position: sticky;
 		top: 0;
 		width: 100vw;
+	}
+}
+
+@media only screen and (max-width: 480px) {
+	.viz_track {
+		zoom: 40%;
 	}
 }
 
@@ -84,6 +94,10 @@ td > div {
 	width: 1px;
 	height: 1px;
 	transform:  scale(20);
+}
+
+.viz_track {
+	width: 100%;
 }
 
 .myslider1:hover {
