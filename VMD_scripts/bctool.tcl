@@ -75,9 +75,10 @@ proc readColumn {data colIdx} {
 #	field: which field should be assigned (e.g. user or beta)
 #	seltext: [optional] additional refinements to the selection text
 # Results:
-#	The field of the mol's residues should contain the appropriate values. If the residues are not sequential, the gap is skipped in the values list.
-#	WARNING: the heuristic may not always work. If you get a warning message about a gap detected, be sure to manually check the residues before and
-#	after the indicated gap.
+#	The field of the mol's residues should contain the appropriate values. 
+#	If the residues are not sequential, the gap is skipped in the values list.
+#	WARNING: the heuristic may not always work. If you get a warning message about a gap detected, 
+#	be sure to manually check the residues before and after the indicated gap.
 proc assignVals {values residues mol field {seltext ""}} {
 	if {$seltext ne ""} {
 		set seltext "and $seltext"
@@ -87,8 +88,8 @@ proc assignVals {values residues mol field {seltext ""}} {
 	foreach id $residues {
 		set step [expr $id - $last]
 		if {$step>1} {
-			puts "WARNING: apparent gap detected between residues $last and $id. Skipping $step blobulated residues."
-			set idx [expr $idx + $step]
+			puts "WARNING: apparent gap detected between residues $last and $id. Double check blob assignments."
+			#set idx [expr $idx + $step]
 		}
 		set selection "residue $id $seltext"
 		set res [atomselect $mol $selection]
@@ -185,7 +186,8 @@ proc getBlobs {fname atomsel} {
 
 	set userVals [lmap blb $blobs {dict get $blobMap $blb}]
 	puts "User values will be $userVals"
-	set residues [lsort -unique [$atomsel get residue]]
+	set residues [lsort -unique -integer [$atomsel get resid]]
+
 	assignVals $userVals $residues [$atomsel molid] user 
 
 	set blobIdcs [readColumn $blobData $indexCol]
