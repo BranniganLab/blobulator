@@ -10,7 +10,7 @@
 #	source /path/to/bctool.tcl
 # Get the protein sequence using:
 # 	set protSel [atomselect top "protein"]
-#	get_sequence $protSel
+#	getSequence $protSel
 # Copy and paste the sequence into the blobulator and blobulate according to your needs
 # Download the data using the "Download Data" button on the website
 # Copy the data to your working directory
@@ -146,7 +146,7 @@ proc getSequence {atomsel} {
 	set chainid [lsort -unique [$atomsel get chain]]
 	set cleanSelection [atomselect $molid "chain $chainid and name CA and resid $resids"]
 	set resnames [$cleanSelection get resname]
-	set sequence [lmap resname $resnames {dictGetWithDefaultt $seqMap $resname "X"}]
+	set sequence [lmap resname $resnames {dictGetWithDefault $seqMap $resname "X"}]
 
 	return [string map {" " ""} $sequence]
 }
