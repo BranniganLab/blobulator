@@ -174,9 +174,9 @@ proc getBlobs {fname atomsel} {
 	puts "The blobs in this protein are: $blobs"
 	puts "There are [expr [llength $blobs]] residues in this blobulation."
 
-	set blobSeq [string map {" " ""} [readColumn $blobData $seqCol]]
-	set pdbSeq [get_sequence $atomsel]
-
+	set blobSeq [string map {" " "" "{" "" "}" ""} [readColumn $blobData $seqCol]]
+	set pdbSeq [getSequence $atomsel]
+	
 	if {$blobSeq ne $pdbSeq} {
 		puts "WARNING: the sequence that was blobulated appears different from the sequence of the provided selection!"
 		puts "Blobulated sequence: $blobSeq"
