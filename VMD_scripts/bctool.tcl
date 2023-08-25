@@ -79,28 +79,37 @@ proc readColumn {data colIdx} {
 #	If the residues are not sequential, the gap is skipped in the values list.
 #	WARNING: the heuristic may not always work. If you get a warning message about a gap detected, 
 #	be sure to manually check the residues before and after the indicated gap.
-proc assignVals {values residues mol field {seltext ""}} {
+proc assignVals {blobSeq values residues mol field {seltext ""}} {
 	if {$seltext ne ""} {
 		set seltext "and $seltext"
 	}
-	set idx 0
-	set last 0
+	set blbidx 0
+	set blblast 0
+	
+	# Iterate over the residues in the structure
 	foreach residue $residues {
-		set step [expr $residue - $last]
-		if {$step>1} {
-			puts "WARNING: apparent gap detected between residues $last and $residue. Double check blob assignments."
-		}
 		set selection "residue $residue $seltext"
 		set res [atomselect $mol $selection]
-		set val [lindex $values $idx]
+		set resSeq [getSequence $res]
 		
+		# Make sure the sequences match. If not, increment.
+		if {$resSeq ne [string index $blobSeq $blbidx]} {
+			incr blbidx
+		}	
+			
+		set val [lindex $values $blbidx]
 		if {[catch {$res set $field $val} err]} {
-		   #puts "Error info $err\nFull info: $::errorInfo"
-		   puts "Are you sure there is ONLY protein in your selection?"
+		   puts "Error info $err\nFull info: $::errorInfo"
+		   puts "You may have more residues in the selection than in the blobulation."
 		}
+		
 		$res delete
-		incr idx
-		set last $residue
+		set delta [expr "$blbidx-$blblast-1"]
+		if {$delta > 0} {
+			puts "Warning: skipping $delta residues from the blobulation."
+		}
+		set blblast $blbidx
+		incr blbidx
 	}
 }
 
@@ -191,10 +200,10 @@ proc getBlobs {fname atomsel} {
 	puts "User values will be $userVals"
 	set residues [lsort -unique -integer [$atomsel get residue]]
 
-	assignVals $userVals $residues [$atomsel molid] user 
+	assignVals $blobSeq $userVals $residues [$atomsel molid] user
 
 	set blobIdcs [readColumn $blobData $indexCol]
 	set numericalIdcs [lmap idx $blobIdcs {regexp -all -inline -- {[0-9]+} $idx}]
 	puts "Assigning user2 values: $numericalIdcs"
-	assignVals $numericalIdcs $residues [$atomsel molid] user2 
+	assignVals $blobSeq $numericalIdcs $residues [$atomsel molid] user2 
 }
