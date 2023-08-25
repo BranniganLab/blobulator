@@ -84,20 +84,23 @@ proc assignVals {values residues mol field {seltext ""}} {
 		set seltext "and $seltext"
 	}
 	set idx 0
-	set last [lindex $residues 0]
-	foreach id $residues {
-		set step [expr $id - $last]
+	set last 0
+	foreach residue $residues {
+		set step [expr $residue - $last]
 		if {$step>1} {
-			puts "WARNING: apparent gap detected between residues $last and $id. Double check blob assignments."
-			#set idx [expr $idx + $step]
+			puts "WARNING: apparent gap detected between residues $last and $residue. Double check blob assignments."
 		}
-		set selection "residue $id $seltext"
+		set selection "residue $residue $seltext"
 		set res [atomselect $mol $selection]
 		set val [lindex $values $idx]
-		$res set $field $val
+		
+		if {[catch {$res set $field $val} err]} {
+		   #puts "Error info $err\nFull info: $::errorInfo"
+		   puts "Are you sure there is ONLY protein in your selection?"
+		}
 		$res delete
 		incr idx
-		set last $id
+		set last $residue
 	}
 }
 
@@ -142,10 +145,10 @@ proc dictGetWithDefault {D args} {
 proc getSequence {atomsel} {
 	set seqMap [dict create GLY G ALA A VAL V PHE F PRO P MET M ILE I LEU L ASP D GLU E LYS K ARG R SER S THR T TYR Y HIS H CYS C ASN N GLN Q TRP W]
 
-	set resids [lsort -unique [$atomsel get resid]]
+	set residues [lsort -unique [$atomsel get residue]]
 	set molid [$atomsel molid]
 	set chainid [lsort -unique [$atomsel get chain]]
-	set cleanSelection [atomselect $molid "chain $chainid and name CA and resid $resids"]
+	set cleanSelection [atomselect $molid "chain $chainid and name CA and residue $residues"]
 	set resnames [$cleanSelection get resname]
 	set sequence [lmap resname $resnames {dictGetWithDefault $seqMap $resname "X"}]
 
@@ -186,7 +189,7 @@ proc getBlobs {fname atomsel} {
 
 	set userVals [lmap blb $blobs {dict get $blobMap $blb}]
 	puts "User values will be $userVals"
-	set residues [lsort -unique -integer [$atomsel get resid]]
+	set residues [lsort -unique -integer [$atomsel get residue]]
 
 	assignVals $userVals $residues [$atomsel molid] user 
 
