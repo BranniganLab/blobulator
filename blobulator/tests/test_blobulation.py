@@ -15,9 +15,9 @@ class TestBlobulation:
 
         blobDF = blobulator.compute(sequence, float(cutoff), int(min_blob), hscale)
         blobDF = blobulator.clean_df(blobDF)
-        blobDF.to_csv(f"{oname[0:-13]}.csv", index=False)
+        blobDF.to_csv(f"test_outputs/{oname[0:-13]}.csv", index=False)
 
-        expected = [row for row in open(f"{oname[0:-13]}_expected.csv")]
-        test = [row for row in open(oname)]
+        expected = [row for row in open(oname)]
+        test = [row for row in open(f"test_outputs/{oname[0:-13]}.csv")]
 
         assert expected == test

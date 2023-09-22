@@ -6,16 +6,15 @@ import blobulator
 import random
 import numpy as np
 
-ntests=20
+ntests=200
 amino_acids=['A', 'R', 'N', 'D', 'B', 'C', 'E', 'Q', 'Z', 'G', 'H', 'I', 'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']
-cutoffs = np.linspace(0,1,ntests)
 
-for num in range(20):
-    # A very simple oligopeptide
+for num in range(ntests):
+    seqlen = random.randint(100,5000)
     sequence = ''.join(random.choices(amino_acids, k=100))
 
     # Default cutoff, Lmin, and hydrophobicity scale
-    cutoff = cutoffs[num]
+    cutoff = random.uniform(0,1)
     min_blob = random.randint(1,30)
     hscale = "kyte_doolittle"
 
