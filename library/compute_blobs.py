@@ -563,14 +563,14 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
 
     df["N"] = domain_group["resid"].transform("count")
     df["H"] = domain_group["hydropathy"].transform("mean")
-    df["min_h"] = domain_group["hydropathy"].transform("min")
+    df["min_h"] = domain_group["hydropathy_3_window_mean"].transform("min")
     df["NCPR"] = domain_group["charge"].transform("mean")
     df["disorder"] = domain_group["disorder"].transform("mean")
     df["f+"] = domain_group["charge"].transform(lambda x: count_var(x, 1))
     df["f-"] = domain_group["charge"].transform(lambda x: count_var(x, -1))
     df["fcr"] = df["f-"] + df["f+"]
-    df['h_blob_enrichment'] = df[["N", "H", "blobtype"]].apply(lookupEnrichment, axis=1)
-    df['h_numerical_enrichment'] = df[["N", "H", "blobtype"]].apply(lambda x: h_blob_enrichments_numerical(x), axis=1)
+    df['h_blob_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lookupEnrichment, axis=1)
+    df['h_numerical_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lambda x: h_blob_enrichments_numerical(x), axis=1)
 
     df["blob_color"] = df[["domain", "hydropathy"]].apply(
         blob_diagram, axis=1)
