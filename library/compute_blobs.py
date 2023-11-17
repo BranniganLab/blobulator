@@ -569,8 +569,8 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
     df["f+"] = domain_group["charge"].transform(lambda x: count_var(x, 1))
     df["f-"] = domain_group["charge"].transform(lambda x: count_var(x, -1))
     df["fcr"] = df["f-"] + df["f+"]
-    df['h_blob_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lookupEnrichment, axis=1)
-    df['h_numerical_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lambda x: h_blob_enrichments_numerical(x), axis=1)
+    df['h_blob_enrichment'] = df[["N", "H", "blobtype"]].apply(lookupEnrichment, axis=1)
+    df['h_numerical_enrichment'] = df[["N", "H", "blobtype"]].apply(lambda x: h_blob_enrichments_numerical(x), axis=1)
 
     df["blob_color"] = df[["domain", "hydropathy"]].apply(
         blob_diagram, axis=1)
