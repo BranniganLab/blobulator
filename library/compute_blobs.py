@@ -270,10 +270,11 @@ enrichDF_s.to_csv("../data/enrichment_s.txt")
 
 def lookupEnrichment(x):
     """
-    A function that returns the color for each blob based on how sensitive to mutation it is predicted to be
-
+    A function that returns the color for each blob based on how sensitive to mutation it is predicted to be.
+    Note: this function requires the minimum smoothed hydropathy for each blob. The analysis from Lohia et al. 2022 that produced the data by which blobs are colored involved increasing the H* threshold, and the minimum smoothed hydropathy is what determines that any given h-blob of a given length is still considered an h-blob as this threshold is increased.
+    
     Arguments:
-        x (array): An array containing the predicted mutation sensitivity value for each residue by blob
+        x (array): An array containing the number of residues in the blob, the minimum smoothed hydropathy, and the type of blob it is
 
     Returns:
         color (str): a string containing the color value for each residue based on sensitive to mutation the blob that contains it is estimated to be
