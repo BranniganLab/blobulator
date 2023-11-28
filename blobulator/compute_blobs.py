@@ -284,14 +284,16 @@ enrichDF_s = pd.read_csv(fname, index_col=[0, 1])
 
 def lookupEnrichment(x):
     """
-    A function that returns the color for each blob based on how sensitive to mutation it is predicted to be
-
+    A function that returns the color for each blob based on how sensitive to mutation it is predicted to be.
+    Note: this function requires the minimum smoothed hydropathy for each blob. The analysis from Lohia et al. 2022 that produced the data by which blobs are colored involved increasing the H* threshold, and the minimum smoothed hydropathy is what determines that any given h-blob of a given length is still considered an h-blob as this threshold is increased.
+    
     Arguments:
-        x (array): An array containing the predicted mutation sensitivity value for each residue by blob
+        x (array): An array containing the number of residues in the blob, the minimum smoothed hydropathy, and the type of blob it is
 
     Returns:
         color (str): a string containing the color value for each residue based on sensitive to mutation the blob that contains it is estimated to be
     """
+    
     min_hydrophobicity = round(x[1], 2)
     blob_length = x[0]
     blob_type = x[2]
@@ -577,7 +579,7 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
 
     df["N"] = domain_group["resid"].transform("count")
     df["H"] = domain_group["hydropathy"].transform("mean")
-    df["min_h"] = domain_group["hydropathy"].transform("min")
+    df["min_h"] = domain_group["hydropathy_3_window_mean"].transform("min")
     df["NCPR"] = domain_group["charge"].transform("mean")
     df["disorder"] = domain_group["disorder"].transform("mean")
     df["f+"] = domain_group["charge"].transform(lambda x: count_var(x, 1))
