@@ -270,10 +270,11 @@ enrichDF_s.to_csv("../data/enrichment_s.txt")
 
 def lookupEnrichment(x):
     """
-    A function that returns the color for each blob based on how sensitive to mutation it is predicted to be
-
+    A function that returns the color for each blob based on how sensitive to mutation it is predicted to be.
+    Note: this function requires the minimum smoothed hydropathy for each blob. The analysis from Lohia et al. 2022 that produced the data by which blobs are colored involved increasing the H* threshold, and the minimum smoothed hydropathy is what determines that any given h-blob of a given length is still considered an h-blob as this threshold is increased.
+    
     Arguments:
-        x (array): An array containing the predicted mutation sensitivity value for each residue by blob
+        x (array): An array containing the number of residues in the blob, the minimum smoothed hydropathy, and the type of blob it is
 
     Returns:
         color (str): a string containing the color value for each residue based on sensitive to mutation the blob that contains it is estimated to be
@@ -550,7 +551,7 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
 
     # ..........................Define domain names.........................................................#
     df['domain'] =  df['domain'].groupby(df['domain'].ne(df['domain'].shift()).cumsum(), group_keys=False).apply(lambda x: f3(x, domain_threshold))
-    counts_group_length = df['domain'].value_counts().to_dict()#
+    counts_group_length = df['domain'].value_counts().to_dict()
     
 
     df['domain'] = df[['domain_pre', 'domain']].apply(lambda x: f4(x, domain_threshold, counts_group_length),axis=1)
@@ -563,7 +564,7 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
 
     df["N"] = domain_group["resid"].transform("count")
     df["H"] = domain_group["hydropathy"].transform("mean")
-    df["min_h"] = domain_group["hydropathy"].transform("min")
+    df["min_h"] = domain_group["hydropathy_3_window_mean"].transform("min")
     df["NCPR"] = domain_group["charge"].transform("mean")
     df["disorder"] = domain_group["disorder"].transform("mean")
     df["f+"] = domain_group["charge"].transform(lambda x: count_var(x, 1))
