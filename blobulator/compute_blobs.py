@@ -71,12 +71,20 @@ def domain_to_numbers(x):
         int: height for each residue
 
     """
-    if x[0][0] == "p":
+    try:
+        test = x[0][0]
+    except IndexError(f"Inapropriate input: {x}") as exc:
+        raise RuntimeError from exc
+
+    if test == "p":
         return 0.2
-    elif x[0][0] == "h":
+    elif test == "h":
         return 0.6
-    else:
+    elif test == "s":
         return 0.4
+    else:
+        raise ValueError(f"Invalid blob type: {test}")
+        
 
 
 
@@ -92,18 +100,21 @@ def phase_diagram(x):
     Returns:
         color (str): the rgb value for each residue bar based on its Das-Pappu class
     """
-
-    fcr = x[1]
     ncpr = x[0]
+    fcr = x[1]
     fp = x[2]
     fn = x[3]
+
+    assert fcr >= 0, "Fraction charged should be non-negative."
+    assert fp >= 0, "Fraction positive should be non-negative."
+    assert fn >= 0, "Fraction negative should be non-negative."
 
     # if we're in region 1
     if fcr < 0.25:
         return "rgb(138.0,251.0,69.0)"
 
         # if we're in region 2
-    elif fcr >= 0.25 and fcr <= 0.35:
+    elif 0.25 <= fcr <= 0.35:
         return "rgb(254.0,230.0,90.0)"
 
         # if we're in region 3
@@ -113,18 +124,14 @@ def phase_diagram(x):
         # if we're in region 4 or 5
     elif fp > 0.35:
         if fn > 0.35:
-            raise SequenceException(
-                "Algorithm bug when coping with phase plot regions"
-            )
+            raise ValueError("Algorithm bug when coping with phase plot regions")
         return "blue"
 
     elif fn > 0.35:
         return "red"
 
     else:  # This case is impossible but here for completeness\
-        raise SequenceException(
-            "Found inaccessible region of phase diagram. Numerical error"
-        )
+        raise ValueError("Found inaccessible region of phase diagram. Numerical error")
 
 
 def phase_diagram_class(x):
@@ -158,18 +165,14 @@ def phase_diagram_class(x):
         # if we're in region 4 or 5
     elif fp > 0.35:
         if fn > 0.35:
-            raise SequenceException(
-                "Algorithm bug when coping with phase plot regions"
-            )
+            raise ValueError("Algorithm bug when coping with phase plot regions")
         return "5"
 
     elif fn > 0.35:
         return "4"
 
     else:  # This case is impossible but here for completeness\
-        raise SequenceException(
-            "Found inaccessible region of phase diagram. Numerical error"
-        )
+        raise ValueError("Found inaccessible region of phase diagram. Numerical error")
 
 
 # ..........................Define colors for each blob type.........................................................#
@@ -527,6 +530,8 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
         smoothed_hydropath = hydropath.rolling(window=3, min_periods=0, center=True).mean()
         return smoothed_hydropath
 
+    assert len(seq) >= domain_threshold
+    
     window_factor = int((window - 1) / 2)
     seq_start = 1  # starting resid for the seq
     resid_range = range(seq_start, len(seq) + 1 + seq_start)
