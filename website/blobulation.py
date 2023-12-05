@@ -48,6 +48,22 @@ REQUEST_URL_coordinates = "https://www.ebi.ac.uk/proteins/api/coordinates"
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    """
+    The index function handles the logic for processing user input and generating the appropriate response based on the input type.
+
+    Inputs:
+    - request: The Flask request object containing the user's input data.
+
+    Flow:
+    1. The function checks if the request method is POST.
+    2. If the request method is POST, it checks if the user input is a Uniprot ID or an amino acid sequence.
+    3. If the input is a Uniprot ID, it retrieves additional information about the protein from external APIs and processes the data.
+    4. If the input is an amino acid sequence, it performs blobulation calculations on the sequence.
+    5. The function renders the appropriate template with the processed data and returns it as the response.
+
+    Outputs:
+    - Rendered template: The function returns a rendered template with the result.html page, displaying the blobulation results for the provided input.
+    """
     form = InputForm(request.form) #reads the user input
 
     if request.method == "POST":
