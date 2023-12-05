@@ -566,7 +566,7 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
 
     # ..........................Define domain names.........................................................#
     df['domain'] =  df['domain'].groupby(df['domain'].ne(df['domain'].shift()).cumsum(), group_keys=False).apply(lambda x: f3(x, domain_threshold))
-    counts_group_length = df['domain'].value_counts().to_dict()
+    counts_group_length = df['domain'].value_counts().to_dict()#
     
 
     df['domain'] = df[['domain_pre', 'domain']].apply(lambda x: f4(x, domain_threshold, counts_group_length),axis=1)
@@ -579,6 +579,7 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
 
     df["N"] = domain_group["resid"].transform("count")
     df["H"] = domain_group["hydropathy"].transform("mean")
+    ## For the enrichment calculations, smoothed minimum hydropathy must be used. Previously, unsmoothed hydropathy was used giving depletion in most h-blobs where there should have been enrichment
     df["min_h"] = domain_group["hydropathy_3_window_mean"].transform("min")
     df["NCPR"] = domain_group["charge"].transform("mean")
     df["disorder"] = domain_group["disorder"].transform("mean")
