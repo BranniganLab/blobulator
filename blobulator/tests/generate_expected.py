@@ -26,4 +26,4 @@ for num in range(ntests):
     blobDF = blobulator.compute(sequence, cutoff, min_blob, hscale)
     #print ("Writing output file")
     blobDF = blobulator.clean_df(blobDF)
-    blobDF.to_csv(oname, index=False)
+    blobDF.to_csv(oname, index=False, encoding='utf-8')
