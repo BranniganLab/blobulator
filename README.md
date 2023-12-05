@@ -122,4 +122,26 @@ These CSVs are organized with each residue in its own row and columns as follows
 - Kyte-Doolittle_hydropathy: Traditional K-D hydropathy (on a scale from -4.5 to 4.5). This is a very common hydrophobicity scale dating to 1982: https://doi.org/10.1016%2F0022-2836%2882%2990515-0
 
 
+### Visualizing in VMD
+There is a tcl script in the VMD_scripts directory that will read a csv from the website or the local tool.
+
+To use it:
+1. Load your protein of choice into a vmd session and open the tkconsole
+2. Source this file using:
+3. source /path/to/bctool.tcl
+4. Get the protein sequence using:
+```
+set protSel [atomselect top "protein"]
+get_sequence $protSel
+```
+6. Copy and paste the sequence into the blobulator and blobulate according to your needs
+7. Download the data using the "Download Data" button on the website
+8. Copy the csv to your working directory
+9. Import the blobulation data using:
+```
+getBlobs my_blobulation.csv $protSel
+```
+11. Visualize according to your needs. 
+- User will contain 1=hydrophobic blob, 2=polar blob, 3=short blob
+- User2 will contain the blob id number
 
