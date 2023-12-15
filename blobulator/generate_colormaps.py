@@ -9,13 +9,14 @@ from random import random
 import matplotlib as mpl
 from matplotlib.lines import Line2D
 
-import os 
 
+
+
+from importlib.resources import files
+
+blob_path = files("blobulator").joinpath("data")
 
 ## COLOR MAPS
-cmap = LinearSegmentedColormap.from_list(
-    "mycmap", [(0.0 / 1, "red"), ((0.5) / 1, "whitesmoke"), (1.0, "blue")]
-)
 
 vmax=2.5
 cmap_enrich = LinearSegmentedColormap.from_list('mycmap', [(0/ vmax, 'red'), (1./vmax, 'whitesmoke'), (vmax / vmax, 'blue')])
@@ -30,25 +31,14 @@ cNorm = matplotlib.colors.Normalize(vmin=-0.3, vmax=0.3) #re-wrapping normalizat
 scalarMap = matplotlib.cm.ScalarMappable(norm=cNorm, cmap=cmap_u)
 cval = scalarMap.to_rgba(0)
 
-blob_length_cutoff_enrichment = pd.read_csv('./Table_S1.csv')
+fname = blob_path.joinpath("Table_S1.csv")
+blob_length_cutoff_enrichment = pd.read_csv(fname)
 dict_enrich = dict(zip(zip(blob_length_cutoff_enrichment['Hydrophobicity cutoff'], blob_length_cutoff_enrichment['Blob length']), blob_length_cutoff_enrichment['Enrichment ']))
 
 
 def uversky_color(x):
     ncpr = x[0]
     m_color = scalarMap.to_rgba(ncpr)
-    return "rgb" + str(tuple([255 * x for x in m_color[:-1]]))
-
-def NCPR_color(x):
-    ncpr = x[0]
-    #Setting the limts of the ncpr graph to 0.5 and -0.5, any number higher or lower will be considered max
-    if ncpr > 0.5:
-        ncpr = 1
-    if ncpr < -0.5:
-        ncpr = -1
-    ncpr_normalized = (ncpr + 1.0) / 2
-    m_color = cmap(ncpr_normalized)
-
     return "rgb" + str(tuple([255 * x for x in m_color[:-1]]))
 
 def disorder_color(x):
@@ -59,8 +49,6 @@ def disorder_color(x):
 def enrichment_color(enrich_value):
     m_color = scalarMap_enrich.to_rgba(enrich_value)
     return "rgb" + str(tuple([255 * x for x in m_color[:-1]]))
-
-
 
 
 def writeCMap(func, fname, vmin, vmax, res):
@@ -80,8 +68,6 @@ def writeCMap(func, fname, vmin, vmax, res):
 res = 2 #this determines the resolution in terms of the number of decimal places
 
 writeCMap(uversky_color, "uverskyCMap.csv", -1, 1, res)
-
-writeCMap(NCPR_color, "ncprCMap.csv", -1, 1, res)
 
 writeCMap(disorder_color,"disorderCMap.csv",-1, 1, res)
 
@@ -104,19 +90,18 @@ def enrichment_color(enrich_value):
     return "rgb" + str(tuple([255 * x for x in m_color[:-1]]))
 
 
-df = pd.read_csv('./Table_S1.csv')
 
-dfMI = df.set_index(["Hydrophobicity cutoff", "Blob length"])
+dfMI = blob_length_cutoff_enrichment.set_index(["Hydrophobicity cutoff", "Blob length"])
 
 #Special function for enrichment prediction color which requires the cutoff
 dfMI["color"] = ""
 errCount = 0
-for i in range(df.shape[0]):
+for idx, the_row in dfMI.iterrows():
     try:
-        enrich_value = df.loc[i, "Enrichment "]
+        enrich_value = the_row["Enrichment "]
         m_color = scalarMap_enrich.to_rgba(enrich_value)
         theColor = "rgb" + str(tuple([255 * x for x in m_color[:-1]]))
-        dfMI["color"].iloc[i] = theColor
+        dfMI.loc[idx, "color"] = theColor
     except KeyError:
         errCount = errCount+1
 print(f'Num errors: {errCount}')
