@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = 'blobulator'
+version = "0.1.1"
+authors = [
+  { author='Brannigan Lab', email='grace.brannigan@rutgers.edu' },
+]
+description = 'Edge Detection in Protein Sequences'
+readme = "README.md"
+requires-python = ['Bio', 'numpy>=1.22.0','pandas>=1.4.0', 'matplotlib>=3.5.0', 'importlib_resources>=1.4', 'wtforms', 'flask', 'flask_restful', 'flask_cors', 'flask_session', 'svglib', 'reportlab']
+classifiers = [
+	'Intended Audience :: Science/Research',
+	'Operating System :: POSIX :: Linux',        
+	'Programming Language :: Python :: 3.10'
+	"License :: OSI Approved :: GNU General Public License v3",
+	"Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/BranniganLab/blobulator"
+Issues = "https://github.com/BranniganLab/blobulator/issues"
