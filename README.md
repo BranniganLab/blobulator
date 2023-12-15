@@ -63,6 +63,9 @@ Additional sample scripts can be found in the repository examples directory.
 
 
 ### Using the command-line utility blobulate.py:
+#### Minimal Install:
+The backend can be installed independently using with ``` pip install blobulator ```
+
 #### Basic usage:
 Open a terminal in the blobulator directory and run:
 ```
