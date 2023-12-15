@@ -60,6 +60,80 @@ cNorm = matplotlib.colors.Normalize(vmin=-0.3, vmax=0.3) #re-wrapping normalizat
 scalarMap = matplotlib.cm.ScalarMappable(norm=cNorm, cmap=cmap_u)
 cval = scalarMap.to_rgba(0)
 
+
+from string import ascii_lowercase 
+
+def divmod_base26(n):
+    a, b = divmod(n, 26)                                                        
+    if b == 0:
+        return a - 1, b + 26
+    return a, b
+
+def to_base26(num):
+    chars = []
+    while num > 0:                                                                                                                           
+        num, d = divmod_base26(num)
+        chars.append(ascii_lowercase[d - 1])
+    return ''.join(reversed(chars))
+
+def name_blobs(res_types):
+    """
+    A function that takes in residues individually and numbers each blob
+    Args:
+        res_type(array): an array of residue blobtypes for a sequence
+        domain_threshold(int): minimum length for blobs 
+    """
+    h_counter = 0
+    s_counter = 0
+    p_counter = 0
+
+    preliminary_names = []
+    group_nums = []
+    
+    i = 0
+    previous_residue = ''
+    
+    for residue in res_types:
+        if residue == 'h':
+            if previous_residue == '':
+                h_counter += 1
+            preliminary_names.append(residue + str(h_counter))
+    
+        elif residue == 'p':
+            if previous_residue == 'p':
+                pass
+            else:
+                h_counter += 1
+                p_counter += 1
+            preliminary_names.append(residue + str(p_counter))
+            
+        else:
+            if previous_residue == 's':
+                pass
+            else:
+                s_counter += 1
+                group_nums.append(h_counter)
+            preliminary_names.append(residue + str(s_counter))
+        
+        previous_residue = residue
+        i += 1
+        
+    grouped_names = []
+    
+    i = 1
+    previous_residue = ''
+    for item in preliminary_names:
+        if item[0] == 'h' and (int(item[1]) in group_nums):
+            item += to_base26(i)
+        elif item[0] == 's' and previous_residue != 's':
+            i += 1
+        if item[0] == 'p':
+            i = 1
+        previous_residue = item[0]
+        grouped_names.append(item)
+    
+    return grouped_names
+
 def domain_to_numbers(x):
     """
     A function that assigns heights to each residue for output tracks based on what type of blob they fall into
