@@ -81,7 +81,6 @@ def name_blobs(res_types):
     A function that takes in residues individually and numbers each blob
     Args:
         res_type(array): an array of residue blobtypes for a sequence
-        domain_threshold(int): minimum length for blobs 
     """
     h_counter = 0
     s_counter = 0
@@ -112,7 +111,7 @@ def name_blobs(res_types):
                 pass
             else:
                 s_counter += 1
-                group_nums.append(h_counter)
+            group_nums.append(h_counter)
             preliminary_names.append(residue + str(s_counter))
         
         previous_residue = residue
@@ -122,8 +121,9 @@ def name_blobs(res_types):
     
     i = 1
     previous_residue = ''
+    print(group_nums)
     for item in preliminary_names:
-        if item[0] == 'h' and (int(item[1]) in group_nums):
+        if item[0] == 'h' and (int(item[1:]) in group_nums):
             item += to_base26(i)
         elif item[0] == 's' and previous_residue != 's':
             i += 1
@@ -133,7 +133,7 @@ def name_blobs(res_types):
         grouped_names.append(item)
     
     return grouped_names
-
+        
 def domain_to_numbers(x):
     """
     A function that assigns heights to each residue for output tracks based on what type of blob they fall into
@@ -639,11 +639,8 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
         domain_to_numbers, axis=1)
 
     # ..........................Define domain names.........................................................#
-    df['domain'] =  df['domain'].groupby(df['domain'].ne(df['domain'].shift()).cumsum(), group_keys=False).apply(lambda x: f3(x, domain_threshold))
-    counts_group_length = df['domain'].value_counts().to_dict()#
-    
-
-    df['domain'] = df[['domain_pre', 'domain']].apply(lambda x: f4(x, domain_threshold, counts_group_length),axis=1)
+    domain_list = df['domain'].to_list()
+    df['domain'] = pd.Series(name_blobs(domain_list))
     df['domain'].fillna(value='s', inplace=True)
 
 
@@ -685,5 +682,3 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
     )
 
     return df
-
-
