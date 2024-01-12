@@ -45,8 +45,8 @@
 <!--About Page Contents-->
 <div class="tab-pane fade" id="about">
     <h4 class="mt-2">Welcome to the Blobulator</h4>
-    <p>Blobulation is an approach for edge-detection in protein sequences based on contiguous hydrophobicity, <a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007390" target="_blank"> originally developed </a> by the <a href="https://branniganlab.org/" target="_blank"> Brannigan Lab </a> for a specific long intrinsically disordered protein (the prodomain of BDNF). The blobulator allows the user to blobulate any sequence, and visualize the results while adjusting the two blobulation parameters to detect more edges for higher-resolution ("zooming-in") or detect fewer edges for a more tractable visualization ("zooming-out").</p>
-    <p> A stretch of residues between two edges are called blobs, inspired by the terminology in polymer physics. The blobulator also characterizes each blob based on several collective properties of the blob residues, including hydrophobicity, net charge, globular tendency (Das-Pappu phase), distance from the Uversky boundary, and sensitivity to mutation. These properties are also dynamically adjusted as the user increases or decreases resolution of the sequence. For human proteins, users will also see the location of disease-associated single nucleotide polymorphisms (SNPs). </p>
+    <p>Blobulation is an approach for detecting hydrophobic modularity in protein sequences based on contiguous hydrophobicity, <a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007390" target="_blank"> originally developed </a> by the <a href="https://branniganlab.org/" target="_blank"> Brannigan Lab </a> for aiding in analyzing residue contacts in molecular dynamics (MD) simulations of a long intrinsically disordered protein (the BDNF prodomain). The blobulator allows the user to blobulate any sequence, and visualize the results while adjusting the two tunable parameters to detect blobs found at varying resolutions.</p>
+    <p> Clusters of resiudes outputted by the blobulator are called blobs, inspired by the terminology in polymer physics. In addition to outputting a visualization of the blobulated sequence, the blobulator also outputs several tracks showing blobs overlaid with additional information including: net charge, globular tendency (Das-Pappu phase), distance from the Uversky boundary, and sensitivity to mutation. These properties are also dynamically adjusted as the user increases or decreases resolution of the sequence. For human proteins, users will also see the location of known disease-associated single nucleotide polymorphisms (SNPs). </p>
     <p>For bug reports, feature requests, or anything else please contact at connor.pitman@rutgers.edu or grace.brannigan@rutgers.edu.</p>
     <br>Citing the Blobulator<br> <p>A manuscript on the Blobulator is currently in preparation. For now, please cite analysis done with Blobulator using: <a href="https://www.pnas.org/doi/10.1073/pnas.2116267119" target="_blank"> Lohia R, Hansen M, Brannigan G, “Contiguously hydrophobic sequences are functionally significant throughout the human exome.” PNAS. 2022. doi: 10.1073 </a> </p>
 
@@ -54,27 +54,27 @@
 <!--Documentation Page Contents - styled as accordion panels-->
 <div class="tab-pane fade" id="documentation">
     <h4 class="mt-2">Sequence Input</h4>
-    <p> The first thing needed for the blobulator is either a Uniprot ID for a protein of interest, or a manual sequence entry. Uniprot IDs are our recommended format for retrieving the sequence required for blobulation. Above each “compute button” there is a manual text entry box, in which the you insert either your sequence or ID. Then press the “Compute” button. </p>
+    <p> The first thing needed to use the blobulator is either a Uniprot ID for a protein of interest, or a manual sequence entry. Uniprot IDs are our recommended format for retrieving the sequence required for blobulation. Above each “compute button” there is a manual text entry box, in which the you insert either your sequence or ID. Then press the “Compute” button. </p>
     <h4 class="mt-2">Visualization</h4>
     <p> On the blobulation output page, there are three adjustable parameters: </p>
     <button class="accordion"> &#10133 Adjusting Hydropathy Cutoff</button>
     <div class="panel">
-    <p>Blobulation considers the residues in turn and calculates the average hydrophobicity score of each group of residues. If a group of residues (under the minimum blob size) is above the value for hydrophobicity cutoff, it will be considered a ‘h’ (hydrophobic) blob. If it’s below it will be considered a ‘p’ (non-hydrophobic) blob. The hydropathy cutoff can be adjusted by manual entry into the text box to the left, or by adjusting the slider to the desired value.</p>
+    <p>The first step of blobulation is digitization. The algorithm first calcualtes each residue's hydrophobicity on the selected scale and then smooths this over the hydrophobicity of the adjacent residues. Residues are then digitized to hydrophobic or non-hydrophobic based on their smoothed hydrophathy's relation to the hydropathy cutoff (shown as grey bars in the first track). This cutoff (shown as a blue line in the first track) can be adjusted by manual entry into the text box to the left, by adjusting the slider to the desired value, or by clicking a residue letter (found above the slider) to set the cutoff to a given amino acid's hydrophobicity on the selected scale.</p>
     </div>
     <button class="accordion"> &#10133 Adjusting Minimum Blob Size</button>
     <div class="panel">
-    <p>This setting establishes a threshold for how many residues constitute blob. If there are groups of residues which average above or below the hydropathy cutoff, they must then meet this requirement to be considered either a h or p blob. If a residue in a h-blob is below this threshold and below the hydropathy cutoff, or if the residue is in a p-blob and above the hydropathy cutoff and below the minimum blob size, the residue (or group of residues) will be considered a ‘s’ (spacer or separator) blob.</p>
+    <p>This setting establishes a threshold for how many residues constitute blob. If a group of contiguous residues over the minimum blob size individually have smoothed hydrophobicities above the value for hydrophobicity cutoff, the cluster will be considered a ‘h’ (hydrophobic) blob. If not, a group will be considered a ‘p’ (non-hydrophobic) blob if the length is above the minimum blob size, or an 's' (short) blob if the length is below the minimum blob size. The hydropathy cutoff can be adjusted by manual entry into the text box to the left, or by adjusting the slider to the desired value.</p>
     </div>
     <button class="accordion"> &#10133 Mutating Residues</button>
     <div class="panel">
-    <p>This option is used to change a residue within the sequence, and see what potential affects it would have on the blobulation output. To mutate a residue, check the 'Mutate Residue' box on the left, then select which residue you would like to mutate, and then choose the amino acid they would like to mutate the residue into. The graphs will automatically update after the box is checked and the changes are made.</p>
+    <p>This option is used to change a residue within the sequence, and see what potential affects it would have on the blobulation output. To mutate a residue, select which residue you would like to mutate, choose the amino acid you would like to mutate the residue into, and click the checkbox. Alternatively, the user can select one of the known disease associated single nucleotide polymorphism by clicking on a black triangle found at the bottom of each track. These will only appear if a UniProt ID is used.</p>
     </div>
     <br> <br>
 
     <h4 class="mt-2">SNPs and Mutations</h4>
     <button class="accordion"> &#10133 Visualizing SNPs</button>
     <div class="panel">
-    <p>SNPs are shown by the black triangles below the relevant residues on many of the visualizations.</p>
+    <p>Known disease-associated mutations are shown by the black triangles. Hovering over these mutations will display the amino acid change caused by them, as well as a clickable reference SNP cluster ID.</p>
     </div>
     <br> <br>
 
@@ -84,33 +84,33 @@
 
     <button class="accordion">&#10133 Smoothed hydropathy per residue</button>
     <div class="panel">
-    <p>This plot shows the smoothed hydropathy per residue. The core of blobulation consists of two parameters - the first of which being a hydropathy threshold. This threshold is shown by the blue line on the “mean hydropathy” axis. This line shows the threshold which determines the boundaries of the h and p blobs. This graph is the only one that shows the residues individually, and can be used as a reference to how the residues are grouped together based upon their position above or below the mean hydropathy line. Any stretch of 'minimum blob size' or more residues with mean hydropathy > 'hydropathy cutoff' is classified as a hydrophobic or “h” blob and any remaining stretch of four or more residues is classified as a non-hydrophobic linker or “p” blob. Beneath this first plot are several additional plots. Open the tooltip associated with each to get more information about the plots. In all cases, the height of the bars indicates h or p blobs established by the data presented here.</p>
+    <p>This plot shows the smoothed hydropathy per residue. The core of blobulation consists of two parameters - the first being a hydropathy threshold. This threshold is shown by the blue line on the “mean hydropathy” axis. This line shows the hydropathy threshold (shown by a blue line), which determines the boundaries of the h and p blobs. Note that this graph is the only one that shows the residues individually, and can be used as a reference to how the residues are grouped together based upon their position above or below the blue line. If a group of contiguous residues over the minimum blob size individually have smoothed hydrophobicities above the value for hydrophobicity cutoff, the cluster will be considered a ‘h’ (hydrophobic) blob. If not, a group will be considered a ‘p’ (non-hydrophobic) blob if the length is above the minimum blob size, or an 's' (short) blob if the length is below the minimum blob size.</p>
     </div>
     <button class="accordion">&#10133 Blobs according to globular tendency</button>
     <div class="panel">
-    <p>This second outputted visualizaton shows the blobs according to their globular tendency, considered based upon their <a href="https://www.pnas.org/content/early/2013/07/29/1304749110" target="_blank"> Das-Pappu </a> classification. The Das-Pappu phase diagram provides a means to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. Specifically, these are: globular, janus/boundary, strong polyelectrolyte, strong polyanion, and strong polycation. The height of each bar corresponds to their identity of either a "p" "h" or "s" blob. </p>
+    <p>This second outputted visualizaton shows the blobs colored according to their globular tendency based on their <a href="https://www.pnas.org/content/early/2013/07/29/1304749110" target="_blank"> Das-Pappu </a> classification. The Das-Pappu phase diagram pwas originally used to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. Specifically, these are: globular, janus/boundary, strong polyelectrolyte, strong polyanion, and strong polycation. The height of each bar corresponds to their identity of either a "p" "h" or "s" blob. </p>
     </div>
     <button class="accordion">&#10133 Blobs according to net charge per residue</button>
     <div class="panel">
-    <p>This third outputted visualization shows the blobs according to their residues’ collective average charge. Each blob is evaluated based on its fraction of both positively and negatively charged residues. The darker blue a blob is shown here, the higher the fraction of positively charged residues are present within the blob. Alternatively, the darker red a blob is shown here, the higher the fraction of negatively charged residues are present within the blob. An even fraction of positive or negative, or a low fraction of any charged residues, results in a grey color.</p>
+    <p>This third outputted visualization shows the blobs according to their residues’ collective average charge. Each blob is evaluated based on its fraction of both positively and negatively charged residues. The darker blue a blob is shown here, the higher the fraction of positively charged residues are present within the blob. Alternatively, the darker red a blob is shown here, the higher the fraction of negatively charged residues are present within the blob. An even fraction of positive or negatively charged residues, or a low fraction of any charged residues results in a grey color.</p>
     </div>
     <button class="accordion">&#10133 Blobs colored according to Uversky diagram</button>
     <div class="panel">
-    <p>This fourth outputted visualization shows the blobs according to their positions on the <a href="https://pubmed.ncbi.nlm.nih.gov/11025552/" target="_blank"> Uversky diagram </a>, where the line between ordered and disordered is plotted. Calculated negative values (represented in orange) are ordered and positive values (shown in blue) are disordered and plotted.</p>
+    <p>This fourth outputted visualization shows the blobs according to their positions on the <a href="https://pubmed.ncbi.nlm.nih.gov/11025552/" target="_blank"> Uversky diagram </a>, where the line between ordered and disordered is plotted. Calculated negative values (represented in orange) are more ordered and positive values (shown in blue) are more disordered.</p>
     </div>
     <button class="accordion">&#10133 Blobs colored according to dSNP enrichment</button>
     <div class="panel">
-    <p>This fifth outputted visualization shows the blobs according to their enrichment in documented disease associated SNPs (dSNP). This idea was investigated in the context of aggregating and non-aggregating proteins at various blob lengths and hydrophobicity cutoffs a <a href="https://www.pnas.org/doi/10.1073/pnas.2116267119" target="blank"></a>, from which the figure below is presented (Lohia, et al).</p>
+    <p>This fifth outputted visualization shows the blobs according to their enrichment in documented disease associated SNPs (dSNP). This idea was investigated in the context of aggregating and non-aggregating proteins at various blob lengths and hydrophobicity cutoffs in our <a href="https://www.pnas.org/doi/10.1073/pnas.2116267119" target="blank">recent publication</a>, from which the figure below is presented (Lohia, et al 2022).</p>
     </div>
-    <button class="accordion">&#10133 Blobs colored according to fraction of disordered residue</button>
+    <button class="accordion">&#10133 Blobs colored according to fraction of disordered residues</button>
     <div class="panel">
-    <p>This sixth and final outputted visualization shows the blobs according to their fraction of disordered residue, which utilizes the <a href="https://academic.oup.com/nar/article/41/D1/D508/1069637" target="_blank">Database of Disordered protein prediction </a>. This disorder calculation is only available if the user uses the Uniprot ID.</p>
+    <p>This sixth and final outputted visualization shows the blobs according to their predicted fraction of disordered residues, which utilizes the <a href="https://academic.oup.com/nar/article/41/D1/D508/1069637" target="_blank">Database of Disordered protein prediction </a>. This disorder calculation is only available if the user uses the Uniprot ID.</p>
     </div>
 
     <h4 class="mt-2">Saving Data</h4>
     <button class="accordion">&#10133 Downloading Data</button>
     <div class="panel">
-    <p>After the “Download data!” button (located just below the three adjustable parameters) is pressed, the raw data will be downloaded in the form of a csv file. The data stored here is by residue. Each column corresponds to one of the following: residue name, residue number, window, hydropathy cutoff, minimum blob size, average hydrophobicity, blob type, blob index number, blob Das-Pappu classification, blob net charge per residue, fraction of positively charged residues, fraction of negatively charged residues, fraction of charged residues, uversky diagram score, blob dSNP enrichment, and blob disorder score.</p>
+    <p>After the “Download data!” button (located just below the three adjustable parameters) is pressed, the raw data used to generate the tracks will be downloaded in the form of a csv file. Each column corresponds to one of the following: residue name, residue number, window, hydropathy cutoff, minimum blob size, average hydrophobicity, blob type, blob index number, blob Das-Pappu classification, blob net charge per residue, fraction of positively charged residues, fraction of negatively charged residues, fraction of charged residues, uversky diagram score, blob dSNP enrichment, and blob disorder score.</p>
     </div>
 
 </div>
@@ -125,15 +125,15 @@
     </div>
     <button class="accordion">&#10133 What defines a blob in a protein?</button>
     <div class="panel">
-    <p>Blobs here are determined by defining regions of contiguously hydrophobic residues, and the regions of non-hydrophobic residues that span between. A blob is a contiguous stretch of either hydrophobic or non-hydrophobic residues greater than a certain length. </p>
+    <p>Blobs here are determined by defining clusters of contiguously hydrophobic residues, and the non-hydrophobic residues that span between them. A blob is a contiguous stretch of either hydrophobic or non-hydrophobic residues greater than (or below) a certain length. </p>
     </div>
     <button class="accordion">&#10133 What is the evidence that blobulation is useful?</button>
     <div class="panel">
-    <p>While many softwares exist that consider charge, disorder, or conformational states of proteins, the blobulator considers hydrophobicity and its role in the determination of regions of a protein. <a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007390" target="_blank"> This has been shown already to be a powerful tool for analysis of different domains of the BDNF protein </a>, the research within which this tool was developed. Additionally, a <a href="https://www.pnas.org/doi/10.1073/pnas.2116267119" target="_blank"> recent publication </a> has demonstrated other contexts in which the blobulator has proven useful, particularly with regard to disease associated snps.</p>
+    <p>While many analyses exist that consider charge, disorder, or conformational states of proteins, the blobulator considers hydrophobicity and its role in the determination of regions of a protein. <a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007390" target="_blank"> This has been shown already to be a powerful tool for analysis of different domains of the BDNF protein </a>, the research within which this tool was developed. Additionally, our <a href="https://www.pnas.org/doi/10.1073/pnas.2116267119" target="_blank"> recent publication </a> has demonstrated other contexts in which the blobulator has proven useful, particularly with regard to disease associated snps.</p>
     </div>
     <button class="accordion">&#10133 What does the blobulator output?</button>
     <div class="panel">
-    <p>The blobulator outputs 6 graphs showing categorizations of its subdomains. Each graph shows the sequence of the protein displayed in one of the following ways: smoothed hydropathy per residue, colored according to globular tendency, colored according to net charge per residue, colored according to the Uversky diagram, colored according to dSNP enrichment, colored according to fraction of disordered residue.</p>
+    <p>The blobulator outputs 6 tracks showing blobs overlaid with additional information. Each graph shows the sequence of the protein displayed in one of the following ways: smoothed hydropathy per residue, colored according to globular tendency, colored according to net charge per residue, colored according to the Uversky diagram, colored according to dSNP enrichment, colored according to fraction of disordered residue.</p>
     </div>
     <button class="accordion">&#10133 Do you recommend using the manual sequence entry option, or the Uniprot ID option for input?</button>
     <div class="panel">
