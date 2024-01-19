@@ -38,4 +38,13 @@
 ## Version 0.9.4
 - NCPR track bug fix
 
+## Version 0.9.5
+- blobulator is now a pip installable package!
+- NCPR track rescaled to be between -0.5 and 0.5
+- VMD bctool is refactored
+- Mutation sensitivity track bug fix
+- Group numbering bug fix
 
+## Version 0.9.6
+- New heading
+- Updated text on About, Documentation, and FAQ pages
