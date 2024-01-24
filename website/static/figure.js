@@ -471,7 +471,7 @@ class ZChart extends ZFigure{
 					d3.select(this).attr("fill", "black")
 				};
 				tooltip_snps.transition()
-					.duration(1000)
+					.duration(3000)
 					.style("opacity", 0)
 					.on("end", () => tooltip_snps.style("display", "none"));
 			});
