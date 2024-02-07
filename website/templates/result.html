@@ -153,6 +153,7 @@ $(document).ready( function() {
 		figs.pathyFig = new ZHydropathy("pathyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_zoomout_button("pathyPlot", data)
 			.add_resetmutation_button()
+			.add_disappearresultcontrols_button()
 			.add_smoothed_hydro_title("Smoothed hydropathy per residue")
 			.add_tooltip_hydropathy(hydropathy_tool_text)
 			.add_zoomtip_hydropathy(zoom_tool_text);
@@ -353,8 +354,8 @@ $(document).ready( function() {
 		<div class="result-controls" id="result_main_container" style="overflow-x: auto">
 			<table id="results_table">
 				<col style="width:13%">
-				<col style="width:7%">
-<!-- 			<col style="width:50%">
+				<col style="width:7%">		
+<!-- 				<col style="width:50%">
 				<col style="width:20%"> -->
 				 <div text="left">
 				<tr><td>Hydrophobicity Scale:</td>
