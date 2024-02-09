@@ -100,7 +100,7 @@ class ZFigure {
 	btn.onclick = function () {
 		locked = !locked;
 		if (locked) {
-			document.getElementById("result_main_container").style.position = "absolute";
+			document.getElementById("result_main_container").style.position = "static";
 			btn.innerHTML = "Unlock Control Panel";
 	}
 		else {
