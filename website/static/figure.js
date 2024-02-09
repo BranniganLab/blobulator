@@ -88,6 +88,22 @@ class ZFigure {
 
 	return this;
 	}
+
+	add_disappearresultcontrols_button() {
+
+	var btn = document.createElement("button");
+	btn.innerHTML = "Lock Control Panel";
+	btn.id = "lock_ctrl"
+	btn.type = "button";
+	btn.style.margin = "4px";
+	btn.onclick = function () {
+		document.getElementById("result_main_container").style.position = "absolute";
+	}
+	var top_container = document.getElementById("result_main_container");
+	top_container.appendChild(btn);
+
+	return this;
+	}
 	
 	add_title(title){
 	    // Creates the title
