@@ -88,6 +88,31 @@ class ZFigure {
 
 	return this;
 	}
+
+	add_disappearresultcontrols_button() {
+
+	var btn = document.createElement("button");
+	btn.innerHTML = "Lock Control Panel";
+	btn.id = "lock_ctrl"
+	btn.type = "button";
+	btn.style.margin = "4px";
+	let locked = false
+	btn.onclick = function () {
+		locked = !locked;
+		if (locked) {
+			document.getElementById("result_main_container").style.position = "static";
+			btn.innerHTML = "Unlock Control Panel";
+	}
+		else {
+			document.getElementById("result_main_container").style.position = "sticky";
+			btn.innerHTML = "Lock Control Panel";
+	}
+	}
+	var top_container = document.getElementById("result_main_container");
+	top_container.appendChild(btn);
+
+	return this;
+	}
 	
 	add_title(title){
 	    // Creates the title

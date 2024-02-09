@@ -153,6 +153,7 @@ $(document).ready( function() {
 		figs.pathyFig = new ZHydropathy("pathyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_zoomout_button("pathyPlot", data)
 			.add_resetmutation_button()
+			.add_disappearresultcontrols_button()
 			.add_smoothed_hydro_title("Smoothed hydropathy per residue")
 			.add_tooltip_hydropathy(hydropathy_tool_text)
 			.add_zoomtip_hydropathy(zoom_tool_text);
@@ -350,25 +351,26 @@ $(document).ready( function() {
 			<h6>{{ my_uni_id_linked | safe}}</h6>
 			<h6>{{ my_uni_id_stripped | safe}}</h6>
 		</div>
-		<div class="result-controls" id="result_main_container" style="overflow-x: auto">
+		<div class="result-controls" id="result_main_container">
 			<table id="results_table">
-				<col style="width:13%">
-				<col style="width:7%">
-<!-- 			<col style="width:50%">
-				<col style="width:20%"> -->
-				 <div text="left">
+				<div class="white-box">
+				<col style="width: 13%">
+				<col style="width: 7%">
+				<col style="width: 10%">
+				<col style= "width: 30%">
+				<div text="left">
 				<tr><td>Hydrophobicity Scale:</td>
 					<td><select id="hydro_scales" class="hydro_scales">
 						<option selected="selected" value="kyte_doolittle">Kyte and Doolittle</option>
 						<option value="eisenberg_weiss">Eisenberg and Weiss</option></select></td>
 						<td id="hydro-labels" class="hydro_labels" style="width: 50%"></td>
-					<td>&nbsp;</td></tr>
+					<td>&nbsp;</td></div></tr>
 					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
 					</label></td>
 					<td><input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
 					<td style="width: 50%"><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td>
-					<td>&nbsp;</td></div></tr>
+					<td>&nbsp;</td></tr>
 				<tr>
 				<td>Minimum blob size:
 					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
@@ -440,6 +442,7 @@ $(document).ready( function() {
 					</select> </td>
 				</tr>
 				</div>
+			</div>
 			</table>
 				<label style = "opacity: 0.0; display: none; position: relative;"> </label>
 				<button type="button" onclick="window.print();return false;">Print Screen</button>
