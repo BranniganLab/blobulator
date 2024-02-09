@@ -96,8 +96,17 @@ class ZFigure {
 	btn.id = "lock_ctrl"
 	btn.type = "button";
 	btn.style.margin = "4px";
+	let locked = false
 	btn.onclick = function () {
-		document.getElementById("result_main_container").style.position = "absolute";
+		locked = !locked;
+		if (locked) {
+			document.getElementById("result_main_container").style.position = "absolute";
+			btn.innerHTML = "Unlock Control Panel";
+	}
+		else {
+			document.getElementById("result_main_container").style.position = "sticky";
+			btn.innerHTML = "Lock Control Panel";
+	}
 	}
 	var top_container = document.getElementById("result_main_container");
 	top_container.appendChild(btn);
