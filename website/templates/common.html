@@ -40,6 +40,18 @@
                 });
             }
         });
+
+        function hideDiv(elem) {
+            let dropdown = document.getElementById("sequence_type")
+            if (dropdown.value == "id_entry") {
+                document.getElementById("manual_entry_block").style.display = "none";
+                document.getElementById("id_entry_block").style.display = "block"
+            }
+            else {
+                document.getElementById("id_entry_block").style.display = "none";
+                document.getElementById("manual_entry_block").style.display = "block";
+            }
+        }
     </script>
     {% block scripts %}{% endblock %}
     {% block css %}{% endblock %}
