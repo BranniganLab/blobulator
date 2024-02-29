@@ -486,7 +486,8 @@ def clean_df(df):
                             'h_numerical_enrichment': 'dSNP_enrichment', 
                             'blob_charge_class': 'Blob_Das-Pappu_Class', 
                             'U_diagram': 'Uversky_Diagram_Score', 
-                            'hydropathy': 'Normalized_Kyte-Doolittle_hydropathy',
+                            'hydropathy': 'Normalized_hydropathy',
+                            'hydropathy_3_window_mean': 'Smoothed_Hydropathy',
                             'N': 'blob_length'})
     df['Kyte-Doolittle_hydropathy'] = df['Normalized_Kyte-Doolittle_hydropathy']*9-4.5
 
