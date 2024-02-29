@@ -462,13 +462,30 @@ def clean_df(df):
     del df["P_diagram"]
     del df["uversky_color"]
     del df["disorder_color"]
-    #del df["hydropathy_3_window_mean"] 
-    del df["hydropathy_digitized"] 
-    #del df["hydropathy"]
+    del df["hydropathy_digitized"]
     del df["charge"]
     del df["domain_to_numbers"]
     df['resid'] = df['resid'].astype(int)
-    df = df[[ 'resid', 'seq_name', 'window', 'm_cutoff', 'domain_threshold', 'N', 'H', 'min_h', 'blobtype', 'domain', 'blob_charge_class', 'NCPR', 'f+', 'f-', 'fcr', 'U_diagram', 'h_numerical_enrichment', 'disorder', 'hydropathy']]
+    df = df[[ 'resid',
+             'seq_name',
+             'window',
+             'm_cutoff',
+             'domain_threshold',
+             'N',
+             'H',
+             'min_h',
+             'blobtype',
+             'domain',
+             'blob_charge_class',
+             'NCPR',
+             'f+',
+             'f-',
+             'fcr',
+             'U_diagram',
+             'h_numerical_enrichment',
+             'disorder',
+             'hydropathy',
+             'hydropathy_3_window_mean']]
     df = df.rename(columns={'seq_name': 'Residue_Name', 
                             'resid': 'Residue_Number', 
                             'disorder': 'Blob_Disorder', 
