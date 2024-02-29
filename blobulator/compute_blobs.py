@@ -489,7 +489,7 @@ def clean_df(df):
                             'hydropathy': 'Normalized_hydropathy',
                             'hydropathy_3_window_mean': 'Smoothed_Hydropathy',
                             'N': 'blob_length'})
-    df['Kyte-Doolittle_hydropathy'] = df['Normalized_Kyte-Doolittle_hydropathy']*9-4.5
+    #df['Kyte-Doolittle_hydropathy'] = df['Normalized_Kyte-Doolittle_hydropathy']*9-4.5
 
     return df
 
