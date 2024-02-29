@@ -462,7 +462,7 @@ def clean_df(df):
     del df["P_diagram"]
     del df["uversky_color"]
     del df["disorder_color"]
-    del df["hydropathy_3_window_mean"] 
+    #del df["hydropathy_3_window_mean"] 
     del df["hydropathy_digitized"] 
     #del df["hydropathy"]
     del df["charge"]
