@@ -19,7 +19,7 @@ set bi_list [list 0 0 1 1 1 1 0 0 1 0 1 0 1 0 1 1 1 1 0 0 0 1 1 1 1 0 0 0 ]
 	set count 0
 	set blist {}
 	set isFirst 1
-	#code currently doesn't account for ending blobs 
+	
 	for {set i 0} {$i < [llength $digitizedSeq]} { incr i } {
 		set resDigit [lindex $digitizedSeq $i]
 		if {$resDigit == 1} {
@@ -70,8 +70,10 @@ proc blobS { blobList digitizedSeq lMin } {
 #
 #	 Results:
 #	 Should add to the blobList of tuples to include s blobs 
+
 	puts $blobList
 	set slist {}
+	#Checks the beginning of the list for an s blob 
 	if {[lindex $blobList 0 0] != 0 } {
 		if {[lindex $blobList 0 0] < $lMin  } {
 			set start 0
@@ -79,6 +81,7 @@ proc blobS { blobList digitizedSeq lMin } {
 			lappend slist "$start $finish {s}"
 			}
 		}
+	#Checks the end of the list for an s blob 
 	if {[lindex $blobList end 1] != [expr [llength $digitizedSeq]-1 ]} {
 		
 		set lengthOfseq [expr [llength $digitizedSeq] - 1 ]
@@ -90,7 +93,7 @@ proc blobS { blobList digitizedSeq lMin } {
 		} 
 	}
 
-		
+	#Looks between the hblobs, from previous proc, to see gaps less than the Lmin  	
 	for {set i 0} {$i < [expr [llength $blobList] -1 ]} { incr i } {
 		
 		
@@ -131,27 +134,18 @@ proc blobP { blobList digitizedSeq } {
  	}
  	
  	set i 0 
- 	
+ 	#Goes through created list and replaces q with h or s 
  	while {$i <= [expr [llength $blobList]-1]} {
- 	
- 	
  	for {set count [lindex $blobList $i 0]} { $count <= [lindex $blobList $i 1]} {incr count} {
- 		
- 		
  		set blob_list [lreplace $blob_list $count $count [lindex $blobList $i 2]]
- 		
  	}
- 	
 	incr i
- 	
  	}
+ 	#Goes through created list and turns remaining q's to p
  	for {set j 0} { $j < [llength $blob_list]} {incr j} {
- 		
  		if {[lindex $blob_list $j] == "q"} {
- 			
  			set blob_list [lreplace $blob_list $j $j "p"]
  		} else {
- 			
  			continue
  		}
  	}
