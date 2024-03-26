@@ -1,13 +1,19 @@
 source normalized_hydropathyscales.tcl
 
-puts "Enter MolID"
-gets stdin MolID
-puts $MolID
-puts "Enter Lmin"
-gets stdin lMin
+#puts "Enter MolID"
+#gets stdin MolID
+#puts $MolID
+#puts "Enter Lmin"
+#gets stdin lMin
+#puts $lMin
+#puts "Enter H"
+#gets stdin H
+#puts $H
+
+set lMin [expr {int(rand()*20) } ]
 puts $lMin
-puts "Enter H"
-gets stdin H
+
+set H [expr {rand() }]
 puts $H
 
 
@@ -46,7 +52,7 @@ set checked [checker $MolID $lMin $H]
 		return -1  
 	}
 
-proc tcl::getSequence {MolID} {
+proc getSequence {MolID} {
 #
 #	Acquires the MolID and makes a list of the amino acid residues
 #
@@ -64,7 +70,7 @@ proc tcl::getSequence {MolID} {
     return $stuff
 }
 
-set sequence [tcl::getSequence $MolID]
+set sequence [getSequence $MolID]
 puts "sequence works!"
 
 proc hydropathyMean { Hydropathylist Sequence } {
@@ -253,8 +259,12 @@ proc blobS { blobList digitizedSeq lMin } {
 #
 #	 Results:
 #	 Should add to the blobList of tuples to include s blobs 
-
+	
 	puts $blobList
+	if {[llength $blobList] == 0} {
+		puts "no hblobs found"
+		return -1
+	}
 	set slist {}
 	#Checks the beginning of the list for an s blob 
 	if {[lindex $blobList 0 0] != 0 } {
@@ -311,13 +321,21 @@ proc blobP { blobList digitizedSeq } {
 #
 #   Results:
 #   Proc should return a list of s, h, and p using the bloblist as a guide
-
+	
  	set isFirst 0
  	set blob_list {}
+ 	if { $blobList == -1 } {
+ 		foreach q $digitizedSeq {
+ 			lappend blob_list "p"
+ 		}
+ 		return $blob_list
+ 	}
+ 		
  	foreach b $digitizedSeq {
  		lappend blob_list "q"
  	}
  	
+ 		 
  	set i 0 
  	#Goes through created list and replaces q with h or s 
  	while {$i <= [expr [llength $blobList]-1]} {
