@@ -28,7 +28,7 @@ proc blobulate {MolID lMin H} {
 		return -1
 		}
 	puts "hydroS works!"
-
+	puts $hydroS
 	set hydroM [hydropathyMean $hydroS $sequence]
 	puts "hydroM works"
 
@@ -115,7 +115,8 @@ proc hydropathyScores { hydropathyList Sequence } {
 #
 #   Results 
 #	The result is a list that has the hydropathy scores
-	
+	puts $hydropathyList
+	puts $Sequence
 	set hydroScored {}
 	foreach amino $Sequence {
 		if {[lsearch -exact $hydropathyList $amino] == -1} {
@@ -125,7 +126,7 @@ proc hydropathyScores { hydropathyList Sequence } {
 		
 		set value [dict get $hydropathyList $amino]
 		
-		lappend mylist $value
+		lappend hydroScored $value
 	}
 	return $hydroScored
 }
@@ -141,6 +142,8 @@ proc hydropathyMean { hydroScores Sequence} {
 #	The result is a new list of scores that are averaged between each other
 	set hydroList {}
 	set isFirst 1
+	puts $hydroScores
+	puts "error?"
 	for { set i 0 } { $i < [expr [llength $hydroScores] -1] } {incr i} {
 		if {$isFirst == 1} {
 			set isFirst 0
@@ -158,8 +161,11 @@ proc hydropathyMean { hydroScores Sequence} {
 			lappend hydroList $avgValue
 		}
 	}
+	puts "error?"
 	set indexSecondToLast [lindex $hydroScores end-1]
+	puts $indexSecondToLast
 	set indexOfLastValue [lindex $hydroScores end]
+	puts $indexOfLastValue
 	set lastAvgValue [expr ($indexSecondToLast + $indexOfLastValue) /2]
 	lappend hydroList $lastAvgValue
 	if {[llength $hydroList] != [llength $Sequence] } {
@@ -181,21 +187,21 @@ proc Digitize { H hydroMean } {
 #	Results
 #	A list of 1 and 0 depending on if the value is past the threshold 
 	
-	set myist {}
+	set digList {}
 	foreach hy $hydroMean {
 		if {$hy < $H } {
-			lappend mylist 0
+			lappend digList 0
 		} else {
-			lappend mylist 1 
+			lappend digList 1 
 		}
 	}
 
-	if {[llength $mylist] != [llength $hydroMean]} { 
+	if {[llength $digList] != [llength $hydroMean]} { 
 		puts "Error: List do not match"
 		return -1
 	}
 	
-	return $mylist
+	return $digList
 }                                                                                     	
 	
 proc blobH { digitizedSeq lMin } {
