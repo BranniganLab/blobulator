@@ -28,7 +28,7 @@ proc blobulate {MolID lMin H} {
 		return -1
 		}
 	puts "hydroS works!"
-	puts $hydroS
+
 	set hydroM [hydropathyMean $hydroS $sequence]
 	puts "hydroM works"
 
@@ -115,8 +115,7 @@ proc hydropathyScores { hydropathyList Sequence } {
 #
 #   Results 
 #	The result is a list that has the hydropathy scores
-	puts $hydropathyList
-	puts $Sequence
+	
 	set hydroScored {}
 	foreach amino $Sequence {
 		if {[lsearch -exact $hydropathyList $amino] == -1} {
@@ -142,8 +141,8 @@ proc hydropathyMean { hydroScores Sequence} {
 #	The result is a new list of scores that are averaged between each other
 	set hydroList {}
 	set isFirst 1
-	puts $hydroScores
-	puts "error?"
+	
+	
 	for { set i 0 } { $i < [expr [llength $hydroScores] -1] } {incr i} {
 		if {$isFirst == 1} {
 			set isFirst 0
@@ -161,7 +160,7 @@ proc hydropathyMean { hydroScores Sequence} {
 			lappend hydroList $avgValue
 		}
 	}
-	puts "error?"
+	
 	set indexSecondToLast [lindex $hydroScores end-1]
 	puts $indexSecondToLast
 	set indexOfLastValue [lindex $hydroScores end]
@@ -272,7 +271,7 @@ proc blobS { blobList digitizedSeq lMin } {
 #	 Results:
 #	 Should add to the blobList of tuples to include s blobs 
 	
-	puts $blobList
+	
 	if {[llength $blobList] == 0} {
 		puts "no hblobs found"
 		return -1
@@ -369,7 +368,7 @@ proc blobP { blobList digitizedSeq } {
  		puts "error: illegal character"
  		break
  	}
- 	puts $digitizedSeq
+ 	
  	return $hpsList
 
  }
@@ -398,7 +397,6 @@ proc blob { blob } {
 		lappend numAssignBlob 3
 	}
 	}
-	puts $blob
 	return $numAssignBlob
 }
 	
