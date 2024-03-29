@@ -22,10 +22,11 @@ proc blobulate {MolID lMin H} {
 		}
 	set sequence [getSequence $MolID]
 	puts "sequence works!"	
+
 	set hydroS [hydropathyScores $KD_Normalized $sequence]
 	if {$hydroS == -1} {
-	return -1
-	}
+		return -1
+		}
 	puts "hydroS works!"
 
 	set hydroM [hydropathyMean $hydroS $sequence]
@@ -98,6 +99,7 @@ proc getSequence {MolID} {
 
     set stuff [$sel get resname]
     $sel delete
+
     return $stuff
 }
 
@@ -114,7 +116,7 @@ proc hydropathyScores { hydropathyList Sequence } {
 #   Results 
 #	The result is a list that has the hydropathy scores
 	
-	set mylist {}
+	set hydroScored {}
 	foreach amino $Sequence {
 		if {[lsearch -exact $hydropathyList $amino] == -1} {
 			puts "Unkown amino acid ending program"
@@ -125,7 +127,7 @@ proc hydropathyScores { hydropathyList Sequence } {
 		
 		lappend mylist $value
 	}
-	return $mylist
+	return $hydroScored
 }
 
 proc hydropathyMean { hydroScores Sequence} {
@@ -381,13 +383,13 @@ proc blob { blob } {
 	set numAssignBlob {}
 	foreach bp $blob {
 	if {$bp == "h"} {
-	lappend numAssignBlob 1
+		lappend numAssignBlob 1
 	}
 	if {$bp == "s"} {
-	lappend numAssignBlob 2
+		lappend numAssignBlob 2
 	}
 	if {$bp == "p"} {
-	lappend numAssignBlob 3
+		lappend numAssignBlob 3
 	}
 	}
 	puts $blob
