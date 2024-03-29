@@ -28,7 +28,7 @@ proc blobulate {MolID lMin H} {
 	}
 	puts "hydroS works!"
 
-	set hydroM [hydropathyMean $hydroS]
+	set hydroM [hydropathyMean $hydroS $sequence]
 	puts "hydroM works"
 
 	set dig [Digitize $H $hydroM ]
@@ -128,7 +128,7 @@ proc hydropathyScores { hydropathyList Sequence } {
 	return $mylist
 }
 
-proc hydropathyMean { hydroScores } {
+proc hydropathyMean { hydroScores Sequence} {
 #
 #	Takes a list of hydropathy scores and creates a list of smoothed hydropathy scores
 #
@@ -139,25 +139,25 @@ proc hydropathyMean { hydroScores } {
 #	The result is a new list of scores that are averaged between each other
 	set hydroList {}
 	set isFirst 1
-	for { set i 0 } { $i < [expr [llength $mylist] -1] } {incr i} {
+	for { set i 0 } { $i < [expr [llength $hydroScores] -1] } {incr i} {
 		if {$isFirst == 1} {
 			set isFirst 0
-			set indexOfFirstValue [lindex $mylist $i] 
-			set indexOfSecondValue [lindex $mylist [expr $i +1]]
+			set indexOfFirstValue [lindex $hydroScores $i] 
+			set indexOfSecondValue [lindex $hydroScores [expr $i +1]]
 			set avgValue [expr ($indexOfFirstValue + $indexOfSecondValue) /2]
 			lappend hydroList $avgValue
 			continue
 		} 
 		if {$isFirst == 0} {
-			set	indexOfFirstValue [lindex $mylist [expr $i - 1]]
-			set indexOfSecondValue [lindex $mylist $i] 
-			set indexOfLastValue [lindex $mylist [expr $i + 1]]
+			set	indexOfFirstValue [lindex $hydroScores [expr $i - 1]]
+			set indexOfSecondValue [lindex $hydroScores $i] 
+			set indexOfLastValue [lindex $hydroScores [expr $i + 1]]
 			set avgValue [expr ($indexOfFirstValue + $indexOfSecondValue + $indexOfLastValue) / 3]
 			lappend hydroList $avgValue
 		}
 	}
-	set indexSecondToLast [lindex $mylist end-1]
-	set indexOfLastValue [lindex $mylist end]
+	set indexSecondToLast [lindex $hydroScores end-1]
+	set indexOfLastValue [lindex $hydroScores end]
 	set lastAvgValue [expr ($indexSecondToLast + $indexOfLastValue) /2]
 	lappend hydroList $lastAvgValue
 	if {[llength $hydroList] != [llength $Sequence] } {
@@ -167,7 +167,7 @@ proc hydropathyMean { hydroScores } {
 	return $hydroList
 }
 	
-proc Digitize { H hydroMeans } {
+proc Digitize { H hydroMean } {
 #
 #	Takes the seqeunce and compares it to the Hydropathy list, making a list of 1s and 0s 
 #	based on if exceeds/meets H or goes below it respecitively 
@@ -180,7 +180,7 @@ proc Digitize { H hydroMeans } {
 #	A list of 1 and 0 depending on if the value is past the threshold 
 	
 	set myist {}
-	foreach hy $hydroMeans {
+	foreach hy $hydroMean {
 		if {$hy < $H } {
 			lappend mylist 0
 		} else {
@@ -188,7 +188,7 @@ proc Digitize { H hydroMeans } {
 		}
 	}
 
-	if {[llength $mylist] != [llength $hydroScores]} { 
+	if {[llength $mylist] != [llength $hydroMean]} { 
 		puts "Error: List do not match"
 		return -1
 	}
