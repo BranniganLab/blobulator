@@ -30,7 +30,7 @@ proc blobulate {MolID lMin H} {
 
 	set hydroM [hydropathyMean $hydroS]
 	puts "hydroM works"
-	
+
 	set dig [Digitize $H $hydroM ]
 	puts "dig works!"
 
@@ -167,23 +167,20 @@ proc hydropathyMean { hydroScores } {
 	return $hydroList
 }
 	
-proc Digitize { H Hydroscores } {
+proc Digitize { H hydroMeans } {
 #
 #	Takes the seqeunce and compares it to the Hydropathy list, making a list of 1s and 0s 
 #	based on if exceeds/meets H or goes below it respecitively 
 #	
 # 	Arguments:
 # 	H (float): Float number between 0 and 1 that the amino sequences will compare to
-# 	Hydroscores (list): a list of averaged hydropathy scores 
+# 	hydroScores (list): a list of averaged hydropathy scores 
 #
 #	Results
 #	A list of 1 and 0 depending on if the value is past the threshold 
 	
 	set myist {}
-	foreach hy $Hydroscores {
-		
-		
-		
+	foreach hy $hydroMeans {
 		if {$hy < $H } {
 			lappend mylist 0
 		} else {
@@ -191,9 +188,9 @@ proc Digitize { H Hydroscores } {
 		}
 	}
 
-	if {[llength $mylist] != [llength $Hydroscores]} { 
+	if {[llength $mylist] != [llength $hydroScores]} { 
 		puts "Error: List do not match"
-		break
+		return -1
 	}
 	
 	return $mylist
