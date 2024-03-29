@@ -47,8 +47,8 @@ proc blobulate {MolID lMin H} {
     set blobulated [blob $blobp]	
 	#Makes sure procedures that fail to pass checks can assign values. 
 	if {$blobulated != -1} {
-	
-	set sel [atomselect $MolID alpha]
+	set lower [string tolower $MolID]
+	set sel [atomselect $lower alpha]
 	$sel set user $blobulated
 	$sel get user
 	$sel delete
@@ -60,13 +60,14 @@ proc checker {MolID lMin H} {
 	#	Checks the inputs to make sure they're with parameters for future procedures
 	#
 	#	Arguments:
-	#	Lmin (Integer) Length of blobs should be an integer between 2 and some number
-	#	H* (Float)	Hydropathy scale, must be between 0 and 1 
-	#	MolID (Integer) Makes sure there's a top atom to select 
-	#	Hydropathy Scale (Array) Specifc scale that the package can use
+	#	Lmin (Integer): Length of blobs should be an integer between 2 and some number
+	#	H* (Float):	Hydropathy scale, must be between 0 and 1 
+	#	MolID (Integer): Makes sure there's a top atom to select 
+	#	Hydropathy Scale (Array): Specifc scale that the package can use
 	#	Results:
 	#	The result is that each input will be cleared for future procedures
-	set sel [atomselect $MolID alpha]
+	set lower [string tolower $MolID]
+	set sel [atomselect $lower alpha]
 	set res [$sel get resname]
 	if {$lMin < 1} {
 		puts "Lmin too short"
@@ -89,13 +90,13 @@ proc getSequence {MolID} {
 #	Acquires the MolID and makes a list of the amino acid residues
 #
 #	Arguments:
-#	MolID (integer) number used to organize molecule files in vmd use 
+#	MolID (integer): number used to organize molecule files in vmd use 
 #	this to call our desired protein
 #	Results:
 #	Results should be a list that has every resname in the protein seqeunce
 #	in order
-    
-    set sel [atomselect $MolID alpha]
+    set lower [string tolower $MolID]
+    set sel [atomselect $lower alpha]
 
     set resSeq [$sel get resname]
     $sel delete
@@ -110,8 +111,8 @@ proc hydropathyScores { hydropathyList Sequence } {
 #	Takes the sequence and compares to normalized hydropathy scale making a list of scores 
 #
 #	Arguments 
-#	hydropathyList (dict) A dictionary where the amino acids are the keys and the value is a normalized hydropathy list
-#   Sequence (list) A list of amino acids from the molecule in vmd
+#	hydropathyList (dict): A dictionary where the amino acids are the keys and the value is a normalized hydropathy list
+#   Sequence (list): A list of amino acids from the molecule in vmd
 #
 #   Results 
 #	The result is a list that has the hydropathy scores
