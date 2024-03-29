@@ -97,10 +97,10 @@ proc getSequence {MolID} {
     
     set sel [atomselect $MolID alpha]
 
-    set stuff [$sel get resname]
+    set resSeq [$sel get resname]
     $sel delete
 
-    return $stuff
+    return $resSeq
 }
 
 
