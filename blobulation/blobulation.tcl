@@ -1,40 +1,77 @@
-source normalized_hydropathyscales.tcl
-
-#puts "Enter MolID"
-#gets stdin MolID
-#puts $MolID
-#puts "Enter Lmin"
-#gets stdin lMin
-#puts $lMin
-#puts "Enter H"
-#gets stdin H
-#puts $H
-
-set lMin [expr {int(rand()*20) } ]
-puts $lMin
-
-set H [expr {rand() }]
-puts $H
 
 
-proc checker {MolID lMin H } {
+proc blobulate {MolID lMin H} {
+	#
+	#	The overarching proc, users use this to run program
+	#
+	#
+	#	Arguments:
+	#	MolID (Integer): An integer that assigns what protein the algorithm looks for 
+	#	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
+	# 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
+	#	for an h blob
+	#
+	#	Results:
+	#	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
+
+	source normalized_hydropathyscales.tcl
+	set checked [checker $MolID $lMin $H]
+	if {$checked == -1} {
+		puts "Variables are incorrect ending program"
+		return  
+		}
+	set sequence [getSequence $MolID]
+	puts "sequence works!"	
+	set hydroS [hydropathyScores $KD_Normalized $sequence]
+	if {$hydroS == -1} {
+	return -1
+	}
+	puts "hydroS works!"
+
+	set hydroM [hydropathyMean $hydroS]
+	puts "hydroM works"
+	
+	set dig [Digitize $H $hydroM ]
+	puts "dig works!"
+
+	set blobh [ blobH $dig $lMin ]
+	puts "blobh works!"
+
+	set blobs [ blobS $blobh $dig $lMin ]
+	puts "blobs works!"
+
+	set blobp [ blobP $blobs $dig ]
+    puts "blobp works!"
+
+    set blobulated [blob $blobp]	
+	#Makes sure procedures that fail to pass checks can assign values. 
+	if {$blobulated != -1} {
+	
+	set sel [atomselect $MolID alpha]
+	$sel set user $blobulated
+	$sel get user
+	$sel delete
+	} 
+}
+
+proc checker {MolID lMin H} {
 	#
 	#	Checks the inputs to make sure they're with parameters for future procedures
 	#
 	#	Arguments:
 	#	Lmin (Integer) Length of blobs should be an integer between 2 and some number
 	#	H* (Float)	Hydropathy scale, must be between 0 and 1 
-	#	MolID (integer) Makes sure there's a top atom to select 
+	#	MolID (Integer) Makes sure there's a top atom to select 
 	#	Hydropathy Scale (Array) Specifc scale that the package can use
 	#	Results:
 	#	The result is that each input will be cleared for future procedures
 	set sel [atomselect $MolID alpha]
 	set res [$sel get resname]
-	if {$lMin <= 1} {
+	if {$lMin < 1} {
 		puts "Lmin too short"
 		return -1
 	}
-	if {$lMin >= [llength $res]} {
+	if {$lMin > [llength $res]} {
 		puts "Lmin too long"
 		return -1
 	}
@@ -44,13 +81,7 @@ proc checker {MolID lMin H } {
 	}
 	$sel delete 
 	return 0
-	}
-	
-set checked [checker $MolID $lMin $H]
-	if {$checked == -1} {
-		puts "Variables are incorrect ending program"
-		return -1  
-	}
+}
 
 proc getSequence {MolID} {
 #
@@ -70,90 +101,71 @@ proc getSequence {MolID} {
     return $stuff
 }
 
-set sequence [getSequence $MolID]
-puts "sequence works!"
 
-proc hydropathyMean { Hydropathylist Sequence } {
+
+proc hydropathyScores { hydropathyList Sequence } {
 #
-#	Takes the seqeunce and compares to normalized hydropathy scale will create average scores 
+#	Takes the sequence and compares to normalized hydropathy scale making a list of scores 
 #
 #	Arguments 
-#	Hydropathylist (dict) A dictionary where the amino acids are the keys and the value is a normalized hydropathy list
+#	hydropathyList (dict) A dictionary where the amino acids are the keys and the value is a normalized hydropathy list
 #   Sequence (list) A list of amino acids from the molecule in vmd
 #
 #   Results 
-#	The result is a list that has the smoothed hydropathy scores
+#	The result is a list that has the hydropathy scores
 	
 	set mylist {}
 	foreach amino $Sequence {
-		if {[lsearch -exact $Hydropathylist $amino] == -1} {
+		if {[lsearch -exact $hydropathyList $amino] == -1} {
 			puts "Unkown amino acid ending program"
 			return -1
 		}
 		
-		set value [dict get $Hydropathylist $amino]
+		set value [dict get $hydropathyList $amino]
 		
 		lappend mylist $value
 	}
-	
-	
-	set hydrolist {}
+	return $mylist
+}
+
+proc hydropathyMean { hydroScores } {
+#
+#	Takes a list of hydropathy scores and creates a list of smoothed hydropathy scores
+#
+#	Arguments:
+#	hydroScores (list): A list of hydro based off a normalized hydropathy scale
+#
+#	Results:
+#	The result is a new list of scores that are averaged between each other
+	set hydroList {}
 	set isFirst 1
 	for { set i 0 } { $i < [expr [llength $mylist] -1] } {incr i} {
 		if {$isFirst == 1} {
 			set isFirst 0
-			set firstvalue [lindex $mylist $i] 
-			set secondvalue [lindex $mylist [expr $i +1]]
-			set firstvaluefinal [expr ($firstvalue + $secondvalue) /2]
-			
-			lappend hydrolist $firstvaluefinal
-			
-			
+			set indexOfFirstValue [lindex $mylist $i] 
+			set indexOfSecondValue [lindex $mylist [expr $i +1]]
+			set avgValue [expr ($indexOfFirstValue + $indexOfSecondValue) /2]
+			lappend hydroList $avgValue
 			continue
 		} 
 		if {$isFirst == 0} {
-			set	preceedingvalue [lindex $mylist [expr $i - 1]]
-			
-			set initialvalue [lindex $mylist $i] 
-			
-			set aheadervalue [lindex $mylist [expr $i + 1]]
-			
-
-			
-			set valuefinal [expr ($preceedingvalue + $initialvalue + $aheadervalue) / 3]
-		
-			
-			lappend hydrolist $valuefinal
-			
-
+			set	indexOfFirstValue [lindex $mylist [expr $i - 1]]
+			set indexOfSecondValue [lindex $mylist $i] 
+			set indexOfLastValue [lindex $mylist [expr $i + 1]]
+			set avgValue [expr ($indexOfFirstValue + $indexOfSecondValue + $indexOfLastValue) / 3]
+			lappend hydroList $avgValue
 		}
-
 	}
-	set sectolastvalue [lindex $mylist end-1]
-	set lastvalue [lindex $mylist end]
-	set lastvaluefinal [expr ($sectolastvalue + $lastvalue) /2]
-	
-	lappend hydrolist $lastvaluefinal
-	
-
-	if {[llength $hydrolist] != [llength $Sequence] } {
+	set indexSecondToLast [lindex $mylist end-1]
+	set indexOfLastValue [lindex $mylist end]
+	set lastAvgValue [expr ($indexSecondToLast + $indexOfLastValue) /2]
+	lappend hydroList $lastAvgValue
+	if {[llength $hydroList] != [llength $Sequence] } {
 		puts "Error"
 		break
 	}
-		
-	
-	return $hydrolist
-	
-	}
-
-set hydro [hydropathyMean $KD_Normalized $sequence]
-	if {$hydro == -1} {
-	return -1
-	}
-	
-puts "hydro works!"
-	
-
+	return $hydroList
+}
 	
 proc Digitize { H Hydroscores } {
 #
@@ -186,9 +198,6 @@ proc Digitize { H Hydroscores } {
 	
 	return $mylist
 }                                                                                     	
-	
-set dig [Digitize $H $hydro ]
-	puts "dig works!"	
 	
 proc blobH { digitizedSeq lMin } {
 #
@@ -244,8 +253,6 @@ proc blobH { digitizedSeq lMin } {
 
 	return $blist
 }
-set blobh [ blobH $dig $lMin ]
-	puts "blobh works!"
 
 proc blobS { blobList digitizedSeq lMin } {
 #
@@ -293,7 +300,7 @@ proc blobS { blobList digitizedSeq lMin } {
 		set endOffirlist [lindex $blobList $i 1]
 		set startOfseclist [lindex $blobList [expr $i + 1] 0]
 		
-		if { [expr $startOfseclist - $endOffirlist] <= 4  } {
+		if { [expr $startOfseclist - $endOffirlist] <= $lMin  } {
 			
 			set start [expr $endOffirlist + 1 ]
 			set finish [expr $startOfseclist - 1]
@@ -302,14 +309,13 @@ proc blobS { blobList digitizedSeq lMin } {
 			continue
 		}
 	}
-foreach sb $slist {
-	lappend blobList $sb
-}
-set blobList [lsort -index 0 $blobList] 
-return $blobList
+	foreach sb $slist {
+		lappend blobList $sb
 	}
-set blobs [ blobS $blobh $dig $lMin ]
-puts "blobs works!"
+	set blobList [lsort -index 0 $blobList] 
+	return $blobList
+}
+
 
 proc blobP { blobList digitizedSeq } {
 #
@@ -323,16 +329,16 @@ proc blobP { blobList digitizedSeq } {
 #   Proc should return a list of s, h, and p using the bloblist as a guide
 	
  	set isFirst 0
- 	set blob_list {}
+ 	set hpsList {}
  	if { $blobList == -1 } {
  		foreach q $digitizedSeq {
- 			lappend blob_list "p"
+ 			lappend hpsList "p"
  		}
- 		return $blob_list
+ 		return $hpsList
  	}
  		
  	foreach b $digitizedSeq {
- 		lappend blob_list "q"
+ 		lappend hpsList "q"
  	}
  	
  		 
@@ -340,32 +346,29 @@ proc blobP { blobList digitizedSeq } {
  	#Goes through created list and replaces q with h or s 
  	while {$i <= [expr [llength $blobList]-1]} {
  	for {set count [lindex $blobList $i 0]} { $count <= [lindex $blobList $i 1]} {incr count} {
- 		set blob_list [lreplace $blob_list $count $count [lindex $blobList $i 2]]
+ 		set hpsList [lreplace $hpsList $count $count [lindex $blobList $i 2]]
  	}
 	incr i
  	}
  	#Goes through created list and turns remaining q's to p
- 	for {set j 0} { $j < [llength $blob_list]} {incr j} {
- 		if {[lindex $blob_list $j] == "q"} {
- 			set blob_list [lreplace $blob_list $j $j "p"]
+ 	for {set j 0} { $j < [llength $hpsList]} {incr j} {
+ 		if {[lindex $hpsList $j] == "q"} {
+ 			set hpsList [lreplace $hpsList $j $j "p"]
  		} else {
  			continue
  		}
  	}
 
  	
- 	if {[string match -nocase *q $blob_list] == 1} {
+ 	if {[string match -nocase *q $hpsList] == 1} {
  		puts "error: illegal character"
  		break
  	}
  	puts $digitizedSeq
- 	return $blob_list
+ 	return $hpsList
 
- 	}
+ }
  	
-set blobp [ blobP $blobs $dig ]
-puts "blobp works!"
-
 proc blob { blob } {
 #
 #	Takes a list of h's, s's , and p's and returns a set of numbers corresponding to 1 as h, 2 as s, and 3 as p.
@@ -378,30 +381,19 @@ proc blob { blob } {
 	
 	
 	#Creating a list of numbers where 1 is h, 2 is s, and 3 is p
-	set numberassignblobs {}
+	set numAssignBlob {}
 	foreach bp $blob {
 	if {$bp == "h"} {
-	lappend numberassignblobs 1
+	lappend numAssignBlob 1
 	}
 	if {$bp == "s"} {
-	lappend numberassignblobs 2
+	lappend numAssignBlob 2
 	}
 	if {$bp == "p"} {
-	lappend numberassignblobs 3
+	lappend numAssignBlob 3
 	}
 	}
 	puts $blob
-	return $numberassignblobs
+	return $numAssignBlob
 }
-
-set blobulated [blob $blobp]
-puts $blobulated	
-#Makes sure procedures that fail to pass checks can assign values. 
-if {$blobulated != -1} {
-	
-	set sel [atomselect $MolID alpha]
-	$sel set user $blobulated
-	$sel get user
-	$sel delete
-	} 
 	
