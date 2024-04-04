@@ -21,25 +21,25 @@ proc blobulate {MolID lMin H} {
 		return  
 		}
 	set sequence [getSequence $MolID]
-	puts "sequence works!"	
+		
 
 	set hydroS [hydropathyScores $KD_Normalized $sequence]
 	if {$hydroS == -1} {
 		return -1
 		}
-	puts "hydroS works!"
+	
 
 	set hydroM [hydropathyMean $hydroS $sequence]
-	puts "hydroM works"
+	
 
 	set dig [Digitize $H $hydroM ]
-	puts "dig works!"
+	
 
 	set blobh [ blobH $dig $lMin ]
-	puts "blobh works!"
+	
 
 	set blobs [ blobS $blobh $dig $lMin ]
-	puts "blobs works!"
+	
 
 	set blobp [ blobP $blobs $dig ]
     	
@@ -104,7 +104,7 @@ proc getSequence {MolID} {
 
     set resSeq [$sel get resname]
     $sel delete
-
+    puts "sequence works!"
     return $resSeq
 }
 
@@ -132,6 +132,7 @@ proc hydropathyScores { hydropathyList Sequence } {
 		
 		lappend hydroScored $value
 	}
+	puts "hydroS works!"
 	return $hydroScored
 }
 
@@ -176,6 +177,7 @@ proc hydropathyMean { hydroScores Sequence} {
 		puts "Error"
 		break
 	}
+	puts "hydroM works"
 	return $hydroList
 }
 	
@@ -204,7 +206,7 @@ proc Digitize { H hydroMean } {
 		puts "Error: List do not match"
 		return -1
 	}
-	
+	puts "dig works!"
 	return $digList
 }                                                                                     	
 	
@@ -259,7 +261,7 @@ proc blobH { digitizedSeq lMin } {
 			set isFirst 1
 		}
 	}
-
+	puts "blobh works!"
 	return $blist
 }
 
@@ -322,6 +324,7 @@ proc blobS { blobList digitizedSeq lMin } {
 		lappend blobList $sb
 	}
 	set blobList [lsort -index 0 $blobList] 
+	puts "blobs works!"
 	return $blobList
 }
 
