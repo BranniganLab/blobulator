@@ -21,8 +21,6 @@ proc blobulate {MolID lMin H} {
 		return  
 		}
 	set sequence [getSequence $MolID]
-		
-
 	set hydroS [hydropathyScores $KD_Normalized $sequence]
 	if {$hydroS == -1} {
 		return -1
@@ -32,7 +30,8 @@ proc blobulate {MolID lMin H} {
 	set blobh [ blobH $dig $lMin ]
 	set blobs [ blobS $blobh $dig $lMin ]
 	set blobp [ blobP $blobs $dig ]
-    	set blobulated [blobAssign $blobp]	
+    	set blobulated [blobAssign $blobp]
+    		
 	#Makes sure procedures that fail to pass checks can't assign values. 
 	if {$blobulated != -1} {
 	set lower [string tolower $MolID]
@@ -97,8 +96,6 @@ proc getSequence {MolID} {
     return $resSeq
 }
 
-
-
 proc hydropathyScores { hydropathyList Sequence } {
 #
 #	Takes the sequence and compares to normalized hydropathy scale making a list of scores 
@@ -136,8 +133,6 @@ proc hydropathyMean { hydroScores Sequence} {
 #	The result is a new list of scores that are averaged between each other
 	set hydroList {}
 	set isFirst 1
-	
-	
 	for { set i 0 } { $i < [expr [llength $hydroScores] -1] } {incr i} {
 		if {$isFirst == 1} {
 			set isFirst 0
@@ -157,9 +152,7 @@ proc hydropathyMean { hydroScores Sequence} {
 	}
 	
 	set indexSecondToLast [lindex $hydroScores end-1]
-	
 	set indexOfLastValue [lindex $hydroScores end]
-	
 	set lastAvgValue [expr ($indexSecondToLast + $indexOfLastValue) /2]
 	lappend hydroList $lastAvgValue
 	if {[llength $hydroList] != [llength $Sequence] } {
@@ -190,7 +183,6 @@ proc Digitize { H hydroMean } {
 			lappend digList 1 
 		}
 	}
-
 	if {[llength $digList] != [llength $hydroMean]} { 
 		puts "Error: List do not match"
 		return -1
@@ -283,10 +275,8 @@ proc blobS { blobList digitizedSeq lMin } {
 		}
 	#Checks the end of the list for an s blob 
 	if {[lindex $blobList end 1] != [expr [llength $digitizedSeq]-1 ]} {
-		
 		set lengthOfseq [expr [llength $digitizedSeq] - 1 ]
 		if { [expr $lengthOfseq - [lindex $blobList end 1]] < $lMin } {
-			
 			set start [expr [lindex $blobList end 1] +1] 
 			set finish [expr [llength $digitizedSeq] -1 ]
 			lappend slist "$start $finish {s}"
@@ -295,13 +285,9 @@ proc blobS { blobList digitizedSeq lMin } {
 
 	#Looks between the hblobs, from previous proc, to see gaps less than the Lmin  	
 	for {set i 0} {$i < [expr [llength $blobList] -1 ]} { incr i } {
-		
-		
 		set endOffirlist [lindex $blobList $i 1]
 		set startOfseclist [lindex $blobList [expr $i + 1] 0]
-		
 		if { [expr $startOfseclist - $endOffirlist] <= $lMin  } {
-			
 			set start [expr $endOffirlist + 1 ]
 			set finish [expr $startOfseclist - 1]
 			lappend slist "$start $finish {s}"
@@ -316,7 +302,6 @@ proc blobS { blobList digitizedSeq lMin } {
 	puts "blobs works!"
 	return $blobList
 }
-
 
 proc blobP { blobList digitizedSeq } {
 #
@@ -341,7 +326,6 @@ proc blobP { blobList digitizedSeq } {
  	foreach b $digitizedSeq {
  		lappend hpsList "q"
  	}
- 	
  		 
  	set i 0 
  	#Goes through created list and replaces q with h or s 
@@ -359,15 +343,12 @@ proc blobP { blobList digitizedSeq } {
  			continue
  		}
  	}
-
- 	
  	if {[string match -nocase *q $hpsList] == 1} {
  		puts "error: illegal character"
  		break
  	}
  	puts "blobp works!"
  	return $hpsList
-
  }
  	
 proc blobAssign { blob } {
@@ -379,7 +360,6 @@ proc blobAssign { blob } {
 #
 #	Results:
 #	A list of values that can be applied to the user filed in vmd
-	
 	
 	#Creating a list of numbers where 1 is h, 2 is s, and 3 is p
 	set numAssignBlob {}
