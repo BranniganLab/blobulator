@@ -54,10 +54,10 @@ proc blobulate {MolID lMin H} {
 		}
 	set hydroM [hydropathyMean $hydroScores $sequence]
 	set dig [Digitize $H $hydroM ]
-	set blobh [ blobH $dig $lMin ]
-	set blobs [ blobS $blobh $dig $lMin ]
-	set blobp [ blobP $blobs $dig ]
-    	set blobulated [blobAssign $blobp]
+	set hblob [ hBlob $dig $lMin ]
+	set hsblob [ hsBlob $hblob $dig $lMin ]
+	set hpsblob [ hpsBlob $hsblob $dig ]
+    	set blobulated [blobAssign $hpsblob]
     		
 	#Makes sure procedures that fail to pass checks can't assign values. 
 	if {$blobulated != -1} {
@@ -80,10 +80,10 @@ proc blobulateChain {MolID lMin H Chain} {
 		}
 	set hydroM [hydropathyMean $hydroS $sequence]
 	set dig [Digitize $H $hydroM ]
-	set blobh [ blobH $dig $lMin ]
-	set blobs [ blobS $blobh $dig $lMin ]
-	set blobp [ blobP $blobs $dig ]
-    	set blobulated [blobAssign $blobp]
+	set hblob [ hBlob $dig $lMin ]
+	set hsblob [ hsBlob $hblob $dig $lMin ]
+	set hpsblob [ hpsBlob $hsblob $dig ]
+    	set blobulated [blobAssign $hpsblob]
     	
 	return $blobulated
 	}	
@@ -173,7 +173,7 @@ proc hydropathyScores { hydropathyList Sequence } {
 		
 		lappend hydroScored $value
 	}
-	puts "hydroS works!"
+	puts "hydroScores works!"
 	return $hydroScored
 }
 
@@ -214,7 +214,7 @@ proc hydropathyMean { hydroScores Sequence} {
 		puts "Error"
 		break
 	}
-	puts "hydroM works"
+	puts "hydroMean works"
 	return $hydroList
 }
 	
@@ -246,7 +246,7 @@ proc Digitize { H hydroMean } {
 	return $digList
 }                                                                                     	
 	
-proc blobH { digitizedSeq lMin } {
+proc hBlob { digitizedSeq lMin } {
 #
 #   Proc will find digitized hblobs based off the lMin parameter 
 #   
@@ -301,7 +301,7 @@ proc blobH { digitizedSeq lMin } {
 	return $blist
 }
 
-proc blobS { blobList digitizedSeq lMin } {
+proc hsBlob { blobList digitizedSeq lMin } {
 #
 #
 #    A procedure that uses the list provided by the blobH procedure to determine short blob locations
@@ -358,7 +358,7 @@ proc blobS { blobList digitizedSeq lMin } {
 	return $blobList
 }
 
-proc blobP { blobList digitizedSeq } {
+proc hpsBlob { blobList digitizedSeq } {
 #
 #   Returns a list of s, h, and p that determine the hydrophobic region
 #
