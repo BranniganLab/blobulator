@@ -20,6 +20,34 @@ proc blobulate {MolID lMin H} {
 		puts "Variables are incorrect ending program"
 		return  
 		}
+	if {$checked == 1} { 
+		puts "here!"
+		set lower [string tolower $MolID]
+		set sel [atomselect $lower alpha]
+		set sorted [lsort -unique [$sel get chain]]
+		puts $sorted
+
+		set chainBlobs {}
+		puts "here 2!"
+		for {set i 0} {$i <= [expr [llength $sorted] -1 ] } { incr i} {
+			puts $chainBlobs
+			set Chain [lindex $sorted $i] 
+			set blobulated [blobulateChain $MolID $lMin $H $Chain]
+			foreach bb $blobulated {
+				lappend chainBlobs $bb
+				
+			} 
+		}
+		if {$chainBlobs != -1} {
+		set lower [string tolower $MolID]
+		set sel [atomselect $lower alpha]
+		$sel set user $chainBlobs
+		$sel get user
+		$sel delete
+		} 
+		return $chainBlobs
+		}
+	
 	set sequence [getSequence $MolID]
 	set hydroS [hydropathyScores $KD_Normalized $sequence]
 	if {$hydroS == -1} {
@@ -43,6 +71,24 @@ proc blobulate {MolID lMin H} {
 	return $blobulated
 }
 
+proc blobulateChain {MolID lMin H Chain} {
+
+	source normalized_hydropathyscales.tcl
+	set sequence [getSequenceChain $MolID $Chain]
+	set hydroS [hydropathyScores $KD_Normalized $sequence]
+	if {$hydroS == -1} {
+		return -1
+		}
+	set hydroM [hydropathyMean $hydroS $sequence]
+	set dig [Digitize $H $hydroM ]
+	set blobh [ blobH $dig $lMin ]
+	set blobs [ blobS $blobh $dig $lMin ]
+	set blobp [ blobP $blobs $dig ]
+    	set blobulated [blobAssign $blobp]
+    	
+	return $blobulated
+	}	
+
 proc checker {MolID lMin H} {
 	#
 	#	Checks the inputs to make sure they're with parameters for future procedures
@@ -57,9 +103,8 @@ proc checker {MolID lMin H} {
 	set lower [string tolower $MolID]
 	set sel [atomselect $lower alpha]
 	set sorted [lsort -unique [$sel get chain]]
-	if { [llength $sorted] != 1 } {
-		puts "Protein has multiple chains use at own risk"
-		}
+	
+		
 	set res [$sel get resname]
 	if {$lMin < 1} {
 		puts "Lmin too short"
@@ -72,6 +117,10 @@ proc checker {MolID lMin H} {
 	if { ($H > 1) || ( $H < 0 )} {
 		puts "Hydropathy must be between 0 and 1"
 		return -1
+	}
+	if { [llength $sorted] != 1 } {
+		puts "Protein has multiple chains use at own risk"
+		return 1
 	}
 	$sel delete 
 	return 0
@@ -95,6 +144,14 @@ proc getSequence {MolID} {
     return $resSeq
 }
 
+proc getSequenceChain {MolID Chain} {
+	set lower [string tolower $MolID]
+        set sel [atomselect $lower "alpha and chain $Chain"]
+        set resSeq [$sel get resname]
+        $sel delete
+        puts "sequence works!"
+        return $resSeq
+}
 proc hydropathyScores { hydropathyList Sequence } {
 #
 #	Takes the sequence and compares to normalized hydropathy scale making a list of scores 
