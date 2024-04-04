@@ -15,21 +15,21 @@ proc blobulate {MolID lMin H} {
 	#	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
 	
 	source normalized_hydropathyscales.tcl
-	set checked [checker $MolID $lMin $H]
-	if {$checked == -1} {
+	set argumentsOK [checker $MolID $lMin $H]
+	if {$argumentsOK == -1} {
 		puts "Variables are incorrect ending program"
 		return  
 		}
-	if {$checked == 1} { 
+	if {$argumentsOK == 1} { 
 		
-		set lower [string tolower $MolID]
-		set sel [atomselect $lower alpha]
+		set caselessMolID [string tolower $MolID]
+		set sel [atomselect $caselessMolID alpha]
 		set sorted [lsort -unique [$sel get chain]]
-		puts $sorted
+		
 
 		set chainBlobs {}
 		
-		for {set i 0} {$i <= [expr [llength $sorted] -1 ] } { incr i} {
+		for {set i 0} {$i < [llength $sorted] } { incr i} {
 			puts $chainBlobs
 			set Chain [lindex $sorted $i] 
 			set blobulated [blobulateChain $MolID $lMin $H $Chain]
@@ -42,18 +42,17 @@ proc blobulate {MolID lMin H} {
 		set lower [string tolower $MolID]
 		set sel [atomselect $lower alpha]
 		$sel set user $chainBlobs
-		$sel get user
 		$sel delete
 		} 
 		return $chainBlobs
 		}
 	
 	set sequence [getSequence $MolID]
-	set hydroS [hydropathyScores $KD_Normalized $sequence]
+	set hydroScores [hydropathyScores $KD_Normalized $sequence]
 	if {$hydroS == -1} {
 		return -1
 		}
-	set hydroM [hydropathyMean $hydroS $sequence]
+	set hydroM [hydropathyMean $hydroScores $sequence]
 	set dig [Digitize $H $hydroM ]
 	set blobh [ blobH $dig $lMin ]
 	set blobs [ blobS $blobh $dig $lMin ]
@@ -100,8 +99,8 @@ proc checker {MolID lMin H} {
 	#	Hydropathy Scale (Array): Specifc scale that the package can use
 	#	Results:
 	#	The result is that each input will be cleared for future procedures
-	set lower [string tolower $MolID]
-	set sel [atomselect $lower alpha]
+	set caselessMolID [string tolower $MolID]
+	set sel [atomselect $caselessMolID alpha]
 	set sorted [lsort -unique [$sel get chain]]
 	
 		
@@ -136,8 +135,8 @@ proc getSequence {MolID} {
 #	Results:
 #	Results should be a list that has every resname in the protein seqeunce
 #	in order
-    set lower [string tolower $MolID]
-    set sel [atomselect $lower alpha]
+    set caselessMolID [string tolower $MolID]
+    set sel [atomselect $caselessMolID alpha]
     set resSeq [$sel get resname]
     $sel delete
     puts "sequence works!"
