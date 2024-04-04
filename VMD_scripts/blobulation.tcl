@@ -27,25 +27,13 @@ proc blobulate {MolID lMin H} {
 	if {$hydroS == -1} {
 		return -1
 		}
-	
-
 	set hydroM [hydropathyMean $hydroS $sequence]
-	
-
 	set dig [Digitize $H $hydroM ]
-	
-
 	set blobh [ blobH $dig $lMin ]
-	
-
 	set blobs [ blobS $blobh $dig $lMin ]
-	
-
 	set blobp [ blobP $blobs $dig ]
-    	
-
     	set blobulated [blobAssign $blobp]	
-	#Makes sure procedures that fail to pass checks can assign values. 
+	#Makes sure procedures that fail to pass checks can't assign values. 
 	if {$blobulated != -1} {
 	set lower [string tolower $MolID]
 	set sel [atomselect $lower alpha]
@@ -53,6 +41,7 @@ proc blobulate {MolID lMin H} {
 	$sel get user
 	$sel delete
 	} 
+	return $blobulated
 }
 
 proc checker {MolID lMin H} {
