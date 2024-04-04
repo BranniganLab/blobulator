@@ -21,14 +21,14 @@ proc blobulate {MolID lMin H} {
 		return  
 		}
 	if {$checked == 1} { 
-		puts "here!"
+		
 		set lower [string tolower $MolID]
 		set sel [atomselect $lower alpha]
 		set sorted [lsort -unique [$sel get chain]]
 		puts $sorted
 
 		set chainBlobs {}
-		puts "here 2!"
+		
 		for {set i 0} {$i <= [expr [llength $sorted] -1 ] } { incr i} {
 			puts $chainBlobs
 			set Chain [lindex $sorted $i] 
