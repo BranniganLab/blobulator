@@ -13,7 +13,7 @@ proc blobulate {MolID lMin H} {
 	#
 	#	Results:
 	#	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
-
+	
 	source normalized_hydropathyscales.tcl
 	set checked [checker $MolID $lMin $H]
 	if {$checked == -1} {
@@ -57,7 +57,7 @@ proc checker {MolID lMin H} {
 	set lower [string tolower $MolID]
 	set sel [atomselect $lower alpha]
 	set sorted [lsort -unique [$sel get chain]]
-	if { $sorted != "A" } {
+	if { [llength $sorted] != 1 } {
 		puts "Protein has multiple chains use at own risk"
 		}
 	set res [$sel get resname]
@@ -89,7 +89,6 @@ proc getSequence {MolID} {
 #	in order
     set lower [string tolower $MolID]
     set sel [atomselect $lower alpha]
-
     set resSeq [$sel get resname]
     $sel delete
     puts "sequence works!"
@@ -254,7 +253,7 @@ proc blobS { blobList digitizedSeq lMin } {
 #    Arguments:
 #    blobList (list): A list of tuples that show the location of hblobs  
 #    digitizedSeq (list): A list of 1's and 0's that are determined by the hydrophobic threshold 
-#	 lMin (integer): An integer that decided the minimum length of an hblob
+#	lMin (integer): An integer that decided the minimum length of an hblob
 #
 #	 Results:
 #	 Should add to the blobList of tuples to include s blobs 
