@@ -42,9 +42,9 @@ proc blobulate {MolID lMin H} {
 	puts "blobs works!"
 
 	set blobp [ blobP $blobs $dig ]
-    puts "blobp works!"
+    	
 
-    set blobulated [blob $blobp]	
+    	set blobulated [blob $blobp]	
 	#Makes sure procedures that fail to pass checks can assign values. 
 	if {$blobulated != -1} {
 	set lower [string tolower $MolID]
@@ -68,6 +68,10 @@ proc checker {MolID lMin H} {
 	#	The result is that each input will be cleared for future procedures
 	set lower [string tolower $MolID]
 	set sel [atomselect $lower alpha]
+	set sorted [lsort -unique [$sel get chain]]
+	if { $sorted != "A" } {
+		puts "Protein has multiple chains use at own risk"
+		}
 	set res [$sel get resname]
 	if {$lMin < 1} {
 		puts "Lmin too short"
@@ -163,9 +167,9 @@ proc hydropathyMean { hydroScores Sequence} {
 	}
 	
 	set indexSecondToLast [lindex $hydroScores end-1]
-	puts $indexSecondToLast
+	
 	set indexOfLastValue [lindex $hydroScores end]
-	puts $indexOfLastValue
+	
 	set lastAvgValue [expr ($indexSecondToLast + $indexOfLastValue) /2]
 	lappend hydroList $lastAvgValue
 	if {[llength $hydroList] != [llength $Sequence] } {
@@ -369,7 +373,7 @@ proc blobP { blobList digitizedSeq } {
  		puts "error: illegal character"
  		break
  	}
- 	
+ 	puts "blobp works!"
  	return $hpsList
 
  }
