@@ -44,7 +44,7 @@ proc blobulate {MolID lMin H} {
 	set blobp [ blobP $blobs $dig ]
     	
 
-    	set blobulated [blob $blobp]	
+    	set blobulated [blobAssign $blobp]	
 	#Makes sure procedures that fail to pass checks can assign values. 
 	if {$blobulated != -1} {
 	set lower [string tolower $MolID]
@@ -381,7 +381,7 @@ proc blobP { blobList digitizedSeq } {
 
  }
  	
-proc blob { blob } {
+proc blobAssign { blob } {
 #
 #	Takes a list of h's, s's , and p's and returns a set of numbers corresponding to 1 as h, 2 as s, and 3 as p.
 #
@@ -405,6 +405,7 @@ proc blob { blob } {
 		lappend numAssignBlob 3
 	}
 	}
+	puts "blobAssign works!"
 	return $numAssignBlob
 }
 	
