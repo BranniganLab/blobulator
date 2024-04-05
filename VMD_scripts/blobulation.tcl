@@ -62,11 +62,7 @@ proc blobulate {MolID lMin H} {
 	set hblob [ hBlob $digitized $lMin ]
 	set hsblob [ hsBlob $hblob $digitized $lMin ]
 	set hpsblob [ hpsBlob $hsblob $digitized ]
-<<<<<<< HEAD
     set blobulated [blobAssign $hpsblob]
-=======
-    	set blobulated [blobAssign $hpsblob]
->>>>>>> ff50c2b (changed variable names and fixed indentation errors)
     		
 	#Makes sure procedures that fail to pass checks can't assign values. 
 	if {$blobulated != -1} {
