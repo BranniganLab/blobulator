@@ -39,10 +39,10 @@ proc blobulate {MolID lMin H} {
 			} 
 		}
 		if {$chainBlobs != -1} {
-		set lower [string tolower $MolID]
-		set sel [atomselect $lower alpha]
-		$sel set user $chainBlobs
-		$sel delete
+			set lower [string tolower $MolID]
+			set sel [atomselect $lower alpha]
+			$sel set user $chainBlobs
+			$sel delete
 		} 
 		return $chainBlobs
 		}
