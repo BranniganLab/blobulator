@@ -118,7 +118,10 @@ proc checker {MolID lMin H} {
 
 	set nocaseMolID [string tolower $MolID]
 	set sel [atomselect $nocaseMolID alpha]
+<<<<<<< HEAD
 
+=======
+>>>>>>> 58dcb29 (Changed lower variable name to nocaseMolID for clarity of variable)
 	set sorted [lsort -unique [$sel get chain]]
 	
 		
@@ -153,10 +156,15 @@ proc checker {MolID lMin H} {
 #	in order
 proc getSequence {MolID} {
 
+<<<<<<< HEAD
 
     set nocaseMolID [string tolower $MolID]
     set sel [atomselect $nocaseMolID alpha]
 
+=======
+    set nocaseMolID [string tolower $MolID]
+    set sel [atomselect $nocaseMolID alpha]
+>>>>>>> 58dcb29 (Changed lower variable name to nocaseMolID for clarity of variable)
     set resSeq [$sel get resname]
     $sel delete
     
