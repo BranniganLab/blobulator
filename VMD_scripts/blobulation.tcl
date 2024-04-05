@@ -30,7 +30,7 @@ proc blobulate {MolID lMin H} {
 		set chainBlobs {}
 		
 		for {set i 0} {$i < [llength $sorted] } { incr i} {
-			puts $chainBlobs
+			
 			set singleChain [lindex $sorted $i] 
 			set blobulated [blobulateChain $MolID $lMin $H $singleChain]
 			foreach bb $blobulated {
@@ -44,7 +44,7 @@ proc blobulate {MolID lMin H} {
 			$sel set user $chainBlobs
 			$sel delete
 		} 
-		return $chainBlobs
+		return 
 		}
 	
 	set sequence [getSequence $MolID]
@@ -57,7 +57,7 @@ proc blobulate {MolID lMin H} {
 	set hblob [ hBlob $digitized $lMin ]
 	set hsblob [ hsBlob $hblob $digitized $lMin ]
 	set hpsblob [ hpsBlob $hsblob $digitized ]
-    	set blobulated [blobAssign $hpsblob]
+    set blobulated [blobAssign $hpsblob]
     		
 	#Makes sure procedures that fail to pass checks can't assign values. 
 	if {$blobulated != -1} {
@@ -67,7 +67,7 @@ proc blobulate {MolID lMin H} {
 	$sel get user
 	$sel delete
 	} 
-	return $blobulated
+	return 
 }
 
 proc blobulateChain {MolID lMin H Chain} {
@@ -118,7 +118,6 @@ proc checker {MolID lMin H} {
 		return -1
 	}
 	if { [llength $sorted] != 1 } {
-		puts "Protein has multiple chains use at own risk"
 		return 1
 	}
 	$sel delete 
@@ -139,7 +138,7 @@ proc getSequence {MolID} {
     set sel [atomselect $caselessMolID alpha]
     set resSeq [$sel get resname]
     $sel delete
-    puts "sequence works!"
+    
     return $resSeq
 }
 
@@ -148,7 +147,7 @@ proc getSequenceChain {MolID Chain} {
         set sel [atomselect $lower "alpha and chain $Chain"]
         set resSeq [$sel get resname]
         $sel delete
-        puts "sequence works!"
+        
         return $resSeq
 }
 proc hydropathyScores { hydropathyList Sequence } {
@@ -173,7 +172,7 @@ proc hydropathyScores { hydropathyList Sequence } {
 		
 		lappend hydroScored $value
 	}
-	puts "hydroScores works!"
+	
 	return $hydroScored
 }
 
@@ -214,7 +213,7 @@ proc hydropathyMean { hydroScores Sequence} {
 		puts "Error"
 		break
 	}
-	puts "smoothHydroean works"
+	
 	return $hydroList
 }
 	
@@ -242,7 +241,7 @@ proc Digitize { H smoothHydroean } {
 		puts "Error: List do not match"
 		return -1
 	}
-	puts "digitized works!"
+	
 	return $digList
 }                                                                                     	
 	
@@ -297,7 +296,7 @@ proc hBlob { digitizedSeq lMin } {
 			set isFirst 1
 		}
 	}
-	puts "blobh works!"
+	
 	return $blist
 }
 
@@ -354,7 +353,7 @@ proc hsBlob { blobList digitizedSeq lMin } {
 		lappend blobList $sb
 	}
 	set blobList [lsort -index 0 $blobList] 
-	puts "blobs works!"
+	
 	return $blobList
 }
 
@@ -402,7 +401,7 @@ proc hpsBlob { blobList digitizedSeq } {
  		puts "error: illegal character"
  		break
  	}
- 	puts "blobp works!"
+ 	
  	return $hpsList
  }
  	
@@ -429,7 +428,7 @@ proc blobAssign { blob } {
 		lappend numAssignBlob 3
 	}
 	}
-	puts "blobAssign works!"
+	
 	return $numAssignBlob
 }
 	
