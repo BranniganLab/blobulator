@@ -118,6 +118,7 @@ proc checker {MolID lMin H} {
 
 	set nocaseMolID [string tolower $MolID]
 	set sel [atomselect $nocaseMolID alpha]
+
 	set sorted [lsort -unique [$sel get chain]]
 	
 		
@@ -152,8 +153,10 @@ proc checker {MolID lMin H} {
 #	in order
 proc getSequence {MolID} {
 
+
     set nocaseMolID [string tolower $MolID]
     set sel [atomselect $nocaseMolID alpha]
+
     set resSeq [$sel get resname]
     $sel delete
     
@@ -238,7 +241,7 @@ proc hydropathyMean { hydroScores Sequence} {
 	
 	return $hydroList
 }
-	
+
 
 #
 #	Takes the seqeunce and compares it to the Hydropathy list, making a list of 1s and 0s 
