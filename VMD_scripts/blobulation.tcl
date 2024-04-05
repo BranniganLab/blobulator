@@ -62,7 +62,11 @@ proc blobulate {MolID lMin H} {
 	set hblob [ hBlob $digitized $lMin ]
 	set hsblob [ hsBlob $hblob $digitized $lMin ]
 	set hpsblob [ hpsBlob $hsblob $digitized ]
+<<<<<<< HEAD
     set blobulated [blobAssign $hpsblob]
+=======
+    	set blobulated [blobAssign $hpsblob]
+>>>>>>> ff50c2b (changed variable names and fixed indentation errors)
     		
 	#Makes sure procedures that fail to pass checks can't assign values. 
 	if {$blobulated != -1} {
@@ -235,11 +239,19 @@ proc hydropathyMean { hydroScores Sequence} {
 		puts "Error"
 		break
 	}
+<<<<<<< HEAD
 	
 	return $hydroList
 }
 
 
+=======
+	puts "smoothHydroean works"
+	return $hydroList
+}
+	
+proc Digitize { H smoothHydroean } {
+>>>>>>> ff50c2b (changed variable names and fixed indentation errors)
 #
 #	Takes the seqeunce and compares it to the Hydropathy list, making a list of 1s and 0s 
 #	based on if exceeds/meets H or goes below it respecitively 
@@ -265,7 +277,11 @@ proc Digitize { H smoothHydroean } {
 		puts "Error: List do not match"
 		return -1
 	}
+<<<<<<< HEAD
 	
+=======
+	puts "digitized works!"
+>>>>>>> ff50c2b (changed variable names and fixed indentation errors)
 	return $digList
 }                                                                                     	
 
