@@ -52,11 +52,11 @@ proc blobulate {MolID lMin H} {
 	if {$hydroS == -1} {
 		return -1
 		}
-	set hydroM [hydropathyMean $hydroScores $sequence]
-	set dig [Digitize $H $hydroM ]
-	set hblob [ hBlob $dig $lMin ]
-	set hsblob [ hsBlob $hblob $dig $lMin ]
-	set hpsblob [ hpsBlob $hsblob $dig ]
+	set smoothHydro [hydropathyMean $hydroScores $sequence]
+	set digitized [Digitize $H $smoothHydro ]
+	set hblob [ hBlob $digitized $lMin ]
+	set hsblob [ hsBlob $hblob $digitized $lMin ]
+	set hpsblob [ hpsBlob $hsblob $digitized ]
     	set blobulated [blobAssign $hpsblob]
     		
 	#Makes sure procedures that fail to pass checks can't assign values. 
@@ -78,12 +78,12 @@ proc blobulateChain {MolID lMin H Chain} {
 	if {$hydroS == -1} {
 		return -1
 		}
-	set hydroM [hydropathyMean $hydroS $sequence]
-	set dig [Digitize $H $hydroM ]
-	set hblob [ hBlob $dig $lMin ]
-	set hsblob [ hsBlob $hblob $dig $lMin ]
-	set hpsblob [ hpsBlob $hsblob $dig ]
-    	set blobulated [blobAssign $hpsblob]
+	set smoothHydro [hydropathyMean $hydroS $sequence]
+	set digitized [Digitize $H $smoothHydro ]
+	set hblob [ hBlob $digitized $lMin ]
+	set hsblob [ hsBlob $hblob $digitized $lMin ]
+	set hpsblob [ hpsBlob $hsblob $digitized ]
+    set blobulated [blobAssign $hpsblob]
     	
 	return $blobulated
 	}	
@@ -214,11 +214,11 @@ proc hydropathyMean { hydroScores Sequence} {
 		puts "Error"
 		break
 	}
-	puts "hydroMean works"
+	puts "smoothHydroean works"
 	return $hydroList
 }
 	
-proc Digitize { H hydroMean } {
+proc Digitize { H smoothHydroean } {
 #
 #	Takes the seqeunce and compares it to the Hydropathy list, making a list of 1s and 0s 
 #	based on if exceeds/meets H or goes below it respecitively 
@@ -231,18 +231,18 @@ proc Digitize { H hydroMean } {
 #	A list of 1 and 0 depending on if the value is past the threshold 
 	
 	set digList {}
-	foreach hy $hydroMean {
+	foreach hy $smoothHydroean {
 		if {$hy < $H } {
 			lappend digList 0
 		} else {
 			lappend digList 1 
 		}
 	}
-	if {[llength $digList] != [llength $hydroMean]} { 
+	if {[llength $digList] != [llength $smoothHydroean]} { 
 		puts "Error: List do not match"
 		return -1
 	}
-	puts "dig works!"
+	puts "digitized works!"
 	return $digList
 }                                                                                     	
 	
