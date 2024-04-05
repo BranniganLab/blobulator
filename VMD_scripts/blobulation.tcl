@@ -1,3 +1,8 @@
+# blobulation.tcl
+#
+###Abstract 
+# This file takes a protein sequence and creates user values that are assign to blob type
+# h's are for hydrophobic blobs, s's are for short blobs, and p's are for polar blobs 
 
 #
 #	The overarching proc, users use this to run program
