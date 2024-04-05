@@ -31,8 +31,8 @@ proc blobulate {MolID lMin H} {
 		
 		for {set i 0} {$i < [llength $sorted] } { incr i} {
 			puts $chainBlobs
-			set Chain [lindex $sorted $i] 
-			set blobulated [blobulateChain $MolID $lMin $H $Chain]
+			set singleChain [lindex $sorted $i] 
+			set blobulated [blobulateChain $MolID $lMin $H $singleChain]
 			foreach bb $blobulated {
 				lappend chainBlobs $bb
 				
