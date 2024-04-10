@@ -15,9 +15,6 @@ class InputForm(Form):
     uniprot_id = StringField(
         label='Uniprot ID:', widget=TextArea(), default='P37840',
         validators=[validators.InputRequired(), my_length_check])
-    ensembl_id = StringField(
-        label='Ensembl ID:', widget=TextArea(), default='ENSG00000145335', 
-        validators=[validators.InputRequired(), my_length_check])
     aa_sequence = StringField(
         label='Sequence:', widget=TextArea(), default='MDVFMKGLSKAKEGVVAAAEKTKQGVAEAAGKTKEGVLYVGSKTKEGVVHGVATVAEKTKEQVTNVGGAVVTGVTAVAQKTVEGAGSIAAATGFVKKDQLGKNEEGAPQEGILEDMPVDPDNEAYEMPSEEGYQDYEPEA',
         )
