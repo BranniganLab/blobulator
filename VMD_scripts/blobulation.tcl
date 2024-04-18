@@ -1,18 +1,23 @@
+# blobulation.tcl
+#
+###Abstract 
+# This file takes a protein sequence and creates user values that are assign to blob type
+# h's are for hydrophobic blobs, s's are for short blobs, and p's are for polar blobs 
 
-
+#
+#	The overarching proc, users use this to run program
+#
+#
+#	Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for 
+#	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
+# 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
+#	for an h blob
+#
+#	Results:
+#	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
 proc blobulate {MolID lMin H} {
-	#
-	#	The overarching proc, users use this to run program
-	#
-	#
-	#	Arguments:
-	#	MolID (Integer): An integer that assigns what protein the algorithm looks for 
-	#	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
-	# 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
-	#	for an h blob
-	#
-	#	Results:
-	#	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
+
 	
 	source normalized_hydropathyscales.tcl
 	set argumentsOK [checker $MolID $lMin $H]
@@ -22,29 +27,28 @@ proc blobulate {MolID lMin H} {
 		}
 	if {$argumentsOK == 1} { 
 		
-		set caselessMolID [string tolower $MolID]
-		set sel [atomselect $caselessMolID alpha]
-		set sorted [lsort -unique [$sel get chain]]
+		set nocaseMolID [string tolower $MolID]
+		set sel [atomselect $nocaseMolID alpha]
+		set chainList [lsort -unique [$sel get chain]]
 		
 
 		set chainBlobs {}
 		
-		for {set i 0} {$i < [llength $sorted] } { incr i} {
-			puts $chainBlobs
-			set Chain [lindex $sorted $i] 
-			set blobulated [blobulateChain $MolID $lMin $H $Chain]
+		
+		foreach cl $chainList {
+			set blobulated [blobulateChain $MolID $lMin $H $cl]
 			foreach bb $blobulated {
 				lappend chainBlobs $bb
 				
 			} 
 		}
 		if {$chainBlobs != -1} {
-		set lower [string tolower $MolID]
-		set sel [atomselect $lower alpha]
-		$sel set user $chainBlobs
-		$sel delete
+			set lower [string tolower $MolID]
+			set sel [atomselect $lower alpha]
+			$sel set user $chainBlobs
+			$sel delete
 		} 
-		return $chainBlobs
+		return 
 		}
 	
 	set sequence [getSequence $MolID]
@@ -52,12 +56,12 @@ proc blobulate {MolID lMin H} {
 	if {$hydroS == -1} {
 		return -1
 		}
-	set hydroM [hydropathyMean $hydroScores $sequence]
-	set dig [Digitize $H $hydroM ]
-	set hblob [ hBlob $dig $lMin ]
-	set hsblob [ hsBlob $hblob $dig $lMin ]
-	set hpsblob [ hpsBlob $hsblob $dig ]
-    	set blobulated [blobAssign $hpsblob]
+	set smoothHydro [hydropathyMean $hydroScores $sequence]
+	set digitized [Digitize $H $smoothHydro ]
+	set hblob [ hBlob $digitized $lMin ]
+	set hsblob [ hsBlob $hblob $digitized $lMin ]
+	set hpsblob [ hpsBlob $hsblob $digitized ]
+    set blobulated [blobAssign $hpsblob]
     		
 	#Makes sure procedures that fail to pass checks can't assign values. 
 	if {$blobulated != -1} {
@@ -67,9 +71,20 @@ proc blobulate {MolID lMin H} {
 	$sel get user
 	$sel delete
 	} 
-	return $blobulated
+	return 
 }
-
+#
+#	Proc that subsitiutes the blobulate task if multiple chains in a protein are detected
+#
+#	Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for 
+#	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
+# 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
+#	for an h blob
+#	Chain (List): A list of each chain name used to parse through specific chains seperately
+#
+#	Results:
+#	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
 proc blobulateChain {MolID lMin H Chain} {
 
 	source normalized_hydropathyscales.tcl
@@ -78,29 +93,30 @@ proc blobulateChain {MolID lMin H Chain} {
 	if {$hydroS == -1} {
 		return -1
 		}
-	set hydroM [hydropathyMean $hydroS $sequence]
-	set dig [Digitize $H $hydroM ]
-	set hblob [ hBlob $dig $lMin ]
-	set hsblob [ hsBlob $hblob $dig $lMin ]
-	set hpsblob [ hpsBlob $hsblob $dig ]
-    	set blobulated [blobAssign $hpsblob]
+	set smoothHydro [hydropathyMean $hydroS $sequence]
+	set digitized [Digitize $H $smoothHydro ]
+	set hblob [ hBlob $digitized $lMin ]
+	set hsblob [ hsBlob $hblob $digitized $lMin ]
+	set hpsblob [ hpsBlob $hsblob $digitized ]
+    set blobulated [blobAssign $hpsblob]
     	
 	return $blobulated
 	}	
 
+#
+#	Checks the inputs to make sure they're with parameters for future procedures
+#
+#	Arguments:
+#	Lmin (Integer): Length of blobs should be an integer between 2 and some number
+#	H* (Float):	Hydropathy scale, must be between 0 and 1 
+#	MolID (Integer): Makes sure there's a top atom to select 
+#	Hydropathy Scale (Array): Specifc scale that the package can use
+#	Results:
+#	The result is that each input will be cleared for future procedures
 proc checker {MolID lMin H} {
-	#
-	#	Checks the inputs to make sure they're with parameters for future procedures
-	#
-	#	Arguments:
-	#	Lmin (Integer): Length of blobs should be an integer between 2 and some number
-	#	H* (Float):	Hydropathy scale, must be between 0 and 1 
-	#	MolID (Integer): Makes sure there's a top atom to select 
-	#	Hydropathy Scale (Array): Specifc scale that the package can use
-	#	Results:
-	#	The result is that each input will be cleared for future procedures
-	set caselessMolID [string tolower $MolID]
-	set sel [atomselect $caselessMolID alpha]
+
+	set nocaseMolID [string tolower $MolID]
+	set sel [atomselect $nocaseMolID alpha]
 	set sorted [lsort -unique [$sel get chain]]
 	
 		
@@ -118,14 +134,12 @@ proc checker {MolID lMin H} {
 		return -1
 	}
 	if { [llength $sorted] != 1 } {
-		puts "Protein has multiple chains use at own risk"
 		return 1
 	}
 	$sel delete 
 	return 0
 }
 
-proc getSequence {MolID} {
 #
 #	Acquires the MolID and makes a list of the amino acid residues
 #
@@ -135,11 +149,13 @@ proc getSequence {MolID} {
 #	Results:
 #	Results should be a list that has every resname in the protein seqeunce
 #	in order
-    set caselessMolID [string tolower $MolID]
-    set sel [atomselect $caselessMolID alpha]
+proc getSequence {MolID} {
+
+    set nocaseMolID [string tolower $MolID]
+    set sel [atomselect $nocaseMolID alpha]
     set resSeq [$sel get resname]
     $sel delete
-    puts "sequence works!"
+    
     return $resSeq
 }
 
@@ -148,10 +164,10 @@ proc getSequenceChain {MolID Chain} {
         set sel [atomselect $lower "alpha and chain $Chain"]
         set resSeq [$sel get resname]
         $sel delete
-        puts "sequence works!"
+        
         return $resSeq
 }
-proc hydropathyScores { hydropathyList Sequence } {
+
 #
 #	Takes the sequence and compares to normalized hydropathy scale making a list of scores 
 #
@@ -161,6 +177,8 @@ proc hydropathyScores { hydropathyList Sequence } {
 #
 #   Results 
 #	The result is a list that has the hydropathy scores
+proc hydropathyScores { hydropathyList Sequence } {
+
 	
 	set hydroScored {}
 	foreach amino $Sequence {
@@ -173,11 +191,11 @@ proc hydropathyScores { hydropathyList Sequence } {
 		
 		lappend hydroScored $value
 	}
-	puts "hydroScores works!"
+	
 	return $hydroScored
 }
 
-proc hydropathyMean { hydroScores Sequence} {
+
 #
 #	Takes a list of hydropathy scores and creates a list of smoothed hydropathy scores
 #
@@ -186,6 +204,8 @@ proc hydropathyMean { hydroScores Sequence} {
 #
 #	Results:
 #	The result is a new list of scores that are averaged between each other
+proc hydropathyMean { hydroScores Sequence} {
+
 	set hydroList {}
 	set isFirst 1
 	for { set i 0 } { $i < [expr [llength $hydroScores] -1] } {incr i} {
@@ -214,11 +234,11 @@ proc hydropathyMean { hydroScores Sequence} {
 		puts "Error"
 		break
 	}
-	puts "hydroMean works"
+	
 	return $hydroList
 }
-	
-proc Digitize { H hydroMean } {
+
+
 #
 #	Takes the seqeunce and compares it to the Hydropathy list, making a list of 1s and 0s 
 #	based on if exceeds/meets H or goes below it respecitively 
@@ -229,24 +249,25 @@ proc Digitize { H hydroMean } {
 #
 #	Results
 #	A list of 1 and 0 depending on if the value is past the threshold 
+proc Digitize { H smoothHydroean } {
+
 	
 	set digList {}
-	foreach hy $hydroMean {
+	foreach hy $smoothHydroean {
 		if {$hy < $H } {
 			lappend digList 0
 		} else {
 			lappend digList 1 
 		}
 	}
-	if {[llength $digList] != [llength $hydroMean]} { 
+	if {[llength $digList] != [llength $smoothHydroean]} { 
 		puts "Error: List do not match"
 		return -1
 	}
-	puts "dig works!"
+	
 	return $digList
 }                                                                                     	
-	
-proc hBlob { digitizedSeq lMin } {
+
 #
 #   Proc will find digitized hblobs based off the lMin parameter 
 #   
@@ -255,7 +276,9 @@ proc hBlob { digitizedSeq lMin } {
 #   lMin (integer): An integer that decided the minimum length of an hblob
 #
 #   Results: 
-#   The procedure should give a list of tuples that indicate where an hblobs starts and ends
+#   The procedure should give a list of tuples that indicate where an hblobs starts and ends	
+proc hBlob { digitizedSeq lMin } {
+
 
 	set idx 0 
 	set start 0
@@ -297,11 +320,11 @@ proc hBlob { digitizedSeq lMin } {
 			set isFirst 1
 		}
 	}
-	puts "blobh works!"
+	
 	return $blist
 }
 
-proc hsBlob { blobList digitizedSeq lMin } {
+
 #
 #
 #    A procedure that uses the list provided by the blobH procedure to determine short blob locations
@@ -313,6 +336,8 @@ proc hsBlob { blobList digitizedSeq lMin } {
 #
 #	 Results:
 #	 Should add to the blobList of tuples to include s blobs 
+proc hsBlob { blobList digitizedSeq lMin } {
+
 	
 	
 	if {[llength $blobList] == 0} {
@@ -354,11 +379,10 @@ proc hsBlob { blobList digitizedSeq lMin } {
 		lappend blobList $sb
 	}
 	set blobList [lsort -index 0 $blobList] 
-	puts "blobs works!"
+	
 	return $blobList
 }
 
-proc hpsBlob { blobList digitizedSeq } {
 #
 #   Returns a list of s, h, and p that determine the hydrophobic region
 #
@@ -368,6 +392,8 @@ proc hpsBlob { blobList digitizedSeq } {
 #
 #   Results:
 #   Proc should return a list of s, h, and p using the bloblist as a guide
+proc hpsBlob { blobList digitizedSeq } {
+
 	
  	set isFirst 0
  	set hpsList {}
@@ -402,11 +428,10 @@ proc hpsBlob { blobList digitizedSeq } {
  		puts "error: illegal character"
  		break
  	}
- 	puts "blobp works!"
+ 	
  	return $hpsList
  }
- 	
-proc blobAssign { blob } {
+
 #
 #	Takes a list of h's, s's , and p's and returns a set of numbers corresponding to 1 as h, 2 as s, and 3 as p.
 #
@@ -414,7 +439,9 @@ proc blobAssign { blob } {
 #	blob (list): A list of h's, s's, and p's	
 #
 #	Results:
-#	A list of values that can be applied to the user filed in vmd
+#	A list of values that can be applied to the user filed in vmd	
+proc blobAssign { blob } {
+
 	
 	#Creating a list of numbers where 1 is h, 2 is s, and 3 is p
 	set numAssignBlob {}
@@ -429,7 +456,7 @@ proc blobAssign { blob } {
 		lappend numAssignBlob 3
 	}
 	}
-	puts "blobAssign works!"
+	
 	return $numAssignBlob
 }
 	
