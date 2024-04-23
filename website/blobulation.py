@@ -30,7 +30,8 @@ from reportlab.graphics import renderPDF
 
 from importlib import reload
 
-
+import requests
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 template_dir = os.path.abspath('../website/templates')
 app = Flask(__name__, template_folder=template_dir)
@@ -45,6 +46,9 @@ REQUEST_URL_snp = "https://www.ebi.ac.uk/proteins/api/variation"
 REQUEST_URL_features = "https://www.ebi.ac.uk/proteins/api/features"
 REQUEST_UNIPROT_ID_FROM_ENSEMBL = "https://www.uniprot.org/uploadlists/"
 REQUEST_URL_coordinates = "https://www.ebi.ac.uk/proteins/api/coordinates"
+
+# Wait this many seconds, max
+REQUEST_TIMEOUT = 10
 
 @app.route("/", methods=["GET", "POST"])
 def index():
@@ -88,14 +92,6 @@ def index():
                 else:
                     original_accession = ""
 
-            try:
-                response_d2p2 = requests.get(
-                    f'http://d2p2.pro/api/seqid/["{user_uniprot_id}"]'
-                )
-                data_d2p2 = response_d2p2.json()
-            except:
-                data_d2p2 = {user_uniprot_id: []}
-
             # get the sequence and its name from uniprot database, perform error checks
             uniprot_params = {
                 "offset": 0,
@@ -103,50 +99,60 @@ def index():
                 "consequencetype": "missense",
                 "accession": user_uniprot_id,
             }
-            try:
-                get_sequence = requests.get(
-                    REQUEST_URL_features,
-                    params=uniprot_params,
-                    headers={"Accept": "application/json"},
-                )
-            except ConnectionError:
-                return render_template("error.html",
-                    title="Unable to connect to UniProt server",
-                    message="""There is probably an intermittent network error from our server to theirs.
-                    If the UniProt server is down then this service won't work either.
-                    Please try again later.""")
-            seq_file = get_sequence.json()
 
-            if 'errorMessage' in seq_file:
-                return render_template("error.html",
-                    title="UniProt server returned an error",
-                    message=f"""The UniProt server said: {', '.join(seq_file['errorMessage'])}""")
+            # We define a nested function that we'll call below using a thread pool
+            def fetch_json(args):
+                tag, url, params = args
+                try:
+                    data = requests.get(
+                        url,
+                        params=params,
+                        headers={"Accept": "application/json"},
+                        timeout=REQUEST_TIMEOUT # NB: This is where we tweak the timeout. 
+                    )
+                except:
+                    return tag, None
+                
+                return tag, data.json()
 
-            get_snp = requests.get(
-                REQUEST_URL_snp,
-                params=uniprot_params,
-                headers={"Accept": "application/json"},
-            )
-            # HTTP status code 200 means the request was successful
-            if get_snp.status_code != 200:
-                return render_template("error.html",
-                    title="Error getting SNP from UniProt",
-                    message="""There was an error retrieving SNP data from UniProt""")
+            # We have a list of request URLs and parameters. Each one is annotated by a "tag" which is just the first
+            # string in each tuple. We'll use this tag to identify which result data goes with what request
+            fetch_args = [
+                ('D2P2', f'http://d2p2.pro/api/seqid/["{user_uniprot_id}"]', []),
+                ('Feature', REQUEST_URL_features, uniprot_params),
+                ('SNP', REQUEST_URL_snp, uniprot_params),
+                ('Coordinates', REQUEST_URL_coordinates, uniprot_params),
+            ]
 
-            seq_file_snp = get_snp.json()
+            # The ThreadPoolExecutor has a submit method that dispatches the function we specified (fetch_json)
+            # multiple times concurrently. It immediately returns a "future" which gets resolved by the as_completed
+            # method, which I guess returns the next available result when it is called, or blocks waiting for one
+            fetched_data = {}
+            with ThreadPoolExecutor() as executor:
+                futures = [executor.submit(fetch_json, args) for args in fetch_args]
+                for future in as_completed(futures):
+                    try:
+                        tag, data = future.result()
+                        fetched_data[tag] = data
+                    except ValueError as e:
+                        # print(f"Task generated exception: {e}")
+                        fetched_data[tag] = None
+                
+            # At this point fetched data is full of either our data, or Nones for each thing we called
+            data_d2p2 = fetched_data['D2P2']
+            seq_file = fetched_data['Feature']
+            seq_file_snp = fetched_data['SNP']
+            seq_file_coords = fetched_data['Coordinates']
 
+            # Now we can process the fetched data
             if seq_file_snp:
                 snps_json = pathogenic_snps(seq_file_snp[0]["features"]) #filters the disease causing SNPs
             else:
                 snps_json = "[]"
             my_seq = seq_file[0]["sequence"]
 
-            if (
-                user_uniprot_id not in data_d2p2
-                or len(data_d2p2[user_uniprot_id]) == 0
-            ):
+            if (data_d2p2 is None) or (user_uniprot_id not in data_d2p2 or len(data_d2p2[user_uniprot_id]) == 0):
                 disorder_residues = [0]
-
             else:
                 try:
                     disorder_file = data_d2p2[user_uniprot_id][0][2]["disorder"]["disranges"] #filters the disorder residues from d2p2, PV2 predictor
@@ -172,19 +178,6 @@ def index():
                 user_uniprot_name = ''
                 user_uniprot_entry = ''
 
-            get_coords = requests.get(
-                REQUEST_URL_coordinates,
-                params=uniprot_params,
-                headers={"Accept": "application/json"},
-            )
-
-            # HTTP status code 200 means the request was successful
-            if get_coords.status_code != 200:
-                return render_template("error.html",
-                    title="Error getting genomic coordinates from UniProt",
-                    message="""There was an error retrieving SNP data from UniProt""")
-
-            seq_file_coords = get_coords.json()
             try:
                 gn_chrom = seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['chromosome']
                 gn_start = seq_file_coords[0]['gnCoordinate'][0]['genomicLocation']['exon'][0]['genomeLocation']['begin']['position']
