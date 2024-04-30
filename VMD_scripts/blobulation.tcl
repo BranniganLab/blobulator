@@ -29,14 +29,15 @@ proc blobulate {MolID lMin H} {
 		
 		set nocaseMolID [string tolower $MolID]
 		set sel [atomselect $nocaseMolID alpha]
-		set chainList [lsort -unique [$sel get chain]]
+		set sorted [lsort -unique [$sel get chain]]
 		
 
 		set chainBlobs {}
 		
-		
-		foreach cl $chainList {
-			set blobulated [blobulateChain $MolID $lMin $H $cl]
+		for {set i 0} {$i < [llength $sorted] } { incr i} {
+			
+			set singleChain [lindex $sorted $i] 
+			set blobulated [blobulateChain $MolID $lMin $H $singleChain]
 			foreach bb $blobulated {
 				lappend chainBlobs $bb
 				
