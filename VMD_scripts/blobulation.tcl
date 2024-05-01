@@ -60,9 +60,10 @@ proc blobulate {MolID lMin H} {
 	set smoothHydro [hydropathyMean $hydroScores $sequence]
 	set digitized [Digitize $H $smoothHydro ]
 	set hblob [ hBlob $digitized $lMin ]
+	set blobNum [hBlobNum $hblob $lMin]
 	set hsblob [ hsBlob $hblob $digitized $lMin ]
 	set hpsblob [ hpsBlob $hsblob $digitized ]
-    set blobulated [blobAssign $hpsblob]
+        set blobulated [blobAssign $hpsblob]
     		
 	#Makes sure procedures that fail to pass checks can't assign values. 
 	if {$blobulated != -1} {
@@ -97,9 +98,10 @@ proc blobulateChain {MolID lMin H Chain} {
 	set smoothHydro [hydropathyMean $hydroS $sequence]
 	set digitized [Digitize $H $smoothHydro ]
 	set hblob [ hBlob $digitized $lMin ]
+	set blobNum [hBlobNum $hblob $lMin]
 	set hsblob [ hsBlob $hblob $digitized $lMin ]
 	set hpsblob [ hpsBlob $hsblob $digitized ]
-    set blobulated [blobAssign $hpsblob]
+        set blobulated [blobAssign $hpsblob]
     	
 	return $blobulated
 	}	
@@ -325,6 +327,39 @@ proc hBlob { digitizedSeq lMin } {
 	return $blist
 }
 
+proc hBlobNum {blobList lMin} {
+	set blobList [lsort -integer -index 0 $blobList]
+	puts $blobList
+	set hCount 1
+	set linkOn 0
+	set aCount 0
+	set newBlobList {}
+	set alphabet [list a b c d e f g h i j k l m n o p q r s t u v w x y z]
+	for {set i 0} { $i < [llength $blobList] } { incr i } { 
+		
+		set entryOne [ lindex $blobList $i ]
+		puts $entryOne
+		set entryTwo [ lindex $blobList [expr $i + 1 ]]
+		puts $entryTwo
+		if {[expr [lindex $entryTwo 0] - [lindex $entryOne 1] ] < $lMin} {
+			set linkOn 1 
+			lappend entryOne [concat $pCount [lindex $alphabet $aCount]]
+			incr pCount 
+			incr aCount
+		} elseif { $linkOn == 1 && [expr [lindex $entryTwo 0] - [lindex $entryOne 1] ] < $lMin } {
+			  
+		
+		lappend entryOne $pCount
+		lappend newBlobList $entryOne 
+		
+					
+		}
+	
+
+
+
+return 
+}
 
 #
 #
@@ -340,7 +375,8 @@ proc hBlob { digitizedSeq lMin } {
 proc hsBlob { blobList digitizedSeq lMin } {
 
 	
-	
+	set sCount 1
+	set pCount 1
 	if {[llength $blobList] == 0} {
 		puts "no hblobs found"
 		return -1
@@ -351,7 +387,13 @@ proc hsBlob { blobList digitizedSeq lMin } {
 		if {[lindex $blobList 0 0] < $lMin  } {
 			set start 0
 			set finish [expr [lindex $blobList 0 0] -1]
-			lappend slist "$start $finish {s}"
+			lappend slist "$start $finish {s} $sCount"
+			incr sCount
+		} else {
+			set start 0
+			set finish [expr [lindex $blobList 0 0] -1]
+			lappend slist "$start $finish {p} $pCount"
+			incr pCount
 			}
 		}
 	#Checks the end of the list for an s blob 
@@ -360,10 +402,16 @@ proc hsBlob { blobList digitizedSeq lMin } {
 		if { [expr $lengthOfseq - [lindex $blobList end 1]] < $lMin } {
 			set start [expr [lindex $blobList end 1] +1] 
 			set finish [expr [llength $digitizedSeq] -1 ]
-			lappend slist "$start $finish {s}"
-		} 
+			lappend slist "$start $finish {s} $sCount"
+			incr sCount
+		} else {
+		        set start [expr [lindex $blobList end 1] +1] 
+			set finish [expr [llength $digitizedSeq] -1 ]
+			lappend slist "$start $finish {p} $pCount"
+			incr pCount
+			}
 	}
-
+	
 	#Looks between the hblobs, from previous proc, to see gaps less than the Lmin  	
 	for {set i 0} {$i < [expr [llength $blobList] -1 ]} { incr i } {
 		set endOffirlist [lindex $blobList $i 1]
@@ -371,9 +419,13 @@ proc hsBlob { blobList digitizedSeq lMin } {
 		if { [expr $startOfseclist - $endOffirlist] <= $lMin  } {
 			set start [expr $endOffirlist + 1 ]
 			set finish [expr $startOfseclist - 1]
-			lappend slist "$start $finish {s}"
+			lappend slist "$start $finish {s} $sCount"
+			incr sCount
 		} else {
-			continue
+			set start [expr $endOffirlist + 1 ]
+			set finish [expr $startOfseclist - 1]
+			lappend slist "$start $finish {p} $pCount"
+			incr pCount
 		}
 	}
 	foreach sb $slist {
