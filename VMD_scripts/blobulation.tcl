@@ -344,21 +344,33 @@ proc hBlobNum {blobList lMin} {
 		if {[expr [lindex $entryTwo 0] - [lindex $entryOne 1] ] < $lMin} {
 			set linkOn 1 
 			lappend entryOne [concat $pCount [lindex $alphabet $aCount]]
+			lappend newBlobList $entryOne 
 			incr pCount 
 			incr aCount
 		} elseif { $linkOn == 1 && [expr [lindex $entryTwo 0] - [lindex $entryOne 1] ] < $lMin } {
-			  
+			lappend entryOne [concat $pCount [lindex $alphabet $aCount]]
+			lappend newBlobList $entryOne 
+			incr pCount 
+			incr aCount
+		} elseif { $linkOn == 1 && [expr [lindex $entryTwo 0] - [lindex $entryOne 1] ] > $lMin } {
+			set linkOn 0 
+			lappend entryOne [concat $pCount [lindex $alphabet $aCount]]
+			lappend newBlobList $entryOne 
+			incr pCount
+			set aCount 0
+		} else {
 		
-		lappend entryOne $pCount
-		lappend newBlobList $entryOne 
-		
+			lappend entryOne $pCount
+			lappend newBlobList $entryOne 
+			incr pCount
+			
 					
 		}
 	
 
 
-
-return 
+puts $newBlobList
+return $newBlobList
 }
 
 #
