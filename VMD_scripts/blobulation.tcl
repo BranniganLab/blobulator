@@ -90,7 +90,6 @@ proc blobulate {MolID lMin H} {
 #	Results:
 #	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
 proc blobulateChain {MolID lMin H Chain count} {
-	puts $count
 	source normalized_hydropathyscales.tcl
 	set sequence [getSequenceChain $MolID $Chain]
 	set hydroS [hydropathyScores $KD_Normalized $sequence]
@@ -348,31 +347,40 @@ proc hBlobNum {blobList lMin} {
 		
 		set entryTwo [ lindex $blobList [expr $i + 1 ]]
 		if {$entryTwo < 1} {
+			puts "hit the end of the list condition"
+			if { $linkOn == 1 } {
+			puts "hit the link end condition"
+			lappend entryOne $hCount[lindex $alphabet $aCount]
+			lappend newBlobList $entryOne 	
+			} else { 
+			puts "hit the nonlink end condition"
 			incr hCount
 			lappend entryOne $hCount
-			lappend newBlobList $entryOne 
+			lappend newBlobList $entryOne
+			} 
 		} elseif { $linkOn == 1 && [expr [lindex $entryTwo 0] - [lindex $entryOne 1] ] <= $lMin } {
+			puts "hit chain continue condition"
 			lappend entryOne $hCount[lindex $alphabet $aCount]
 			lappend newBlobList $entryOne 
 			incr aCount
 		} elseif { $linkOn == 1 && [expr [lindex $entryTwo 0] - [lindex $entryOne 1] ] > $lMin } {
+			puts "hit chain end condition"
 			set linkOn 0 
 			lappend entryOne $hCount[lindex $alphabet $aCount]
 			lappend newBlobList $entryOne 
 			set aCount 0
 		} elseif {[expr [lindex $entryTwo 0] - [lindex $entryOne 1] ] <= $lMin} {
+			puts "hit chain start condition"
 			set linkOn 1 
 			incr hCount
 			lappend entryOne $hCount[lindex $alphabet $aCount]
 			lappend newBlobList $entryOne 
 			incr aCount
 		} else {
+			puts "hit chain skip condition"
 			incr hCount
 			lappend entryOne $hCount
-			lappend newBlobList $entryOne 
-			
-			
-					
+			lappend newBlobList $entryOne 			
 		}
 	
 
