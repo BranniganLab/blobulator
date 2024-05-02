@@ -33,11 +33,12 @@ proc blobulate {MolID lMin H} {
 		
 
 		set chainBlobs {}
-		
+		set count 1
 		for {set i 0} {$i < [llength $sorted] } { incr i} {
 			
 			set singleChain [lindex $sorted $i] 
-			set blobulated [blobulateChain $MolID $lMin $H $singleChain]
+			set blobulated [blobulateChain $MolID $lMin $H $singleChain $count]
+			incr count
 			foreach bb $blobulated {
 				lappend chainBlobs $bb
 				
@@ -88,8 +89,8 @@ proc blobulate {MolID lMin H} {
 #
 #	Results:
 #	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
-proc blobulateChain {MolID lMin H Chain} {
-
+proc blobulateChain {MolID lMin H Chain count} {
+	puts $count
 	source normalized_hydropathyscales.tcl
 	set sequence [getSequenceChain $MolID $Chain]
 	set hydroS [hydropathyScores $KD_Normalized $sequence]
@@ -101,10 +102,15 @@ proc blobulateChain {MolID lMin H Chain} {
 	set hblob [ hBlob $digitized $lMin ]
 	set blobNum [hBlobNum $hblob $lMin]
 	set hsblob [ hsBlob $blobNum $digitized $lMin ]
+	set hsblob [lsort -integer -index 0 $hsblob] 
+	set file_blob [open "Blob_data${count}" w]
+	foreach bl $hsblob {
+	puts $file_blob $bl
+	}
+	close $file_blob
 	set iBlob [ blobIndex $hsblob ]
 	set hpsblob [ hpsBlob $hsblob $digitized ]
         set blobulated [blobAssign $hpsblob]
-    	
 	return $blobulated
 	}	
 
@@ -349,7 +355,7 @@ proc hBlobNum {blobList lMin} {
 			lappend entryOne $hCount[lindex $alphabet $aCount]
 			lappend newBlobList $entryOne 
 			incr aCount
-		} elseif { $linkOn == 1 && [expr [lindex $entryTwo 0] - [lindex $entryOne 1] ] >= $lMin } {
+		} elseif { $linkOn == 1 && [expr [lindex $entryTwo 0] - [lindex $entryOne 1] ] > $lMin } {
 			set linkOn 0 
 			lappend entryOne $hCount[lindex $alphabet $aCount]
 			lappend newBlobList $entryOne 
@@ -445,7 +451,7 @@ proc hsBlob { blobList digitizedSeq lMin } {
 	foreach sb $slist {
 		lappend blobList $sb
 	}
-	set blobList [lsort -index 0 $blobList] 
+	
 	
 	return $blobList
 }
