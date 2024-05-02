@@ -550,11 +550,13 @@ proc blobIndex {blobList} {
 	set blobIndex {}
  	 
  	while {$i < [expr [llength $sortedBlobList]]} {
- 	for {set count [lindex $sortedBlobList $i 0]} { $count <= [lindex $sortedBlobList $i 1]} {incr count} {
- 		set blobName [ lindex $sortedBlobList $count 2][lindex $sortedBlobList $count 3]
- 		puts $blobName
- 		lappend blobIndex $blobName
- 	}
+ 		puts [lindex $sortedBlobList $i 0]
+ 		puts [lindex $sortedBlobList $i 1]
+	 	for {set count [lindex $sortedBlobList $i 0]} { $count <= [lindex $sortedBlobList $i 1]} {incr count} {
+	 		set blobName [ lindex $sortedBlobList $count 2][lindex $sortedBlobList $count 3]
+	 		puts $blobName
+	 		lappend blobIndex $blobName
+	 	}
 	incr i
  	}
  	puts $blobName
