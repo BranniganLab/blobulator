@@ -347,37 +347,37 @@ proc hBlobNum {blobList lMin} {
 		
 		set entryTwo [ lindex $blobList [expr $i + 1 ]]
 		if {$entryTwo < 1} {
-			puts "hit the end of the list condition"
+			#puts "hit the end of the list condition"
 			if { $linkOn == 1 } {
-			puts "hit the link end condition"
-			lappend entryOne $hCount[lindex $alphabet $aCount]
-			lappend newBlobList $entryOne 	
+				#puts "hit the link end condition"
+				lappend entryOne $hCount[lindex $alphabet $aCount]
+				lappend newBlobList $entryOne 	
 			} else { 
-			puts "hit the nonlink end condition"
-			incr hCount
-			lappend entryOne $hCount
-			lappend newBlobList $entryOne
+			#puts "hit the nonlink end condition"
+				incr hCount
+				lappend entryOne $hCount
+				lappend newBlobList $entryOne
 			} 
 		} elseif { $linkOn == 1 && [expr [lindex $entryTwo 0] - [lindex $entryOne 1] ] <= $lMin } {
-			puts "hit chain continue condition"
+			#puts "hit chain continue condition"
 			lappend entryOne $hCount[lindex $alphabet $aCount]
 			lappend newBlobList $entryOne 
 			incr aCount
 		} elseif { $linkOn == 1 && [expr [lindex $entryTwo 0] - [lindex $entryOne 1] ] > $lMin } {
-			puts "hit chain end condition"
+			#puts "hit chain end condition"
 			set linkOn 0 
 			lappend entryOne $hCount[lindex $alphabet $aCount]
 			lappend newBlobList $entryOne 
 			set aCount 0
 		} elseif {[expr [lindex $entryTwo 0] - [lindex $entryOne 1] ] <= $lMin} {
-			puts "hit chain start condition"
+			#puts "hit chain start condition"
 			set linkOn 1 
 			incr hCount
 			lappend entryOne $hCount[lindex $alphabet $aCount]
 			lappend newBlobList $entryOne 
 			incr aCount
 		} else {
-			puts "hit chain skip condition"
+			#puts "hit chain skip condition"
 			incr hCount
 			lappend entryOne $hCount
 			lappend newBlobList $entryOne 			
@@ -410,6 +410,7 @@ proc hsBlob { blobList digitizedSeq lMin } {
 		return -1
 	}
 	set slist {}
+	set blobList [lsort -integer -index 0 $blobList ]
 	#Checks the beginning of the list for an s blob 
 	if {[lindex $blobList 0 0] != 0 } {
 		if {[lindex $blobList 0 0] < $lMin  } {
@@ -424,21 +425,7 @@ proc hsBlob { blobList digitizedSeq lMin } {
 			incr pCount
 			}
 		}
-	#Checks the end of the list for an s blob 
-	if {[lindex $blobList end 1] != [expr [llength $digitizedSeq]-1 ]} {
-		set lengthOfseq [expr [llength $digitizedSeq] - 1 ]
-		if { [expr $lengthOfseq - [lindex $blobList end 1]] < $lMin } {
-			set start [expr [lindex $blobList end 1] +1] 
-			set finish [expr [llength $digitizedSeq] -1 ]
-			lappend slist "$start $finish s $sCount"
-			incr sCount
-		} else {
-		        set start [expr [lindex $blobList end 1] +1] 
-			set finish [expr [llength $digitizedSeq] -1 ]
-			lappend slist "$start $finish p $pCount"
-			incr pCount
-			}
-	}
+	
 	
 	#Looks between the hblobs, from previous proc, to see gaps less than the Lmin  	
 	for {set i 0} {$i < [expr [llength $blobList] -1 ]} { incr i } {
@@ -455,6 +442,21 @@ proc hsBlob { blobList digitizedSeq lMin } {
 			lappend slist "$start $finish p $pCount"
 			incr pCount
 		}
+	}
+	#Checks the end of the list for an s blob 
+	if {[lindex $blobList end 1] != [expr [llength $digitizedSeq]-1 ]} {
+		set lengthOfseq [expr [llength $digitizedSeq] - 1 ]
+		if { [expr $lengthOfseq - [lindex $blobList end 1]] < $lMin } {
+			set start [expr [lindex $blobList end 1] +1] 
+			set finish [expr [llength $digitizedSeq] -1 ]
+			lappend slist "$start $finish s $sCount"
+			incr sCount
+		} else {
+		        set start [expr [lindex $blobList end 1] +1] 
+			set finish [expr [llength $digitizedSeq] -1 ]
+			lappend slist "$start $finish p $pCount"
+			incr pCount
+			}
 	}
 	foreach sb $slist {
 		lappend blobList $sb
@@ -491,7 +493,7 @@ proc hpsBlob { blobList digitizedSeq } {
  		 
  	set i 0 
  	#Goes through created list and replaces q with h or s 
- 	while {$i <= [expr [llength $blobList]-1]} {
+ 	while {$i < [expr [llength $blobList]]} {
  	for {set count [lindex $blobList $i 0]} { $count <= [lindex $blobList $i 1]} {incr count} {
  		set hpsList [lreplace $hpsList $count $count [lindex $blobList $i 2]]
  	}
@@ -544,7 +546,18 @@ proc blobAssign { blob } {
 proc blobIndex {blobList} { 
 	set sortedBlobList [lsort -integer -index 0 $blobList ]
 	puts $sortedBlobList
-	
+	set i 0 
+	set blobIndex {}
+ 	 
+ 	while {$i < [expr [llength $sortedBlobList]]} {
+ 	for {set count [lindex $sortedBlobList $i 0]} { $count <= [lindex $sortedBlobList $i 1]} {incr count} {
+ 		set blobName [ lindex $sortedBlobList $count 2][lindex $sortedBlobList $count 3]
+ 		puts $blobName
+ 		lappend blobIndex $blobName
+ 	}
+	incr i
+ 	}
+ 	puts $blobName
 return 
 }
 
