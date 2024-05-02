@@ -331,7 +331,6 @@ proc hBlob { digitizedSeq lMin } {
 
 proc hBlobNum {blobList lMin} {
 	set blobList [lsort -integer -index 0 $blobList]
-	puts $blobList
 	set hCount 0
 	set linkOn 0
 	set aCount 0
@@ -350,17 +349,17 @@ proc hBlobNum {blobList lMin} {
 			lappend entryOne $hCount[lindex $alphabet $aCount]
 			lappend newBlobList $entryOne 
 			incr aCount
+		} elseif { $linkOn == 1 && [expr [lindex $entryTwo 0] - [lindex $entryOne 1] ] >= $lMin } {
+			set linkOn 0 
+			lappend entryOne $hCount[lindex $alphabet $aCount]
+			lappend newBlobList $entryOne 
+			set aCount 0
 		} elseif {[expr [lindex $entryTwo 0] - [lindex $entryOne 1] ] <= $lMin} {
 			set linkOn 1 
 			incr hCount
 			lappend entryOne $hCount[lindex $alphabet $aCount]
 			lappend newBlobList $entryOne 
 			incr aCount
-		} elseif { $linkOn == 1 && [expr [lindex $entryTwo 0] - [lindex $entryOne 1] ] >= $lMin } {
-			set linkOn 0 
-			lappend entryOne $hCount[lindex $alphabet $aCount]
-			lappend newBlobList $entryOne 
-			set aCount 0
 		} else {
 			incr hCount
 			lappend entryOne $hCount
