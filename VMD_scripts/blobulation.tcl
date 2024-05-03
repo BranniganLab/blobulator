@@ -46,6 +46,7 @@ proc blobulate {MolID lMin H} {
 		if {$chainBlobs != -1} {
 			set lower [string tolower $MolID]
 			set sel [atomselect $lower alpha]
+			blobIndex $chainBlobs $MolID
 			$sel set user $chainBlobs
 			$sel delete
 		} 
@@ -62,7 +63,8 @@ proc blobulate {MolID lMin H} {
 	set hblob [ hBlob $digitized $lMin ]
 	set hsblob [ hsBlob $hblob $digitized $lMin ]
 	set hpsblob [ hpsBlob $hsblob $digitized ]
-    set blobulated [blobAssign $hpsblob]
+	
+    	set blobulated [blobAssign $hpsblob]
     		
 	#Makes sure procedures that fail to pass checks can't assign values. 
 	if {$blobulated != -1} {
@@ -72,6 +74,8 @@ proc blobulate {MolID lMin H} {
 	$sel get user
 	$sel delete
 	} 
+	
+	blobIndex $hpsblob $MolID
 	return 
 }
 #
@@ -99,7 +103,7 @@ proc blobulateChain {MolID lMin H Chain} {
 	set hblob [ hBlob $digitized $lMin ]
 	set hsblob [ hsBlob $hblob $digitized $lMin ]
 	set hpsblob [ hpsBlob $hsblob $digitized ]
-    set blobulated [blobAssign $hpsblob]
+        set blobulated [blobAssign $hpsblob]
     	
 	return $blobulated
 	}	
@@ -472,4 +476,37 @@ proc blobAssign { blob } {
 	
 	return $numAssignBlob
 }
-	
+
+proc blobIndex { blob MolID } {
+	puts $blob
+	puts [llength $blob]
+	set blobChar q
+	set count 0
+	set countList {}
+	set sel [atomselect $MolID alpha]
+	for {set i 0 } { $i < [llength $blob]} { incr i } {
+		set currentChar [lindex $blob $i]	
+		if { $currentChar != $blobChar } {
+			set blobChar $currentChar
+			incr count 
+			lappend countList $count
+			
+		} else {
+			
+			lappend countList $count
+		}
+	}
+	puts $countList
+	set lower [string tolower $MolID]
+	set sel [atomselect $lower alpha]
+	$sel set user2 $countList
+	$sel delete 
+		
+return 
+			 
+}		
+			
+			
+			
+			
+		
