@@ -17,7 +17,7 @@
 #	Results:
 #	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
 proc blobulate {MolID lMin H} {
-
+	puts "blob started"
 	
 	source normalized_hydropathyscales.tcl
 	set argumentsOK [checker $MolID $lMin $H]
@@ -33,7 +33,7 @@ proc blobulate {MolID lMin H} {
 		
 
 		set chainBlobs {}
-		
+		set chainBlobIndex {}
 		for {set i 0} {$i < [llength $sorted] } { incr i} {
 			
 			set singleChain [lindex $sorted $i] 
@@ -42,14 +42,29 @@ proc blobulate {MolID lMin H} {
 				lappend chainBlobs $bb
 				
 			} 
+
+			set chainIndex [blobIndex $blobulated $MolID]
+			foreach ci $chainIndex { 
+				lappend chainBlobIndex $ci
+			}
+			puts $chainBlobIndex
+			puts [lindex $chainBlobIndex 0]
+			
+			
+			
 		}
 		if {$chainBlobs != -1} {
 			set lower [string tolower $MolID]
 			set sel [atomselect $lower alpha]
-			blobIndex $chainBlobs $MolID
+			
 			$sel set user $chainBlobs
 			$sel delete
 		} 
+		puts $chainBlobIndex
+		set lower [string tolower $MolID]
+		set sel [atomselect $lower alpha]
+		$sel set user2 $chainBlobIndex
+		$sel delete 
 		return 
 		}
 	
@@ -63,8 +78,7 @@ proc blobulate {MolID lMin H} {
 	set hblob [ hBlob $digitized $lMin ]
 	set hsblob [ hsBlob $hblob $digitized $lMin ]
 	set hpsblob [ hpsBlob $hsblob $digitized ]
-	
-    	set blobulated [blobAssign $hpsblob]
+    set blobulated [blobAssign $hpsblob]
     		
 	#Makes sure procedures that fail to pass checks can't assign values. 
 	if {$blobulated != -1} {
@@ -75,7 +89,7 @@ proc blobulate {MolID lMin H} {
 	$sel delete
 	} 
 	
-	blobIndex $hpsblob $MolID
+	
 	return 
 }
 #
@@ -103,7 +117,7 @@ proc blobulateChain {MolID lMin H Chain} {
 	set hblob [ hBlob $digitized $lMin ]
 	set hsblob [ hsBlob $hblob $digitized $lMin ]
 	set hpsblob [ hpsBlob $hsblob $digitized ]
-        set blobulated [blobAssign $hpsblob]
+    set blobulated [blobAssign $hpsblob]
     	
 	return $blobulated
 	}	
@@ -466,12 +480,12 @@ proc blobAssign { blob } {
 }
 
 proc blobIndex { blob MolID } {
-	puts $blob
+	
 	puts [llength $blob]
 	set blobChar q
 	set count 0
 	set countList {}
-	set sel [atomselect $MolID alpha]
+	
 	for {set i 0 } { $i < [llength $blob]} { incr i } {
 		set currentChar [lindex $blob $i]	
 		if { $currentChar != $blobChar } {
@@ -480,17 +494,13 @@ proc blobIndex { blob MolID } {
 			lappend countList $count
 			
 		} else {
-			
 			lappend countList $count
 		}
 	}
-	puts $countList
-	set lower [string tolower $MolID]
-	set sel [atomselect $lower alpha]
-	$sel set user2 $countList
-	$sel delete 
+	
+	
 		
-return 
+return $countList
 			 
 }		
 			
