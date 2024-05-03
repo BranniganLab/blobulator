@@ -17,7 +17,7 @@
 #	Results:
 #	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
 proc blobulate {MolID lMin H} {
-	puts "blob started"
+	
 	
 	source normalized_hydropathyscales.tcl
 	set argumentsOK [checker $MolID $lMin $H]
@@ -34,21 +34,31 @@ proc blobulate {MolID lMin H} {
 
 		set chainBlobs {}
 		set chainBlobIndex {}
+		set chainBlobGroup {}
 		for {set i 0} {$i < [llength $sorted] } { incr i} {
 			
 			set singleChain [lindex $sorted $i] 
-			set blobulated [blobulateChain $MolID $lMin $H $singleChain]
+			set chainReturn [blobulateChain $MolID $lMin $H $singleChain]
+			puts $chainReturn
+			set blobulated [lindex [blobulateChain $MolID $lMin $H $singleChain] 0]
+			puts $blobulated
+			set index [lindex [blobulateChain $MolID $lMin $H $singleChain] 1]
+			#puts $index
 			foreach bb $blobulated {
 				lappend chainBlobs $bb
 				
 			} 
 
-			set chainIndex [blobIndex $blobulated $MolID]
+			set chainIndex [blobIndex $blobulated ]
 			foreach ci $chainIndex { 
 				lappend chainBlobIndex $ci
 			}
-			puts $chainBlobIndex
-			puts [lindex $chainBlobIndex 0]
+			
+			set chainGroup [blobGroup $index]
+			foreach cg $chainGroup {
+				lappend chainBlobGroup $cg
+			}
+			#puts $chainGroup
 			
 			
 			
@@ -60,14 +70,18 @@ proc blobulate {MolID lMin H} {
 			$sel set user $chainBlobs
 			$sel delete
 		} 
-		puts $chainBlobIndex
 		set lower [string tolower $MolID]
 		set sel [atomselect $lower alpha]
 		$sel set user2 $chainBlobIndex
 		$sel delete 
+
+		set lower [string tolower $MolID]
+		set sel [atomselect $lower alpha]
+		$sel set user3 $chainBlobGroup
+		$sel delete 
 		return 
 		}
-	
+		
 	set sequence [getSequence $MolID]
 	set hydroScores [hydropathyScores $KD_Normalized $sequence]
 	if {$hydroS == -1} {
@@ -78,6 +92,7 @@ proc blobulate {MolID lMin H} {
 	set hblob [ hBlob $digitized $lMin ]
 	set hsblob [ hsBlob $hblob $digitized $lMin ]
 	set hpsblob [ hpsBlob $hsblob $digitized ]
+	set groupedBlob [blobGroup $hpsblob]
     set blobulated [blobAssign $hpsblob]
     		
 	#Makes sure procedures that fail to pass checks can't assign values. 
@@ -88,7 +103,16 @@ proc blobulate {MolID lMin H} {
 	$sel get user
 	$sel delete
 	} 
-	
+	set blobIndexList [ blobIndex $blobulated ]
+	set lower [string tolower $MolID]
+	set sel [atomselect $lower alpha]
+	$sel set user2 $blobIndexList
+	$sel delete 
+
+	set lower [string tolower $MolID]
+	set sel [atomselect $lower alpha]
+	$sel set user3 $groupedBlob
+	$sel delete 
 	
 	return 
 }
@@ -105,7 +129,6 @@ proc blobulate {MolID lMin H} {
 #	Results:
 #	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
 proc blobulateChain {MolID lMin H Chain} {
-
 	source normalized_hydropathyscales.tcl
 	set sequence [getSequenceChain $MolID $Chain]
 	set hydroS [hydropathyScores $KD_Normalized $sequence]
@@ -117,9 +140,10 @@ proc blobulateChain {MolID lMin H Chain} {
 	set hblob [ hBlob $digitized $lMin ]
 	set hsblob [ hsBlob $hblob $digitized $lMin ]
 	set hpsblob [ hpsBlob $hsblob $digitized ]
+	set groupedBlobs [blobGroup $hpsblob ]
     set blobulated [blobAssign $hpsblob]
     	
-	return $blobulated
+	return [list $blobulated $hpsblob]
 	}	
 
 #
@@ -491,7 +515,7 @@ proc blobAssign { blob } {
 	return $numAssignBlob
 }
 
-proc blobIndex { blob MolID } {
+proc blobIndex { blob } {
 	
 	puts [llength $blob]
 	set blobChar q
@@ -516,7 +540,31 @@ return $countList
 			 
 }		
 			
-			
-			
-			
+proc blobGroup { blob } {
+
+	set groupList {}
+	set hCount 1
+	set pCount 1
+	set sCount 1
+	set activeChar q
+
+	foreach b $blob {
 		
+
+		if { $activeChar != $b} {
+			set activeChar $b
+			upvar 0 ${b}count count 
+			incr count
+			
+			lappend groupList $count
+			
+		} else {
+			upvar 0 ${b}count count
+			
+			lappend groupList $count
+
+		}
+	}
+
+return $groupList
+}
