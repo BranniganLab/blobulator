@@ -39,11 +39,8 @@ proc blobulate {MolID lMin H} {
 			
 			set singleChain [lindex $sorted $i] 
 			set chainReturn [blobulateChain $MolID $lMin $H $singleChain]
-			puts $chainReturn
 			set blobulated [lindex [blobulateChain $MolID $lMin $H $singleChain] 0]
-			puts $blobulated
 			set index [lindex [blobulateChain $MolID $lMin $H $singleChain] 1]
-			#puts $index
 			foreach bb $blobulated {
 				lappend chainBlobs $bb
 				
@@ -366,8 +363,6 @@ proc hBlob { digitizedSeq lMin } {
 				if { $count >= $lMin } {
 					#there were enough hydrophobic residues to form a blob
 					set finish [expr $i - 1 ]
-					# puts $start
-					# puts $finish
 					lappend blist "$start $finish {h}"
 					} 
 			}
@@ -517,7 +512,7 @@ proc blobAssign { blob } {
 
 proc blobIndex { blob } {
 	
-	puts [llength $blob]
+	
 	set blobChar q
 	set count 0
 	set countList {}
