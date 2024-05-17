@@ -1,0 +1,40 @@
+<source src="./index.js" type="text/javascript"></source>
+<style>
+    #app {
+        position: absolute;
+        left: 100px;
+        top: 100px;
+        width: 800px;
+        height: 600px;
+    }
+</style>
+<!-- 
+    molstar.js and .css are obtained from
+    - the folder build/viewer after cloning and building the molstar package 
+    - from the build/viewer folder in the Mol* NPM package
+-->
+<link rel="stylesheet" type="text/css" href="./node_modules/molstar/build/viewer/molstar.css" />
+<script type="text/javascript" src="./node_modules/molstar/build/viewer/molstar.js"></script>
+
+<div id="app"></div>
+
+<script type="text/javascript">
+    molstar.Viewer.create('app', {
+        layoutIsExpanded: false,
+        layoutShowControls: false,
+        layoutShowRemoteState: false,
+        layoutShowSequence: true,
+        layoutShowLog: false,
+        layoutShowLeftPanel: true,
+
+        viewportShowExpand: true,
+        viewportShowSelectionMode: false,
+        viewportShowAnimation: false,
+
+        pdbProvider: 'rcsb',
+        emdbProvider: 'rcsb',
+    }).then(viewer => {
+        viewer.loadPdb('7bv2');
+        viewer.loadEmdb('EMD-30210', { detail: 6 });
+    });
+</script>
