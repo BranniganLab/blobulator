@@ -56,25 +56,43 @@ var MySpec = __assign(__assign({}, (0, spec_1.DefaultPluginUISpec)()), { config:
     ] });
 function createPlugin(parent) {
     return __awaiter(this, void 0, void 0, function () {
-        var plugin, data, trajectory;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var plugin, data, trajectory, model, structure, components, builder, update;
+        var _a;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0: return [4 /*yield*/, (0, mol_plugin_ui_1.createPluginUI)({
                         target: parent,
                         spec: MySpec,
                         render: react18_1.renderReact18
                     })];
                 case 1:
-                    plugin = _a.sent();
-                    return [4 /*yield*/, plugin.builders.data.download({ url: '...' }, { state: { isGhost: true } })];
+                    plugin = _b.sent();
+                    return [4 /*yield*/, plugin.builders.data.download({ url: "https://files.rcsb.org/download/1dpx.pdb" }, { state: { isGhost: true } })];
                 case 2:
-                    data = _a.sent();
-                    return [4 /*yield*/, plugin.builders.structure.parseTrajectory(data, format)];
+                    data = _b.sent();
+                    return [4 /*yield*/, plugin.builders.structure.parseTrajectory(data, 'pdb')];
                 case 3:
-                    trajectory = _a.sent();
-                    return [4 /*yield*/, this.plugin.builders.structure.hierarchy.applyPreset(trajectory, 'default')];
+                    trajectory = _b.sent();
+                    return [4 /*yield*/, plugin.builders.structure.hierarchy.applyPreset(trajectory, 'default')];
                 case 4:
-                    _a.sent();
+                    _b.sent();
+                    return [4 /*yield*/, plugin.builders.structure.createModel(trajectory)];
+                case 5:
+                    model = _b.sent();
+                    return [4 /*yield*/, plugin.builders.structure.createStructure(model)];
+                case 6:
+                    structure = _b.sent();
+                    _a = {};
+                    return [4 /*yield*/, plugin.builders.structure.tryCreateComponentStatic(structure, 'polymer')];
+                case 7:
+                    components = (_a.polymer = _b.sent(),
+                        _a);
+                    builder = plugin.builders.structure.representation;
+                    update = plugin.build();
+                    builder.buildRepresentation(update, components.polymer, { type: 'gaussian-surface', typeParams: { alpha: 0.51 } }, { tag: 'polymer' });
+                    return [4 /*yield*/, update.commit()];
+                case 8:
+                    _b.sent();
                     return [2 /*return*/, plugin];
             }
         });
