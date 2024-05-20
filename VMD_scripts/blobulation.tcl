@@ -209,7 +209,15 @@ proc getSequence {MolID} {
     
     return $resSeq
 }
-
+#
+#	Acquires the MolID and makes a list of the amino acid residues
+#
+#	Arguments:
+#	MolID (integer): number used to organize molecule files in vmd use 
+#	this to call our desired protein
+#	Results:
+#	Results should be a list that has every resname in the protein seqeunce
+#	in order
 proc getSequenceChain {MolID Chain} {
 	set lower [string tolower $MolID]
         set sel [atomselect $lower "alpha and chain $Chain"]
@@ -509,7 +517,14 @@ proc blobAssign { blob } {
 	
 	return $numAssignBlob
 }
-
+#
+#	Takes a list of h's p's and s's and assigns them to their own groups, so the first set of s's p's or h's is group 1 and then the next set is group 2 etc. 
+#
+#	Arguments:
+#	blob (list): A list of h's s's and p's
+#
+#	Results:
+#	A list of values that belongs to a group of blobs 
 proc blobIndex { blob } {
 	
 	
