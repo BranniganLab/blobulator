@@ -66,39 +66,55 @@ proc blobulate {MolID lMin H} {
 			
 			$sel set user $chainBlobs
 			$sel delete
-		} 
+		
+		
+		set lower [string tolower $MolID]
+		set sel [atomselect $lower "user 1"]
+		set resids [$sel get resid]
+		$sel delete
+		foreach rs $resids {
+		set sel2 [atomselect $lower "same residue as resid $rs"]
+		
+		$sel2 set user 1
+		}
+		$sel2 delete
 		set lower [string tolower $MolID]
 		set sel [atomselect $lower alpha]
 		$sel set user2 $chainBlobIndex
 		$sel delete 
-
+		
 		set lower [string tolower $MolID]
 		set sel [atomselect $lower alpha]
 		$sel set user3 $chainBlobGroup
 		$sel delete 
+		}
 		return 
 		}
 		
 	set sequence [getSequence $MolID]
-	set hydroScores [hydropathyScores $KD_Normalized $sequence]
+	set hydroS [hydropathyScores $KD_Normalized $sequence]
 	if {$hydroS == -1} {
 		return -1
 		}
-	set smoothHydro [hydropathyMean $hydroScores $sequence]
+	set smoothHydro [hydropathyMean $hydroS $sequence]
 	set digitized [Digitize $H $smoothHydro ]
 	set hblob [ hBlob $digitized $lMin ]
 	set hsblob [ hsBlob $hblob $digitized $lMin ]
 	set hpsblob [ hpsBlob $hsblob $digitized ]
 	set groupedBlob [blobGroup $hpsblob]
-    set blobulated [blobAssign $hpsblob]
+    	set blobulated [blobAssign $hpsblob]
     		
 	#Makes sure procedures that fail to pass checks can't assign values. 
 	if {$blobulated != -1} {
 	set lower [string tolower $MolID]
 	set sel [atomselect $lower alpha]
 	$sel set user $blobulated
-	$sel get user
 	$sel delete
+	set sel2 [atomselect $lower "same residue as resid $rs"] {
+		
+		$sel2 set user 1
+	}
+		$sel2 delete
 	} 
 	set blobIndexList [ blobIndex $blobulated ]
 	set lower [string tolower $MolID]
@@ -138,7 +154,7 @@ proc blobulateChain {MolID lMin H Chain} {
 	set hsblob [ hsBlob $hblob $digitized $lMin ]
 	set hpsblob [ hpsBlob $hsblob $digitized ]
 	set groupedBlobs [blobGroup $hpsblob ]
-    set blobulated [blobAssign $hpsblob]
+        set blobulated [blobAssign $hpsblob]
     	
 	return [list $blobulated $hpsblob]
 	}	
