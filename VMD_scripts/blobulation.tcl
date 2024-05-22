@@ -61,32 +61,11 @@ proc blobulate {MolID lMin H} {
 			
 		}
 		if {$chainBlobs != -1} {
-			set lower [string tolower $MolID]
-			set sel [atomselect $lower alpha]
-			
-			$sel set user $chainBlobs
-			$sel delete
+			blobUserAssign $chainBlobs $MolID
+			blobUser2Assign $chainBlobIndex $MolID
+			blobUser3Assign $chainBlobGroup $MolID
 		
 		
-		set lower [string tolower $MolID]
-		set sel [atomselect $lower "user 1"]
-		set resids [$sel get resid]
-		$sel delete
-		foreach rs $resids {
-		set sel2 [atomselect $lower "same residue as resid $rs"]
-		
-		$sel2 set user 1
-		}
-		$sel2 delete
-		set lower [string tolower $MolID]
-		set sel [atomselect $lower alpha]
-		$sel set user2 $chainBlobIndex
-		$sel delete 
-		
-		set lower [string tolower $MolID]
-		set sel [atomselect $lower alpha]
-		$sel set user3 $chainBlobGroup
-		$sel delete 
 		}
 		return 
 		}
@@ -102,30 +81,15 @@ proc blobulate {MolID lMin H} {
 	set hsblob [ hsBlob $hblob $digitized $lMin ]
 	set hpsblob [ hpsBlob $hsblob $digitized ]
 	set groupedBlob [blobGroup $hpsblob]
-    	set blobulated [blobAssign $hpsblob]
-    		
-	#Makes sure procedures that fail to pass checks can't assign values. 
-	if {$blobulated != -1} {
-	set lower [string tolower $MolID]
-	set sel [atomselect $lower alpha]
-	$sel set user $blobulated
-	$sel delete
-	set sel2 [atomselect $lower "same residue as resid $rs"] {
-		
-		$sel2 set user 1
-	}
-		$sel2 delete
-	} 
+	set blobulated [blobAssign $hpsblob]
 	set blobIndexList [ blobIndex $blobulated ]
-	set lower [string tolower $MolID]
-	set sel [atomselect $lower alpha]
-	$sel set user2 $blobIndexList
-	$sel delete 
+	if {$blobulated != -1} {
+		blobUserAssign $chainBlobs $MolID
+		blobUser2Assign $blobIndexList $MolID
+		blobUser3Assign $groupedBlob $MolID
+	}
+	#Makes sure procedures that fail to pass checks can't assign values. 
 
-	set lower [string tolower $MolID]
-	set sel [atomselect $lower alpha]
-	$sel set user3 $groupedBlob
-	$sel delete 
 	
 	return 
 }
@@ -154,7 +118,7 @@ proc blobulateChain {MolID lMin H Chain} {
 	set hsblob [ hsBlob $hblob $digitized $lMin ]
 	set hpsblob [ hpsBlob $hsblob $digitized ]
 	set groupedBlobs [blobGroup $hpsblob ]
-        set blobulated [blobAssign $hpsblob]
+    set blobulated [blobAssign $hpsblob]
     	
 	return [list $blobulated $hpsblob]
 	}	
@@ -333,14 +297,14 @@ proc Digitize { H smoothHydroean } {
 }                                                                                     	
 
 #
-#   Proc will find digitized hblobs based off the lMin parameter 
-#   
+#   	Proc will find digitized hblobs based off the lMin parameter 
+#   	
 #	Arguments:
 #	digitizedSeq (list): A list of 1's and 0's that are determined by the hydrophobic threshold 
-#   lMin (integer): An integer that decided the minimum length of an hblob
+#   	lMin (integer): An integer that decided the minimum length of an hblob
 #
-#   Results: 
-#   The procedure should give a list of tuples that indicate where an hblobs starts and ends	
+#   	Results: 
+#  	 The procedure should give a list of tuples that indicate where an hblobs starts and ends	
 proc hBlob { digitizedSeq lMin } {
 
 
@@ -403,9 +367,10 @@ proc hsBlob { blobList digitizedSeq lMin } {
 	
 	
 	if {[llength $blobList] == 0} {
-		puts "no hblobs found"
+		
 		return -1
 	}
+
 	set slist {}
 	#Checks the beginning of the list for an s blob 
 	if {[lindex $blobList 0 0] != 0 } {
@@ -553,7 +518,14 @@ proc blobIndex { blob } {
 return $countList
 			 
 }		
-			
+#
+#	Takes a list of h's p's and s's and assigns them to their own groups, so the first set of s's p's and h's is group 1 and then the next set is group 2 etc. 
+#
+#	Arguments:
+#	blob (list): A list of h's s's and p's
+#
+#	Results:
+#	A list of values that belongs to a group of blobs 			
 proc blobGroup { blob } {
 
 	set groupList {}
@@ -581,4 +553,64 @@ proc blobGroup { blob } {
 	}
 
 return $groupList
+}
+
+proc blobUserAssign { blob1 MolID } { 
+	set molid [string tolower $MolID]
+	set clean [atomselect $molid all]
+	$clean set user 0
+	$clean delete
+
+	set sel [atomselect $molid alpha]
+	$sel set user $blob1
+	$sel delete
+
+	#Only have 3 user values and therefore know how many increments are needed 
+	for {set i 1} { $i <= 3 } {incr i} {
+		set sel [atomselect $molid "user $i"]
+		set resids [$sel get resid]
+		$sel delete
+		if {[llength $resids] > 1} {
+			foreach rs $resids {
+				set sel2 [atomselect $molid "resid $rs"]
+				$sel2 set user $i
+			}
+			$sel2 delete
+		}
+	}
+			
+	
+ }
+
+proc blobUser2Assign { blob2 MolID} {
+	
+	set molid [string tolower $MolID]
+	set clean [atomselect $molid all]
+	$clean set user2 0
+	$clean delete
+	set sel [atomselect $molid alpha]
+	$sel set user2 $blob2
+	$sel delete
+
+	set blobLength [llength [lsort -unique $blob2]]
+	# for {set i 0} { $i > $blobLength } { incr i } {
+	# 	puts $i
+	# 	set sel [atomselect $molid "user2 $i"]
+	# 	set resids [$sel get resid]
+	# 	$sel delete
+		
+	# 	foreach rs $resids {
+			
+	# 		set sel2 [atomselect $molid "resid $rs"]
+	# 		$sel2 set user2 $i
+	# 	}
+	
+	# } 
+}
+
+proc blobUser3Assign {blob3 MolID} {
+	set lower [string tolower $MolID]
+	set sel [atomselect $lower alpha]
+	$sel set user3 $blob3 
+	$sel delete 
 }
