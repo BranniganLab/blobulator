@@ -496,7 +496,7 @@ proc blobAssign { blob } {
 #	A list of values that belongs to a group of blobs 
 proc blobIndex { blob } {
 	
-	set indexFile [open "blobIndex.csv" w]
+	
 	set blobChar q
 	set count 1
 	set countList {}
@@ -504,8 +504,8 @@ proc blobIndex { blob } {
 
 	for {set i 0 } { $i < [llength $blob]} { incr i } {
 		set currentChar [lindex $blob $i]
-		puts "file?"
-		puts $indexFile "$i, $blobChar, $count"	
+		
+		
 		if { $currentChar != $blobChar } {
 			set blobChar $currentChar
 			incr count 
@@ -517,7 +517,7 @@ proc blobIndex { blob } {
 		
 	}
 
-close $indexFile
+
 		
 return $countList
 			 
