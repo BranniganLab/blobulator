@@ -84,7 +84,7 @@ proc blobulate {MolID lMin H} {
 	set blobulated [blobAssign $hpsblob]
 	set blobIndexList [ blobIndex $blobulated ]
 	if {$blobulated != -1} {
-		blobUserAssign $chainBlobs $MolID
+		blobUserAssign $blobulated $MolID
 		blobUser2Assign $blobIndexList $MolID
 		blobUser3Assign $groupedBlob $MolID
 	}
@@ -496,13 +496,16 @@ proc blobAssign { blob } {
 #	A list of values that belongs to a group of blobs 
 proc blobIndex { blob } {
 	
-	
+	set indexFile [open "blobIndex.csv" w]
 	set blobChar q
-	set count 0
+	set count 1
 	set countList {}
 	
+
 	for {set i 0 } { $i < [llength $blob]} { incr i } {
-		set currentChar [lindex $blob $i]	
+		set currentChar [lindex $blob $i]
+		puts "file?"
+		puts $indexFile "$i, $blobChar, $count"	
 		if { $currentChar != $blobChar } {
 			set blobChar $currentChar
 			incr count 
@@ -511,9 +514,10 @@ proc blobIndex { blob } {
 		} else {
 			lappend countList $count
 		}
+		
 	}
-	
-	
+
+close $indexFile
 		
 return $countList
 			 
@@ -582,33 +586,33 @@ proc blobUserAssign { blob1 MolID } {
 	
  }
 
-proc blobUser2Assign { blob2 MolID} {
+proc blobUser2Assign { blob2 MolID } {
 	
 	set molid [string tolower $MolID]
 	set clean [atomselect $molid all]
 	$clean set user2 0
 	$clean delete
+
 	set sel [atomselect $molid alpha]
 	$sel set user2 $blob2
 	$sel delete
 
 	set blobLength [llength [lsort -unique $blob2]]
-	# for {set i 0} { $i > $blobLength } { incr i } {
-	# 	puts $i
-	# 	set sel [atomselect $molid "user2 $i"]
-	# 	set resids [$sel get resid]
-	# 	$sel delete
-		
-	# 	foreach rs $resids {
-			
-	# 		set sel2 [atomselect $molid "resid $rs"]
-	# 		$sel2 set user2 $i
-	# 	}
+	for {set i 1} { $i < $blobLength } { incr i } {
+		set sel [atomselect $molid "user2 $i"]
+		set resids [$sel get resid]
+		$sel delete
 	
-	# } 
+		foreach rs $resids {
+			
+			set sel2 [atomselect $molid "resid $rs"]
+			$sel2 set user2 $i
+		}
+	
+	} 
 }
 
-proc blobUser3Assign {blob3 MolID} {
+proc blobUser3Assign { blob3 MolID } {
 	set lower [string tolower $MolID]
 	set sel [atomselect $lower alpha]
 	$sel set user3 $blob3 
