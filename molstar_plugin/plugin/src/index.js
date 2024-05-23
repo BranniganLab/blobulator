@@ -51,6 +51,7 @@ var spec_1 = require("../node_modules/molstar/lib/mol-plugin-ui/spec");
 var mol_plugin_ui_1 = require("../node_modules/molstar/lib/mol-plugin-ui");
 var react18_1 = require("../node_modules/molstar/lib/mol-plugin-ui/react18");
 var config_1 = require("../node_modules/molstar/lib/mol-plugin/config");
+var color_1 = require("../node_modules/molstar/lib/mol-util/color");
 var MySpec = __assign(__assign({}, (0, spec_1.DefaultPluginUISpec)()), { config: [
         [config_1.PluginConfig.VolumeStreaming.Enabled, false]
     ] });
@@ -89,7 +90,15 @@ function createPlugin(parent) {
                         _a);
                     builder = plugin.builders.structure.representation;
                     update = plugin.build();
-                    builder.buildRepresentation(update, components.polymer, { type: 'gaussian-surface', typeParams: { alpha: 0.51 } }, { tag: 'polymer' });
+                    // // Select residue 124 of chain A and convert to Loci
+                    // const Q = MolScriptBuilder;
+                    // var sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
+                    //                 "residue-test": Q.core.rel.eq([Q.struct.atomProperty.macromolecular.label_seq_id(), 11]),
+                    //               }), objdata)
+                    // const components = {
+                    //     blob: await plugin.builders.structure.tryCreateComponentFromSelection(structure, sel, "residue-test")
+                    // }
+                    builder.buildRepresentation(update, components.polymer, { type: 'gaussian-surface', typeParams: { alpha: 0.51 }, color: 'uniform', colorParams: { value: (0, color_1.Color)(0x073763) } }, { tag: 'polymer' });
                     return [4 /*yield*/, update.commit()];
                 case 8:
                     _b.sent();

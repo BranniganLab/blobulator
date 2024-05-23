@@ -4,6 +4,18 @@ import { renderReact18 } from '../node_modules/molstar/lib/mol-plugin-ui/react18
 import { PluginConfig } from '../node_modules/molstar/lib/mol-plugin/config';
 import { compileIdListSelection } from 'molstar/lib/mol-script/util/id-list';
 
+import { MolScriptBuilder as MS, MolScriptBuilder } from '../node_modules/molstar/lib/mol-script/language/builder';
+import { Expression } from '../node_modules/molstar/lib/mol-script/language/expression';
+import {  StructureSelectionQuery } from '../node_modules/molstar/lib/mol-plugin-state/helpers/structure-selection-query';
+import {
+  Structure,
+  StructureProperties,
+} from "../node_modules/molstar/lib/mol-model/structure";
+import { Script } from '../node_modules/molstar/lib/mol-script/script';
+import { Color } from '../node_modules/molstar/lib/mol-util/color';
+import { ColorNames } from '../node_modules/molstar/lib/mol-util/color/names'
+
+
 const MySpec: PluginUISpec = {
     ...DefaultPluginUISpec(),
     config: [
@@ -32,7 +44,17 @@ async function createPlugin(parent: HTMLElement) {
     const builder = plugin.builders.structure.representation;
     const update = plugin.build();
 
-    builder.buildRepresentation(update, components.polymer, { type: 'gaussian-surface', typeParams: { alpha: 0.51 } }, { tag: 'polymer' });
+    // // Select residue 124 of chain A and convert to Loci
+    // const Q = MolScriptBuilder;
+    // var sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
+    //                 "residue-test": Q.core.rel.eq([Q.struct.atomProperty.macromolecular.label_seq_id(), 11]),
+    //               }), objdata)
+
+    // const components = {
+    //     blob: await plugin.builders.structure.tryCreateComponentFromSelection(structure, sel, "residue-test")
+    // }
+
+    builder.buildRepresentation(update, components.polymer, { type: 'gaussian-surface', typeParams: { alpha: 0.51 }, color : 'uniform', colorParams: { value: Color(0x073763) } }, { tag: 'polymer' });
     await update.commit();
 
 
