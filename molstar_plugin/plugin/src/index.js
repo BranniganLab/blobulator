@@ -51,13 +51,16 @@ var spec_1 = require("../node_modules/molstar/lib/mol-plugin-ui/spec");
 var mol_plugin_ui_1 = require("../node_modules/molstar/lib/mol-plugin-ui");
 var react18_1 = require("../node_modules/molstar/lib/mol-plugin-ui/react18");
 var config_1 = require("../node_modules/molstar/lib/mol-plugin/config");
+var builder_1 = require("../node_modules/molstar/lib/mol-script/language/builder");
 var color_1 = require("../node_modules/molstar/lib/mol-util/color");
+var transforms_1 = require("../node_modules/molstar/lib/mol-plugin-state/transforms");
+var structure_representation_params_1 = require("../node_modules/molstar/lib/mol-plugin-state/helpers/structure-representation-params");
 var MySpec = __assign(__assign({}, (0, spec_1.DefaultPluginUISpec)()), { config: [
         [config_1.PluginConfig.VolumeStreaming.Enabled, false]
     ] });
 function createPlugin(parent) {
     return __awaiter(this, void 0, void 0, function () {
-        var plugin, data, trajectory, model, structure, components, builder, update;
+        var plugin, data, trajectory, model, structure, components, builder, update, sel;
         var _a;
         return __generator(this, function (_b) {
             switch (_b.label) {
@@ -74,18 +77,15 @@ function createPlugin(parent) {
                     return [4 /*yield*/, plugin.builders.structure.parseTrajectory(data, 'pdb')];
                 case 3:
                     trajectory = _b.sent();
-                    return [4 /*yield*/, plugin.builders.structure.hierarchy.applyPreset(trajectory, 'default')];
-                case 4:
-                    _b.sent();
                     return [4 /*yield*/, plugin.builders.structure.createModel(trajectory)];
-                case 5:
+                case 4:
                     model = _b.sent();
                     return [4 /*yield*/, plugin.builders.structure.createStructure(model)];
-                case 6:
+                case 5:
                     structure = _b.sent();
                     _a = {};
                     return [4 /*yield*/, plugin.builders.structure.tryCreateComponentStatic(structure, 'polymer')];
-                case 7:
+                case 6:
                     components = (_a.polymer = _b.sent(),
                         _a);
                     builder = plugin.builders.structure.representation;
@@ -98,9 +98,20 @@ function createPlugin(parent) {
                     // const components = {
                     //     blob: await plugin.builders.structure.tryCreateComponentFromSelection(structure, sel, "residue-test")
                     // }
-                    builder.buildRepresentation(update, components.polymer, { type: 'gaussian-surface', typeParams: { alpha: 0.51 }, color: 'uniform', colorParams: { value: (0, color_1.Color)(0x073763) } }, { tag: 'polymer' });
+                    // builder.buildRepresentation(update, components.polymer, { type: 'gaussian-surface', typeParams: { alpha: 0.51 }, color : 'uniform', colorParams: { value: Color(0x073763) } }, { tag: 'polymer' });
+                    builder.buildRepresentation(update, components.polymer, { type: 'cartoon', typeParams: { alpha: 1.0 }, color: 'uniform', colorParams: { value: (0, color_1.Color)(0xFFA500) } }, { tag: 'polymer' });
+                    sel = builder_1.MolScriptBuilder.struct.generator.atomGroups({
+                        'residue-test': builder_1.MolScriptBuilder.core.rel.eq([builder_1.MolScriptBuilder.struct.atomProperty.macromolecular.label_comp_id(), 'ALA']),
+                    });
+                    update.to(structure)
+                        .apply(transforms_1.StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
+                        .apply(transforms_1.StateTransforms.Representation.StructureRepresentation3D, (0, structure_representation_params_1.createStructureRepresentationParams)(plugin, structure.data, {
+                        type: 'gaussian-surface',
+                        color: 'uniform',
+                        colorParams: { value: (0, color_1.Color)(0x0096FF) }
+                    }));
                     return [4 /*yield*/, update.commit()];
-                case 8:
+                case 7:
                     _b.sent();
                     return [2 /*return*/, plugin];
             }

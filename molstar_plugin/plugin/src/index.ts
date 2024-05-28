@@ -15,6 +15,8 @@ import { Script } from '../node_modules/molstar/lib/mol-script/script';
 import { Color } from '../node_modules/molstar/lib/mol-util/color';
 import { ColorNames } from '../node_modules/molstar/lib/mol-util/color/names'
 
+import { StateTransforms } from '../node_modules/molstar/lib/mol-plugin-state/transforms';
+import { createStructureRepresentationParams } from '../node_modules/molstar/lib/mol-plugin-state/helpers/structure-representation-params'
 
 const MySpec: PluginUISpec = {
     ...DefaultPluginUISpec(),
@@ -32,7 +34,7 @@ async function createPlugin(parent: HTMLElement) {
 
     const data = await plugin.builders.data.download({ url: "https://files.rcsb.org/download/1dpx.pdb" }, { state: { isGhost: true } });
     const trajectory = await plugin.builders.structure.parseTrajectory(data, 'pdb');
-    await plugin.builders.structure.hierarchy.applyPreset(trajectory, 'default');
+    // await plugin.builders.structure.hierarchy.applyPreset(trajectory, 'default');
 
     const model = await plugin.builders.structure.createModel(trajectory);
     const structure = await plugin.builders.structure.createStructure(model);
@@ -54,7 +56,23 @@ async function createPlugin(parent: HTMLElement) {
     //     blob: await plugin.builders.structure.tryCreateComponentFromSelection(structure, sel, "residue-test")
     // }
 
-    builder.buildRepresentation(update, components.polymer, { type: 'gaussian-surface', typeParams: { alpha: 0.51 }, color : 'uniform', colorParams: { value: Color(0x073763) } }, { tag: 'polymer' });
+    // builder.buildRepresentation(update, components.polymer, { type: 'gaussian-surface', typeParams: { alpha: 0.51 }, color : 'uniform', colorParams: { value: Color(0x073763) } }, { tag: 'polymer' });
+    builder.buildRepresentation(update, components.polymer, { type: 'cartoon', typeParams: { alpha: 1.0 }, color : 'uniform', colorParams: { value: Color(0xFFA500) } }, { tag: 'polymer' });
+    // await update.commit();
+
+        const sel = MS.struct.generator.atomGroups({
+        'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_comp_id(), 'ALA']),
+    });
+
+
+    update.to(structure)
+        .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
+        .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
+            type: 'gaussian-surface',
+            color: 'uniform',
+            colorParams: { value: Color(0x0096FF) }
+        }));
+
     await update.commit();
 
 
