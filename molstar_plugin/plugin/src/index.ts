@@ -61,7 +61,7 @@ async function createPlugin(parent: HTMLElement) {
     // await update.commit();
 
         const sel = MS.struct.generator.atomGroups({
-        'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_comp_id(), 'ALA']),
+        'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), 15]),
     });
 
 
