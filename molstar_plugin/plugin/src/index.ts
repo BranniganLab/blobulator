@@ -2,7 +2,7 @@ import { DefaultPluginUISpec, PluginUISpec } from '../node_modules/molstar/lib/m
 import { createPluginUI } from '../node_modules/molstar/lib/mol-plugin-ui';
 import { renderReact18 } from '../node_modules/molstar/lib/mol-plugin-ui/react18';
 import { PluginConfig } from '../node_modules/molstar/lib/mol-plugin/config';
-import { compileIdListSelection } from 'molstar/lib/mol-script/util/id-list';
+import { PluginContext } from '../node_modules/molstar/lib/mol-plugin/context'
 
 import { MolScriptBuilder as MS, MolScriptBuilder } from '../node_modules/molstar/lib/mol-script/language/builder';
 import { Expression } from '../node_modules/molstar/lib/mol-script/language/expression';
@@ -21,16 +21,46 @@ import { createStructureRepresentationParams } from '../node_modules/molstar/lib
 const MySpec: PluginUISpec = {
     ...DefaultPluginUISpec(),
     config: [
-        [PluginConfig.VolumeStreaming.Enabled, false]
+        [PluginConfig.VolumeStreaming.Enabled, false],
+        // [PluginConfig.Viewport.ShowExpand, false],
+        // [PluginConfig.Viewport.ShowControls, false],
+        // [PluginConfig.Viewport.ShowSettings, false],
+        // [PluginConfig.Viewport.ShowAnimation, false],
     ]
 }
 
 async function createPlugin(parent: HTMLElement) {
+    const defaultSpec = DefaultPluginUISpec();
     const plugin = await createPluginUI({
       target: parent,
-      spec: MySpec,
-      render: renderReact18
+      // spec: MySpec,
+      // render: renderReact18
+      render: renderReact18,
+            spec: {
+                ...defaultSpec,
+                layout: {
+                    initial: {
+                        isExpanded: false,
+                        showControls: false
+                    },
+                },
+                components: {
+                    controls: { left: 'none', right: 'none', top: 'none', bottom: 'none' },
+                },
+                canvas3d: {
+                    camera: {
+                        helper: { axes: { name: 'off', params: {} } }
+                    }
+                },
+                config: [
+                    [PluginConfig.Viewport.ShowExpand, false],
+                    [PluginConfig.Viewport.ShowControls, false],
+                    [PluginConfig.Viewport.ShowSelectionMode, false],
+                    [PluginConfig.Viewport.ShowAnimation, false],
+                ]
+            }
     });
+
 
     const data = await plugin.builders.data.download({ url: "https://files.rcsb.org/download/1dpx.pdb" }, { state: { isGhost: true } });
     const trajectory = await plugin.builders.structure.parseTrajectory(data, 'pdb');
@@ -46,34 +76,79 @@ async function createPlugin(parent: HTMLElement) {
     const builder = plugin.builders.structure.representation;
     const update = plugin.build();
 
-    // // Select residue 124 of chain A and convert to Loci
-    // const Q = MolScriptBuilder;
-    // var sel = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
-    //                 "residue-test": Q.core.rel.eq([Q.struct.atomProperty.macromolecular.label_seq_id(), 11]),
-    //               }), objdata)
-
-    // const components = {
-    //     blob: await plugin.builders.structure.tryCreateComponentFromSelection(structure, sel, "residue-test")
-    // }
-
-    // builder.buildRepresentation(update, components.polymer, { type: 'gaussian-surface', typeParams: { alpha: 0.51 }, color : 'uniform', colorParams: { value: Color(0x073763) } }, { tag: 'polymer' });
-    builder.buildRepresentation(update, components.polymer, { type: 'cartoon', typeParams: { alpha: 1.0 }, color : 'uniform', colorParams: { value: Color(0xFFA500) } }, { tag: 'polymer' });
+    builder.buildRepresentation(update, components.polymer, { type: 'cartoon', typeParams: { alpha: 0.0 }, color : 'uniform', colorParams: { value: Color(0xFFA500) } }, { tag: 'polymer' });
     // await update.commit();
 
+    let p_arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128]
+    let h_arr = [18, 19, 20, 21, 22, 23, 24, 27, 28, 29, 30, 31, 32, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100]
+    let s_arr = [25, 26]
+
+    for (var val of h_arr) {
         const sel = MS.struct.generator.atomGroups({
-        'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), 15]),
+        'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), val]),
     });
-
-
-    update.to(structure)
+        update.to(structure)
+            update.to(structure)
         .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
         .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
-            type: 'gaussian-surface',
+            type: 'cartoon',
             color: 'uniform',
-            colorParams: { value: Color(0x0096FF) }
+            colorParams: { value: Color(0x0096FF) },
+            typeParams: { alpha: 1.0}
         }));
 
-    await update.commit();
+    update.commit();
+
+    }
+
+    for (var val of p_arr) {
+        const sel = MS.struct.generator.atomGroups({
+        'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), val]),
+    });
+        update.to(structure)
+            update.to(structure)
+        .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
+        .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
+            type: 'cartoon',
+            color: 'uniform',
+            colorParams: { value: Color(0xFFA500) },
+            typeParams: { alpha: 1.0}
+        }));
+
+    update.commit();
+
+    }
+
+    for (var val of s_arr) {
+        const sel = MS.struct.generator.atomGroups({
+        'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), val]),
+    });
+        update.to(structure)
+            update.to(structure)
+        .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
+        .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
+            type: 'cartoon',
+            color: 'uniform',
+            colorParams: { value: Color(0x00FF00) },
+            typeParams: { alpha: 1.0}
+        }));
+
+    update.commit();
+
+    }
+
+
+        
+
+    // update.to(structure)
+    //     .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
+    //     .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
+    //         type: 'gaussian-surface',
+    //         color: 'uniform',
+    //         colorParams: { value: Color(0x0096FF) }
+    //     }));
+
+    // await update.commit();
 
 
     return plugin;
