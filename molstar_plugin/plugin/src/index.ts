@@ -62,7 +62,7 @@ async function createPlugin(parent: HTMLElement) {
     });
 
 
-    const data = await plugin.builders.data.download({ url: "https://files.rcsb.org/download/1dpx.pdb" }, { state: { isGhost: true } });
+    const data = await plugin.builders.data.download({ url: "https://files.rcsb.org/download/1xq8.pdb" }, { state: { isGhost: true } });
     const trajectory = await plugin.builders.structure.parseTrajectory(data, 'pdb');
     // await plugin.builders.structure.hierarchy.applyPreset(trajectory, 'default');
 
@@ -79,19 +79,18 @@ async function createPlugin(parent: HTMLElement) {
     builder.buildRepresentation(update, components.polymer, { type: 'cartoon', typeParams: { alpha: 0.0 }, color : 'uniform', colorParams: { value: Color(0xFFA500) } }, { tag: 'polymer' });
     // await update.commit();
 
-    let p_arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128]
-    let h_arr = [18, 19, 20, 21, 22, 23, 24, 27, 28, 29, 30, 31, 32, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100]
-    let s_arr = [25, 26]
+    let p_arr = [10, 11, 12, 13,  20, 21, 22, 23, 24, , 32, 33, 34, 35, 36, 42, 43, 44, 45, 46, 57, 58, 59, 60, 61, 62, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140]
+    let h_arr = [[1, 2, 3, 4, 5, 6, 7, 8, 9], [14, 15, 16, 17, 18, 19], [25, 26, 27, 28, 29, 30, 31], [37, 38, 39, 40, 41], [47, 48, 49, 50, 51, 52, 53, 54, 55, 56], [63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78], [81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96]]
+    let s_arr = [79, 80]
 
-    for (var val of h_arr) {
+    for (var val_h of h_arr) {
         const sel = MS.struct.generator.atomGroups({
-        'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), val]),
-    });
+            'residue-test': MS.core.set.has([MS.set(...val_h), MS.ammp('label_seq_id')])
+        });
         update.to(structure)
-            update.to(structure)
         .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
         .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
-            type: 'cartoon',
+            type: 'gaussian-surface',
             color: 'uniform',
             colorParams: { value: Color(0x0096FF) },
             typeParams: { alpha: 1.0}
@@ -101,12 +100,11 @@ async function createPlugin(parent: HTMLElement) {
 
     }
 
-    for (var val of p_arr) {
+    for (var val_p of p_arr) {
         const sel = MS.struct.generator.atomGroups({
-        'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), val]),
+        'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), val_p]),
     });
         update.to(structure)
-            update.to(structure)
         .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
         .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
             type: 'cartoon',
@@ -119,12 +117,11 @@ async function createPlugin(parent: HTMLElement) {
 
     }
 
-    for (var val of s_arr) {
+    for (var val_s of s_arr) {
         const sel = MS.struct.generator.atomGroups({
-        'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), val]),
+        'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), val_s]),
     });
         update.to(structure)
-            update.to(structure)
         .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
         .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
             type: 'cartoon',
