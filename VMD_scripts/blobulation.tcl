@@ -136,7 +136,7 @@ proc blobulateChain {MolID lMin H Chain} {
 proc checker {MolID lMin H} {
 
 	set nocaseMolID [string tolower $MolID]
-	set sel [atomselect $nocaseMolID alpha]
+	set sel [atomselect $nocaseMolID "alpha and protein"]
 	set sorted [lsort -unique [$sel get chain]]
 	
 		
@@ -172,7 +172,7 @@ proc checker {MolID lMin H} {
 proc getSequence {MolID} {
 
     set nocaseMolID [string tolower $MolID]
-    set sel [atomselect $nocaseMolID alpha]
+    set sel [atomselect $nocaseMolID "alpha and protein"]
     set resSeq [$sel get resname]
     $sel delete
     
@@ -565,7 +565,7 @@ proc blobUserAssign { blob1 MolID } {
 	$clean set user 0
 	$clean delete
 
-	set sel [atomselect $molid alpha]
+	set sel [atomselect $molid "alpha and protein"]
 	$sel set user $blob1
 	$sel delete
 
@@ -576,7 +576,7 @@ proc blobUserAssign { blob1 MolID } {
 		$sel delete
 		if {[llength $resids] > 1} {
 			foreach rs $resids {
-				set sel2 [atomselect $molid "resid $rs"]
+				set sel2 [atomselect $molid "resid $rs and protein"]
 				$sel2 set user $i
 			}
 			$sel2 delete
@@ -593,7 +593,7 @@ proc blobUser2Assign { blob2 MolID } {
 	$clean set user2 0
 	$clean delete
 
-	set sel [atomselect $molid alpha]
+	set sel [atomselect $molid "alpha and protein"]
 	$sel set user2 $blob2
 	$sel delete
 
@@ -605,7 +605,7 @@ proc blobUser2Assign { blob2 MolID } {
 	
 		foreach rs $resids {
 			
-			set sel2 [atomselect $molid "resid $rs"]
+			set sel2 [atomselect $molid "resid $rs and protein"]
 			$sel2 set user2 $i
 		}
 	
@@ -614,7 +614,7 @@ proc blobUser2Assign { blob2 MolID } {
 
 proc blobUser3Assign { blob3 MolID } {
 	set lower [string tolower $MolID]
-	set sel [atomselect $lower alpha]
+	set sel [atomselect $lower "alpha and protein" ]
 	$sel set user3 $blob3 
 	$sel delete 
 }
