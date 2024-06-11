@@ -4,7 +4,7 @@
 
 This tool is an visualization tool for Blobulator.
 
-## What you will need: 
+## How to use VMD Blobulation: 
 
 ### Installation guide:
 
