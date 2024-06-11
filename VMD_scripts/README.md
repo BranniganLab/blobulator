@@ -10,26 +10,26 @@ This tool is an visualization tool for Blobulator.
 
 **Software requirements:** 
 
-`VMD`
+```VMD```
 
 **Files Needed:**
 
-`Blobulation.tcl
+```Blobulation.tcl
 Blobs_GUI.tcl
 normalized_hydropathyscales.tcl
-`
+```
 
-###Using in VMD
+### Using in VMD
 
 Keep all files in one directory, in the VMD program access the tk console
 from the Extensions drop down menu 
 `Extensions > Tk Console`
 
 Using the Linux cd command cd to the file location below is an example
-`cd /VMD/blobulator`
+```cd /VMD/blobulator```
  
  then input the following command 
 
-`source Blobs_GUI.tcl' 
+```source Blobs_GUI.tcl'`` 
 
 You will need to source everytime you wish to load the GUI. 
