@@ -16,10 +16,17 @@
 #
 #	Results:
 #	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
-proc blobulate {MolID lMin H} {
+proc blobulate {MolID lMin H dictInput} {
 	
-	
+	set noCaseDictInput [string tolower $dictInput]
 	source normalized_hydropathyscales.tcl
+	if {$dictInput == "KD"} {
+		set usedDictionary $KD_Normalized
+	}
+
+	if {$dictInput == "EW"} {
+		set usedDictionary $EW_Normalized
+	}
 	set argumentsOK [checker $MolID $lMin $H]
 	if {$argumentsOK == -1} {
 		puts "Variables are incorrect ending program"
@@ -71,7 +78,7 @@ proc blobulate {MolID lMin H} {
 		}
 		
 	set sequence [getSequence $MolID]
-	set hydroS [hydropathyScores $KD_Normalized $sequence]
+	set hydroS [hydropathyScores $usedDictionary $sequence]
 	if {$hydroS == -1} {
 		return -1
 		}
@@ -108,7 +115,7 @@ proc blobulate {MolID lMin H} {
 proc blobulateChain {MolID lMin H Chain} {
 	source normalized_hydropathyscales.tcl
 	set sequence [getSequenceChain $MolID $Chain]
-	set hydroS [hydropathyScores $KD_Normalized $sequence]
+	set hydroS [hydropathyScores $usedDictionary $sequence]
 	if {$hydroS == -1} {
 		return -1
 		}
