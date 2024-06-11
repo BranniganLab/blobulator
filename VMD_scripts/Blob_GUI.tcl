@@ -10,19 +10,17 @@ set dropMenuName1 "Blob"
 set dropMenuName2 "Group"
 set dropMenu2Name1 "Kyte-Doolittle"
 set dropMenu2Name2	"Eisenberg-Weiss"
-set blobs [toplevel ".blob"]
 
+set blobs [toplevel ".blob"]
 wm title $blobs "Blob u later!"
 wm resizable $blobs 0 0
 wm attributes $blobs -alpha 1;
 wm attributes $blobs -fullscreen 0 
-
 grid [label $blobs.1_MolID -text MolID ]
 grid [entry $blobs.tv_MolID -width 10 -textvariable MolID ] -row 0 -column 1
 if {$MolID == ""} {
 	set MolID "top"
 }
-
 set paraList [list Lmin 1 50 1 H .1 1 .01]
 foreach { entry min max interval} $paraList {
 	set w1 [label $blobs.l_$entry -text $entry]
@@ -33,16 +31,11 @@ foreach { entry min max interval} $paraList {
 	grid $w1 $w2 $w3 
 	
 }
-
 grid [label $blobs.t -text "Blobulate by: " -height 2] -row 4 -column 0 -columnspan 2 -sticky e
 grid [ttk::combobox $blobs.dmnu -textvariable graphrep2 -width $dropDownMenuWidth -values [list $dropMenuName1 $dropMenuName2] -state readonly ] -pady 6 -row 4 -column 2 -sticky w
 grid [label $blobs.t2 -text "Hydropathy Scale : " -height 2] -row 5 -column 0 -columnspan 2 -sticky e
 grid [ttk::combobox $blobs.dmnu2  -textvariable dictionariesList -width $dropDownMenuWidth -values [list $dropMenu2Name1 $dropMenu2Name2] -state readonly] -pady 6 -row 5 -column 2 -sticky w
-
-
-
 grid [button $blobs.blobulate -text "Blobulate" -width $buttonWidth -command {blobulation $MolID $Lmin $H $dictionariesList} ] -columnspan 3
-
 grid [button $blobs.clear -text "Clear representations" -width $buttonWidth -command {blobClear $MolID}] -columnspan 3
 grid [button $blobs.quit -text "Quit" -width $buttonWidth -command {blobQuit} ] -columnspan 3
 # trace add variable graphrep2 write "blobulationSlider $MolID $Lmin $H"
@@ -70,8 +63,8 @@ proc blobulation { MolID Lmin H dictInput} {
 	global dropMenuName1
 	global dropMenuName2
 
-	bind $blobs.dmnu <<ComboboxSelected>> {blobulationSlider $MolID $Lmin $H $dictInput}
-	bind $blobs.dmnu2 <<ComboboxSelected>> {blobulationSlider $MolID $Lmin $H $dictInput}
+	bind $blobs.dmnu <<ComboboxSelected>> {blobulationSlider $MolID $Lmin $H $dictionariesList}
+	bind $blobs.dmnu2 <<ComboboxSelected>> {blobulationSlider $MolID $Lmin $H $dictionariesList}
 	if {$graphrep2 == $dropMenuName1} {
 		blobulate $MolID $Lmin $H $dictInput
 		graphRepUser $MolID $Lmin $H 
