@@ -14,7 +14,8 @@ This tool is an visualization tool for Blobulator.
 
 **Files Needed:**
 
-```Blobulation.tcl
+``` 
+Blobulation.tcl
 Blobs_GUI.tcl
 normalized_hydropathyscales.tcl
 ```
@@ -26,10 +27,10 @@ from the Extensions drop down menu
 `Extensions > Tk Console`
 
 Using the Linux cd command cd to the file location below is an example
-```cd /VMD/blobulator```
+``` cd /VMD/blobulator ```
  
  then input the following command 
 
-```source Blobs_GUI.tcl'`` 
+``` source Blobs_GUI.tcl '`` 
 
 You will need to source everytime you wish to load the GUI. 
