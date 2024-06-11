@@ -27,10 +27,11 @@ from the Extensions drop down menu
 `Extensions > Tk Console`
 
 Using the Linux cd command cd to the file location below is an example
+
 ``` cd /VMD/blobulator ```
  
  then input the following command 
 
-``` source Blobs_GUI.tcl '`` 
+``` source Blobs_GUI.tcl ``` 
 
 You will need to source everytime you wish to load the GUI. 
