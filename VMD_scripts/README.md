@@ -4,9 +4,9 @@
 
 This tool is an visualization tool for Blobulator.
 
-##What you will need: 
+## What you will need: 
 
-###Installation guide:
+### Installation guide:
 
 **Software requirements:** 
 
