@@ -20,7 +20,7 @@ Blobs_GUI.tcl
 normalized_hydropathyscales.tcl
 ```
 
-### Using in VMD
+### Using in VMD:
 
 Keep all files in one directory, in the VMD program access the tk console
 from the Extensions drop down menu 
