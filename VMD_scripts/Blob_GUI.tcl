@@ -28,8 +28,7 @@ foreach { entry min max interval} $paraList {
 	set w3 [scale $blobs.s_$entry -orient horizontal -from $min -to $max -length 175 -resolution $interval -tickinterval 0 -variable $entry -showvalue 0]
 	
 	bind $blobs.s_$entry <ButtonRelease> {blobulationSlider $MolID $Lmin $H $dictionariesList} 
-	grid $w1 $w2 $w3 
-	
+	grid $w1 $w2 $w3 	
 }
 grid [label $blobs.t -text "Blobulate by: " -height 2] -row 4 -column 0 -columnspan 2 -sticky e
 grid [ttk::combobox $blobs.dmnu -textvariable graphrep2 -width $dropDownMenuWidth -values [list $dropMenuName1 $dropMenuName2] -state readonly ] -pady 6 -row 4 -column 2 -sticky w
@@ -243,7 +242,7 @@ proc graphRepUser2 {MolID Lmin H} {
 	incr count 
 
 	mol representation NewCartoon .3 10 
-	mol color ColorID 23
+	mol color user2
 	mol addrep $MolID 
 	mol modselect $count $MolID "user 1"
 	incr count
