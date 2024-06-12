@@ -20,11 +20,11 @@ proc blobulate {MolID lMin H dictInput} {
 	
 	set noCaseDictInput [string tolower $dictInput]
 	source normalized_hydropathyscales.tcl
-	if {$dictInput == "KD"} {
+	if {$dictInput == "Kyte-Doolittle"} {
 		set usedDictionary $KD_Normalized
 	}
 
-	if {$dictInput == "EW"} {
+	if {$dictInput == "Eisenberg-Weiss"} {
 		set usedDictionary $EW_Normalized
 	}
 	set argumentsOK [checker $MolID $lMin $H]
