@@ -27,7 +27,7 @@ foreach { entry min max interval} $paraList {
 	set w2 [entry $blobs.e_$entry -width 10 -textvariable $entry]
 	set w3 [scale $blobs.s_$entry -orient horizontal -from $min -to $max -length 175 -resolution $interval -tickinterval 0 -variable $entry -showvalue 0]
 	
-	bind $blobs.s_$entry <ButtonRelease> {blobulationSlider $MolID $Lmin $H $dictionariesList} 
+	
 	grid $w1 $w2 $w3 	
 }
 grid [label $blobs.t -text "Blobulate by: " -height 2] -row 4 -column 0 -columnspan 2 -sticky e
@@ -61,7 +61,8 @@ proc blobulation { MolID Lmin H dictInput} {
 	set isFirst 1
 	global dropMenuName1
 	global dropMenuName2
-
+	bind $blobs.s_Lmin <ButtonRelease> {blobulationSlider $MolID $Lmin $H $dictionariesList} 
+	bind $blobs.s_H <ButtonRelease> {blobulationSlider $MolID $Lmin $H $dictionariesList} 
 	bind $blobs.dmnu <<ComboboxSelected>> {blobulationSlider $MolID $Lmin $H $dictionariesList}
 	bind $blobs.dmnu2 <<ComboboxSelected>> {blobulationSlider $MolID $Lmin $H $dictionariesList}
 	if {$graphrep2 == $dropMenuName1} {
