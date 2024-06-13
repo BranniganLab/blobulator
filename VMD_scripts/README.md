@@ -33,7 +33,7 @@ from the Extensions drop down menu
 `Extensions > Tk Console`
 
 Using the Linux cd command, cd to the downloaded file location.
-Below is an example of accessing the proper direcotry in the Tk Console 
+Below is an example of accessing the proper directory in the Tk Console 
 
 ``` cd /VMD/blobulator ```
  
