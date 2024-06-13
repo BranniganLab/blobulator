@@ -2,7 +2,13 @@
 
 **A VMD application for blobulation needs**
 
-This tool is an visualization tool for Blobulator.
+This tool is a visualization tool for Blobulator. Blobulator tracks amino 
+acid sequences of proteins to determine hydrophobicity. If a section of an 
+amino acid chain is hydrophobic, and longer than the
+threshold, it is considered a h blob. If a section of
+an amino acid chain is hydrophilic, and longer than the 
+threshold, it is considered a p blob. All other sections are too short and
+are categorized as s blobs.  
 
 ## How to use VMD Blobulation: 
 
