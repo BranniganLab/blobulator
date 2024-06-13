@@ -32,7 +32,7 @@ Keep all files in one directory, in the VMD program access the Tk console
 from the Extensions drop down menu 
 `Extensions > Tk Console`
 
-Using the Linux cd command, cd to the file location of the downloadedfiles.
+Using the Linux cd command, cd to the downloaded file location.
 Below is an example of accessing the proper direcotry in the Tk Console 
 
 ``` cd /VMD/blobulator ```
