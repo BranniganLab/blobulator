@@ -144,16 +144,6 @@ def index():
             seq_file_snp = fetched_data['SNP']
             seq_file_coords = fetched_data['Coordinates']
 
-            if 'errorMessage' in seq_file:
-                return render_template("error.html",
-                    title="UniProt server returned an error",
-                    message=f"""The UniProt server said: {', '.join(seq_file['errorMessage'])}""")
-            
-            if 'errorMessage' in seq_file_snp:
-                return render_template("error.html",
-                    title="UniProt server returned an error",
-                    message=f"""The UniProt server said: {', '.join(seq_file_snp['errorMessage'])}""")
-
             # Now we can process the fetched data
             if seq_file_snp:
                 snps_json = pathogenic_snps(seq_file_snp[0]["features"]) #filters the disease causing SNPs
