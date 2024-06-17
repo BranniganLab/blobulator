@@ -24,6 +24,10 @@ proc blobulate {MolID lMin H dictInput} {
 		set usedDictionary $KD_Normalized
 	}
 
+	if {$dictInput == "Moon-Fleming"} {
+		set usedDictionary $MF_Normalized
+	}
+
 	if {$dictInput == "Eisenberg-Weiss"} {
 		set usedDictionary $EW_Normalized
 	}
