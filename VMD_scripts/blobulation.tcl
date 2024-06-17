@@ -45,9 +45,9 @@ proc blobulate {MolID lMin H dictInput} {
 		for {set i 0} {$i < [llength $sorted] } { incr i} {
 			
 			set singleChain [lindex $sorted $i] 
-			set chainReturn [blobulateChain $MolID $lMin $H $singleChain]
-			set blobulated [lindex [blobulateChain $MolID $lMin $H $singleChain] 0]
-			set index [lindex [blobulateChain $MolID $lMin $H $singleChain] 1]
+			set chainReturn [blobulateChain $MolID $lMin $H $singleChain $usedDictionary]
+			set blobulated [lindex [blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 0]
+			set index [lindex [blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 1]
 			foreach bb $blobulated {
 				lappend chainBlobs $bb
 				
@@ -112,7 +112,7 @@ proc blobulate {MolID lMin H dictInput} {
 #
 #	Results:
 #	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
-proc blobulateChain {MolID lMin H Chain} {
+proc blobulateChain {MolID lMin H Chain usedDictionary} {
 	source normalized_hydropathyscales.tcl
 	set sequence [getSequenceChain $MolID $Chain]
 	set hydroS [hydropathyScores $usedDictionary $sequence]
