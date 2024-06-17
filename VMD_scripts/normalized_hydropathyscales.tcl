@@ -39,3 +39,24 @@ dict set EW_Normalized THR 0.64
 dict set EW_Normalized VAL 0.92
 dict set EW_Normalized TRP 0.86
 dict set EW_Normalized TYR 0.72
+
+dict set MF_Normalized ALA 0.29 
+dict set MF_Normalized ARG 0.78 
+dict set MF_Normalized ASN 0.75 
+dict set MF_Normalized ASP 0.68 
+dict set MF_Normalized CYS 0.35 
+dict set MF_Normalized GLN 0.69 
+dict set MF_Normalized GLU 0.51 
+dict set MF_Normalized GLY 0.52 
+dict set MF_Normalized HIS 0.92 
+dict set MF_Normalized ILE 0.08 
+dict set MF_Normalized LEU 0.05 
+dict set MF_Normalized LYS 1.0 
+dict set MF_Normalized MET 0.19 
+dict set MF_Normalized PHE 0.0 
+dict set MF_Normalized PRO 0.09 
+dict set MF_Normalized SER 0.53 
+dict set MF_Normalized THR 0.52 
+dict set MF_Normalized TRP 0.24 
+dict set MF_Normalized TYR 0.15 
+dict set MF_Normalized VAL 0.19 
