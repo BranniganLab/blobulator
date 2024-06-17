@@ -10,6 +10,7 @@ set dropMenuName1 "Blob Type"
 set dropMenuName2 "Blob ID"
 set dropMenu2Name1 "Kyte-Doolittle"
 set dropMenu2Name2	"Eisenberg-Weiss"
+set dropMenu2Name3 "Moon-Fleming"
 
 set blobs [toplevel ".blob"]
 wm title $blobs "Blob u later!"
@@ -33,7 +34,7 @@ foreach { entry min max interval} $paraList {
 grid [label $blobs.t -text "Blobulate by: " -height 2] -row 4 -column 0 -columnspan 2 -sticky e
 grid [ttk::combobox $blobs.dmnu -textvariable graphrep2 -width $dropDownMenuWidth -values [list $dropMenuName1 $dropMenuName2] -state readonly ] -pady 6 -row 4 -column 2 -sticky w
 grid [label $blobs.t2 -text "Hydropathy Scale : " -height 2] -row 5 -column 0 -columnspan 2 -sticky e
-grid [ttk::combobox $blobs.dmnu2  -textvariable dictionariesList -width $dropDownMenuWidth -values [list $dropMenu2Name1 $dropMenu2Name2] -state readonly] -pady 6 -row 5 -column 2 -sticky w
+grid [ttk::combobox $blobs.dmnu2  -textvariable dictionariesList -width $dropDownMenuWidth -values [list $dropMenu2Name1 $dropMenu2Name2 $dropMenu2Name3] -state readonly] -pady 6 -row 5 -column 2 -sticky w
 grid [button $blobs.blobulate -text "Blobulate!" -font [list arial 9 bold] -width $buttonWidth -command {blobulation $MolID $Lmin $H $dictionariesList} ] -columnspan 3
 grid [button $blobs.clear -text "Clear representations" -width $buttonWidth -command {blobClear $MolID}] -columnspan 3
 grid [button $blobs.quit -text "Quit" -width $buttonWidth -command {blobQuit} ] -columnspan 3
