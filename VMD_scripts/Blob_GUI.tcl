@@ -13,7 +13,7 @@ set dropMenu2Name2	"Eisenberg-Weiss"
 set dropMenu2Name3 "Moon-Fleming"
 
 set blobs [toplevel ".blob"]
-wm title $blobs "Blob u later!"
+wm title $blobs "Blobulation"
 wm resizable $blobs 0 0
 wm attributes $blobs -alpha 1;
 wm attributes $blobs -fullscreen 0 
@@ -37,7 +37,7 @@ grid [label $blobs.t2 -text "Hydropathy Scale : " -height 2] -row 5 -column 0 -c
 grid [ttk::combobox $blobs.dmnu2  -textvariable dictionariesList -width $dropDownMenuWidth -values [list $dropMenu2Name1 $dropMenu2Name2 $dropMenu2Name3] -state readonly] -pady 6 -row 5 -column 2 -sticky w
 grid [button $blobs.blobulate -text "Blobulate!" -font [list arial 9 bold] -width $buttonWidth -command {blobulation $MolID $Lmin $H $dictionariesList} ] -columnspan 3
 grid [button $blobs.clear -text "Clear representations" -width $buttonWidth -command {blobClear $MolID}] -columnspan 3
-grid [button $blobs.quit -text "Quit" -width $buttonWidth -command {blobQuit} ] -columnspan 3
+grid [button $blobs.quit -text "Quit" -width $buttonWidth -command "vmd_open_url {https://www.youtube.com/watch?v=dQw4w9WgXcQ}" ] -columnspan 3
 # trace add variable graphrep2 write "blobulationSlider $MolID $Lmin $H"
 
 # trace add variable $Lmin write {blobulate $MolID $Lmin $H}
