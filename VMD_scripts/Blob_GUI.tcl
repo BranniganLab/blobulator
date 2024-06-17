@@ -14,13 +14,13 @@ set dropMenuName2 "Group"
 set dropMenu2Name1 "Kyte-Doolittle"
 set dropMenu2Name2	"Eisenberg-Weiss"
 set already_registered 0
-
+set blobs [toplevel ".blob"]
 proc register_menu {} {
 	global blobs
     variable already_registered
     if {$already_registered==0} {
 		incr already_registered
-		vmd_install_extension Blobs222_GUI \
+		vmd_install_extension Blobs2222_GUI \
 		     blobWindow \
 		    "Blobulator2"
     }
@@ -29,8 +29,8 @@ proc register_menu {} {
 proc windowMaker {} {
 	global MolID Lmin H buttonWidth \
 	 dropDownMenuWidth dropMenuName1 dropMenuName2 \
-	 dropMenu2Name1 dropMenu2Name2
-	set blobs [toplevel ".blob"]
+	 dropMenu2Name1 dropMenu2Name2 blobs
+	
 	wm title $blobs "Blob u later!"
 	wm resizable $blobs 0 0
 	wm attributes $blobs -alpha 1;
@@ -49,7 +49,7 @@ proc windowMaker {} {
 		set w2 [entry $blobs.e_$entry -width 10 -textvariable $entry]
 		set w3 [scale $blobs.s_$entry -orient horizontal -from $min -to $max -length 175 -resolution $interval -tickinterval 0 -variable $entry -showvalue 0]
 		
-		bind $blobs.s_$entry <ButtonRelease> {blobulationSlider $MolID $Lmin $H $dictionariesList} 
+		
 		grid $w1 $w2 $w3 	
 	}
 
@@ -86,7 +86,10 @@ proc blobulation { MolID Lmin H dictInput} {
 	set isFirst 1
 	global dropMenuName1
 	global dropMenuName2
-	set blobs [windowMaker]
+	global blobs
+	
+	bind $blobs.s_H <ButtonRelease> {blobulationSlider $MolID $Lmin $H $dictionariesList} 
+	bind $blobs.s_Lmin <ButtonRelease> {blobulationSlider $MolID $Lmin $H $dictionariesList} 
 	bind $blobs.dmnu <<ComboboxSelected>> {blobulationSlider $MolID $Lmin $H $dictionariesList}
 	bind $blobs.dmnu2 <<ComboboxSelected>> {blobulationSlider $MolID $Lmin $H $dictionariesList}
 	if {$graphrep2 == $dropMenuName1} {
@@ -119,7 +122,8 @@ proc blobulationSlider { MolID Lmin H dictInput} {
 	global isFirst
 	global dropMenuName1
 	global dropMenuName2
-	set blobs [windowMaker]
+	global blobs
+	
 	if {$isFirst == 1} {
 
 		if {$graphrep2 == $dropMenuName1} {
@@ -317,4 +321,5 @@ proc blobWindow {} {
 set finishedBlob [windowMaker] 
 return $finishedBlob
 }
-register_menu 
+ register_menu 
+
