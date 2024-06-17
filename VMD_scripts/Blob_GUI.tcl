@@ -6,8 +6,8 @@ if [winfo exists .blob] {
 set buttonWidth 42
 set dropDownMenuWidth 14 
 set isFirst 0
-set dropMenuName1 "Blob"
-set dropMenuName2 "Group"
+set dropMenuName1 "Blob Type"
+set dropMenuName2 "Blob ID"
 set dropMenu2Name1 "Kyte-Doolittle"
 set dropMenu2Name2	"Eisenberg-Weiss"
 
@@ -34,7 +34,7 @@ grid [label $blobs.t -text "Blobulate by: " -height 2] -row 4 -column 0 -columns
 grid [ttk::combobox $blobs.dmnu -textvariable graphrep2 -width $dropDownMenuWidth -values [list $dropMenuName1 $dropMenuName2] -state readonly ] -pady 6 -row 4 -column 2 -sticky w
 grid [label $blobs.t2 -text "Hydropathy Scale : " -height 2] -row 5 -column 0 -columnspan 2 -sticky e
 grid [ttk::combobox $blobs.dmnu2  -textvariable dictionariesList -width $dropDownMenuWidth -values [list $dropMenu2Name1 $dropMenu2Name2] -state readonly] -pady 6 -row 5 -column 2 -sticky w
-grid [button $blobs.blobulate -text "Blobulate" -width $buttonWidth -command {blobulation $MolID $Lmin $H $dictionariesList} ] -columnspan 3
+grid [button $blobs.blobulate -text "Blobulate!" -font [list arial 9 bold] -width $buttonWidth -command {blobulation $MolID $Lmin $H $dictionariesList} ] -columnspan 3
 grid [button $blobs.clear -text "Clear representations" -width $buttonWidth -command {blobClear $MolID}] -columnspan 3
 grid [button $blobs.quit -text "Quit" -width $buttonWidth -command {blobQuit} ] -columnspan 3
 # trace add variable graphrep2 write "blobulationSlider $MolID $Lmin $H"
@@ -161,19 +161,19 @@ proc graphRepUser {MolID Lmin H} {
 	}
 	
 
-	mol representation NewCartoon .3 10
+	mol representation NewCartoon .3 20
 	mol color ColorID 7
 	mol addrep $MolID 
 	mol modselect $count $MolID "user 2"
 	incr count
 
-	mol representation NewCartoon .3 10 
+	mol representation NewCartoon .3 20 
 	mol color ColorID 3
 	mol addrep $MolID 
 	mol modselect $count $MolID "user 3"
 	incr count
 
-	mol representation NewCartoon .3 10 
+	mol representation NewCartoon .3 20 
 	mol color ColorID 23
 	mol addrep $MolID 
 	mol modselect $count $MolID "user 1"
@@ -230,19 +230,19 @@ proc graphRepUser2 {MolID Lmin H} {
 	# }
 	
 	
-	mol representation NewCartoon .3 10
+	mol representation NewCartoon .3 20
 	mol color ColorID 7
 	mol addrep $MolID 
 	mol modselect $count $MolID "user 2"
 	incr count 
 	
-	mol representation NewCartoon .3 10 
+	mol representation NewCartoon .3 20 
 	mol color ColorID 3
 	mol addrep $MolID 
 	mol modselect $count $MolID "user 3"
 	incr count 
 
-	mol representation NewCartoon .3 10 
+	mol representation NewCartoon .3 20 
 	mol color user2
 	mol addrep $MolID 
 	mol modselect $count $MolID "user 1"
