@@ -34,3 +34,25 @@
 - Custom SNP diamonds clickable
 - SNP mutations from uniprot now include rs numbers with clickable links
 - X-axis labels prevented from overlapping when zoomed
+
+## Version 0.9.4
+- NCPR track bug fix
+
+## Version 0.9.5
+- blobulator is now a pip installable package!
+- NCPR track rescaled to be between -0.5 and 0.5
+- VMD bctool is refactored
+- Mutation sensitivity track bug fix
+- Group numbering bug fix
+
+## Version 0.9.6
+- New heading
+- Updated text on About, Documentation, and FAQ pages
+
+## Version 0.9.7
+- Added button to lock the control panel to the top of the screen
+- Overhauled the home page
+- compute_blobs.py variable and function names were updated
+- Bug fixes
+- Added algorithm description to the 'About' tab
+- NCPR track now scaled to be between -0.2 and +0.2

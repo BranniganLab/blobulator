@@ -3,39 +3,39 @@
 <div class="tab-pane container" id="home">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm">
-                <!--form-->
-                <div class="form-group">
-                    <form class="navbar-form navbar-top" method=post target="_blank" action="">
-                        <h5 class="text-center"> <b>Option 1: ID Entry</b></h5>
-                        <br>
-                        <p>Enter an ID for your protein.</p>
-                        <p>Note: Please make sure to use the ID for the human protein if you also want to see the location of disease-associated mutations. </p>
-                        <label for="input-types">Choose an input type:</label>
-                        <select name="input_type" id="input_type">
-                            <option value="uniprot_id">UniProt ID</option>
-                            <option value="ensembl_id">Ensembl ID</option>
-                        <!--form.uniprot_id calls the UniProt ID field in model_2.py -->
-                        <p> {{ form.uniprot_id(class_="form-control", rows="1")}}</p>
-                        <p>This option takes about 30 seconds to fetch SNP and disorder data, but may take longer.</p> 
-                        <p><input type=submit name="action_u" class="btn btn-primary" value="Compute"></p>
-                    </form>
-                    </div>
-            </div>
-            <div class="col-sm">
-                <div class="form-group">
-                    <form class="navbar-form navbar-top" method=post target="_blank" action="">
-                        <h5 class="text-center"> <b>Option 2: Manual Entry</b> </h5>
-                        <br>
-                        <!--Creating box for protein sequence input, and placing explanation text above-->
-                        <p> Input the protein sequence directly. </p>
-                        <p> Note: Disease-associated SNPs and disorder prediction are based on UniProt annotation and will not be displayed with this option. </p>
-                        <p class="text-monospace"> {{ form.aa_sequence(class_="form-control", rows="4")}}</p>
-                        <p> Enter a name for this sequence (optional):</p>
-                        <p> {{ form.seq_name(class_="form-control", rows="1")}} </p>
-                        <p><input type=submit name="action_s" class="btn btn-primary" value="Compute"></p>
-                    </form>
+            <!--form-->
+            <centering><p><b>Protein selection: </b>
+            <select name="sequence_type" id="sequence_type" onchange="hideDiv(this)">
+                <option value="id_entry">ID Entry</option>
+                <option value="sequence_entry">Manual Entry</option></select></p></centering>
+            <div class="form-group" align="center">
+                <form class="navbar-form navbar-top" method=post target="_blank" action="" id="id_entry_block">
+                    <h5 class="text-center"> <b>Option 1: ID Entry</b></h5>
+                    <br>
+                    <p>Enter an ID for your protein.</p>
+                    <p>Note: Please make sure to use the ID for the human protein if you also want to see the location of disease-associated mutations. </p>
+                    <label for="input-types">Choose an input type:</label>
+                    <select name="input_type" id="input_type">
+                        <option value="uniprot_id">UniProt ID</option>
+                        <option value="ensembl_id">Ensembl ID</option> </select>
+                    <!--form.uniprot_id calls the UniProt ID field in model_2.py -->
+                    <p> {{ form.uniprot_id(class_="form-control", rows="1")}}</p>
+                    <p>This option takes about 30 seconds to fetch SNP and disorder data, but may take longer.</p>
+                    <p><input type=submit name="action_u" class="btn btn-primary" value="Blobulate!"></p>
+                </form>
                 </div>
+            <div class="form-group" align="center">
+                <form class="navbar-form navbar-top" method=post target="_blank" action="" id="manual_entry_block" style="display: none">
+                    <h5 class="text-center"> <b>Option 2: Manual Entry</b> </h5>
+                    <br>
+                    <!--Creating box for protein sequence input, and placing explanation text above-->
+                    <p> Input the protein sequence directly. </p>
+                    <p> Note: Disease-associated SNPs and disorder prediction are based on UniProt annotation and will not be displayed with this option. </p>
+                    <p class="text-monospace"> {{ form.aa_sequence(class_="form-control", rows="4")}}</p>
+                    <p> Enter a name for this sequence (optional):</p>
+                    <p> {{ form.seq_name(class_="form-control", rows="1")}} </p>
+                    <p><input type=submit name="action_s" class="btn btn-primary" value="Blobulate!"></p>
+                </form>
             </div>
         </div>
     </div>
@@ -46,7 +46,9 @@
 <div class="tab-pane fade" id="about">
     <h4 class="mt-2">Welcome to the Blobulator</h4>
     <p>Blobulation is an approach for detecting hydrophobic modularity in protein sequences based on contiguous hydrophobicity, <a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007390" target="_blank"> originally developed </a> by the <a href="https://branniganlab.org/" target="_blank"> Brannigan Lab </a> for aiding in analyzing residue contacts in molecular dynamics (MD) simulations of a long intrinsically disordered protein (the BDNF prodomain). The blobulator allows the user to blobulate any sequence, and visualize the results while adjusting the two tunable parameters to detect blobs found at varying resolutions.</p>
-    <p> Clusters of residues outputted by the blobulator are called blobs, inspired by terminology from polymer physics (<a href="https://pubs.acs.org/doi/10.1021/ma60051a002" target="_blank">Pincus, 1976</a>; de Gennes, 1979). In addition to outputting a visualization of the blobulated sequence, the blobulator also outputs several tracks showing blobs overlaid with additional information including: net charge, globular tendency (Das-Pappu phase), distance from the Uversky boundary, and sensitivity to mutation. These properties are also dynamically adjusted as the user increases or decreases resolution of the sequence. For human proteins, users will also see the location of known disease-associated single nucleotide polymorphisms (SNPs). </p>
+    <img src="/static/blobulation.png" width="600" align="center">
+    <p>The figure above shows an overview of the blobulation algorithm. It consists of two steps - digitization and clustering. In the digitization step, residues are classified as either hydrophobic (blue) or non-hydrophobic (orange) by comparing their hydropathy to the user-selected threshold, H*. Next, the sequence is segmented: all segments containing only hydrophobic residues longer than L<sub>min</sub> are h-blobs (blue), other segments longer than L<sub>min</sub> are p-blobs (orange), and segments shorter than L<sub>min</sub> and non-hydrophobic are s-blobs (green). Figure adapted from  <a href="https://www.pnas.org/doi/10.1073/pnas.2116267119" target="_blank">Lohia et al. 2022</a>.</p>
+    <p>In addition to outputting a visualization of the blobulated sequence, the blobulator also outputs several tracks showing blobs overlaid with additional information including: net charge, globular tendency (Das-Pappu phase), distance from the Uversky boundary, and sensitivity to mutation. These properties are also dynamically adjusted as the user increases or decreases resolution of the sequence. For human proteins, users will also see the location of known disease-associated single nucleotide polymorphisms (SNPs). </p>
     <p>For bug reports, feature requests, or anything else - please contact at connor.pitman@rutgers.edu or grace.brannigan@rutgers.edu, or post an issue on our <a href="https://github.com/BranniganLab/blobulator" target="_blank"> GitHub. </a></p>
     <br>Citing the Blobulator<br> <p>A manuscript on the Blobulator is currently under review. For now, please cite: <a href="https://www.biorxiv.org/content/10.1101/2024.01.15.575761v1" target="_blank"> Connor Pitman, Ezry Santiago-McRae, Ruchi Lohia, Kaitlin Bassi, Thomas T. Joseph, Matthew E.B. Hansen, Grace Brannigan, “The blobulator: a webtool for identification and visual exploration of hydrophobic modularity in protein sequences.” bioRxiv. 2024.</a> </p>
 

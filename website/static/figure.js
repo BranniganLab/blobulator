@@ -88,6 +88,31 @@ class ZFigure {
 
 	return this;
 	}
+
+	add_disappearresultcontrols_button() {
+
+	var btn = document.createElement("button");
+	btn.innerHTML = "Lock Control Panel";
+	btn.id = "lock_ctrl"
+	btn.type = "button";
+	btn.style.margin = "4px";
+	let locked = false
+	btn.onclick = function () {
+		locked = !locked;
+		if (locked) {
+			document.getElementById("result_main_container").style.position = "static";
+			btn.innerHTML = "Unlock Control Panel";
+	}
+		else {
+			document.getElementById("result_main_container").style.position = "sticky";
+			btn.innerHTML = "Lock Control Panel";
+	}
+	}
+	var top_container = document.getElementById("result_main_container");
+	top_container.appendChild(btn);
+
+	return this;
+	}
 	
 	add_title(title){
 	    // Creates the title
@@ -471,7 +496,7 @@ class ZChart extends ZFigure{
 					d3.select(this).attr("fill", "black")
 				};
 				tooltip_snps.transition()
-					.duration(1000)
+					.duration(3000)
 					.style("opacity", 0)
 					.on("end", () => tooltip_snps.style("display", "none"));
 			});
@@ -623,6 +648,7 @@ class ZHydropathy extends ZChart{
 			.attr("x2", this.WIDTH)
 			.attr("y1", y(my_cut))
 			.attr("y2", y(my_cut))
+			.attr("id", "cutoffline")
 
 		return this;
 	}
@@ -1030,6 +1056,5 @@ class ZblobChart extends ZChart {
 	}
 
 }
-
 
 
