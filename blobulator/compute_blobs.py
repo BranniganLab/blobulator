@@ -267,7 +267,7 @@ def lookup_color_blob(blob_properties_array):
         return "#2DB11A"
 
 # ..........................Define phase diagram.........................................................#
-def lookup_color_uversky(blob_properties_array):
+def lookup_number_uversky(blob_properties_array):
     """
     A function that calculates the distance from the disorder/order boundary for each blob on the uversky diagram
 
@@ -671,7 +671,7 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
         lookup_number_das_pappu, axis=1
     )
     df["U_diagram"] = df[["NCPR", "H"]].apply(
-        lookup_color_uversky, axis=1
+        lookup_number_uversky, axis=1
     )
     df["NCPR_color"] = df[["NCPR", "fcr"]].apply(
         lookup_color_ncpr, axis=1
