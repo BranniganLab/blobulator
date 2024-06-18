@@ -18,6 +18,7 @@ classifiers = [
 	"License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
 	"Operating System :: OS Independent",
 ]
+dependencies = ['Bio', 'numpy>=1.22.0','pandas>=1.4.0', 'matplotlib>=3.5.0', 'importlib_resources>=1.4', 'wtforms', 'flask', 'flask_restful', 'flask_cors', 'flask_session', 'svglib', 'reportlab']
 
 [project.urls]
 Homepage = "https://github.com/BranniganLab/blobulator"
