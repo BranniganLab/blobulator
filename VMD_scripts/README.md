@@ -10,7 +10,7 @@ an amino acid chain is hydrophilic, and longer than the
 threshold, it is considered a p blob. All other sections are too short and
 are categorized as s blobs.  
 
-## How to use VMD Blobulation: 
+## How to use VMD Blobulation:
 
 ### Installation guide:
 
