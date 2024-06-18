@@ -48,3 +48,11 @@
 ## Version 0.9.6
 - New heading
 - Updated text on About, Documentation, and FAQ pages
+
+## Version 0.9.7
+- Added button to lock the control panel to the top of the screen
+- Overhauled the home page
+- compute_blobs.py variable and function names were updated
+- Bug fixes
+- Added algorithm description to the 'About' tab
+- NCPR track now scaled to be between -0.2 and +0.2
