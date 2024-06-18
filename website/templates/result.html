@@ -1,6 +1,5 @@
 {% extends 'common.html' %}
 
-
 {% block css %}
 <style> @import "static/style.css"; </style>
 <style> @import "static/zoomStyle.css"; </style>
@@ -154,6 +153,7 @@ $(document).ready( function() {
 		figs.pathyFig = new ZHydropathy("pathyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_zoomout_button("pathyPlot", data)
 			.add_resetmutation_button()
+			.add_disappearresultcontrols_button()
 			.add_smoothed_hydro_title("Smoothed hydropathy per residue")
 			.add_tooltip_hydropathy(hydropathy_tool_text)
 			.add_zoomtip_hydropathy(zoom_tool_text);
@@ -174,7 +174,7 @@ $(document).ready( function() {
 			.add_title("Net charge per residue")
 			.add_tooltip(ncpr_tool_text)
 			.add_zoomtip(zoom_tool_text)
-			.add_ContinuousLegend("RWB", {min: "-0.5", med: "0.0", max: "+0.5"});
+			.add_ContinuousLegend("RWB", {min: "-0.2", med: "0.0", max: "+0.2"});
 		
 		figs.globFig = new ZblobChart("globPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Globular tendency")
@@ -205,6 +205,7 @@ $(document).ready( function() {
 				.add_zoomtip(zoom_tool_text)
 				.add_ContinuousLegend("PuOr", {min: "0.0", med: "0.5", max: "1.0"});
 		}
+
 
 		// Set up UI element change handler
 		d3.selectAll(".mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales").on("change", function(){do_update(figs, data)});
@@ -326,8 +327,6 @@ $(document).ready( function() {
 
 </script>
 
-
-
 {% endblock %}
 
 {% block tablist %}
@@ -340,6 +339,7 @@ $(document).ready( function() {
 
 {% block tabcontent %}
 {% include 'common-tabcontent.html' %}
+
 <div class="tab-pane container" id="result">
     <div class="container">
 		<div class="text-center">
@@ -353,30 +353,31 @@ $(document).ready( function() {
 		</div>
 		<div class="result-controls" id="result_main_container">
 			<table id="results_table">
-				<col style="width:13%">
-				<col style="width:7%">
-<!-- 			<col style="width:50%">
-				<col style="width:20%"> -->
-				 <div text="left">
+				<div class="white-box">
+				<col style="width: 13%">
+				<col style="width: 7%">
+				<col style="width: 10%">
+				<col style= "width: 30%">
+				<div text="left">
 				<tr><td>Hydrophobicity Scale:</td>
 					<td><select id="hydro_scales" class="hydro_scales">
 						<option selected="selected" value="kyte_doolittle">Kyte and Doolittle</option>
 						<option value="eisenberg_weiss">Eisenberg and Weiss</option></select></td>
-						<td id="hydro-labels" class="hydro_labels" style="width: 43%"></td>
-					<td>&nbsp;</td></tr>
+						<td id="hydro-labels" class="hydro_labels" style="width: 50%"></td>
+					<td>&nbsp;</td></div></tr>
 					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
 					</label></td>
 					<td><input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
-					<td style="width: 43%"><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td>
-					<td>&nbsp;</td></div></tr>
+					<td style="width: 50%"><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td>
+					<td>&nbsp;</td></tr>
 				<tr>
 				<td>Minimum blob size:
 					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
 					</label> </td>
 					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> 
 					</td>
-					<td style="width: 43%"><input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider1" step=1> </td>
+					<td style="width: 50%"><input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider1" step=1> </td>
 				<td>&nbsp;</td></tr>
 				</div>
 
@@ -441,6 +442,7 @@ $(document).ready( function() {
 					</select> </td>
 				</tr>
 				</div>
+			</div>
 			</table>
 				<label style = "opacity: 0.0; display: none; position: relative;"> </label>
 				<button type="button" onclick="window.print();return false;">Print Screen</button>

@@ -1,10 +1,6 @@
 import json
 
 import os
-import sys
-
-sys.path.insert(0, '../library/')
-
 from user_input_form import InputForm
 from blobulator.amino_acids import properties_hydropathy
 from blobulator.compute_blobs import (compute, clean_df)
