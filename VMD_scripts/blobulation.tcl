@@ -222,7 +222,16 @@ proc hydropathyScores { hydropathyList Sequence } {
 	set hydroScored {}
 	foreach amino $Sequence {
 		if {[lsearch -exact $hydropathyList $amino] == -1} {
-			puts "Unkown amino acid ending program"
+			set aminoList {}
+			foreach aa $Sequence {
+
+				if {[lsearch -exact $hydropathyList $aa] == -1} {
+					lappend aminoList $aa
+					
+				}
+			
+			}
+			puts "Unknown sequence(s) detected: $aminoList \nEnding Program"
 			return -1
 		}
 		
