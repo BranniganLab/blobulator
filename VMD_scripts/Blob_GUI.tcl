@@ -152,7 +152,7 @@ proc graphRepUser {MolID Lmin H} {
 		mol representation QuickSurf 1.21 1 .5 2
 		mol material AOChalky
 		mol color ColorID 23
-		
+
 		
 
 		mol addrep $MolID 
@@ -202,13 +202,18 @@ proc graphRepUser2 {MolID Lmin H} {
 	set count 0
 	set sel [atomselect $MolID protein]
 	set user2length [lsort -unique [$sel get user2]]
-	$sel delete
+	
+	$sel delete 
+	set colorNum [list 23 24 10 21 22]
+	set i 0
 	foreach u2 $user2length {
-
+		if {$i >= [llength $colorNum]} {
+			set i 0
+		}
 		mol representation QuickSurf 1.21 1 .5 2
 		mol material AOChalky
-		mol color user2
-		
+		mol color ColorID [lindex $colorNum $i]
+		incr i		
 		
 
 		mol addrep $MolID 
@@ -216,20 +221,6 @@ proc graphRepUser2 {MolID Lmin H} {
 		
 		incr count 
 	}
-	# 	for {set i 0} { $i < $user2length } { incr i } {
-		
-	# 	mol representation QuickSurf 1.1 1
-	# 	mol material AOChalky
-	# 	mol color user2
-		
-		
-
-	# 	mol addrep $MolID 
-	# 	mol modselect $count $MolID "user 1 and user2 $i"
-		
-	# 	incr count 
-	# }
-	
 	
 	mol representation NewCartoon .3 20
 	mol color ColorID 7
@@ -298,3 +289,4 @@ proc blobQuit {} {
 # 		    "Analysis/Blobulator"
 #     }
 # }
+
