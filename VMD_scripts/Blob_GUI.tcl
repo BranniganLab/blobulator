@@ -220,6 +220,7 @@ proc graphRepUser2 {MolID Lmin H} {
 		mol modselect $count $MolID "user 1 and user2 $u2"
 		
 		incr count 
+
 	}
 	
 	mol representation NewCartoon .3 20
@@ -276,17 +277,4 @@ proc blobClear {MolID} {
 proc blobQuit {} {
 	destroy .blob
 }
-
-# set blobulator_in_vmd \
-#     [string length [info proc vmd_install_extension]]
-
-# proc register_menu {} {
-#     variable already_registered
-#     if {$already_registered==0} {
-# 		incr already_registered
-# 		vmd_install_extension GUI_practice \
-# 		    $blobs \
-# 		    "Analysis/Blobulator"
-#     }
-# }
 
