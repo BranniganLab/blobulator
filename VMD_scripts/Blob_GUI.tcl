@@ -248,6 +248,7 @@ proc graphRepUser2 {MolID Lmin H} {
 	mol addrep $MolID 
 	mol modselect $count $MolID "user 1"
 	incr count
+	tricolor_scale
 
 }
 
@@ -298,3 +299,27 @@ proc blobQuit {} {
 # 		    "Analysis/Blobulator"
 #     }
 # }
+
+proc tricolor_scale {{pointA 0} {pointB 511} {pointC 660} {pointD 1000} {colorA "0.0 0.3 0.4"} {colorB "0.0 0.4 0.8"} {colorC "0.2 0.6 1.0"} {colorD "0.6 0.8 1.0"}} {
+	#replaces the rgb colorscale with a custom one
+	#sets the color explicitly at three intermediate color anchors (511, 660, 1000) 
+	#adds a linear gradient between the anchors 
+	set color_start [colorinfo num]
+	display update off
+	for {set i 0} {$i < 1024} {incr i} {
+		if {$i == $pointA} {
+			lassign $colorA r g b
+		}
+		if {$i == $pointB} {
+			lassign $colorB r g b
+		}
+		if {$i == $pointC} {
+			lassign $colorC r g b
+		}
+		if {$i == $pointD} {
+			lassign $colorD r g b
+		}
+		color change rgb [expr $i + $color_start] $r $g $b
+	}
+	display update on
+}
