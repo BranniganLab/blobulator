@@ -222,21 +222,22 @@ proc hydropathyScores { hydropathyList Sequence } {
 	set hydroScored {}
 	foreach amino $Sequence {
 		if {[lsearch -exact $hydropathyList $amino] == -1} {
-			set aminoList {}
-			foreach aa $Sequence {
-
-				if {[lsearch -exact $hydropathyList $aa] == -1} {
-					lappend aminoList $aa
-					
+			if {$amino == "HID" || $amino == "HIE"} {
+				set value [dict get $hydropathyList "HIS"]
+			} else {
+				set aminoList {}
+				foreach aa $Sequence {
+					if {[lsearch -exact $hydropathyList $aa] == -1 } {
+						lappend aminoList 
+					}
+				puts "Unknown sequence(s) detected: $aminoList \nEnding Program"
+				return -1
 				}
 			
 			}
-			puts "Unknown sequence(s) detected: $aminoList \nEnding Program"
-			return -1
-		}
-		
+		} else {
 		set value [dict get $hydropathyList $amino]
-		
+		}
 		lappend hydroScored $value
 	}
 	
@@ -638,3 +639,6 @@ proc blobUser3Assign { blob3 MolID } {
 	$sel set user3 $blob3 
 	$sel delete 
 }
+
+
+
