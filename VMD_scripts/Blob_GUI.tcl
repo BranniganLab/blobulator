@@ -278,3 +278,4 @@ proc blobQuit {} {
 	destroy .blob
 }
 
+
