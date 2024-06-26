@@ -248,6 +248,7 @@ proc graphRepUser2 {MolID Lmin H} {
 	mol addrep $MolID 
 	mol modselect $count $MolID "user 1"
 	incr count
+	colorScale
 
 }
 
@@ -298,3 +299,47 @@ proc blobQuit {} {
 # 		    "Analysis/Blobulator"
 #     }
 # }
+
+proc tricolor_scale {PointA PointB ColorA ColorB} {
+	#replaces the rgb colorscale with a custom one
+	#sets the color explicitly at three intermediate color anchors (511, 660, 1000) 
+	#adds a linear gradient between the anchors 
+	set color_start [colorinfo num]
+	display update off
+
+	for {set i $PointA} {$i < $PointB} {incr i} {
+		# if {$i == $pointA} {
+		# 	lassign $colorA r g b
+		# }
+		# if {$i == $pointB} {
+		# 	lassign $colorB r g b
+		# }
+		# if {$i == $pointC} {
+		# 	lassign $colorC r g b
+		# }
+		# if {$i == $pointD} {
+		# 	lassign $colorD r g b
+		# }
+
+		set deltaPoint [expr $PointB - $PointA]
+		set colorList {}
+		foreach pa $ColorA pb $ColorB {
+			set deltaColor [expr $pb - $pa]
+
+			set color [expr [expr $deltaColor / $deltaPoint] * [expr $i - $PointA] + $pa]
+			lappend colorList $color
+		}
+
+		color change rgb [expr $i + $color_start] [lindex $colorList 0] [lindex $colorList 1] [lindex $colorList 2]
+	}
+	display update on
+}
+
+
+proc colorScale {{pointA 0} {pointB 511} {pointC 660} {pointD 1000} {colorA "0.0 0.3 0.4"} {colorB "0.0 0.4 0.8"} {colorC "0.2 0.6 1.0"} {colorD "0.6 0.8 1.0"}} {
+	tricolor_scale $pointA $pointB $colorA $colorB
+	tricolor_scale $pointB $pointC $colorB $colorC
+	tricolor_scale $pointC $pointD $colorC $colorD
+
+}
+
