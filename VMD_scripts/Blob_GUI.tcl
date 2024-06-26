@@ -4,6 +4,7 @@ if [winfo exists .blob] {
 	return
 }
 set buttonWidth 42
+set defaultButtonWidth 18
 set dropDownMenuWidth 14 
 set isFirst 0
 set dropMenuName1 "Blob Type"
@@ -36,12 +37,9 @@ grid [ttk::combobox $blobs.dmnu -textvariable graphrep2 -width $dropDownMenuWidt
 grid [label $blobs.t2 -text "Hydropathy Scale : " -height 2] -row 5 -column 0 -columnspan 2 -sticky e
 grid [ttk::combobox $blobs.dmnu2  -textvariable dictionariesList -width $dropDownMenuWidth -values [list $dropMenu2Name1 $dropMenu2Name2 $dropMenu2Name3] -state readonly] -pady 6 -row 5 -column 2 -sticky w
 grid [button $blobs.blobulate -text "Blobulate!" -font [list arial 9 bold] -width $buttonWidth -command {blobulation $MolID $Lmin $H $dictionariesList} ] -columnspan 3
-grid [button $blobs.clear -text "Clear representations" -width $buttonWidth -command {blobClear $MolID}] -columnspan 3
-# grid [button $blobs.quit -text "Quit" -width $buttonWidth -command blobQuit ] -columnspan 3
-# trace add variable graphrep2 write "blobulationSlider $MolID $Lmin $H"
-
-# trace add variable $Lmin write {blobulate $MolID $Lmin $H}
-
+grid [button $blobs.ldefault -text "Set Lmin Default" -width $buttonWidth -command {lminDefault }] -padx 0  -columnspan 3
+grid [button $blobs.hdefault -text "Set H Default" -width $buttonWidth -command {hDefault }] -padx 0 -columnspan 3
+grid [button $blobs.clear -text "Clear representations" -width $buttonWidth -command {blobClear $MolID}] -column 0 -columnspan 3
 
 #
 #	Checks radiobutton value so blobulate properly displays representations
@@ -113,16 +111,31 @@ proc blobulationSlider { MolID Lmin H dictInput} {
 	}
 }
 
-# proc graphRep2Check {name1 name2 op} {
-# 	global MolID
-# 	global Lmin
-# 	global H
-	
-#  	blobulationSlider $MolID $Lmin $H
-	
-# return
-# }
+proc lminDefault {} {
+	global H MolID Lmin H dictInput dictionariesList
+	set Lmin 4
+	blobulationSlider $MolID $Lmin $H $dictionariesList
+	return
+}
 
+proc hDefault {} {
+	global H MolID Lmin H dictInput dictionariesList
+	
+	if {$dictionariesList == "Kyte-Doolittle"} {
+		set H .4
+	}
+
+	if {$dictionariesList == "Eisenberg-Weiss"} {
+		set H .28
+	}
+	if {$dictionariesList == "Moon-Fleming"} {
+		set H .35
+	}
+
+	blobulationSlider $MolID $Lmin $H $dictionariesList
+	
+	return 
+}
 
 #
 #	Runs graphical representations showing hblobs in QuickSurf, p and s blobs in NewCartoon
@@ -216,19 +229,7 @@ proc graphRepUser2 {MolID Lmin H} {
 		
 		incr count 
 	}
-	# 	for {set i 0} { $i < $user2length } { incr i } {
-		
-	# 	mol representation QuickSurf 1.1 1
-	# 	mol material AOChalky
-	# 	mol color user2
-		
-		
-
-	# 	mol addrep $MolID 
-	# 	mol modselect $count $MolID "user 1 and user2 $i"
-		
-	# 	incr count 
-	# }
+	
 	
 	
 	mol representation NewCartoon .3 20
@@ -281,24 +282,12 @@ proc blobClear {MolID} {
 	}
 	
 #
-#	Program that destroys the GUI window
+#	Program the destroys the GUI window
 #
 proc blobQuit {} {
 	destroy .blob
 }
 
-# set blobulator_in_vmd \
-#     [string length [info proc vmd_install_extension]]
-
-# proc register_menu {} {
-#     variable already_registered
-#     if {$already_registered==0} {
-# 		incr already_registered
-# 		vmd_install_extension GUI_practice \
-# 		    $blobs \
-# 		    "Analysis/Blobulator"
-#     }
-# }
 
 proc tricolor_scale {PointA PointB ColorA ColorB} {
 	#replaces the rgb colorscale with a custom one
@@ -308,18 +297,6 @@ proc tricolor_scale {PointA PointB ColorA ColorB} {
 	display update off
 
 	for {set i $PointA} {$i < $PointB} {incr i} {
-		# if {$i == $pointA} {
-		# 	lassign $colorA r g b
-		# }
-		# if {$i == $pointB} {
-		# 	lassign $colorB r g b
-		# }
-		# if {$i == $pointC} {
-		# 	lassign $colorC r g b
-		# }
-		# if {$i == $pointD} {
-		# 	lassign $colorD r g b
-		# }
 
 		set deltaPoint [expr $PointB - $PointA]
 		set colorList {}
