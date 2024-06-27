@@ -64,7 +64,7 @@ proc blobulation { MolID Lmin H dictInput} {
 	bind $blobs.s_Lmin <ButtonRelease> {blobulationSlider $MolID $Lmin $H $dictionariesList} 
 	bind $blobs.s_H <ButtonRelease> {blobulationSlider $MolID $Lmin $H $dictionariesList} 
 	bind $blobs.dmnu <<ComboboxSelected>> {blobulationSlider $MolID $Lmin $H $dictionariesList}
-	bind $blobs.dmnu2 <<ComboboxSelected>> {blobulationDropDownMenu $MolID $Lmin $H $dictionariesList}
+	bind $blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu $MolID $Lmin $H $dictionariesList}
 	if {$graphrep2 == $dropMenuName1} {
 		blobulate $MolID $Lmin $H $dictInput
 		graphRepUser $MolID $Lmin $H 
