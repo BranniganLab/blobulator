@@ -336,10 +336,10 @@ proc tricolor_scale {PointA PointB ColorA ColorB} {
 }
 
 
-proc colorScale {{pointA 0} {pointB 511} {pointC 660} {pointD 1000} {colorA "0.0 0.3 0.4"} {colorB "0.0 0.4 0.8"} {colorC "0.2 0.6 1.0"} {colorD "0.6 0.8 1.0"}} {
+proc colorScale {{pointA 0} {pointB 256} {pointC 512} {pointD 768} {pointE 1024} {colorA "0.0 0.5 0.5"} {colorB "0.4 1.0 1.0"} {colorC "0.0 0.3 0.6"} {colorD "0.4 0.7 1.0"} {colorE "0.0 0.0 0.6"}} {
 	tricolor_scale $pointA $pointB $colorA $colorB
 	tricolor_scale $pointB $pointC $colorB $colorC
 	tricolor_scale $pointC $pointD $colorC $colorD
-
+	tricolor_scale $pointD $pointE $colorD $colorE
 }
 
