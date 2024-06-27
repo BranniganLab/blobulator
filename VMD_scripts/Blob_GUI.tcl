@@ -4,6 +4,7 @@ if [winfo exists .blob] {
 	return
 }
 set buttonWidth 42
+set defaultButtonWidth 18
 set dropDownMenuWidth 14 
 set isFirst 0
 set dropMenuName1 "Blob Type"
@@ -34,14 +35,12 @@ foreach { entry min max interval} $paraList {
 grid [label $blobs.t -text "Blobulate by: " -height 2] -row 4 -column 0 -columnspan 2 -sticky e
 grid [ttk::combobox $blobs.dmnu -textvariable graphrep2 -width $dropDownMenuWidth -values [list $dropMenuName1 $dropMenuName2] -state readonly ] -pady 6 -row 4 -column 2 -sticky w
 grid [label $blobs.t2 -text "Hydropathy Scale : " -height 2] -row 5 -column 0 -columnspan 2 -sticky e
+grid [checkbutton $blobs.check -text "Auto Update" -variable checkForUpdate -command {blobulationSlider $MolID $Lmin $H $dictionariesList}] -row 5 -column 2 -sticky e
 grid [ttk::combobox $blobs.dmnu2  -textvariable dictionariesList -width $dropDownMenuWidth -values [list $dropMenu2Name1 $dropMenu2Name2 $dropMenu2Name3] -state readonly] -pady 6 -row 5 -column 2 -sticky w
 grid [button $blobs.blobulate -text "Blobulate!" -font [list arial 9 bold] -width $buttonWidth -command {blobulation $MolID $Lmin $H $dictionariesList} ] -columnspan 3
-grid [button $blobs.clear -text "Clear representations" -width $buttonWidth -command {blobClear $MolID}] -columnspan 3
-# grid [button $blobs.quit -text "Quit" -width $buttonWidth -command blobQuit ] -columnspan 3
-# trace add variable graphrep2 write "blobulationSlider $MolID $Lmin $H"
-
-# trace add variable $Lmin write {blobulate $MolID $Lmin $H}
-
+grid [button $blobs.ldefault -text "Set Lmin Default" -width $buttonWidth -command {lminDefault }] -padx 0  -columnspan 3
+grid [button $blobs.hdefault -text "Set H Default" -width $buttonWidth -command {hDefault }] -padx 0 -columnspan 3
+grid [button $blobs.clear -text "Clear representations" -width $buttonWidth -command {blobClear $MolID}] -column 0 -columnspan 3
 
 #
 #	Checks radiobutton value so blobulate properly displays representations
@@ -65,7 +64,7 @@ proc blobulation { MolID Lmin H dictInput} {
 	bind $blobs.s_Lmin <ButtonRelease> {blobulationSlider $MolID $Lmin $H $dictionariesList} 
 	bind $blobs.s_H <ButtonRelease> {blobulationSlider $MolID $Lmin $H $dictionariesList} 
 	bind $blobs.dmnu <<ComboboxSelected>> {blobulationSlider $MolID $Lmin $H $dictionariesList}
-	bind $blobs.dmnu2 <<ComboboxSelected>> {blobulationSlider $MolID $Lmin $H $dictionariesList}
+	bind $blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu $MolID $Lmin $H $dictionariesList}
 	if {$graphrep2 == $dropMenuName1} {
 		blobulate $MolID $Lmin $H $dictInput
 		graphRepUser $MolID $Lmin $H 
@@ -96,6 +95,8 @@ proc blobulationSlider { MolID Lmin H dictInput} {
 	global isFirst
 	global dropMenuName1
 	global dropMenuName2
+	
+
 	if {$isFirst == 1} {
 
 		if {$graphrep2 == $dropMenuName1} {
@@ -104,25 +105,58 @@ proc blobulationSlider { MolID Lmin H dictInput} {
 		} elseif {$graphrep2 == $dropMenuName2} {
 			blobulate $MolID $Lmin $H $dictInput
 			graphRepUser2 $MolID $Lmin $H 
+
 		} else {
 			puts "no value"
-		} 
-		return
+		}
 	} else {
-		return
-	}
+		return 
+	} 
+	
 }
 
-# proc graphRep2Check {name1 name2 op} {
-# 	global MolID
-# 	global Lmin
-# 	global H
+#
+#	Creates parameters for when the second drop down menu is changed  
+#
+proc hydropathyScaleDropDownMenu {MolID Lmin H dictInput} {
+	global checkForUpdate
+	if {$checkForUpdate == 1} {
+		hDefault
+		blobulationSlider $MolID $Lmin $H $dictInput
+	} else {
+		blobulationSlider $MolID $Lmin $H $dictInput
+	}
+	return
+}
+#
+#	Set Lmin variable to default value, currently 4
+#
+proc lminDefault {} {
+	global H MolID Lmin H dictInput dictionariesList
+	set Lmin 4
+	blobulationSlider $MolID $Lmin $H $dictionariesList
+	return
+}
+#
+#	Sets H variable to default value based on dictionary 
+#
+proc hDefault {} {
+	global H MolID Lmin H dictInput dictionariesList checkForUpdate blobs
 	
-#  	blobulationSlider $MolID $Lmin $H
-	
-# return
-# }
+	if {$dictionariesList == "Kyte-Doolittle"} {
+		set H .4
+	}
 
+	if {$dictionariesList == "Eisenberg-Weiss"} {
+		set H .28
+	}
+	if {$dictionariesList == "Moon-Fleming"} {
+		set H .35
+	}
+	
+
+	return 
+}
 
 #
 #	Runs graphical representations showing hblobs in QuickSurf, p and s blobs in NewCartoon
@@ -216,19 +250,7 @@ proc graphRepUser2 {MolID Lmin H} {
 		
 		incr count 
 	}
-	# 	for {set i 0} { $i < $user2length } { incr i } {
-		
-	# 	mol representation QuickSurf 1.1 1
-	# 	mol material AOChalky
-	# 	mol color user2
-		
-		
-
-	# 	mol addrep $MolID 
-	# 	mol modselect $count $MolID "user 1 and user2 $i"
-		
-	# 	incr count 
-	# }
+	
 	
 	
 	mol representation NewCartoon .3 20
@@ -252,17 +274,7 @@ proc graphRepUser2 {MolID Lmin H} {
 
 }
 
-proc graphRepUser3 {MolID} {
-	set range [molinfo $MolID get numreps]
-	for {set i 0} {$i < $range} {incr i} {
-		mol delrep 0 $MolID
-	}  
-	mol representation NewCartoon .3 10
-	mol color User3
-	mol addrep $MolID
-	mol modselect 0 $MolID "User 1"
-	
-}
+
 #
 #	Program removes all graphical representations
 # 
@@ -281,25 +293,20 @@ proc blobClear {MolID} {
 	}
 	
 #
-#	Program that destroys the GUI window
+#	Program the destroys the GUI window
 #
 proc blobQuit {} {
 	destroy .blob
 }
 
-# set blobulator_in_vmd \
-#     [string length [info proc vmd_install_extension]]
-
-# proc register_menu {} {
-#     variable already_registered
-#     if {$already_registered==0} {
-# 		incr already_registered
-# 		vmd_install_extension GUI_practice \
-# 		    $blobs \
-# 		    "Analysis/Blobulator"
-#     }
-# }
-
+#
+#	Function that creates a gradient from each point using the slope function
+#
+#	Arguments:
+# 	PointA (Integer): Starting value used to start i at the desired color num
+#	PointB (Integer): Ending value used to end the iteration to 
+#	ColorA (List): List of color values, start point that increments up to the end point
+# 	ColorB (List): List of color values, end point 
 proc tricolor_scale {PointA PointB ColorA ColorB} {
 	#replaces the rgb colorscale with a custom one
 	#sets the color explicitly at three intermediate color anchors (511, 660, 1000) 
@@ -308,18 +315,6 @@ proc tricolor_scale {PointA PointB ColorA ColorB} {
 	display update off
 
 	for {set i $PointA} {$i < $PointB} {incr i} {
-		# if {$i == $pointA} {
-		# 	lassign $colorA r g b
-		# }
-		# if {$i == $pointB} {
-		# 	lassign $colorB r g b
-		# }
-		# if {$i == $pointC} {
-		# 	lassign $colorC r g b
-		# }
-		# if {$i == $pointD} {
-		# 	lassign $colorD r g b
-		# }
 
 		set deltaPoint [expr $PointB - $PointA]
 		set colorList {}
@@ -335,8 +330,15 @@ proc tricolor_scale {PointA PointB ColorA ColorB} {
 	display update on
 }
 
-
-proc colorScale {{pointA 0} {pointB 511} {pointC 660} {pointD 1000} {colorA "0.0 0.3 0.4"} {colorB "0.0 0.4 0.8"} {colorC "0.2 0.6 1.0"} {colorD "0.6 0.8 1.0"}} {
+#
+#	Program that sets colorscale to be inline with blobulation colorscheme, creates a gradient 
+#
+#	Arguments:
+# 	PointA (Integer): Starting value used to start i at the desired color num
+#	PointB (Integer): Ending value used to end the iteration to 
+#	ColorA (List): List of color values, start point that increments up to the end point
+# 	ColorB (List): List of color values, end point 
+proc colorScale {{pointA 0} {pointB 330} {pointC 660} {pointD 1024} {colorA "0.0 0.3 0.4"} {colorB "0.0 0.4 0.8"} {colorC "0.2 0.6 1.0"} {colorD "0.6 0.8 1.0"}} {
 	tricolor_scale $pointA $pointB $colorA $colorB
 	tricolor_scale $pointB $pointC $colorB $colorC
 	tricolor_scale $pointC $pointD $colorC $colorD
