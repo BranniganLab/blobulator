@@ -118,7 +118,7 @@ proc blobulationSlider { MolID Lmin H dictInput} {
 #
 #	Creates parameters for when the second drop down menu is changed  
 #
-proc blobulationDropDownMenu {MolID Lmin H dictInput} {
+proc hydropathyScaleDropDownMenu {MolID Lmin H dictInput} {
 	global checkForUpdate
 	if {$checkForUpdate == 1} {
 		hDefault
