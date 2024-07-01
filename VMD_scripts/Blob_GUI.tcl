@@ -139,7 +139,6 @@ proc hydropathyScaleDropDownMenu {MolID Lmin H dictionariesList} {
 	global checkForUpdate
 	if {$checkForUpdate == 1} {
 		hDefault
-		blobulationSlider $MolID $Lmin $H $dictionariesList
 	} else {
 		blobulationSlider $MolID $Lmin $H $dictionariesList
 	}
@@ -186,8 +185,10 @@ proc hDefault {} {
 	if {$dictionariesList == "Moon-Fleming"} {
 		set H .35
 	}
-	
-return 
+
+	blobulationSlider $MolID $Lmin $H $dictionariesList
+
+	return
 }
 
 #

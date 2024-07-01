@@ -47,10 +47,14 @@ proc blobulate {MolID lMin H dictInput} {
 		set chainBlobIndex {}
 		set chainBlobGroup {}
 		for {set i 0} {$i < [llength $sorted] } { incr i} {
-			
 			set singleChain [lindex $sorted $i] 
 			set chainReturn [blobulateChain $MolID $lMin $H $singleChain $usedDictionary]
+				if { $chainReturn == -1} {
+				break
+				return -1
+			}
 			set blobulated [lindex [blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 0]
+		
 			set index [lindex [blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 1]
 			foreach bb $blobulated {
 				lappend chainBlobs $bb
@@ -78,8 +82,8 @@ proc blobulate {MolID lMin H dictInput} {
 		
 		
 		}
-		return 
-		}
+		return $blobulated
+		} else {
 		
 	set sequence [getSequence $MolID]
 	set hydroS [hydropathyScores $usedDictionary $sequence]
@@ -102,7 +106,8 @@ proc blobulate {MolID lMin H dictInput} {
 	#Makes sure procedures that fail to pass checks can't assign values. 
 
 	
-	return 
+	return $blobulated
+	}
 }
 #
 #	Proc that subsitiutes the blobulate task if multiple chains in a protein are detected
@@ -222,21 +227,25 @@ proc hydropathyScores { hydropathyList Sequence } {
 	set hydroScored {}
 	foreach amino $Sequence {
 		if {[lsearch -exact $hydropathyList $amino] == -1} {
+			
 			if {$amino == "HID" || $amino == "HIE"} {
 				set value [dict get $hydropathyList "HIS"]
 			} else {
-				set aminoList {}
+				set unknownResidueList {}
+				set count 0
 				foreach aa $Sequence {
 					if {[lsearch -exact $hydropathyList $aa] == -1 } {
-						lappend aminoList 
+						lappend unknownResidueList $aa
 					}
-				puts "Unknown sequence(s) detected: $aminoList \nEnding Program"
+					
+				}
+				puts "Unknown sequence(s) detected: $unknownResidueList \nEnding Program"
 				return -1
 				}
 			
-			}
+			
 		} else {
-		set value [dict get $hydropathyList $amino]
+		set value [dict get $hydropathyList $amino] 
 		}
 		lappend hydroScored $value
 	}

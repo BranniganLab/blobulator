@@ -42,3 +42,8 @@ Below is an example of accessing the proper directory in the Tk Console
 ``` source Blobs_GUI.tcl ``` 
 
 You will need to source everytime you wish to load the GUI. 
+
+### Known Limitations:
+
+VMD blobulator can not run its blobulation alogorithm on proteins that contain
+non-standard amino acids
