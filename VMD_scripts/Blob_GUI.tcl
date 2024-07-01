@@ -7,11 +7,11 @@ set buttonWidth 42
 set defaultButtonWidth 18
 set dropDownMenuWidth 14 
 set isFirst 0
-set dropMenuName1 "Blob Type"
-set dropMenuName2 "Blob ID"
-set dropMenu2Name1 "Kyte-Doolittle"
-set dropMenu2Name2	"Eisenberg-Weiss"
-set dropMenu2Name3 "Moon-Fleming"
+set blobColorType1 "Blob Type"
+set blobColorType2 "Blob ID"
+set hydropathyScale1 "Kyte-Doolittle"
+set hydropathyScale2	"Eisenberg-Weiss"
+set hydropathyScale3 "Moon-Fleming"
 
 set blobs [toplevel ".blob"]
 wm title $blobs "Blobulation"
@@ -33,10 +33,10 @@ foreach { entry min max interval} $paraList {
 	grid $w1 $w2 $w3 	
 }
 grid [label $blobs.t -text "Blobulate by: " -height 2] -row 4 -column 0 -columnspan 2 -sticky e
-grid [ttk::combobox $blobs.dmnu -textvariable graphrep2 -width $dropDownMenuWidth -values [list $dropMenuName1 $dropMenuName2] -state readonly ] -pady 6 -row 4 -column 2 -sticky w
+grid [ttk::combobox $blobs.dmnu -textvariable graphrep2 -width $dropDownMenuWidth -values [list $blobColorType1 $blobColorType2] -state readonly ] -pady 6 -row 4 -column 2 -sticky w
 grid [label $blobs.t2 -text "Hydropathy Scale : " -height 2] -row 5 -column 0 -columnspan 2 -sticky e
 grid [checkbutton $blobs.check -text "Auto Update" -variable checkForUpdate -command {blobulationSlider $MolID $Lmin $H $dictionariesList}] -row 5 -column 2 -sticky e
-grid [ttk::combobox $blobs.dmnu2  -textvariable dictionariesList -width $dropDownMenuWidth -values [list $dropMenu2Name1 $dropMenu2Name2 $dropMenu2Name3] -state readonly] -pady 6 -row 5 -column 2 -sticky w
+grid [ttk::combobox $blobs.dmnu2  -textvariable dictionariesList -width $dropDownMenuWidth -values [list $hydropathyScale1 $hydropathyScale2 $hydropathyScale3] -state readonly] -pady 6 -row 5 -column 2 -sticky w
 grid [button $blobs.blobulate -text "Blobulate!" -font [list arial 9 bold] -width $buttonWidth -command {blobulation $MolID $Lmin $H $dictionariesList} ] -columnspan 3
 grid [button $blobs.ldefault -text "Set Lmin Default" -width $buttonWidth -command {lminDefault }] -padx 0  -columnspan 3
 grid [button $blobs.hdefault -text "Set H Default" -width $buttonWidth -command {hDefault }] -padx 0 -columnspan 3
@@ -52,24 +52,28 @@ grid [button $blobs.clear -text "Clear representations" -width $buttonWidth -com
 # 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
 #	for an h blob
 #
-#	Returns:
-#	A blobulated protein in the graphical representation that properly updates when the blobulate button is pressed
-proc blobulation { MolID Lmin H dictInput} {
+#	Global Arguments:
+#	graphrep2 (List): A list of graph representation options, decided which graphuser proc called depending on what the variable is set to
+#	isFirst (Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
+#	blobColorType1 (String): A parameter used for graphrep2 checks, if it is set to this variable, will call graphRepUser proc
+#	blobColorType2 (String): A parameter used for graphrep2 checks, if it is set to this variable, will call graphRepUser2 proc
+#	blobs (Object): Overarching window frame
+proc blobulation { MolID Lmin H dictionariesList} {
 	global blobs
 	global graphrep2 
 	global isFirst
 	set isFirst 1
-	global dropMenuName1
-	global dropMenuName2
+	global blobColorType1
+	global blobColorType2
 	bind $blobs.s_Lmin <ButtonRelease> {blobulationSlider $MolID $Lmin $H $dictionariesList} 
 	bind $blobs.s_H <ButtonRelease> {blobulationSlider $MolID $Lmin $H $dictionariesList} 
 	bind $blobs.dmnu <<ComboboxSelected>> {blobulationSlider $MolID $Lmin $H $dictionariesList}
 	bind $blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu $MolID $Lmin $H $dictionariesList}
-	if {$graphrep2 == $dropMenuName1} {
-		blobulate $MolID $Lmin $H $dictInput
+	if {$graphrep2 == $blobColorType1} {
+		blobulate $MolID $Lmin $H $dictionariesList
 		graphRepUser $MolID $Lmin $H 
-	} elseif { $graphrep2 == $dropMenuName2} {
-		blobulate $MolID $Lmin $H $dictInput
+	} elseif { $graphrep2 == $blobColorType2} {
+		blobulate $MolID $Lmin $H $dictionariesList
 		graphRepUser2 $MolID $Lmin $H 
 	} else {
 		puts "no value"
@@ -87,23 +91,27 @@ return
 #	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
 # 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
 #	for an h blob
-#
-#	Returns:
+#	dictionariesList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
 #	
-proc blobulationSlider { MolID Lmin H dictInput} {
+#	Global Arguments:
+#	graphrep2 (List): A list of graph representation options, decided which graphuser proc called depending on what the variable is set to
+#	isFirst (Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
+#	blobColorType1 (String): A parameter used for graphrep2 checks, if it is set to this variable, will call graphRepUser proc
+#	blobColorType2 (String): A parameter used for graphrep2 checks, if it is set to this variable, will call graphRepUser2 proc
+proc blobulationSlider { MolID Lmin H dictionariesList} {
 	global graphrep2 
 	global isFirst
-	global dropMenuName1
-	global dropMenuName2
+	global blobColorType1
+	global blobColorType2
 	
 
 	if {$isFirst == 1} {
 
-		if {$graphrep2 == $dropMenuName1} {
-			blobulate $MolID $Lmin $H $dictInput 
+		if {$graphrep2 == $blobColorType1} {
+			blobulate $MolID $Lmin $H $dictionariesList 
 			graphRepUser $MolID $Lmin $H 
-		} elseif {$graphrep2 == $dropMenuName2} {
-			blobulate $MolID $Lmin $H $dictInput
+		} elseif {$graphrep2 == $blobColorType2} {
+			blobulate $MolID $Lmin $H $dictionariesList
 			graphRepUser2 $MolID $Lmin $H 
 
 		} else {
@@ -112,36 +120,61 @@ proc blobulationSlider { MolID Lmin H dictInput} {
 	} else {
 		return 
 	} 
-	
+return
 }
 
 #
 #	Creates parameters for when the second drop down menu is changed  
 #
-proc hydropathyScaleDropDownMenu {MolID Lmin H dictInput} {
+#	Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for 
+#	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
+# 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
+#	for an h blob
+#	dictionariesList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
+#
+#	Global Arguments:
+#	checkForUpdate (Integer): A number that switches to 1 if the checkbox is active and 0 when the checkbox is inactive
+proc hydropathyScaleDropDownMenu {MolID Lmin H dictionariesList} {
 	global checkForUpdate
 	if {$checkForUpdate == 1} {
 		hDefault
-		blobulationSlider $MolID $Lmin $H $dictInput
+		blobulationSlider $MolID $Lmin $H $dictionariesList
 	} else {
-		blobulationSlider $MolID $Lmin $H $dictInput
+		blobulationSlider $MolID $Lmin $H $dictionariesList
 	}
-	return
+return
 }
+
 #
 #	Set Lmin variable to default value, currently 4
 #
+#	Global Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for 
+#	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
+# 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
+#	for an h blob
+#	dictionariesList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
 proc lminDefault {} {
-	global H MolID Lmin H dictInput dictionariesList
+	global H MolID Lmin dictionariesList
 	set Lmin 4
 	blobulationSlider $MolID $Lmin $H $dictionariesList
-	return
+return
 }
+
 #
 #	Sets H variable to default value based on dictionary 
 #
+#	Global Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for 
+#	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
+# 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
+#	for an h blob
+#	dictionariesList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
+#	checkForUpdate (Integer): A number that switches to 1 if the checkbox is active and 0 when the checkbox is inactive
+#	blobs (Object): Overarching window frame
 proc hDefault {} {
-	global H MolID Lmin H dictInput dictionariesList checkForUpdate blobs
+	global H MolID Lmin dictionariesList checkForUpdate blobs
 	
 	if {$dictionariesList == "Kyte-Doolittle"} {
 		set H .4
@@ -154,8 +187,7 @@ proc hDefault {} {
 		set H .35
 	}
 	
-
-	return 
+return 
 }
 
 #
@@ -167,9 +199,6 @@ proc hDefault {} {
 #	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
 # 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
 #	for an h blob
-#
-#	Returns:
-#	A graphical representation using the user values generated by the blobulation program
 proc graphRepUser {MolID Lmin H} { 
 	
 	set range [molinfo $MolID get numreps]
@@ -213,8 +242,9 @@ proc graphRepUser {MolID Lmin H} {
 	mol addrep $MolID 
 	mol modselect $count $MolID "user 1"
 	incr count
-
+return 
 }
+
 #
 #	Runs graphical representations showing hblobs in QuickSurf (by blob grouping), p and s blobs in NewCartoon
 #
@@ -224,9 +254,6 @@ proc graphRepUser {MolID Lmin H} {
 #	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
 # 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
 #	for an h blob
-#
-#	Returns:
-#	A graphical representation using the user values generated by the blobulation program
 proc graphRepUser2 {MolID Lmin H} {
 	
 	set range [molinfo $MolID get numreps]
@@ -271,7 +298,7 @@ proc graphRepUser2 {MolID Lmin H} {
 	mol modselect $count $MolID "user 1"
 	incr count
 	colorScale
-
+return
 }
 
 
@@ -281,15 +308,16 @@ proc graphRepUser2 {MolID Lmin H} {
 #	Arguments:
 #	MolID (Integer): An integer that assigns what protein the algorithm looks for 
 #
-#	Returns:
-
+#	Global Arguments:
+#	isFirst (Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
 proc blobClear {MolID} {
 	global isFirst
 	set isFirst 0
 	set range [molinfo $MolID get numreps]
 		for {set i 0} {$i < $range} {incr i} {
 			mol delrep 0 $MolID
-		}  
+		} 
+return 
 	}
 	
 #
@@ -297,6 +325,7 @@ proc blobClear {MolID} {
 #
 proc blobQuit {} {
 	destroy .blob
+return
 }
 
 #
@@ -328,6 +357,7 @@ proc tricolor_scale {PointA PointB ColorA ColorB} {
 		color change rgb [expr $i + $color_start] [lindex $colorList 0] [lindex $colorList 1] [lindex $colorList 2]
 	}
 	display update on
+return
 }
 
 #
@@ -338,10 +368,11 @@ proc tricolor_scale {PointA PointB ColorA ColorB} {
 #	PointB (Integer): Ending value used to end the iteration to 
 #	ColorA (List): List of color values, start point that increments up to the end point
 # 	ColorB (List): List of color values, end point 
-proc colorScale {{pointA 0} {pointB 330} {pointC 660} {pointD 1024} {colorA "0.0 0.3 0.4"} {colorB "0.0 0.4 0.8"} {colorC "0.2 0.6 1.0"} {colorD "0.6 0.8 1.0"}} {
+proc colorScale {{pointA 0} {pointB 205} {pointC 410} {pointD 615} {pointE 820} {pointF 1024} {colorA "0.0 0.5 0.5"} {colorB "0.4 1.0 1.0"} {colorC "0.0 0.3 0.6"} {colorD "0.4 0.7 1.0"} {colorE "0.0 0.0 0.6"} {colorF "0.2 0.2 1.0"}} {
 	tricolor_scale $pointA $pointB $colorA $colorB
 	tricolor_scale $pointB $pointC $colorB $colorC
 	tricolor_scale $pointC $pointD $colorC $colorD
-
+	tricolor_scale $pointD $pointE $colorD $colorE
+	tricolor_scale $pointE $pointF $colorE $colorF
+return
 }
-
