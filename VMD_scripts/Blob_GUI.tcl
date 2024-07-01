@@ -121,16 +121,13 @@ proc blobulationSlider { MolID Lmin H dictInput} {
 proc hydropathyScaleDropDownMenu {MolID Lmin H dictInput} {
 	global checkForUpdate
 	if {$checkForUpdate == 1} {
-		puts "hit if!"
 		hDefault
-		
-		puts "blobbed"
 	} else {
-		puts "hit else!"
 		blobulationSlider $MolID $Lmin $H $dictInput
 	}
 	return
 }
+
 #
 #	Set Lmin variable to default value, currently 4
 #
