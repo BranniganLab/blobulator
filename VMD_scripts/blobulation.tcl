@@ -230,15 +230,15 @@ proc hydropathyScores { hydropathyList Sequence } {
 			if {$amino == "HID" || $amino == "HIE"} {
 				set value [dict get $hydropathyList "HIS"]
 			} else {
-				set aminoList {}
+				set unknownResidueList {}
 				set count 0
 				foreach aa $Sequence {
 					if {[lsearch -exact $hydropathyList $aa] == -1 } {
-						lappend aminoList $aa
+						lappend unknownResidueList $aa
 					}
 					
 				}
-				puts "Unknown sequence(s) detected: $aminoList \nEnding Program"
+				puts "Unknown sequence(s) detected: $unknownResidueList \nEnding Program"
 				return -1
 				}
 			
