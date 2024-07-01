@@ -83,7 +83,7 @@ proc blobulate {MolID lMin H dictInput} {
 		
 		}
 		return $blobulated
-		}
+		} else {
 		
 	set sequence [getSequence $MolID]
 	set hydroS [hydropathyScores $usedDictionary $sequence]
@@ -107,6 +107,7 @@ proc blobulate {MolID lMin H dictInput} {
 
 	
 	return $blobulated
+	}
 }
 #
 #	Proc that subsitiutes the blobulate task if multiple chains in a protein are detected
