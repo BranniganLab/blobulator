@@ -35,9 +35,9 @@ foreach { entry min max interval} $paraList {
 grid [label $blobs.t -text "Blobulate by: " -height 2] -row 4 -column 0 -columnspan 2 -sticky e
 grid [ttk::combobox $blobs.dmnu -textvariable graphrep2 -width $dropDownMenuWidth -values [list $blobColorType1 $blobColorType2] -state readonly ] -pady 6 -row 4 -column 2 -sticky w
 grid [label $blobs.t2 -text "Hydropathy Scale : " -height 2] -row 5 -column 0 -columnspan 2 -sticky e
-grid [checkbutton $blobs.check -text "Auto Update" -variable checkForUpdate -command {blobulationSlider $MolID $Lmin $H $dictionariesList}] -row 5 -column 2 -sticky e
-grid [ttk::combobox $blobs.dmnu2  -textvariable dictionariesList -width $dropDownMenuWidth -values [list $hydropathyScale1 $hydropathyScale2 $hydropathyScale3] -state readonly] -pady 6 -row 5 -column 2 -sticky w
-grid [button $blobs.blobulate -text "Blobulate!" -font [list arial 9 bold] -width $buttonWidth -command {blobulation $MolID $Lmin $H $dictionariesList} ] -columnspan 3
+grid [checkbutton $blobs.check -text "Auto Update" -variable checkForUpdate -command {blobulationSlider $MolID $Lmin $H $hydropathyScaleDictionaryList}] -row 5 -column 2 -sticky e
+grid [ttk::combobox $blobs.dmnu2  -textvariable hydropathyScaleDictionaryList -width $dropDownMenuWidth -values [list $hydropathyScale1 $hydropathyScale2 $hydropathyScale3] -state readonly] -pady 6 -row 5 -column 2 -sticky w
+grid [button $blobs.blobulate -text "Blobulate!" -font [list arial 9 bold] -width $buttonWidth -command {blobulation $MolID $Lmin $H $hydropathyScaleDictionaryList} ] -columnspan 3
 grid [button $blobs.ldefault -text "Set Lmin Default" -width $buttonWidth -command {lminDefault }] -padx 0  -columnspan 3
 grid [button $blobs.hdefault -text "Set H Default" -width $buttonWidth -command {hDefault }] -padx 0 -columnspan 3
 grid [button $blobs.clear -text "Clear representations" -width $buttonWidth -command {blobClear $MolID}] -column 0 -columnspan 3
@@ -58,22 +58,22 @@ grid [button $blobs.clear -text "Clear representations" -width $buttonWidth -com
 #	blobColorType1 (String): A parameter used for graphrep2 checks, if it is set to this variable, will call graphRepUser proc
 #	blobColorType2 (String): A parameter used for graphrep2 checks, if it is set to this variable, will call graphRepUser2 proc
 #	blobs (Object): Overarching window frame
-proc blobulation { MolID Lmin H dictionariesList} {
+proc blobulation { MolID Lmin H hydropathyScaleDictionaryList} {
 	global blobs
 	global graphrep2 
 	global isFirst
 	set isFirst 1
 	global blobColorType1
 	global blobColorType2
-	bind $blobs.s_Lmin <ButtonRelease> {blobulationSlider $MolID $Lmin $H $dictionariesList} 
-	bind $blobs.s_H <ButtonRelease> {blobulationSlider $MolID $Lmin $H $dictionariesList} 
-	bind $blobs.dmnu <<ComboboxSelected>> {blobulationSlider $MolID $Lmin $H $dictionariesList}
-	bind $blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu $MolID $Lmin $H $dictionariesList}
+	bind $blobs.s_Lmin <ButtonRelease> {blobulationSlider $MolID $Lmin $H $hydropathyScaleDictionaryList} 
+	bind $blobs.s_H <ButtonRelease> {blobulationSlider $MolID $Lmin $H $hydropathyScaleDictionaryList} 
+	bind $blobs.dmnu <<ComboboxSelected>> {blobulationSlider $MolID $Lmin $H $hydropathyScaleDictionaryList}
+	bind $blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu $MolID $Lmin $H $hydropathyScaleDictionaryList}
 	if {$graphrep2 == $blobColorType1} {
-		blobulate $MolID $Lmin $H $dictionariesList
+		blobulate $MolID $Lmin $H $hydropathyScaleDictionaryList
 		graphRepUser $MolID $Lmin $H 
 	} elseif { $graphrep2 == $blobColorType2} {
-		blobulate $MolID $Lmin $H $dictionariesList
+		blobulate $MolID $Lmin $H $hydropathyScaleDictionaryList
 		graphRepUser2 $MolID $Lmin $H 
 	} else {
 		puts "no value"
@@ -91,14 +91,14 @@ return
 #	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
 # 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
 #	for an h blob
-#	dictionariesList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
+#	hydropathyScaleDictionaryList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
 #	
 #	Global Arguments:
 #	graphrep2 (List): A list of graph representation options, decided which graphuser proc called depending on what the variable is set to
 #	isFirst (Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
 #	blobColorType1 (String): A parameter used for graphrep2 checks, if it is set to this variable, will call graphRepUser proc
 #	blobColorType2 (String): A parameter used for graphrep2 checks, if it is set to this variable, will call graphRepUser2 proc
-proc blobulationSlider { MolID Lmin H dictionariesList} {
+proc blobulationSlider { MolID Lmin H hydropathyScaleDictionaryList} {
 	global graphrep2 
 	global isFirst
 	global blobColorType1
@@ -108,10 +108,10 @@ proc blobulationSlider { MolID Lmin H dictionariesList} {
 	if {$isFirst == 1} {
 
 		if {$graphrep2 == $blobColorType1} {
-			blobulate $MolID $Lmin $H $dictionariesList 
+			blobulate $MolID $Lmin $H $hydropathyScaleDictionaryList 
 			graphRepUser $MolID $Lmin $H 
 		} elseif {$graphrep2 == $blobColorType2} {
-			blobulate $MolID $Lmin $H $dictionariesList
+			blobulate $MolID $Lmin $H $hydropathyScaleDictionaryList
 			graphRepUser2 $MolID $Lmin $H 
 
 		} else {
@@ -131,16 +131,16 @@ return
 #	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
 # 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
 #	for an h blob
-#	dictionariesList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
+#	hydropathyScaleDictionaryList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
 #
 #	Global Arguments:
 #	checkForUpdate (Integer): A number that switches to 1 if the checkbox is active and 0 when the checkbox is inactive
-proc hydropathyScaleDropDownMenu {MolID Lmin H dictionariesList} {
+proc hydropathyScaleDropDownMenu {MolID Lmin H hydropathyScaleDictionaryList} {
 	global checkForUpdate
 	if {$checkForUpdate == 1} {
 		hDefault
 	} else {
-		blobulationSlider $MolID $Lmin $H $dictionariesList
+		blobulationSlider $MolID $Lmin $H $hydropathyScaleDictionaryList
 	}
 return
 }
@@ -153,11 +153,11 @@ return
 #	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
 # 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
 #	for an h blob
-#	dictionariesList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
+#	hydropathyScaleDictionaryList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
 proc lminDefault {} {
-	global H MolID Lmin dictionariesList
+	global H MolID Lmin hydropathyScaleDictionaryList
 	set Lmin 4
-	blobulationSlider $MolID $Lmin $H $dictionariesList
+	blobulationSlider $MolID $Lmin $H $hydropathyScaleDictionaryList
 return
 }
 
@@ -169,24 +169,24 @@ return
 #	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
 # 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
 #	for an h blob
-#	dictionariesList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
+#	hydropathyScaleDictionaryList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
 #	checkForUpdate (Integer): A number that switches to 1 if the checkbox is active and 0 when the checkbox is inactive
 #	blobs (Object): Overarching window frame
 proc hDefault {} {
-	global H MolID Lmin dictionariesList checkForUpdate blobs
+	global H MolID Lmin hydropathyScaleDictionaryList checkForUpdate blobs
 	
-	if {$dictionariesList == "Kyte-Doolittle"} {
+	if {$hydropathyScaleDictionaryList == "Kyte-Doolittle"} {
 		set H .4
 	}
 
-	if {$dictionariesList == "Eisenberg-Weiss"} {
+	if {$hydropathyScaleDictionaryList == "Eisenberg-Weiss"} {
 		set H .28
 	}
-	if {$dictionariesList == "Moon-Fleming"} {
+	if {$hydropathyScaleDictionaryList == "Moon-Fleming"} {
 		set H .35
 	}
 
-	blobulationSlider $MolID $Lmin $H $dictionariesList
+	blobulationSlider $MolID $Lmin $H $hydropathyScaleDictionaryList
 
 	return
 }
