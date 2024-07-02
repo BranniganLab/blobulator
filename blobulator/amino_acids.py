@@ -95,7 +95,32 @@ properties_hydropathy_eisenberg_weiss = {
     "K": -1.10,
     "R": -1.80,
     "U": 0,
-    "X": -0.0,
+    "X": -0.54,
+}
+
+properties_hydropathy_moon_fleming = {
+    "I": -1.56,
+    "F": -2.20,
+    "V": -0.78,
+    "L": -1.81,
+    "W": -0.38,
+    "M": -0.76,
+    "A": 0.0,
+    "G": 1.72,
+    "C": 0.49,
+    "Y": -1.09,
+    "P": -1.52,
+    "T": 1.78,
+    "S": 1.83,
+    "H": 4.76,
+    "E": 1.64,
+    "N": 3.47,
+    "Q": 3.01,
+    "D": 2.95,
+    "K": 5.39,
+    "R": 3.71,
+    "U": 0,
+    "X": 1.595,
 }
 
 
@@ -153,12 +178,19 @@ properties_type = {
     "X": "polar",
     "h": "charge",
 }
+
 for key, value in properties_hydropathy.items():
     properties_hydropathy[key] = (
         value + 4.5
-    ) / 9.0  # The Kyte and dolittle hydropathy is scaled to fit between 0 and 1.
+    ) / 9.0  # The Kyte and Dolittle hydropathy is scaled to fit between 0 and 1.
 
 for key, value in properties_hydropathy_eisenberg_weiss.items():
     properties_hydropathy_eisenberg_weiss[key] = (
         value + 1.8
-    ) / 2.53  # The Eisenberg and weiss hydropathy is scaled to fit between 0 and 1.
+    ) / 2.53  # The Eisenberg and Weiss hydropathy is scaled to fit between 0 and 1.
+
+
+for key, value in properties_hydropathy_moon_fleming.items():
+    properties_hydropathy_moon_fleming[key] = (
+        (value * -1) + 5.39
+    ) / 7.59  # The Moon and Fleming hydropathy is scaled to fit between 0 and 1.
