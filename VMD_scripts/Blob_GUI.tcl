@@ -3,8 +3,8 @@ if [winfo exists .blob] {
 	wm deiconify $blobs
 	return
 }
-set buttonWidth 42
-set defaultButtonWidth 18
+set buttonWidth 54
+set defaultButtonWidth 7
 set dropDownMenuWidth 14 
 set isFirst 0
 set blobColorType1 "Blob Type"
@@ -37,12 +37,12 @@ grid [ttk::combobox $blobs.dmnu -textvariable graphrep2 -width $dropDownMenuWidt
 grid [label $blobs.t2 -text "Hydropathy Scale : " -height 2] -row 5 -column 0 -columnspan 2 -sticky e
 grid [checkbutton $blobs.check -text "Auto Update" -variable checkForUpdate -command {blobulationSlider $MolID $Lmin $H $hydropathyScaleDictionaryList}] -row 5 -column 2 -sticky e
 grid [ttk::combobox $blobs.dmnu2  -textvariable hydropathyScaleDictionaryList -width $dropDownMenuWidth -values [list $hydropathyScale1 $hydropathyScale2 $hydropathyScale3] -state readonly] -pady 6 -row 5 -column 2 -sticky w
-grid [button $blobs.blobulate -text "Blobulate!" -font [list arial 9 bold] -width $buttonWidth -command {blobulation $MolID $Lmin $H $hydropathyScaleDictionaryList} ] -columnspan 3
-grid [button $blobs.ldefault -text "Set Lmin Default" -width $buttonWidth -command {lminDefault }] -padx 0  -columnspan 3
-grid [button $blobs.hdefault -text "Set H Default" -width $buttonWidth -command {hDefault }] -padx 0 -columnspan 3
-grid [button $blobs.clear -text "Clear representations" -width $buttonWidth -command {blobClear $MolID}] -column 0 -columnspan 3
+grid [button $blobs.blobulate -text "Blobulate!" -font [list arial 9 bold] -width $buttonWidth -command {blobulation $MolID $Lmin $H $hydropathyScaleDictionaryList} ] -columnspan 5
+grid [button $blobs.ldefault -text "Default" -width $defaultButtonWidth -command {lminDefault }] -padx 0 -row 1 -columnspan 1 -column 4
+grid [button $blobs.hdefault -text "Default" -width $defaultButtonWidth -command {hDefault }] -padx 0 -row 2 -columnspan 1 -column 4
+grid [button $blobs.clear -text "Clear representations" -width $buttonWidth -command {blobClear $MolID}] -column 0 -columnspan 5
 
-#
+# 
 #	Checks radiobutton value so blobulate properly displays representations
 #
 #
