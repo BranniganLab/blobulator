@@ -267,7 +267,7 @@ def lookup_color_blob(blob_properties_array):
         return "#2DB11A"
 
 # ..........................Define phase diagram.........................................................#
-def lookup_color_uversky(blob_properties_array):
+def lookup_number_uversky(blob_properties_array):
     """
     A function that calculates the distance from the disorder/order boundary for each blob on the uversky diagram
 
@@ -465,13 +465,30 @@ def clean_df(df):
     del df["P_diagram"]
     del df["uversky_color"]
     del df["disorder_color"]
-    del df["hydropathy_3_window_mean"] 
-    del df["hydropathy_digitized"] 
-    #del df["hydropathy"]
+    del df["hydropathy_digitized"]
     del df["charge"]
     del df["domain_to_numbers"]
     df['resid'] = df['resid'].astype(int)
-    df = df[[ 'resid', 'seq_name', 'window', 'm_cutoff', 'domain_threshold', 'N', 'H', 'min_h', 'blobtype', 'domain', 'blob_charge_class', 'NCPR', 'f+', 'f-', 'fcr', 'U_diagram', 'h_numerical_enrichment', 'disorder', 'hydropathy']]
+    df = df[[ 'resid',
+             'seq_name',
+             'window',
+             'm_cutoff',
+             'domain_threshold',
+             'N',
+             'H',
+             'min_h',
+             'blobtype',
+             'domain',
+             'blob_charge_class',
+             'NCPR',
+             'f+',
+             'f-',
+             'fcr',
+             'U_diagram',
+             'h_numerical_enrichment',
+             'disorder',
+             'hydropathy',
+             'hydropathy_3_window_mean']]
     df = df.rename(columns={'seq_name': 'Residue_Name', 
                             'resid': 'Residue_Number', 
                             'disorder': 'Blob_Disorder', 
@@ -489,9 +506,10 @@ def clean_df(df):
                             'h_numerical_enrichment': 'dSNP_enrichment', 
                             'blob_charge_class': 'Blob_Das-Pappu_Class', 
                             'U_diagram': 'Uversky_Diagram_Score', 
-                            'hydropathy': 'Normalized_Kyte-Doolittle_hydropathy',
+                            'hydropathy': 'Normalized_hydropathy',
+                            'hydropathy_3_window_mean': 'Smoothed_Hydropathy',
                             'N': 'blob_length'})
-    df['Kyte-Doolittle_hydropathy'] = df['Normalized_Kyte-Doolittle_hydropathy']*9-4.5
+    #df['Kyte-Doolittle_hydropathy'] = df['Normalized_Kyte-Doolittle_hydropathy']*9-4.5
 
     return df
 
@@ -671,7 +689,7 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
         lookup_number_das_pappu, axis=1
     )
     df["U_diagram"] = df[["NCPR", "H"]].apply(
-        lookup_color_uversky, axis=1
+        lookup_number_uversky, axis=1
     )
     df["NCPR_color"] = df[["NCPR", "fcr"]].apply(
         lookup_color_ncpr, axis=1

@@ -10,7 +10,7 @@ an amino acid chain is hydrophilic, and longer than the
 threshold, it is considered a p blob. All other sections are too short and
 are categorized as s blobs.  
 
-## How to use VMD Blobulation: 
+## How to use VMD Blobulation:
 
 ### Installation guide:
 
@@ -42,3 +42,8 @@ Below is an example of accessing the proper directory in the Tk Console
 ``` source Blobs_GUI.tcl ``` 
 
 You will need to source everytime you wish to load the GUI. 
+
+### Known Limitations:
+
+VMD blobulator can not run its blobulation alogorithm on proteins that contain
+non-standard amino acids

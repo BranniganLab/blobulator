@@ -4,13 +4,14 @@ if [winfo exists .blob] {
 	return
 }
 set buttonWidth 42
+set defaultButtonWidth 18
 set dropDownMenuWidth 14 
 set isFirst 0
-set dropMenuName1 "Blob Type"
-set dropMenuName2 "Blob ID"
-set dropMenu2Name1 "Kyte-Doolittle"
-set dropMenu2Name2	"Eisenberg-Weiss"
-set dropMenu2Name3 "Moon-Fleming"
+set blobColorType1 "Blob Type"
+set blobColorType2 "Blob ID"
+set hydropathyScale1 "Kyte-Doolittle"
+set hydropathyScale2	"Eisenberg-Weiss"
+set hydropathyScale3 "Moon-Fleming"
 
 set blobs [toplevel ".blob"]
 wm title $blobs "Blobulation"
@@ -32,16 +33,14 @@ foreach { entry min max interval} $paraList {
 	grid $w1 $w2 $w3 	
 }
 grid [label $blobs.t -text "Blobulate by: " -height 2] -row 4 -column 0 -columnspan 2 -sticky e
-grid [ttk::combobox $blobs.dmnu -textvariable graphrep2 -width $dropDownMenuWidth -values [list $dropMenuName1 $dropMenuName2] -state readonly ] -pady 6 -row 4 -column 2 -sticky w
+grid [ttk::combobox $blobs.dmnu -textvariable graphrep2 -width $dropDownMenuWidth -values [list $blobColorType1 $blobColorType2] -state readonly ] -pady 6 -row 4 -column 2 -sticky w
 grid [label $blobs.t2 -text "Hydropathy Scale : " -height 2] -row 5 -column 0 -columnspan 2 -sticky e
-grid [ttk::combobox $blobs.dmnu2  -textvariable dictionariesList -width $dropDownMenuWidth -values [list $dropMenu2Name1 $dropMenu2Name2 $dropMenu2Name3] -state readonly] -pady 6 -row 5 -column 2 -sticky w
-grid [button $blobs.blobulate -text "Blobulate!" -font [list arial 9 bold] -width $buttonWidth -command {blobulation $MolID $Lmin $H $dictionariesList} ] -columnspan 3
-grid [button $blobs.clear -text "Clear representations" -width $buttonWidth -command {blobClear $MolID}] -columnspan 3
-# grid [button $blobs.quit -text "Quit" -width $buttonWidth -command blobQuit ] -columnspan 3
-# trace add variable graphrep2 write "blobulationSlider $MolID $Lmin $H"
-
-# trace add variable $Lmin write {blobulate $MolID $Lmin $H}
-
+grid [checkbutton $blobs.check -text "Auto Update" -variable checkForUpdate -command {blobulationSlider $MolID $Lmin $H $hydropathyScaleDictionaryList}] -row 5 -column 2 -sticky e
+grid [ttk::combobox $blobs.dmnu2  -textvariable hydropathyScaleDictionaryList -width $dropDownMenuWidth -values [list $hydropathyScale1 $hydropathyScale2 $hydropathyScale3] -state readonly] -pady 6 -row 5 -column 2 -sticky w
+grid [button $blobs.blobulate -text "Blobulate!" -font [list arial 9 bold] -width $buttonWidth -command {blobulation $MolID $Lmin $H $hydropathyScaleDictionaryList} ] -columnspan 3
+grid [button $blobs.ldefault -text "Set Lmin Default" -width $buttonWidth -command {lminDefault }] -padx 0  -columnspan 3
+grid [button $blobs.hdefault -text "Set H Default" -width $buttonWidth -command {hDefault }] -padx 0 -columnspan 3
+grid [button $blobs.clear -text "Clear representations" -width $buttonWidth -command {blobClear $MolID}] -column 0 -columnspan 3
 
 #
 #	Checks radiobutton value so blobulate properly displays representations
@@ -53,24 +52,28 @@ grid [button $blobs.clear -text "Clear representations" -width $buttonWidth -com
 # 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
 #	for an h blob
 #
-#	Returns:
-#	A blobulated protein in the graphical representation that properly updates when the blobulate button is pressed
-proc blobulation { MolID Lmin H dictInput} {
+#	Global Arguments:
+#	graphrep2 (List): A list of graph representation options, decided which graphuser proc called depending on what the variable is set to
+#	isFirst (Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
+#	blobColorType1 (String): A parameter used for graphrep2 checks, if it is set to this variable, will call graphRepUser proc
+#	blobColorType2 (String): A parameter used for graphrep2 checks, if it is set to this variable, will call graphRepUser2 proc
+#	blobs (Object): Overarching window frame
+proc blobulation { MolID Lmin H hydropathyScaleDictionaryList} {
 	global blobs
 	global graphrep2 
 	global isFirst
 	set isFirst 1
-	global dropMenuName1
-	global dropMenuName2
-	bind $blobs.s_Lmin <ButtonRelease> {blobulationSlider $MolID $Lmin $H $dictionariesList} 
-	bind $blobs.s_H <ButtonRelease> {blobulationSlider $MolID $Lmin $H $dictionariesList} 
-	bind $blobs.dmnu <<ComboboxSelected>> {blobulationSlider $MolID $Lmin $H $dictionariesList}
-	bind $blobs.dmnu2 <<ComboboxSelected>> {blobulationSlider $MolID $Lmin $H $dictionariesList}
-	if {$graphrep2 == $dropMenuName1} {
-		blobulate $MolID $Lmin $H $dictInput
+	global blobColorType1
+	global blobColorType2
+	bind $blobs.s_Lmin <ButtonRelease> {blobulationSlider $MolID $Lmin $H $hydropathyScaleDictionaryList} 
+	bind $blobs.s_H <ButtonRelease> {blobulationSlider $MolID $Lmin $H $hydropathyScaleDictionaryList} 
+	bind $blobs.dmnu <<ComboboxSelected>> {blobulationSlider $MolID $Lmin $H $hydropathyScaleDictionaryList}
+	bind $blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu $MolID $Lmin $H $hydropathyScaleDictionaryList}
+	if {$graphrep2 == $blobColorType1} {
+		blobulate $MolID $Lmin $H $hydropathyScaleDictionaryList
 		graphRepUser $MolID $Lmin $H 
-	} elseif { $graphrep2 == $dropMenuName2} {
-		blobulate $MolID $Lmin $H $dictInput
+	} elseif { $graphrep2 == $blobColorType2} {
+		blobulate $MolID $Lmin $H $hydropathyScaleDictionaryList
 		graphRepUser2 $MolID $Lmin $H 
 	} else {
 		puts "no value"
@@ -88,41 +91,105 @@ return
 #	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
 # 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
 #	for an h blob
-#
-#	Returns:
+#	hydropathyScaleDictionaryList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
 #	
-proc blobulationSlider { MolID Lmin H dictInput} {
+#	Global Arguments:
+#	graphrep2 (List): A list of graph representation options, decided which graphuser proc called depending on what the variable is set to
+#	isFirst (Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
+#	blobColorType1 (String): A parameter used for graphrep2 checks, if it is set to this variable, will call graphRepUser proc
+#	blobColorType2 (String): A parameter used for graphrep2 checks, if it is set to this variable, will call graphRepUser2 proc
+proc blobulationSlider { MolID Lmin H hydropathyScaleDictionaryList} {
 	global graphrep2 
 	global isFirst
-	global dropMenuName1
-	global dropMenuName2
+	global blobColorType1
+	global blobColorType2
+	
+
 	if {$isFirst == 1} {
 
-		if {$graphrep2 == $dropMenuName1} {
-			blobulate $MolID $Lmin $H $dictInput 
+		if {$graphrep2 == $blobColorType1} {
+			blobulate $MolID $Lmin $H $hydropathyScaleDictionaryList 
 			graphRepUser $MolID $Lmin $H 
-		} elseif {$graphrep2 == $dropMenuName2} {
-			blobulate $MolID $Lmin $H $dictInput
+		} elseif {$graphrep2 == $blobColorType2} {
+			blobulate $MolID $Lmin $H $hydropathyScaleDictionaryList
 			graphRepUser2 $MolID $Lmin $H 
+
 		} else {
 			puts "no value"
-		} 
-		return
+		}
 	} else {
-		return
-	}
+		return 
+	} 
+return
 }
 
-# proc graphRep2Check {name1 name2 op} {
-# 	global MolID
-# 	global Lmin
-# 	global H
-	
-#  	blobulationSlider $MolID $Lmin $H
-	
-# return
-# }
+#
+#	Creates parameters for when the second drop down menu is changed  
+#
+#	Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for 
+#	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
+# 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
+#	for an h blob
+#	hydropathyScaleDictionaryList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
+#
+#	Global Arguments:
+#	checkForUpdate (Integer): A number that switches to 1 if the checkbox is active and 0 when the checkbox is inactive
+proc hydropathyScaleDropDownMenu {MolID Lmin H hydropathyScaleDictionaryList} {
+	global checkForUpdate
+	if {$checkForUpdate == 1} {
+		hDefault
+	} else {
+		blobulationSlider $MolID $Lmin $H $hydropathyScaleDictionaryList
+	}
+return
+}
 
+#
+#	Set Lmin variable to default value, currently 4
+#
+#	Global Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for 
+#	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
+# 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
+#	for an h blob
+#	hydropathyScaleDictionaryList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
+proc lminDefault {} {
+	global H MolID Lmin hydropathyScaleDictionaryList
+	set Lmin 4
+	blobulationSlider $MolID $Lmin $H $hydropathyScaleDictionaryList
+return
+}
+
+#
+#	Sets H variable to default value based on dictionary 
+#
+#	Global Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for 
+#	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
+# 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
+#	for an h blob
+#	hydropathyScaleDictionaryList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
+#	checkForUpdate (Integer): A number that switches to 1 if the checkbox is active and 0 when the checkbox is inactive
+#	blobs (Object): Overarching window frame
+proc hDefault {} {
+	global H MolID Lmin hydropathyScaleDictionaryList checkForUpdate blobs
+	
+	if {$hydropathyScaleDictionaryList == "Kyte-Doolittle"} {
+		set H .4
+	}
+
+	if {$hydropathyScaleDictionaryList == "Eisenberg-Weiss"} {
+		set H .28
+	}
+	if {$hydropathyScaleDictionaryList == "Moon-Fleming"} {
+		set H .35
+	}
+
+	blobulationSlider $MolID $Lmin $H $hydropathyScaleDictionaryList
+
+	return
+}
 
 #
 #	Runs graphical representations showing hblobs in QuickSurf, p and s blobs in NewCartoon
@@ -133,9 +200,6 @@ proc blobulationSlider { MolID Lmin H dictInput} {
 #	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
 # 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
 #	for an h blob
-#
-#	Returns:
-#	A graphical representation using the user values generated by the blobulation program
 proc graphRepUser {MolID Lmin H} { 
 	
 	set range [molinfo $MolID get numreps]
@@ -179,8 +243,9 @@ proc graphRepUser {MolID Lmin H} {
 	mol addrep $MolID 
 	mol modselect $count $MolID "user 1"
 	incr count
-
+return 
 }
+
 #
 #	Runs graphical representations showing hblobs in QuickSurf (by blob grouping), p and s blobs in NewCartoon
 #
@@ -190,9 +255,6 @@ proc graphRepUser {MolID Lmin H} {
 #	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
 # 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
 #	for an h blob
-#
-#	Returns:
-#	A graphical representation using the user values generated by the blobulation program
 proc graphRepUser2 {MolID Lmin H} {
 	
 	set range [molinfo $MolID get numreps]
@@ -216,19 +278,7 @@ proc graphRepUser2 {MolID Lmin H} {
 		
 		incr count 
 	}
-	# 	for {set i 0} { $i < $user2length } { incr i } {
-		
-	# 	mol representation QuickSurf 1.1 1
-	# 	mol material AOChalky
-	# 	mol color user2
-		
-		
-
-	# 	mol addrep $MolID 
-	# 	mol modselect $count $MolID "user 1 and user2 $i"
-		
-	# 	incr count 
-	# }
+	
 	
 	
 	mol representation NewCartoon .3 20
@@ -248,53 +298,82 @@ proc graphRepUser2 {MolID Lmin H} {
 	mol addrep $MolID 
 	mol modselect $count $MolID "user 1"
 	incr count
-
+	colorScale
+return
 }
 
-proc graphRepUser3 {MolID} {
-	set range [molinfo $MolID get numreps]
-	for {set i 0} {$i < $range} {incr i} {
-		mol delrep 0 $MolID
-	}  
-	mol representation NewCartoon .3 10
-	mol color User3
-	mol addrep $MolID
-	mol modselect 0 $MolID "User 1"
-	
-}
+
 #
 #	Program removes all graphical representations
 # 
 #	Arguments:
 #	MolID (Integer): An integer that assigns what protein the algorithm looks for 
 #
-#	Returns:
-
+#	Global Arguments:
+#	isFirst (Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
 proc blobClear {MolID} {
 	global isFirst
 	set isFirst 0
 	set range [molinfo $MolID get numreps]
 		for {set i 0} {$i < $range} {incr i} {
 			mol delrep 0 $MolID
-		}  
+		} 
+return 
 	}
 	
 #
-#	Program that destroys the GUI window
+#	Program the destroys the GUI window
 #
 proc blobQuit {} {
 	destroy .blob
+return
 }
 
-# set blobulator_in_vmd \
-#     [string length [info proc vmd_install_extension]]
+#
+#	Function that creates a gradient from each point using the slope function
+#
+#	Arguments:
+# 	PointA (Integer): Starting value used to start i at the desired color num
+#	PointB (Integer): Ending value used to end the iteration to 
+#	ColorA (List): List of color values, start point that increments up to the end point
+# 	ColorB (List): List of color values, end point 
+proc tricolor_scale {PointA PointB ColorA ColorB} {
+	#replaces the rgb colorscale with a custom one
+	#sets the color explicitly at three intermediate color anchors (511, 660, 1000) 
+	#adds a linear gradient between the anchors 
+	set color_start [colorinfo num]
+	display update off
 
-# proc register_menu {} {
-#     variable already_registered
-#     if {$already_registered==0} {
-# 		incr already_registered
-# 		vmd_install_extension GUI_practice \
-# 		    $blobs \
-# 		    "Analysis/Blobulator"
-#     }
-# }
+	for {set i $PointA} {$i < $PointB} {incr i} {
+
+		set deltaPoint [expr $PointB - $PointA]
+		set colorList {}
+		foreach pa $ColorA pb $ColorB {
+			set deltaColor [expr $pb - $pa]
+
+			set color [expr [expr $deltaColor / $deltaPoint] * [expr $i - $PointA] + $pa]
+			lappend colorList $color
+		}
+
+		color change rgb [expr $i + $color_start] [lindex $colorList 0] [lindex $colorList 1] [lindex $colorList 2]
+	}
+	display update on
+return
+}
+
+#
+#	Program that sets colorscale to be inline with blobulation colorscheme, creates a gradient 
+#
+#	Arguments:
+# 	PointA (Integer): Starting value used to start i at the desired color num
+#	PointB (Integer): Ending value used to end the iteration to 
+#	ColorA (List): List of color values, start point that increments up to the end point
+# 	ColorB (List): List of color values, end point 
+proc colorScale {{pointA 0} {pointB 205} {pointC 410} {pointD 615} {pointE 820} {pointF 1024} {colorA "0.0 0.5 0.5"} {colorB "0.4 1.0 1.0"} {colorC "0.0 0.3 0.6"} {colorD "0.4 0.7 1.0"} {colorE "0.0 0.0 0.6"} {colorF "0.2 0.2 1.0"}} {
+	tricolor_scale $pointA $pointB $colorA $colorB
+	tricolor_scale $pointB $pointC $colorB $colorC
+	tricolor_scale $pointC $pointD $colorC $colorD
+	tricolor_scale $pointD $pointE $colorD $colorE
+	tricolor_scale $pointE $pointF $colorE $colorF
+return
+}
