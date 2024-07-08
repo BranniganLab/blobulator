@@ -53,9 +53,9 @@ proc blobulate {MolID lMin H dictInput} {
 				break
 				return -1
 			}
-			set blobulated [lindex [blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 0]
+			set blobulated [lindex $chainReturn 0]
 		
-			set index [lindex [blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 1]
+			
 			set chainBlobs [list {*}$chainBlobs {*}$blobulated]
 			# foreach bb $blobulated {
 			# 	lappend chainBlobs $bb
@@ -68,8 +68,7 @@ proc blobulate {MolID lMin H dictInput} {
 			# 	lappend chainBlobIndex $ci
 			# }
 			
-			set chainGroup [blobGroup $index]
-			set chainBlobGroup [list {*}chainBlobGroup {*}$chainGroup]
+			
 			# foreach cg $chainGroup {
 			# 	lappend chainBlobGroup $cg
 			# }
