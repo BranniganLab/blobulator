@@ -56,20 +56,23 @@ proc blobulate {MolID lMin H dictInput} {
 			set blobulated [lindex [blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 0]
 		
 			set index [lindex [blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 1]
-			foreach bb $blobulated {
-				lappend chainBlobs $bb
+			set chainBlobs [list {*}$chainBlobs {*}$blobulated]
+			# foreach bb $blobulated {
+			# 	lappend chainBlobs $bb
 				
-			} 
+			# } 
 
 			set chainIndex [blobIndex $blobulated ]
-			foreach ci $chainIndex { 
-				lappend chainBlobIndex $ci
-			}
+			set chainBlobIndex [list {*}$chainBlobIndex {*}$chainIndex]
+			# foreach ci $chainIndex { 
+			# 	lappend chainBlobIndex $ci
+			# }
 			
 			set chainGroup [blobGroup $index]
-			foreach cg $chainGroup {
-				lappend chainBlobGroup $cg
-			}
+			set chainBlobGroup [list {*}chainBlobGroup {*}$chainGroup]
+			# foreach cg $chainGroup {
+			# 	lappend chainBlobGroup $cg
+			# }
 			#puts $chainGroup
 			
 			
@@ -78,11 +81,11 @@ proc blobulate {MolID lMin H dictInput} {
 		if {$chainBlobs != -1} {
 			blobUserAssign $chainBlobs $MolID
 			blobUser2Assign $chainBlobIndex $MolID
-			blobUser3Assign $chainBlobGroup $MolID
+		
 		
 		
 		}
-		return $blobulated
+		return $chainBlobs
 		} else {
 		
 	set sequence [getSequence $MolID]
@@ -101,7 +104,7 @@ proc blobulate {MolID lMin H dictInput} {
 	if {$blobulated != -1} {
 		blobUserAssign $blobulated $MolID
 		blobUser2Assign $blobIndexList $MolID
-		blobUser3Assign $groupedBlob $MolID
+		
 	}
 	#Makes sure procedures that fail to pass checks can't assign values. 
 
@@ -642,12 +645,7 @@ proc blobUser2Assign { blob2 MolID } {
 	} 
 }
 
-proc blobUser3Assign { blob3 MolID } {
-	set lower [string tolower $MolID]
-	set sel [atomselect $lower "alpha and protein" ]
-	$sel set user3 $blob3 
-	$sel delete 
-}
+
 
 
 
