@@ -20,6 +20,9 @@ namespace eval ::blobulator {
 	variable MolID
 	variable checkForUpdate
 	variable hydropathyScaleDictionaryList
+
+	} 
+
 	proc ::blobulator::Window {} {
 	variable blobs [toplevel ".blob"]
 		wm title $::blobulator::blobs "Blobulator"
@@ -27,7 +30,6 @@ namespace eval ::blobulator {
 		wm attributes $::blobulator::blobs -alpha 1;
 		wm attributes $::blobulator::blobs -fullscreen 0
 	}
-	} 
 proc ::blobulator::GUI {} {
 	::blobulator::Window
 	grid [label $::blobulator::blobs.1_MolID -text MolID ]
@@ -47,7 +49,7 @@ proc ::blobulator::GUI {} {
 	grid [label $::blobulator::blobs.t -text "Blobulate by: " -height 2] -row 4 -column 0 -columnspan 2 -sticky e
 	grid [ttk::combobox $::blobulator::blobs.dmnu -textvariable ::blobulator::graphRepOptions -width $::blobulator::dropDownMenuWidth -values [list $::blobulator::blobColorType1 $::blobulator::blobColorType2] -state readonly ] -pady 6 -row 4 -column 2 -sticky w
 	grid [label $::blobulator::blobs.t2 -text "hydropathy Scale : " -height 2] -row 5 -column 0 -columnspan 2 -sticky e
-	grid [checkbutton $::blobulator::blobs.check -text "Auto Update" -variable ::blobulator::checkForUpdate -command {blobulationSlider }] -row 5 -column 2 -sticky e
+	grid [checkbutton $::blobulator::blobs.check -text "Auto Update" -variable ::blobulator::checkForUpdate -command {::blobulator::blobulationSlider }] -row 5 -column 2 -sticky e
 	grid [ttk::combobox $::blobulator::blobs.dmnu2  -textvariable ::blobulator::hydropathyScaleDictionaryList -width $::blobulator::dropDownMenuWidth -values [list $::blobulator::hydropathyScale1 $::blobulator::hydropathyScale2 $::blobulator::hydropathyScale3] -state readonly] -pady 6 -row 5 -column 2 -sticky w
 	grid [button $::blobulator::blobs.blobulate -text "Blobulate!" -font [list arial 9 bold] -width $::blobulator::buttonWidth -command {blobulation } ] -columnspan 5
 	grid [button $::blobulator::blobs.ldefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::lminDefault }] -padx 0 -row 1 -columnspan 1 -column 4
@@ -74,9 +76,9 @@ proc blobulation {} {
 	
 	set ::blobulator::isFirst 1
 	
-	bind $::blobulator::blobs.s_Lmin <ButtonRelease> {blobulationSlider } 
-	bind $::blobulator::blobs.s_H <ButtonRelease> {blobulationSlider } 
-	bind $::blobulator::blobs.dmnu <<ComboboxSelected>> {blobulationSlider }
+	bind $::blobulator::blobs.s_Lmin <ButtonRelease> {::blobulator::blobulationSlider } 
+	bind $::blobulator::blobs.s_H <ButtonRelease> {::blobulator::blobulationSlider } 
+	bind $::blobulator::blobs.dmnu <<ComboboxSelected>> {::blobulator::blobulationSlider }
 	bind $::blobulator::blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu }
 	if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
 		blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
@@ -107,7 +109,7 @@ return
 #	isFirst (Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
 #	::blobulator::blobColorType1 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call ::blobulator::graphRepUser proc
 #	::blobulator::blobColorType2 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call ::blobulator::graphRepUser2 proc
-proc blobulationSlider {} {
+proc ::blobulator::blobulationSlider {} {
 	if {$::blobulator::isFirst == 1} {
 
 		if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
@@ -143,7 +145,7 @@ proc hydropathyScaleDropDownMenu {} {
 	if {$::blobulator::checkForUpdate == 1} {
 		::blobulator::hDefault
 	} else {
-		blobulationSlider $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
+		::blobulator::blobulationSlider
 	}
 return
 }
@@ -160,7 +162,7 @@ return
 proc ::blobulator::lminDefault {} {
 	
 	set ::blobulator::Lmin 4
-	blobulationSlider $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
+	::blobulator::blobulationSlider 
 return
 }
 
@@ -189,7 +191,7 @@ proc ::blobulator::hDefault {} {
 		set ::blobulator::H .35
 	}
 
-	blobulationSlider 
+	::blobulator::blobulationSlider 
 
 	return
 }
