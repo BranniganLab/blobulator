@@ -23,13 +23,13 @@ namespace eval ::blobulator {
 
 	} 
 
-	proc ::blobulator::Window {} {
-	variable blobs [toplevel ".blob"]
-		wm title $::blobulator::blobs "Blobulator"
-		wm resizable $::blobulator::blobs 0 0
-		wm attributes $::blobulator::blobs -alpha 1;
-		wm attributes $::blobulator::blobs -fullscreen 0
-	}
+proc ::blobulator::Window {} {
+variable blobs [toplevel ".blob"]
+	wm title $::blobulator::blobs "Blobulator"
+	wm resizable $::blobulator::blobs 0 0
+	wm attributes $::blobulator::blobs -alpha 1;
+	wm attributes $::blobulator::blobs -fullscreen 0
+}
 proc ::blobulator::GUI {} {
 	::blobulator::Window
 	grid [label $::blobulator::blobs.1_MolID -text MolID ]
