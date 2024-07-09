@@ -29,17 +29,17 @@ namespace eval ::blobulator {
 	}
 	} 
 proc ::blobulator::GUI {} {
-	::blobulator:;Window
+	::blobulator::Window
 	grid [label $::blobulator::blobs.1_MolID -text MolID ]
 	grid [entry $::blobulator::blobs.tv_MolID -width 10 -textvariable ::blobulator::MolID ] -row 0 -column 1
 	if {$::blobulator::MolID == ""} {
 		set ::blobulator::MolID "top"
 	}
-	set paraList [list ::blobulator::Lmin 1 50 1 ::blobulator::H .1 1 .01]
-	foreach { entry min max interval} $paraList {
+	set paraList [list Lmin ::blobulator::Lmin 1 50 1 H ::blobulator::H .1 1 .01]
+	foreach { entry variableName min max interval} $paraList {
 		set w1 [label $::blobulator::blobs.l_$entry -text $entry]
-		set w2 [entry $::blobulator::blobs.e_$entry -width 10 -textvariable $entry]
-		set w3 [scale $::blobulator::blobs.s_$entry -orient horizontal -from $min -to $max -length 175 -resolution $interval -tickinterval 0 -variable $entry -showvalue 0]
+		set w2 [entry $::blobulator::blobs.e_$entry -width 10 -textvariable $variableName]
+		set w3 [scale $::blobulator::blobs.s_$entry -orient horizontal -from $min -to $max -length 175 -resolution $interval -tickinterval 0 -variable $variableName -showvalue 0]
 		
 		
 		grid $w1 $w2 $w3 	
@@ -50,9 +50,9 @@ proc ::blobulator::GUI {} {
 	grid [checkbutton $::blobulator::blobs.check -text "Auto Update" -variable ::blobulator::checkForUpdate -command {blobulationSlider }] -row 5 -column 2 -sticky e
 	grid [ttk::combobox $::blobulator::blobs.dmnu2  -textvariable ::blobulator::hydropathyScaleDictionaryList -width $::blobulator::dropDownMenuWidth -values [list $::blobulator::hydropathyScale1 $::blobulator::hydropathyScale2 $::blobulator::hydropathyScale3] -state readonly] -pady 6 -row 5 -column 2 -sticky w
 	grid [button $::blobulator::blobs.blobulate -text "Blobulate!" -font [list arial 9 bold] -width $::blobulator::buttonWidth -command {blobulation } ] -columnspan 5
-	grid [button $::blobulator::blobs.ldefault -text "Default" -width $::blobulator::defaultButtonWidth -command {lminDefault }] -padx 0 -row 1 -columnspan 1 -column 4
-	grid [button $::blobulator::blobs.hdefault -text "Default" -width $::blobulator::defaultButtonWidth -command {hDefault }] -padx 0 -row 2 -columnspan 1 -column 4
-	grid [button $::blobulator::blobs.clear -text "Clear representations" -width $::blobulator::buttonWidth -command {blobClear $::blobulator::MolID}] -column 0 -columnspan 5
+	grid [button $::blobulator::blobs.ldefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::lminDefault }] -padx 0 -row 1 -columnspan 1 -column 4
+	grid [button $::blobulator::blobs.hdefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::hDefault }] -padx 0 -row 2 -columnspan 1 -column 4
+	grid [button $::blobulator::blobs.clear -text "Clear representations" -width $::blobulator::buttonWidth -command {::blobulator::blobClear $::blobulator::MolID}] -column 0 -columnspan 5
 }
 # 
 #	Checks radiobutton value so blobulate properly displays representations
@@ -67,23 +67,23 @@ proc ::blobulator::GUI {} {
 #	Global Arguments:
 #	::blobulator::graphRepOptions (List): A list of graph representation options, decided which graphuser proc called depending on what the variable is set to
 #	isFirst (Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
-#	::blobulator::blobColorType1 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call graphRepUser proc
-#	::blobulator::blobColorType2 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call graphRepUser2 proc
+#	::blobulator::blobColorType1 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call ::blobulator::graphRepUser proc
+#	::blobulator::blobColorType2 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call ::blobulator::graphRepUser2 proc
 #	blobs (Object): Overarching window frame
 proc blobulation {} {
 	
 	set ::blobulator::isFirst 1
 	
-	bind $::blobulator::blobs.s_::blobulator::Lmin <ButtonRelease> {blobulationSlider } 
-	bind $::blobulator::blobs.s_::blobulator::H <ButtonRelease> {blobulationSlider } 
+	bind $::blobulator::blobs.s_Lmin <ButtonRelease> {blobulationSlider } 
+	bind $::blobulator::blobs.s_H <ButtonRelease> {blobulationSlider } 
 	bind $::blobulator::blobs.dmnu <<ComboboxSelected>> {blobulationSlider }
 	bind $::blobulator::blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu }
 	if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
 		blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
-		graphRepUser 
+		::blobulator::graphRepUser 
 	} elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
 		blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
-		graphRepUser2 
+		::blobulator::graphRepUser2 
 	} else {
 		puts "no value"
 	}
@@ -105,17 +105,17 @@ return
 #	Global Arguments:
 #	::blobulator::graphRepOptions (List): A list of graph representation options, decided which graphuser proc called depending on what the variable is set to
 #	isFirst (Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
-#	::blobulator::blobColorType1 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call graphRepUser proc
-#	::blobulator::blobColorType2 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call graphRepUser2 proc
+#	::blobulator::blobColorType1 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call ::blobulator::graphRepUser proc
+#	::blobulator::blobColorType2 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call ::blobulator::graphRepUser2 proc
 proc blobulationSlider {} {
 	if {$::blobulator::isFirst == 1} {
 
 		if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
 			blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList 
-			graphRepUser 
+			::blobulator::graphRepUser 
 		} elseif {$::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
 			blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
-			graphRepUser2 
+			::blobulator::graphRepUser2 
 
 		} else {
 			puts "no value"
@@ -141,7 +141,7 @@ return
 proc hydropathyScaleDropDownMenu {} {
 	
 	if {$::blobulator::checkForUpdate == 1} {
-		hDefault
+		::blobulator::hDefault
 	} else {
 		blobulationSlider $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
 	}
@@ -157,7 +157,7 @@ return
 # 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
 #	for an h blob
 #	hydropathyScaleDictionaryList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
-proc lminDefault {} {
+proc ::blobulator::lminDefault {} {
 	
 	set ::blobulator::Lmin 4
 	blobulationSlider $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
@@ -175,7 +175,7 @@ return
 #	hydropathyScaleDictionaryList (List): List of names that the drop down menu contains, each name calls a dictionary for normalized hydropathy scale values
 #	checkForUpdate (Integer): A number that switches to 1 if the checkbox is active and 0 when the checkbox is inactive
 #	blobs (Object): Overarching window frame
-proc hDefault {} {
+proc ::blobulator::hDefault {} {
 	
 	
 	if {$::blobulator::hydropathyScaleDictionaryList == "Kyte-Doolittle"} {
@@ -203,7 +203,7 @@ proc hDefault {} {
 #	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
 # 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
 #	for an h blob
-proc graphRepUser {} { 
+proc ::blobulator::graphRepUser {} { 
 	
 	set range [molinfo $::blobulator::MolID get numreps]
 	for {set i 0} { $i < $range } {incr i} {
@@ -258,7 +258,7 @@ return
 #	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
 # 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
 #	for an h blob
-proc graphRepUser2 {} {
+proc ::blobulator::graphRepUser2 {} {
 	
 	set range [molinfo $::blobulator::MolID get numreps]
 	for {set i 0} {$i < $range} {incr i} {
@@ -314,7 +314,7 @@ return
 #
 #	Global Arguments:
 #	isFirst (Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
-proc blobClear {MolID} {
+proc ::blobulator::blobClear {MolID} {
 	global isFirst
 	set isFirst 0
 	set range [molinfo $::blobulator::MolID get numreps]
@@ -327,7 +327,7 @@ return
 #
 #	Program the destroys the GUI window
 #
-proc blobQuit {} {
+proc ::blobulator::blobQuit {} {
 	destroy .blob
 return
 }
@@ -340,7 +340,7 @@ return
 #	PointB (Integer): Ending value used to end the iteration to 
 #	ColorA (List): List of color values, start point that increments up to the end point
 # 	ColorB (List): List of color values, end point 
-proc tricolor_scale {PointA PointB ColorA ColorB} {
+proc ::blobulator::tricolor_scale {PointA PointB ColorA ColorB} {
 	#replaces the rgb colorscale with a custom one
 	#sets the color explicitly at three intermediate color anchors (511, 660, 1000) 
 	#adds a linear gradient between the anchors 
@@ -372,20 +372,20 @@ return
 #	PointB (Integer): Ending value used to end the iteration to 
 #	ColorA (List): List of color values, start point that increments up to the end point
 # 	ColorB (List): List of color values, end point 
-proc colorScale {{pointA 0} {pointB 205} {pointC 410} {pointD 615} {pointE 820} {pointF 1024} {colorA "0.0 0.5 0.5"} {colorB "0.4 1.0 1.0"} {colorC "0.0 0.3 0.6"} {colorD "0.4 0.7 1.0"} {colorE "0.0 0.0 0.6"} {colorF "0.2 0.2 1.0"}} {
-	tricolor_scale $pointA $pointB $colorA $colorB
-	tricolor_scale $pointB $pointC $colorB $colorC
-	tricolor_scale $pointC $pointD $colorC $colorD
-	tricolor_scale $pointD $pointE $colorD $colorE
-	tricolor_scale $pointE $pointF $colorE $colorF
+proc ::blobulator::colorScale {{pointA 0} {pointB 205} {pointC 410} {pointD 615} {pointE 820} {pointF 1024} {colorA "0.0 0.5 0.5"} {colorB "0.4 1.0 1.0"} {colorC "0.0 0.3 0.6"} {colorD "0.4 0.7 1.0"} {colorE "0.0 0.0 0.6"} {colorF "0.2 0.2 1.0"}} {
+	::blobulator::tricolor_scale $pointA $pointB $colorA $colorB
+	::blobulator::tricolor_scale $pointB $pointC $colorB $colorC
+	::blobulator::tricolor_scale $pointC $pointD $colorC $colorD
+	::blobulator::tricolor_scale $pointD $pointE $colorD $colorE
+	::blobulator::tricolor_scale $pointE $pointF $colorE $colorF
 return
 }
 
- proc ::blobulator::registerMenu {} {
- 	set already_registered 0
- 	if {$already_registered==0} {
- 		incr already_registered
- 		vmd_install_extension blobulatorVMDGUI ::blobulator::GUI "Visualiztion/Blobulator"
- 	}
-}
-::blobulator::registerMenu
+#  proc ::blobulator::registerMenu {} {
+#  	set already_registered 0
+#  	if {$already_registered==0} {
+#  		incr already_registered
+#  		vmd_install_extension blobulatorVMDGUI ::blobulator::GUI "Visualization/Blobulator"
+#  	}
+# }
+::blobulator::GUI
