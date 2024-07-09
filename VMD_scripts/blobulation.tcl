@@ -37,7 +37,6 @@ proc blobulate {MolID lMin H dictInput} {
 		return  
 		}
 	if {$argumentsOK == 1} { 
-		
 		set nocaseMolID [string tolower $MolID]
 		set sel [atomselect $nocaseMolID alpha]
 		set sorted [lsort -unique [$sel get chain]]
@@ -53,8 +52,9 @@ proc blobulate {MolID lMin H dictInput} {
 				break
 				return -1
 			}
+			
 			set blobulated [lindex [blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 0]
-		
+			
 			set index [lindex [blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 1]
 			foreach bb $blobulated {
 				lappend chainBlobs $bb
@@ -82,7 +82,8 @@ proc blobulate {MolID lMin H dictInput} {
 		
 		
 		}
-		return $blobulated
+		return $chainBlobs
+
 		} else {
 		
 	set sequence [getSequence $MolID]
@@ -205,7 +206,7 @@ proc getSequence {MolID} {
 #	in order
 proc getSequenceChain {MolID Chain} {
 	set lower [string tolower $MolID]
-        set sel [atomselect $lower "alpha and chain $Chain"]
+        set sel [atomselect $lower "alpha and protein and chain $Chain"]
         set resSeq [$sel get resname]
         $sel delete
         
