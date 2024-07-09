@@ -38,13 +38,16 @@ grid [label $blobs.t2 -text "Hydropathy Scale : " -height 2] -row 5 -column 0 -c
 grid [checkbutton $blobs.check -text "Auto Update" -variable checkForUpdate -command {blobulationSlider $MolID $Lmin $H $hydropathyScaleDictionaryList}] -row 5 -column 2 -sticky e
 grid [ttk::combobox $blobs.dmnu2  -textvariable hydropathyScaleDictionaryList -width $dropDownMenuWidth -values [list $hydropathyScale1 $hydropathyScale2 $hydropathyScale3] -state readonly] -pady 6 -row 5 -column 2 -sticky w
 grid [button $blobs.blobulate -text "Blobulate!" -font [list arial 9 bold] -width $buttonWidth -command {blobulation $MolID $Lmin $H $hydropathyScaleDictionaryList} ] -columnspan 3
+
+grid [button $blobs.select -text "Select!" -font [list arial 9 bold] -width $buttonWidth -command {graphRepUserSelect $MolID $Lmin $H $resStart $resEnd} ] -columnspan 3
+
+grid [entry $blobs.tv_resStart -width 10 -textvariable resStart ] [entry $blobs.tv_resEnd -width 10 -textvariable resEnd ]
 grid [button $blobs.ldefault -text "Set Lmin Default" -width $buttonWidth -command {lminDefault }] -padx 0  -columnspan 3
 grid [button $blobs.hdefault -text "Set H Default" -width $buttonWidth -command {hDefault }] -padx 0 -columnspan 3
 grid [button $blobs.clear -text "Clear representations" -width $buttonWidth -command {blobClear $MolID}] -column 0 -columnspan 3
 
 #
 #	Checks radiobutton value so blobulate properly displays representations
-#
 #
 #	Arguments:
 #	MolID (Integer): An integer that assigns what protein the algorithm looks for 
@@ -84,7 +87,6 @@ return
 
 #
 #	Runs blobulation when any slider is moved
-#
 #
 #	Arguments:
 #	MolID (Integer): An integer that assigns what protein the algorithm looks for 
@@ -246,6 +248,7 @@ proc graphRepUser {MolID Lmin H} {
 return 
 }
 
+
 #
 #	Runs graphical representations showing hblobs in QuickSurf (by blob grouping), p and s blobs in NewCartoon
 #
@@ -377,3 +380,50 @@ proc colorScale {{pointA 0} {pointB 205} {pointC 410} {pointD 615} {pointE 820} 
 	tricolor_scale $pointE $pointF $colorE $colorF
 return
 }
+
+proc graphRepUserSelect {MolID Lmin H resStart resEnd} {
+
+	set range [molinfo $MolID get numreps]
+	for {set i 0} { $i < $range } {incr i} {
+		mol delrep 0 $MolID
+	}   
+
+	set sel [atomselect $MolID "alpha and protein and resid $resStart to $resEnd"]
+	set seluser [$sel get user]
+	set seluser2 [$sel get user2]
+	$sel delete
+	puts [list $seluser $seluser2]
+	set currentChar 0
+	set count 0
+	foreach su $seluser su2 $seluser2 {
+		if {$su != $currentChar } {
+			set currentChar $su
+			if {$su == 1} {
+				mol representation QuickSurf 1.21 1 .5 2
+				mol material AOChalky
+				mol color user2
+				
+				
+
+				mol addrep $MolID 
+				mol modselect $count $MolID "user 1 and user2 $su2"
+
+				incr count
+			} elseif {$su == 2 } {
+				mol representation NewCartoon .3 20
+				mol color ColorID 7
+				mol addrep $MolID 
+				mol modselect $count $MolID "user 2"
+				incr count 
+			} elseif {$su == 3} {
+				mol representation NewCartoon .3 20 
+				mol color ColorID 3
+				mol addrep $MolID 
+				mol modselect $count $MolID "user 3"
+				incr count 
+			}
+		}
+		
+		} 
+	}
+
