@@ -61,7 +61,7 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 				
 			} 
 
-			set chainIndex [::blobulator::::blobulator::blobIndex $blobulated ]
+			set chainIndex [::blobulator::blobIndex $blobulated ]
 			foreach ci $chainIndex { 
 				lappend chainBlobIndex $ci
 			}
@@ -82,7 +82,7 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 		
 		
 		}
-		return $blobulated
+		return $chainBlobs
 		} else {
 		
 	set sequence [::blobulator::getSequence $MolID]
