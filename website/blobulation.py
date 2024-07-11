@@ -53,6 +53,7 @@ REQUEST_TIMEOUT = 10
 @app.route("/", methods=["GET", "POST"])
 def index():
     form = InputForm(request.form) #reads the user input
+    print(form)
 
     if request.method == "POST":
         #checks if the user has provided uniprot id or residue sequence
@@ -233,6 +234,10 @@ def index():
                     my_original_id = original_accession,
                     my_hg_value = hg_identifier
                 )
+
+        ## If we have a pdb upload...
+        elif "action_p" in request.form.to_dict(): 
+            
 
         else: # if the user inputs amino acid sequence
             aa_sequence_list = form.aa_sequence.data.splitlines()

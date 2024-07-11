@@ -39,14 +39,14 @@
                 </form>
             </div>
              <div class="form-group" align="center">
-                <form class="navbar-form navbar-top" method=post target="_blank" action="" id="pdb_entry_block" style="display: none">
+                <form class="navbar-form navbar-top" method=post target="_blank" enctype="multipart/form-data" action="" id="pdb_entry_block" style="display: none">
                     <h5 class="text-center"> <b>Option 3: PDB Entry</b> </h5>
                     <br>
                     <!--Creating box for protein sequence input, and placing explanation text above-->
                     <p> Upload a PDB File. </p>
                     <p> Note: Disease-associated SNPs and disorder prediction are based on UniProt annotation and will not be displayed with this option. </p>
-                    <p> <input type="file" accept=".pdb"> </p>
-                    <p><input type=submit name="action_s" class="btn btn-primary" value="Blobulate!"></p>
+                    <p> <input id="file" type="file" accept=".pdb"> </p>
+                    <p><input type=submit name="action_p" class="btn btn-primary" value="Blobulate!"></p>
                 </form>
             </div>
         </div>
