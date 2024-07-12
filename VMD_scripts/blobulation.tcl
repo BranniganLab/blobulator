@@ -62,7 +62,7 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 				
 			} 
 
-			set chainIndex [::blobulator::::blobulator::blobIndex $blobulated ]
+			set chainIndex [blobulator::blobIndex $blobulated ]
 			foreach ci $chainIndex { 
 				lappend chainBlobIndex $ci
 			}
@@ -99,7 +99,7 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 	set hpsblob [ ::blobulator::hpsBlob  $hsblob $digitized ]
 	set groupedBlob [::blobulator::blobGroup $hpsblob]
 	set blobulated [::blobulator::blobAssign $hpsblob]
-	set ::blobulator::blobIndexList [ ::blobulator::blobIndex $blobulated ]
+	set blobIndexList [ ::blobulator::blobIndex $blobulated ]
 	if {$blobulated != -1} {
 		::blobulator::blobUserAssign $blobulated $MolID
 		::blobulator::blobUser2Assign $::blobulator::blobIndexList $MolID
