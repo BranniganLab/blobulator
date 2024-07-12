@@ -14,12 +14,12 @@ namespace eval ::blobulator {
 	variable hydropathyScale1 "Kyte-Doolittle"
 	variable hydropathyScale2 "Eisenberg-Weiss"
 	variable hydropathyScale3 "Moon-Fleming"
-	variable graphRepOptions 
-	variable Lmin
-	variable H
-	variable MolID
+	variable graphRepOptions "Blob ID"
+	variable Lmin 4
+	variable H .4
+	variable MolID 
 	variable checkForUpdate
-	variable hydropathyScaleDictionaryList
+	variable hydropathyScaleDictionaryList "Kyte-Doolittle"
 
 	} 
 
