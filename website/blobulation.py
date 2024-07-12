@@ -6,6 +6,10 @@ from blobulator.amino_acids import properties_hydropathy
 from blobulator.compute_blobs import (compute, clean_df)
 from blobulator.compute_snps import pathogenic_snps
 
+from Bio.PDB.PDBParser import PDBParser
+from Bio.PDB.Polypeptide import PPBuilder
+from Bio import SeqIO
+
 import pandas as pd
 import numpy as np
 import time
@@ -13,6 +17,7 @@ import io
 from matplotlib.backends.backend_svg import FigureCanvasSVG
 import urllib.parse
 import urllib.request
+import tempfile
 
 from flask import Flask, render_template, request, Response, session, jsonify, send_file
 from flask_restful import Resource, Api
@@ -235,8 +240,52 @@ def index():
                     my_hg_value = hg_identifier
                 )
 
-        ## If we have a pdb upload...
-        elif "action_p" in request.form.to_dict(): 
+        ## If we have a pdb upload
+        elif "action_p" in request.form.to_dict():
+            print(request.files)
+            pdb_file = request.files["pdb_file"].read()
+            with open('./pdb_files/current.pdb', 'w') as saved_pdb:
+                saved_pdb.write(str(pdb_file).replace("\\n", "\n"))
+                saved_pdb.close()
+
+            for record in SeqIO.parse('./pdb_files/current.pdb', 'pdb-atom'):
+                my_seq = record.seq
+
+            session['sequence'] = str(my_seq)
+
+
+
+            # Ensure that all characters in sequence actually represent amino acids
+            if any(x not in properties_hydropathy for x in my_seq):
+                return render_template("error.html",
+                    title='Invalid characters in sequence',
+                    message="""The protein sequence you supplied contains non-amino-acid characters.
+                    It should consist only of single-letter amino acid sequence codes.""")
+            # do the blobulation
+            window = 3
+            my_initial_df = compute(
+                str(my_seq), float(0.4), 4, window=window
+            )  # blobulation
+            df = my_initial_df
+            chart_data = df.round(3).to_dict(orient="records")
+            chart_data = json.dumps(chart_data, indent=2)
+            data = {"chart_data": chart_data}
+            return render_template(
+                "result.html",
+                data=data,
+                form=form,
+                my_cut=0.4,
+                my_snp="[]",
+                my_uni_id="'%s'" % form.seq_name.data,
+                my_uni_id_stripped="ID: " + form.seq_name.data,
+                my_seq="'%s'" % my_seq,
+                my_seq_download="%s" % my_seq,
+                domain_threshold=4,
+                domain_threshold_max=len(str(my_seq)),
+                my_disorder = '0',
+                activetab = '#result-tab'
+            )
+
             
 
         else: # if the user inputs amino acid sequence
