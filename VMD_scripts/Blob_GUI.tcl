@@ -81,10 +81,10 @@ proc blobulation {} {
 	bind $::blobulator::blobs.dmnu <<ComboboxSelected>> {::blobulator::blobulationSlider }
 	bind $::blobulator::blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu }
 	if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
-		blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
+		::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
 		::blobulator::graphRepUser 
 	} elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
-		blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
+		::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
 		::blobulator::graphRepUser2 
 	} else {
 		puts "no value"
@@ -113,10 +113,10 @@ proc ::blobulator::blobulationSlider {} {
 	if {$::blobulator::isFirst == 1} {
 
 		if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
-			blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList 
+			::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList 
 			::blobulator::graphRepUser 
 		} elseif {$::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
-			blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
+			::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
 			::blobulator::graphRepUser2 
 
 		} else {
