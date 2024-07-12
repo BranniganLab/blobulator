@@ -182,7 +182,7 @@ properties_type = {
 for key, value in properties_hydropathy.items():
     properties_hydropathy[key] = (
         value + 4.5
-    ) / 9.0  # The Kyte and Dolittle hydropathy is scaled to fit between 0 and 1.
+    ) / 9.0  # The Kyte and Doolittle hydropathy is scaled to fit between 0 and 1.
 
 for key, value in properties_hydropathy_eisenberg_weiss.items():
     properties_hydropathy_eisenberg_weiss[key] = (
