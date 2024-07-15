@@ -3,7 +3,7 @@ import numpy as np
 from .amino_acids import (
     properties_charge,
     THREE_TO_ONE,
-    properties_type,
+    properties_type,     
     properties_hydropathy,
     properties_hydropathy_eisenberg_weiss,
 )
@@ -512,7 +512,7 @@ def clean_df(df):
     #df['Kyte-Doolittle_hydropathy'] = df['Normalized_Kyte-Doolittle_hydropathy']*9-4.5
 
     return df
-
+protein_1 = "AAAAAAAMMMMMMM"
 def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=3, disorder_residues=[]):
     """
     A function that runs the blobulation algorithm
