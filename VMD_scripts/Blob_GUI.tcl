@@ -50,7 +50,7 @@ proc ::blobulator::GUI {} {
 	foreach { entry variableName min max interval} $paraList {
 		set w1 [label $::blobulator::blobs.l_$entry -text $entry]
 		set w2 [entry $::blobulator::blobs.e_$entry -width 10 -textvariable $variableName]
-		set w3 [scale $::blobulator::blobs.s_$entry -orient horizontal -from $min -to $max -length 175 -resolution $interval -tickinterval 0 -variable $variableName -showvalue 0]
+		set w3 [scale $::blobulator::blobs.s_$entry -orient horizontal -from $min -to $max -length 195 -resolution $interval -tickinterval 0 -variable $variableName -showvalue 0]
 		
 		
 		grid $w1 $w2 $w3 	
