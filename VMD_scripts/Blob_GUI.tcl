@@ -48,12 +48,13 @@ proc ::blobulator::GUI {} {
 	grid [label $::blobulator::blobs.thres -text "Thresholds" -height 1 -font [list arial 9 bold]] -column 0 -sticky n
 	set paraList [list Length ::blobulator::Lmin 1 50 1 Hydrophobicity ::blobulator::H .1 1 .01]
 	foreach { entry variableName min max interval} $paraList {
-		set w1 [label $::blobulator::blobs.l_$entry -text $entry]
-		set w2 [entry $::blobulator::blobs.e_$entry -width 10 -textvariable $variableName]
-		set w3 [scale $::blobulator::blobs.s_$entry -orient horizontal -from $min -to $max -length 195 -resolution $interval -tickinterval 0 -variable $variableName -showvalue 0]
+		puts $variableName
+		set entryLabels [label $::blobulator::blobs.l_$entry -text $entry]
+		set entryVariable [entry $::blobulator::blobs.e_$entry -width 10 -textvariable $variableName]
+		set entrySlider [scale $::blobulator::blobs.s_$entry -orient horizontal -from $min -to $max -length 195 -resolution $interval -tickinterval 0 -variable $variableName -showvalue 0]
 		
 		
-		grid $w1 $w2 $w3 	
+		grid $entryLabels $entryVariable $entrySlider 	
 	}
 	grid [canvas $::blobulator::blobs.c2 -height $::blobulator::canvasHeight -width $::blobulator::canvasWidth -background black] -columnspan 5
 	grid [label $::blobulator::blobs.t -text "Visualize by: " -height 2] -row 8 -column 0 -columnspan 2 -sticky e
@@ -86,8 +87,8 @@ proc blobulation {} {
 	
 	set ::blobulator::isFirst 1
 	
-	bind $::blobulator::blobs.s_Lmin <ButtonRelease> {::blobulator::blobulationSlider } 
-	bind $::blobulator::blobs.s_H <ButtonRelease> {::blobulator::blobulationSlider } 
+	bind $::blobulator::blobs.s_Length <ButtonRelease> {::blobulator::blobulationSlider } 
+	bind $::blobulator::blobs.s_Hydrophobicity <ButtonRelease> {::blobulator::blobulationSlider } 
 	bind $::blobulator::blobs.dmnu <<ComboboxSelected>> {::blobulator::blobulationSlider }
 	bind $::blobulator::blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu }
 	if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
@@ -393,11 +394,5 @@ proc ::blobulator::colorScale {{pointA 0} {pointB 205} {pointC 410} {pointD 615}
 return
 }
 
-#  proc ::blobulator::registerMenu {} {
-#  	set already_registered 0
-#  	if {$already_registered==0} {
-#  		incr already_registered
-#  		vmd_install_extension blobulatorVMDGUI ::blobulator::GUI "Visualization/Blobulator"
-#  	}
-# }
+
 ::blobulator::GUI
