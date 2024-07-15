@@ -16,12 +16,12 @@ namespace eval ::blobulator {
 	variable hydropathyScale1 "Kyte-Doolittle"
 	variable hydropathyScale2 "Eisenberg-Weiss"
 	variable hydropathyScale3 "Moon-Fleming"
-	variable graphRepOptions 
-	variable Lmin
-	variable H
-	variable MolID
+	variable graphRepOptions "Blob ID"
+	variable Lmin 4
+	variable H .4
+	variable MolID 
 	variable checkForUpdate
-	variable hydropathyScaleDictionaryList
+	variable hydropathyScaleDictionaryList "Kyte-Doolittle"
 
 	} 
 
@@ -91,10 +91,10 @@ proc blobulation {} {
 	bind $::blobulator::blobs.dmnu <<ComboboxSelected>> {::blobulator::blobulationSlider }
 	bind $::blobulator::blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu }
 	if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
-		blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
+		::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
 		::blobulator::graphRepUser 
 	} elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
-		blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
+		::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
 		::blobulator::graphRepUser2 
 	} else {
 		puts "no value"
@@ -123,10 +123,10 @@ proc ::blobulator::blobulationSlider {} {
 	if {$::blobulator::isFirst == 1} {
 
 		if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
-			blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList 
+			::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList 
 			::blobulator::graphRepUser 
 		} elseif {$::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
-			blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
+			::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
 			::blobulator::graphRepUser2 
 
 		} else {

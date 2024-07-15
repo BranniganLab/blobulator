@@ -272,7 +272,7 @@ proc ::blobulator::getSequenceSelect {MolID resStart resEnd} {
     		incr count
     	}
     }
-    puts [lindex $selectionList 0]
+   
   
     return $selectionList
 }
@@ -306,10 +306,10 @@ proc ::blobulator::getSequenceChain {MolID Chain} {
 #	The result is a list that has the hydropathy scores
 proc ::blobulator::hydropathyScores { hydropathyList Sequence } {
 
-	puts $hydropathyList
+	
 	set hydroScored {}
 	foreach amino $Sequence {
-		puts $amino
+		
 		if {[lsearch $hydropathyList $amino] == -1} {
 			
 			if {$amino == "HID" || $amino == "HIE"} {
@@ -347,7 +347,7 @@ proc ::blobulator::hydropathyScores { hydropathyList Sequence } {
 #	Results:
 #	The result is a new list of scores that are averaged between each other
 proc ::blobulator::hydropathyMean { hydroScores Sequence} {
-	puts $hydroScores
+	
 	set hydroList {}
 	set isFirst 1
 	for { set i 0 } { $i < [expr [llength $hydroScores] -1] } {incr i} {
@@ -367,7 +367,7 @@ proc ::blobulator::hydropathyMean { hydroScores Sequence} {
 			lappend hydroList $avgValue
 		}
 	}
-	puts "puts made it!"
+	
 	set indexSecondToLast [lindex $hydroScores end-1]
 	set indexOfLastValue [lindex $hydroScores end]
 	set lastAvgValue [expr ($indexSecondToLast + $indexOfLastValue) /2]
