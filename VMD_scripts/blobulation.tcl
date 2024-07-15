@@ -263,22 +263,25 @@ proc ::blobulator::getSequenceSelect {MolID resStart resEnd} {
 
 
     set resSeq [$sel get resname]
+    puts $resSeq
     $sel delete
     set selectionList {}
     set count 0
     foreach rS $resSeq {
+    	puts $count
     	if {$count > $resEnd} {
-    		continue
     		incr count
     	} elseif {$count >= $resStart} {
     		lappend selectionList $rS
+    		puts $rS
     		incr count
     	} else {
-    		continue
     		incr count
     	}
+    	
     }
-   
+   	puts [llength $selectionList]
+
   
     return $selectionList
 }
