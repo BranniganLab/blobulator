@@ -167,6 +167,7 @@ proc ::blobulator::blobulateSelection {MolID lMin H resStart resEnd dictInput} {
 	if {$dictInput == "Eisenberg-Weiss"} {
 		set usedDictionary $EW_Normalized
 	}
+	
 	set sequence [::blobulator::getSequenceSelect $MolID $resStart $resEnd]
 	set hydroS [::blobulator::hydropathyScores $usedDictionary $sequence]
 			if {$hydroS == -1} {
@@ -179,6 +180,11 @@ proc ::blobulator::blobulateSelection {MolID lMin H resStart resEnd dictInput} {
 	set hpsblob [ ::blobulator::hpsBlob  $hsblob $digitized ]
 	set groupedBlob [::blobulator::blobGroup $hpsblob]
 	set blobulated [::blobulator::blobAssign $hpsblob]
+
+		if {$blobulated != -1} {
+				::blobulator::blobUserAssignSelector $blobulated $MolID $resStart $resEnd
+				# ::blobulator::blobUser2Assign $::blobulator::blobIndexList $MolID
+			}
 	return $blobulated
 }
 
@@ -699,6 +705,17 @@ proc ::blobulator::blobUserAssign { blob1 MolID } {
 			
 	
  }
+
+proc ::blobulator::blobUserAssignSelector {blob1 MolID resStart resEnd} {
+	set molid [string tolower $MolID]
+	set clean [atomselect $molid all]
+	$clean set user 0
+	$clean delete
+
+	set sel [atomselect $molid "alpha and resid $resStart to $resEnd"]
+	$sel set user $blob1
+	$sel delete
+}
 
 proc ::blobulator::blobUser2Assign { blob2 MolID } {
 	
