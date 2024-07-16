@@ -17,10 +17,13 @@ namespace eval ::blobulator {
 	variable hydropathyScale2 "Eisenberg-Weiss"
 	variable hydropathyScale3 "Moon-Fleming"
 	variable graphRepOptions "Blob ID"
+	variable resStart 
+	variable resEnd
 	variable Lmin 4
 	variable H .4
 	variable MolID 
 	variable checkForUpdate
+	variable checkForSelect 
 	variable hydropathyScaleDictionaryList "Kyte-Doolittle"
 
 	} 
@@ -48,7 +51,6 @@ proc ::blobulator::GUI {} {
 	grid [label $::blobulator::blobs.thres -text "Thresholds" -height 1 -font [list arial 9 bold]] -column 0 -sticky n
 	set paraList [list Length ::blobulator::Lmin 1 50 1 Hydrophobicity ::blobulator::H .1 1 .01]
 	foreach { entry variableName min max interval} $paraList {
-		puts $variableName
 		set entryLabels [label $::blobulator::blobs.l_$entry -text $entry]
 		set entryVariable [entry $::blobulator::blobs.e_$entry -width 10 -textvariable $variableName]
 		set entrySlider [scale $::blobulator::blobs.s_$entry -orient horizontal -from $min -to $max -length 195 -resolution $interval -tickinterval 0 -variable $variableName -showvalue 0]
@@ -61,6 +63,24 @@ proc ::blobulator::GUI {} {
 	grid [ttk::combobox $::blobulator::blobs.dmnu -textvariable ::blobulator::graphRepOptions -width $::blobulator::dropDownMenuWidth \
 	-values [list $::blobulator::blobColorType1 $::blobulator::blobColorType2] -state readonly ] -pady 6 -row 8 -column 2 -sticky w
 	
+
+	grid [checkbutton $::blobulator::blobs.checkSelect -text "Set to blobulate by residue range" \
+	-variable ::blobulator::checkForSelect ]  -columnspan 2
+	set columnCount 0
+	set rowForSelect 10
+	set selectList [list resStart "Residue Start" ::blobulator::resStart  resEnd "Residue End" ::blobulator::resEnd ]
+	
+	foreach {entry textname range} $selectList {
+		set resEntry [label $::blobulator::blobs.l_$entry -text $textname]
+		set resTextVariable [entry $::blobulator::blobs.e_$entry -width 10 -textvariable $range]
+
+		grid $resEntry -row $rowForSelect -column $columnCount
+		incr columnCount
+		grid $resTextVariable -row $rowForSelect -column $columnCount
+		incr columnCount
+	} 
+
+
 	grid [button $::blobulator::blobs.blobulate -text "Blobulate!" -font [list arial 9 bold] -width $::blobulator::buttonWidth -command {blobulation } ] -columnspan 5
 	grid [button $::blobulator::blobs.ldefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::lminDefault }] -padx 0 -row 5 -columnspan 1 -column 4
 	grid [button $::blobulator::blobs.hdefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::hDefault }] -padx 0 -row 6 -columnspan 1 -column 4
@@ -84,7 +104,24 @@ proc ::blobulator::GUI {} {
 #	::blobulator::blobColorType2 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call ::blobulator::graphRepUser2 proc
 #	blobs (Object): Overarching window frame
 proc blobulation {} {
+	if {$::blobulator::checkForSelect == 1} {
+		set ::blobulator::isFirst 1
 	
+	bind $::blobulator::blobs.s_Length <ButtonRelease> {::blobulator::blobulationSlider } 
+	bind $::blobulator::blobs.s_Hydrophobicity <ButtonRelease> {::blobulator::blobulationSlider } 
+	bind $::blobulator::blobs.dmnu <<ComboboxSelected>> {::blobulator::blobulationSlider }
+	bind $::blobulator::blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu }
+	if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
+		::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::resStart $::blobulator::resEnd $::blobulator::hydropathyScaleDictionaryList
+		::blobulator::graphRepUser 
+	} elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
+		::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::resStart $::blobulator::resEnd $::blobulator::hydropathyScaleDictionaryList
+		::blobulator::graphRepUser2 
+	} else {
+		puts "no value"
+	}
+return
+}
 	set ::blobulator::isFirst 1
 	
 	bind $::blobulator::blobs.s_Length <ButtonRelease> {::blobulator::blobulationSlider } 
@@ -122,7 +159,19 @@ return
 #	::blobulator::blobColorType2 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call ::blobulator::graphRepUser2 proc
 proc ::blobulator::blobulationSlider {} {
 	if {$::blobulator::isFirst == 1} {
-
+		if {$::blobulator::checkForSelect == 1} {
+			
+			if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
+				::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::resStart $::blobulator::resEnd $::blobulator::hydropathyScaleDictionaryList
+				::blobulator::graphRepUser 
+			} elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
+				::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::resStart $::blobulator::resEnd $::blobulator::hydropathyScaleDictionaryList
+				::blobulator::graphRepUser2 
+			} else {
+				puts "no value"
+			}
+		return
+		} 
 		if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
 			::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList 
 			::blobulator::graphRepUser 
