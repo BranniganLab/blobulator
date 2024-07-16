@@ -190,7 +190,7 @@ proc ::blobulator::blobulateSelection {MolID lMin H resStart resEnd dictInput} {
 	set groupedBlob [::blobulator::blobGroup $hpsblob]
 	set blobulated [::blobulator::blobAssign $hpsblob]
 	set blobIndexList [ ::blobulator::blobIndex $blobulated ]
-	puts $blobIndexList
+	
 
 		if {$blobulated != -1} {
 				::blobulator::blobUserAssignSelector $blobulated $MolID $resStart $resEnd
@@ -274,7 +274,7 @@ proc ::blobulator::getSequenceSelect {MolID resStart resEnd} {
 
 
     set resSeq [$sel get resname]
-    puts [llength $resSeq]
+  
     $sel delete
     # set selectionList {}
     # set count 0
@@ -736,7 +736,7 @@ proc ::blobulator::blobUser2AssignSelector { blob2 MolID resStart resEnd} {
 	set clean [atomselect $molid all]
 	$clean set user2 0
 	$clean delete
-	puts $blob2
+
 	set sel [atomselect $molid "alpha and protein and resid $resStart to $resEnd"]
 	$sel set user2 $blob2
 	$sel delete
