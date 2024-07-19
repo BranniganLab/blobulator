@@ -8,7 +8,7 @@ namespace eval ::blobulator {
 	variable buttonWidth 64
 	variable defaultButtonWidth 7
 	variable dropDownMenuWidth 14 
-	variable canvasWidth 412
+	variable canvasWidth 490
 	variable canvasHeight 5
 	variable isFirst 0
 	variable blobColorType1 "Blob Type"
@@ -49,7 +49,7 @@ proc ::blobulator::GUI {} {
 	 -values [list $::blobulator::hydropathyScale1 $::blobulator::hydropathyScale2 $::blobulator::hydropathyScale3] -state readonly] -pady 6 -row 2 -column 2 -sticky w
 	grid [canvas $::blobulator::blobs.c -height $::blobulator::canvasHeight -width $::blobulator::canvasWidth -background black] -columnspan 5
 	grid [label $::blobulator::blobs.thres -text "Thresholds" -height 1 -font [list arial 9 bold]] -column 0 -sticky n
-	set paraList [list Length ::blobulator::Lmin 1 50 1 Hydrophobicity ::blobulator::H .1 1 .01]
+	set paraList [list Length: ::blobulator::Lmin 1 50 1 Hydrophobicity: ::blobulator::H .1 1 .01]
 	foreach { entry variableName min max interval} $paraList {
 		set entryLabels [label $::blobulator::blobs.l_$entry -text $entry]
 		set entryVariable [entry $::blobulator::blobs.e_$entry -width 10 -textvariable $variableName]
@@ -68,7 +68,7 @@ proc ::blobulator::GUI {} {
 	-variable ::blobulator::checkForSelect ]  -columnspan 2
 	set columnCount 0
 	set rowForSelect 10
-	set selectList [list resStart "Residue Start" ::blobulator::resStart  resEnd "Residue End" ::blobulator::resEnd ]
+	set selectList [list resStart "Residue Start:" ::blobulator::resStart  resEnd "Residue End:" ::blobulator::resEnd ]
 	
 	foreach {entry textname range} $selectList {
 		set resEntry [label $::blobulator::blobs.l_$entry -text $textname]
