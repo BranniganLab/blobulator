@@ -104,7 +104,7 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 	set blobIndexList [ ::blobulator::blobIndex $blobulated ]
 	if {$blobulated != -1} {
 		::blobulator::blobUserAssign $blobulated $MolID
-		::blobulator::blobUser2Assign $::blobulator::blobIndexList $MolID
+		::blobulator::blobUser2Assign $blobIndexList $MolID
 		blobUser3Assign $groupedBlob $MolID
 	}
 	#Makes sure procedures that fail to pass checks can't assign values. 
