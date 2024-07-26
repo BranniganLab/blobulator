@@ -10,6 +10,7 @@ import { Color } from '../../node_modules/molstar/lib/mol-util/color';
 
 import { StateTransforms } from '../../node_modules/molstar/lib/mol-plugin-state/transforms';
 import { createStructureRepresentationParams } from '../../node_modules/molstar/lib/mol-plugin-state/helpers/structure-representation-params'
+import { cwd } from 'process';
 
 
 const MySpec: PluginUISpec = {
@@ -54,27 +55,72 @@ async function createPlugin(parent: HTMLElement) {
                 ]
             }
     });
-    const fs = require('fs')
-    const content = fs.readFile('../../../pdb_files/current.pdb', 'utf8')
 
+    // Attempt 0: Downloading the data directly from the PDB. This one works :)
+     // const data = await plugin.builders.data.download({ url: 'https://raw.githubusercontent.com/vis4moleculer/molstar/master/tests/data/1crn.cif' }, { state: { isGhost: true } });
 
-    // A misc mix of things that I've tried, currently the const data = ... is working as expected, now need to get contents of the input file to be read in as a string
-    // const data = await plugin.builders.data.download({ url: 'https://raw.githubusercontent.com/vis4moleculer/molstar/master/tests/data/1crn.cif' }, { state: { isGhost: true } });
-    // const data = await Viewer.loadStructureFromUrl('../../../pdb_files/current.pdb')
+    // Note: headers made in post, numbers are arbitrary and do not relect the order of attempts 
+    // Attempt 1: Using fs. Gives error "fs not found", and a million paths it searched for fs in
+    // const fs = require('fs')
+    // const content = fs.readFile('../../../pdb_files/current.pdb', 'utf8')
+
+    // Attempt 2: getElementByID and HTMLInputElement. Returns the html for the input button element, and gives associated downstream errors
+    // const input = (document.getElementById('pdb_file') as HTMLInputElement);
+
+    // const fileInput = document.getElementById("pdb_file") as HTMLInputElement;
+    // console.log(fileInput.files instanceof FileList)
+    // const files = fileInput.files;
+    // console.log(files)
+    // if (files && files.size > 0) {
+    //     const file = files[0];
+    //     const reader = new FileReader();
+    //     reader.onload = () => {
+    //         const fileContent = reader.result as string;
+    //         console.log(fileContent); // or do something else with the file content
+    //     }; 
+    //     reader.readAsText(file.slice(0, file.size));
+    // } else {
+    //     console.log('no file selected');
+    // };
+
     // const file = document.getElementById('pdb_file');
     // const fileContent = await file.text();
+
+    // Attempt 3: jQuery. Gives same error as attempt 2
+    // const element = HTMLFormElement = document.querySelector('.pdb_file');
+    // const input = element.get('pdb_file');
+    // const input_button = (document.querySelector('#pdb_file') as HTMLInputElement).value;
+
+
+    const file = jQuery.get('pdb_files/current.pdb');
+    console.log(file);
+    const contentString = JSON.stringify(file);
+    console.log(contentString);
+    
+    // Attempt 4: Using the Viewer class. Molstar didn't like that very much
+    // const data = await Viewer.loadStructureFromUrl('../../../pdb_files/current.pdb')
+
+
+    // Attempt 5: Using the createObejctURL function
     // const fileURL  = URL.createObjectURL(file)
     // const reader = new FileReader()
     // const fileURL = reader.readAsDataURL(file)
     // const fileContents = readFileSync(file).toString();
+
+    // Attempt 6: Using parsePDB from the molstar library
     // var pdbFile = parsePDB('../../../pdb_files/current.pdb', 'pdb', true);
     // const readFile = plugin.builders.data.readFile({ file: pdbFile });
-    // const data = await Viewer.loadStructureFromUrl('../../../pdb_files/current.pdb', format='pdb')
-    // const data = await plugin.builders.data.download({ url: path.dirname('../../../../pdb_files/current.pdb') }, { state: { isGhost: true } });
     // const data = await plugin.builders.data.rawData({ data: readFile}, { state: { isGhost: true } });
+    
+    // Attempt 7: Using the loadStructureFromUrl funmction with the path to previously loaded file. This operation is outside the scope of the function though
+    // const data = await Viewer.loadStructureFromUrl('../../../pdb_files/current.pdb', format='pdb')
+
+    // Attempt 8: Similar to attempt 7, but using download
+    // const data = await plugin.builders.data.download({ url: path.dirname('../../../../pdb_files/current.pdb') }, { state: { isGhost: true } });
+
 
     // This version of data works when the entire pdb is submitted as a string
-    const data = await plugin.builders.data.rawData({data: content})
+    const data = await plugin.builders.data.rawData({data: contentString})
     const trajectory = await plugin.builders.structure.parseTrajectory(data, 'pdb');
     
     // await plugin.builders.structure.hierarchy.applyPreset(trajectory, 'default');
