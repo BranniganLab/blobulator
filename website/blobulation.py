@@ -244,11 +244,11 @@ def index():
         elif "action_p" in request.form.to_dict():
             print(request.files)
             pdb_file = request.files["pdb_file"].read()
-            with open('./pdb_files/current.pdb', 'w') as saved_pdb:
+            with open('./static/molstar_plugin/plugin/dist/pdb_files/current.pdb', 'w') as saved_pdb:
                 saved_pdb.write(str(pdb_file).replace("\\n", "\n"))
                 saved_pdb.close()
 
-            for record in SeqIO.parse('./pdb_files/current.pdb', 'pdb-atom'):
+            for record in SeqIO.parse('./static/molstar_plugin/plugin/dist/pdb_files/current.pdb', 'pdb-atom'):
                 my_seq = record.seq
 
             session['sequence'] = str(my_seq)

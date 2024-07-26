@@ -64,7 +64,7 @@ var MySpec = __assign(__assign({}, (0, spec_1.DefaultPluginUISpec)()), { config:
     ] });
 function createPlugin(parent) {
     return __awaiter(this, void 0, void 0, function () {
-        var defaultSpec, plugin, data, trajectory, model, structure, components, builder, update, p_arr, h_arr, s_arr, _i, h_arr_1, val_h, sel, _a, p_arr_1, val_p, sel, _b, s_arr_1, val_s, sel;
+        var defaultSpec, plugin, file, contentString, data, trajectory, model, structure, components, builder, update, p_arr, h_arr, s_arr, _i, h_arr_1, val_h, sel, _a, p_arr_1, val_p, sel, _b, s_arr_1, val_s, sel;
         var _c;
         return __generator(this, function (_d) {
             switch (_d.label) {
@@ -95,7 +95,11 @@ function createPlugin(parent) {
                         })];
                 case 1:
                     plugin = _d.sent();
-                    return [4 /*yield*/, plugin.builders.data.download({ url: "https://files.rcsb.org/download/1xq8.pdb" }, { state: { isGhost: true } })];
+                    file = jQuery.get('pdb_files/current.pdb');
+                    console.log(file);
+                    contentString = JSON.stringify(file);
+                    console.log(contentString);
+                    return [4 /*yield*/, plugin.builders.data.rawData({ data: contentString })];
                 case 2:
                     data = _d.sent();
                     return [4 /*yield*/, plugin.builders.structure.parseTrajectory(data, 'pdb')];
@@ -115,7 +119,7 @@ function createPlugin(parent) {
                     builder = plugin.builders.structure.representation;
                     update = plugin.build();
                     builder.buildRepresentation(update, components.polymer, { type: 'cartoon', typeParams: { alpha: 0.0 }, color: 'uniform', colorParams: { value: (0, color_1.Color)(0xFFA500) } }, { tag: 'polymer' });
-                    p_arr = [10, 11, 12, 13, 20, 21, 22, 23, 24, , 32, 33, 34, 35, 36, 42, 43, 44, 45, 46, 57, 58, 59, 60, 61, 62, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140];
+                    p_arr = [10, 11, 12, 13, 20, 21, 22, 23, 24, 32, 33, 34, 35, 36, 42, 43, 44, 45, 46, 57, 58, 59, 60, 61, 62, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140];
                     h_arr = [[1, 2, 3, 4, 5, 6, 7, 8, 9], [14, 15, 16, 17, 18, 19], [25, 26, 27, 28, 29, 30, 31], [37, 38, 39, 40, 41], [47, 48, 49, 50, 51, 52, 53, 54, 55, 56], [63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78], [81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96]];
                     s_arr = [79, 80];
                     for (_i = 0, h_arr_1 = h_arr; _i < h_arr_1.length; _i++) {
