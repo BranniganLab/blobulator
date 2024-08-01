@@ -168,35 +168,51 @@ proc ::blobulator::blobulateSelection {MolID lMin H resStart resEnd dictInput} {
 		set usedDictionary $EW_Normalized
 	}
 	
-	set sequence [::blobulator::getSequenceSelect $MolID $resStart $resEnd]
-			if {$sequence < $lMin} {
-				puts "Sequence is too small"
+		set chainBlobs {}
+		set chainBlobIndex {}
+		set chainBlobGroup {}
+		set sorted [::blobulator::getSelect $MolID $resStart $resEnd]
+		puts $sorted
+		for {set i 0} {$i < [llength $sorted] } { incr i} {
+			set singleChain [lindex $sorted $i] 
+			set chainReturn [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary]
+				if { $chainReturn == -1} {
+				break
 				return -1
 			}
 
-			if {$sequence < [expr $resEnd - $resStart]} {
-				#This phrasing is confusing
-				puts "Only a partial sequence can be obtained"
-			}
-	set hydroS [::blobulator::hydropathyScores $usedDictionary $sequence]
-			if {$hydroS == -1} {
-				return -1
-				}
-	set smoothHydro [::blobulator::hydropathyMean $hydroS $sequence]
-	set digitized [::blobulator::digitize $H $smoothHydro ]
-	set hblob [ ::blobulator::hBlob $digitized $lMin ]
-	set hsblob [ ::blobulator::hsBlob  $hblob $digitized $lMin ]
-	set hpsblob [ ::blobulator::hpsBlob  $hsblob $digitized ]
-	set groupedBlob [::blobulator::blobGroup $hpsblob]
-	set blobulated [::blobulator::blobAssign $hpsblob]
-	set blobIndexList [ ::blobulator::blobIndex $blobulated ]
-	
+			set blobulated [lindex [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 0]
+			puts $blobulated
+			set index [lindex [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 1]
+			puts $index
+			foreach bb $blobulated {
+				lappend chainBlobs $bb
+				
+			} 
 
-		if {$blobulated != -1} {
-				::blobulator::blobUserAssignSelector $blobulated $MolID $resStart $resEnd
-				::blobulator::blobUser2AssignSelector $blobIndexList $MolID $resStart $resEnd
+			set chainIndex [::blobulator::blobIndex $blobulated ]
+			foreach ci $chainIndex { 
+				lappend chainBlobIndex $ci
 			}
-	return $blobulated
+			
+			set chainGroup [::blobulator::blobGroup $index]
+			foreach cg $chainGroup {
+				lappend chainBlobGroup $cg
+			}
+			
+			
+			
+			
+		}
+		if {$chainBlobs != -1} {
+			foreach chain $sorted {
+			::blobulator::blobUserAssignSelector $chainBlobs $MolID $chain
+			::blobulator::blobUser2AssignSelector $chainBlobIndex $MolID $chain
+			}
+		
+		
+		}
+		return $chainBlobs
 }
 
 #
@@ -265,36 +281,17 @@ proc ::blobulator::getSequence {MolID} {
 #
 #	Returns:
 #	resSeq (List): A list of three letter amino acid sequences
-proc ::blobulator::getSequenceSelect {MolID resStart resEnd} {
+proc ::blobulator::getSelect {MolID resStart resEnd} {
 
 	set nocaseMolID [string tolower $MolID]
-    set sel [atomselect $nocaseMolID "alpha and protein and resid $resStart to $resEnd" ]
+    set sel [atomselect $nocaseMolID "alpha and protein and residue $resStart to $resEnd" ]
+    set sorted [lsort -unique [$sel get chain]]
 
-  
-
-
-    set resSeq [$sel get resname]
-  
+  	
+    
     $sel delete
-    # set selectionList {}
-    # set count 0
-    # foreach rS $resSeq {
-    # 	puts $count
-    # 	if {$count > $resEnd} {
-    # 		incr count
-    # 	} elseif {$count >= $resStart} {
-    # 		lappend selectionList $rS
-    # 		puts $rS
-    # 		incr count
-    # 	} else {
-    # 		incr count
-    # 	}
-    	
-    # }
-   	# puts [llength $selectionList]
 
-  
-    return $resSeq
+    return $sorted
 }
 
 #
@@ -720,24 +717,24 @@ proc ::blobulator::blobUserAssign { blob1 MolID } {
 	
  }
 
-proc ::blobulator::blobUserAssignSelector {blob1 MolID resStart resEnd} {
+proc ::blobulator::blobUserAssignSelector {blob1 MolID chain} {
 	set molid [string tolower $MolID]
 	set clean [atomselect $molid all]
 	$clean set user 0
 	$clean delete
 
-	set sel [atomselect $molid "alpha and resid $resStart to $resEnd"]
+	set sel [atomselect $molid "alpha and chain $chain"]
 	$sel set user $blob1
 	$sel delete
 }
 
-proc ::blobulator::blobUser2AssignSelector { blob2 MolID resStart resEnd} {
+proc ::blobulator::blobUser2AssignSelector { blob2 MolID chain} {
 	set molid [string tolower $MolID]
 	set clean [atomselect $molid all]
 	$clean set user2 0
 	$clean delete
 
-	set sel [atomselect $molid "alpha and protein and resid $resStart to $resEnd"]
+	set sel [atomselect $molid "protein and alpha and chain $chain"]
 	$sel set user2 $blob2
 	$sel delete
 
@@ -749,7 +746,7 @@ proc ::blobulator::blobUser2AssignSelector { blob2 MolID resStart resEnd} {
 	
 		foreach rs $resids {
 			
-			set sel2 [atomselect $molid "resid $rs and protein"]
+			set sel2 [atomselect $molid "residue $rs and protein"]
 			$sel2 set user2 $i
 		}
 	
