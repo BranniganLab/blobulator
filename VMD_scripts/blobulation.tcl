@@ -154,7 +154,7 @@ proc ::blobulator::blobulateChain {MolID lMin H Chain usedDictionary} {
 #
 #	Returns:
 #	blobulated (List): A blobulated sequence that is in 1's 2's and 3's
-proc ::blobulator::blobulateSelection {MolID lMin H resStart resEnd dictInput} {
+proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 	source normalized_hydropathyscales.tcl
 	if {$dictInput == "Kyte-Doolittle"} {
 		set usedDictionary $KD_Normalized
@@ -171,20 +171,19 @@ proc ::blobulator::blobulateSelection {MolID lMin H resStart resEnd dictInput} {
 		set chainBlobs {}
 		set chainBlobIndex {}
 		set chainBlobGroup {}
-		set sorted [::blobulator::getSelect $MolID $resStart $resEnd]
-		puts $sorted
+		set sorted [::blobulator::getSelect $MolID $select]
+		
 		for {set i 0} {$i < [llength $sorted] } { incr i} {
 			set singleChain [lindex $sorted $i] 
 			set chainReturn [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary]
 				if { $chainReturn == -1} {
 				break
 				return -1
-			}
-
+			}	
 			set blobulated [lindex [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 0]
-			puts $blobulated
+			
 			set index [lindex [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 1]
-			puts $index
+
 			foreach bb $blobulated {
 				lappend chainBlobs $bb
 				
@@ -199,19 +198,28 @@ proc ::blobulator::blobulateSelection {MolID lMin H resStart resEnd dictInput} {
 			foreach cg $chainGroup {
 				lappend chainBlobGroup $cg
 			}
+
+			
+			set completeIndex [::blobulator::blobIndex $blobulated ]
+			
+
 			
 			
+			
+		
 			
 			
 		}
+
 		if {$chainBlobs != -1} {
-			foreach chain $sorted {
-			::blobulator::blobUserAssignSelector $chainBlobs $MolID $chain
-			::blobulator::blobUser2AssignSelector $chainBlobIndex $MolID $chain
-			}
 		
+		::blobulator::blobUserAssignSelector $chainBlobs $MolID $sorted
+		::blobulator::blobUser2AssignSelector $chainBlobIndex $MolID $sorted
 		
+	
+	
 		}
+		
 		return $chainBlobs
 }
 
@@ -281,11 +289,13 @@ proc ::blobulator::getSequence {MolID} {
 #
 #	Returns:
 #	resSeq (List): A list of three letter amino acid sequences
-proc ::blobulator::getSelect {MolID resStart resEnd} {
+proc ::blobulator::getSelect {MolID select} {
 
 	set nocaseMolID [string tolower $MolID]
-    set sel [atomselect $nocaseMolID "alpha and protein and residue $resStart to $resEnd" ]
+
+    set sel [atomselect $nocaseMolID "$select" ]
     set sorted [lsort -unique [$sel get chain]]
+    puts $sorted
 
   	
     
@@ -717,34 +727,53 @@ proc ::blobulator::blobUserAssign { blob1 MolID } {
 	
  }
 
-proc ::blobulator::blobUserAssignSelector {blob1 MolID chain} {
+proc ::blobulator::blobUserAssignSelector {blob1 MolID chainList} {
+	
+
 	set molid [string tolower $MolID]
 	set clean [atomselect $molid all]
 	$clean set user 0
 	$clean delete
 
-	set sel [atomselect $molid "alpha and chain $chain"]
+
+
+	set sel [atomselect $molid "alpha and chain $chainList"]
 	$sel set user $blob1
 	$sel delete
+
+	for {set i 1} { $i <= 3 } {incr i} {
+		set sel [atomselect $molid "user $i"]
+		set residues [$sel get residue]
+		$sel delete
+		if {[llength $residues] > 1} {
+			foreach rs $residues {
+				set sel2 [atomselect $molid "residue $rs and protein"]
+				$sel2 set user $i
+			}
+			$sel2 delete
+		}
+	}
+		
 }
 
-proc ::blobulator::blobUser2AssignSelector { blob2 MolID chain} {
+proc ::blobulator::blobUser2AssignSelector { blob2 MolID chainList} {
 	set molid [string tolower $MolID]
 	set clean [atomselect $molid all]
 	$clean set user2 0
 	$clean delete
 
-	set sel [atomselect $molid "protein and alpha and chain $chain"]
+	set sel [atomselect $molid "protein and alpha and chain $chainList"]
+	puts [$sel get chain]
 	$sel set user2 $blob2
 	$sel delete
 
 	set blobLength [llength [lsort -unique $blob2]]
 	for {set i 1} { $i < $blobLength } { incr i } {
 		set sel [atomselect $molid "user2 $i"]
-		set resids [$sel get resid]
+		set residues [$sel get residue]
 		$sel delete
 	
-		foreach rs $resids {
+		foreach rs $residues {
 			
 			set sel2 [atomselect $molid "residue $rs and protein"]
 			$sel2 set user2 $i
