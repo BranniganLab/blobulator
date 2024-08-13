@@ -264,7 +264,7 @@ proc ::blobulator::hDefault {} {
 	}
 
 	if {$::blobulator::hydropathyScaleDictionaryList == "Eisenberg-Weiss"} {
-		set ::blobulator::H .28
+		set ::blobulator::H .72
 	}
 	if {$::blobulator::hydropathyScaleDictionaryList == "Moon-Fleming"} {
 		set ::blobulator::H .35
