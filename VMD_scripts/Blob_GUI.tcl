@@ -36,7 +36,7 @@ namespace eval ::blobulator {
 	variable hydropathyScaleDictionaryList "Kyte-Doolittle"
 	variable resStart 
 	variable resEnd
-	variable Lmin 4
+	variable Lmin 
 	variable H .4
 	variable MolID 
 	variable isFirst 0
@@ -82,10 +82,10 @@ proc ::blobulator::GUI {} {
 	#Threhold grids
 	grid [label $::blobulator::blobs.thres -text "Thresholds" -height 1 -font [list arial 9 bold]] -column $::blobulator::textColumn -sticky n
 	set paraList [list Length: ::blobulator::Lmin 1 50 1 Hydrophobicity: ::blobulator::H .1 1 .01]
-	foreach { entry variableName min max interval} $paraList {
+	foreach { entry namedVariable min max interval} $paraList {
 		set entryLabels [label $::blobulator::blobs.l_$entry -text $entry]
-		set entryVariable [entry $::blobulator::blobs.e_$entry -width $::blobulator::paraWidth -textvariable $variableName]
-		set entrySlider [scale $::blobulator::blobs.s_$entry -orient horizontal -from $min -to $max -length $::blobulator::sliderLength -resolution $interval -tickinterval 0 -variable $variableName -showvalue 0]
+		set entryVariable [entry $::blobulator::blobs.e_$entry -width $::blobulator::paraWidth -textvariable $namedVariable]
+		set entrySlider [scale $::blobulator::blobs.s_$entry -orient horizontal -from $min -to $max -length $::blobulator::sliderLength -resolution $interval -tickinterval 0 -variable $namedVariable -showvalue 0]
 		
 		
 		grid $entryLabels -row $::blobulator::sliderRow -column $::blobulator::textColumn -sticky e
@@ -106,6 +106,9 @@ proc ::blobulator::GUI {} {
 	grid [button $::blobulator::blobs.hdefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::hDefault }] -padx 0 -pady 1 -row 6 -columnspan 2 -column $::blobulator::defaultButtonColumn -sticky e
 	grid [button $::blobulator::blobs.clear -text "Clear representations" -width $::blobulator::buttonWidth -command {::blobulator::blobClear $::blobulator::MolID}] -column 0 -columnspan 6
 	bind $::blobulator::blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu }
+	
+
+
 }
 
 # 
@@ -156,7 +159,8 @@ proc blobulation {} {
 	bind $::blobulator::blobs.s_Length: <ButtonRelease> {::blobulator::blobulationSlider } 
 	bind $::blobulator::blobs.s_Hydrophobicity: <ButtonRelease> {::blobulator::blobulationSlider } 
 	bind $::blobulator::blobs.dmnu <<ComboboxSelected>> {::blobulator::blobulationSlider }
-	X
+	bind $::blobulator::blobs.e_Length: <Return> {::blobulator::blobulationSlider }
+	bind $::blobulator::blobs.e_Hydrophobicity: <Return> {::blobulator::blobulationSlider }
 return
 }
 
