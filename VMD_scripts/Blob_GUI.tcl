@@ -105,6 +105,7 @@ proc ::blobulator::GUI {} {
 	grid [button $::blobulator::blobs.ldefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::lminDefault }] -padx 0 -pady 1 -row 5 -columnspan 2 -column $::blobulator::defaultButtonColumn -sticky e
 	grid [button $::blobulator::blobs.hdefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::hDefault }] -padx 0 -pady 1 -row 6 -columnspan 2 -column $::blobulator::defaultButtonColumn -sticky e
 	grid [button $::blobulator::blobs.clear -text "Clear representations" -width $::blobulator::buttonWidth -command {::blobulator::blobClear $::blobulator::MolID}] -column 0 -columnspan 6
+	bind $::blobulator::blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu }
 }
 
 # 
@@ -155,7 +156,7 @@ proc blobulation {} {
 	bind $::blobulator::blobs.s_Length: <ButtonRelease> {::blobulator::blobulationSlider } 
 	bind $::blobulator::blobs.s_Hydrophobicity: <ButtonRelease> {::blobulator::blobulationSlider } 
 	bind $::blobulator::blobs.dmnu <<ComboboxSelected>> {::blobulator::blobulationSlider }
-	bind $::blobulator::blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu }
+	X
 return
 }
 
