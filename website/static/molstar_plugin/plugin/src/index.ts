@@ -57,110 +57,10 @@ async function createPlugin(parent: HTMLElement) {
             }
     });
 
-    // Attempt 0: Downloading the data directly from the PDB. This one works :)
-     // const data = await plugin.builders.data.download({ url: 'https://raw.githubusercontent.com/vis4moleculer/molstar/master/tests/data/1crn.cif' }, { state: { isGhost: true } });
-
-    // Note: headers made in post, numbers are arbitrary and do not relect the order of attempts 
-    // Attempt 1: Using fs. Gives error "fs not found", and a million paths it searched for fs in
-    // const fs = require('fs')
-    // const content = fs.readFile('../../../pdb_files/current.pdb', 'utf8')
-
-    // Attempt 2: getElementByID and HTMLInputElement. Returns the html for the input button element, and gives associated downstream errors
-    // const input = (document.getElementById('pdb_file') as HTMLInputElement);
-
-    // const fileInput = document.getElementById("pdb_file") as HTMLInputElement;
-    // console.log(fileInput.files instanceof FileList)
-    // const files = fileInput.files;
-    // console.log(files)
-    // if (files && files.size > 0) {
-    //     const file = files[0];
-    //     const reader = new FileReader();
-    //     reader.onload = () => {
-    //         const fileContent = reader.result as string;
-    //         console.log(fileContent); // or do something else with the file content
-    //     }; 
-    //     reader.readAsText(file.slice(0, file.size));
-    // } else {
-    //     console.log('no file selected');
-    // };
-
-    // const file = document.getElementById('pdb_file');
-    // const fileContent = await file.text();
-
-    // Attempt 3: jQuery. Gives same error as attempt 2
-    // const element = HTMLFormElement = document.querySelector('.pdb_file');
-    // const input = element.get('pdb_file');
-    // const input_button = (document.querySelector('#pdb_file') as HTMLInputElement).value;
-
-
-    // const file = jQuery.get('pdb_files/current.pdb');
-    // console.log(file);
-    // const contentString = JSON.stringify(file);
-    // console.log(contentString);
-    
-    // Attempt 4: Using the Viewer class. Molstar didn't like that very much
-    // const data = await Viewer.loadStructureFromUrl('../../../pdb_files/current.pdb')
-
-
-    // Attempt 5: Using the createObejctURL function
-    // const fileURL  = URL.createObjectURL(file)
-    // const reader = new FileReader()
-    // const fileURL = reader.readAsDataURL(file)
-    // const fileContents = readFileSync(file).toString();
-
-    // Attempt 6: Using parsePDB from the molstar library
-    // var pdbFile = parsePDB('../../../pdb_files/current.pdb', 'pdb', true);
-    // const readFile = plugin.builders.data.readFile({ file: pdbFile });
-    // const data = await plugin.builders.data.rawData({ data: readFile}, { state: { isGhost: true } });
-    
-    // Attempt 7: Using the loadStructureFromUrl funmction with the path to previously loaded file. This operation is outside the scope of the function though
-    // const data = await Viewer.loadStructureFromUrl('../../../pdb_files/current.pdb', format='pdb')
-
-    // Attempt 8: Similar to attempt 7, but using download
-    // const data = await plugin.builders.data.download({ url: path.dirname('../../../../pdb_files/current.pdb') }, { state: { isGhost: true } });
-    // const form = document.getElementById('pdb_entry_block');
-    // const form = document.forms['pdb_entry_block'];
-    // const pdb_entry_block = formattedFormData.get('pdb_file')!
-    // const form = document.querySelector('#pdb_entry_block');
-    // const input = document.getElementById('input').files[0];
-    // let input = (<HTMLInputElement>document.getElementById('pdb_file')).files[0]
-    
-    
-    // This identifies that a file would have been uploaded using the html input element but it returns empty
-    // const form = document.forms[2];
-    // var formData = new FormData(form);
-    // console.log(formData);
-    // const file = formData.get('pdb_file');
-    // console.log(file)
-
-    // const reader = new FileReader();
-    // reader.readAsBinaryString(file)
-    // console.log(reader.result)
-
-
-
     let contentString = localStorage.getItem('pdb_file');
-    console.log(contentString)
-
-    // let reader = new FileReader();
-    // reader.readAsText(file);
-    // console.log(reader.result);
-    // if (file) {
-    //     const fileReader = new FileReader();
-    //     fileReader.onload = () => {
-    //     const fileContent = fileReader.result as string;
-    //     console.log(fileContent);
-    //     };
-    //     fileReader.readAsText(file);
-    //  }
-
-    
-
-    // This version of data works when the entire pdb is submitted as a string
+    localStorage.removeItem('pdb_file')
     const data = await plugin.builders.data.rawData({data: contentString})
     const trajectory = await plugin.builders.structure.parseTrajectory(data, 'pdb');
-    
-    // await plugin.builders.structure.hierarchy.applyPreset(trajectory, 'default');
 
     const model = await plugin.builders.structure.createModel(trajectory);
     const structure = await plugin.builders.structure.createStructure(model);
@@ -172,63 +72,63 @@ async function createPlugin(parent: HTMLElement) {
     const builder = plugin.builders.structure.representation;
     const update = plugin.build();
  
-    builder.buildRepresentation(update, components.polymer, { type: 'cartoon', typeParams: { alpha: 0.0 }, color : 'uniform', colorParams: { value: Color(0xFFA500) } }, { tag: 'polymer' });
-    // await update.commit();
+    builder.buildRepresentation(update, components.polymer, { type: 'cartoon', typeParams: { alpha: 1.0 }, color : 'uniform', colorParams: { value: Color(0x1A5653) } }, { tag: 'polymer' });
+    await update.commit();
 
-    let p_arr = [10, 11, 12, 13,  20, 21, 22, 23, 24,  32, 33, 34, 35, 36, 42, 43, 44, 45, 46, 57, 58, 59, 60, 61, 62, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140]
-    let h_arr = [[1, 2, 3, 4, 5, 6, 7, 8, 9], [14, 15, 16, 17, 18, 19], [25, 26, 27, 28, 29, 30, 31], [37, 38, 39, 40, 41], [47, 48, 49, 50, 51, 52, 53, 54, 55, 56], [63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78], [81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96]]
-    let s_arr = [79, 80]
+    // let p_arr = [10, 11, 12, 13,  20, 21, 22, 23, 24,  32, 33, 34, 35, 36, 42, 43, 44, 45, 46, 57, 58, 59, 60, 61, 62, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140]
+    // let h_arr = [[1, 2, 3, 4, 5, 6, 7, 8, 9], [14, 15, 16, 17, 18, 19], [25, 26, 27, 28, 29, 30, 31], [37, 38, 39, 40, 41], [47, 48, 49, 50, 51, 52, 53, 54, 55, 56], [63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78], [81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96]]
+    // let s_arr = [79, 80]
 
-    for (var val_h of h_arr) {
-        const sel = MS.struct.generator.atomGroups({
-            'residue-test': MS.core.set.has([MS.set(...val_h), MS.ammp('label_seq_id')])
-        });
-        update.to(structure)
-        .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
-        .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
-            type: 'gaussian-surface',
-            color: 'uniform',
-            colorParams: { value: Color(0x0096FF) },
-            typeParams: { alpha: 1.0}
-        }));
+    // for (var val_h of h_arr) {
+    //     const sel = MS.struct.generator.atomGroups({
+    //         'residue-test': MS.core.set.has([MS.set(...val_h), MS.ammp('label_seq_id')])
+    //     });
+    //     update.to(structure)
+    //     .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
+    //     .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
+    //         type: 'gaussian-surface',
+    //         color: 'uniform',
+    //         colorParams: { value: Color(0x0096FF) },
+    //         typeParams: { alpha: 1.0}
+    //     }));
 
-    update.commit();
+    // update.commit();
 
-    }
+    // }
 
-    for (var val_p of p_arr) {
-        const sel = MS.struct.generator.atomGroups({
-        'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), val_p]),
-    });
-        update.to(structure)
-        .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
-        .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
-            type: 'cartoon',
-            color: 'uniform',
-            colorParams: { value: Color(0xFFA500) },
-            typeParams: { alpha: 1.0}
-        }));
+    // for (var val_p of p_arr) {
+    //     const sel = MS.struct.generator.atomGroups({
+    //     'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), val_p]),
+    // });
+    //     update.to(structure)
+    //     .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
+    //     .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
+    //         type: 'cartoon',
+    //         color: 'uniform',
+    //         colorParams: { value: Color(0xFFA500) },
+    //         typeParams: { alpha: 1.0}
+    //     }));
 
-    update.commit();
+    // update.commit();
 
-    }
+    // }
 
-    for (var val_s of s_arr) {
-        const sel = MS.struct.generator.atomGroups({
-        'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), val_s]),
-    });
-        update.to(structure)
-        .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
-        .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
-            type: 'cartoon',
-            color: 'uniform',
-            colorParams: { value: Color(0x00FF00) },
-            typeParams: { alpha: 1.0}
-        }));
+    // for (var val_s of s_arr) {
+    //     const sel = MS.struct.generator.atomGroups({
+    //     'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), val_s]),
+    // });
+    //     update.to(structure)
+    //     .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
+    //     .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
+    //         type: 'cartoon',
+    //         color: 'uniform',
+    //         colorParams: { value: Color(0x00FF00) },
+    //         typeParams: { alpha: 1.0}
+    //     }));
 
-    update.commit();
+    // update.commit();
 
-    }
+    // }
 
 
         
