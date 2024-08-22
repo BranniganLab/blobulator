@@ -11,6 +11,7 @@ import { Color } from '../../node_modules/molstar/lib/mol-util/color';
 import { StateTransforms } from '../../node_modules/molstar/lib/mol-plugin-state/transforms';
 import { createStructureRepresentationParams } from '../../node_modules/molstar/lib/mol-plugin-state/helpers/structure-representation-params'
 import { cwd } from 'process';
+import { readFile } from 'fs';
 
 
 const MySpec: PluginUISpec = {
@@ -92,10 +93,10 @@ async function createPlugin(parent: HTMLElement) {
     // const input_button = (document.querySelector('#pdb_file') as HTMLInputElement).value;
 
 
-    const file = jQuery.get('pdb_files/current.pdb');
-    console.log(file);
-    const contentString = JSON.stringify(file);
-    console.log(contentString);
+    // const file = jQuery.get('pdb_files/current.pdb');
+    // console.log(file);
+    // const contentString = JSON.stringify(file);
+    // console.log(contentString);
     
     // Attempt 4: Using the Viewer class. Molstar didn't like that very much
     // const data = await Viewer.loadStructureFromUrl('../../../pdb_files/current.pdb')
@@ -117,7 +118,43 @@ async function createPlugin(parent: HTMLElement) {
 
     // Attempt 8: Similar to attempt 7, but using download
     // const data = await plugin.builders.data.download({ url: path.dirname('../../../../pdb_files/current.pdb') }, { state: { isGhost: true } });
+    // const form = document.getElementById('pdb_entry_block');
+    // const form = document.forms['pdb_entry_block'];
+    // const pdb_entry_block = formattedFormData.get('pdb_file')!
+    // const form = document.querySelector('#pdb_entry_block');
+    // const input = document.getElementById('input').files[0];
+    // let input = (<HTMLInputElement>document.getElementById('pdb_file')).files[0]
+    
+    
+    // This identifies that a file would have been uploaded using the html input element but it returns empty
+    // const form = document.forms[2];
+    // var formData = new FormData(form);
+    // console.log(formData);
+    // const file = formData.get('pdb_file');
+    // console.log(file)
 
+    // const reader = new FileReader();
+    // reader.readAsBinaryString(file)
+    // console.log(reader.result)
+
+
+
+    let contentString = localStorage.getItem('pdb_file');
+    console.log(contentString)
+
+    // let reader = new FileReader();
+    // reader.readAsText(file);
+    // console.log(reader.result);
+    // if (file) {
+    //     const fileReader = new FileReader();
+    //     fileReader.onload = () => {
+    //     const fileContent = fileReader.result as string;
+    //     console.log(fileContent);
+    //     };
+    //     fileReader.readAsText(file);
+    //  }
+
+    
 
     // This version of data works when the entire pdb is submitted as a string
     const data = await plugin.builders.data.rawData({data: contentString})
@@ -134,7 +171,7 @@ async function createPlugin(parent: HTMLElement) {
 
     const builder = plugin.builders.structure.representation;
     const update = plugin.build();
-
+ 
     builder.buildRepresentation(update, components.polymer, { type: 'cartoon', typeParams: { alpha: 0.0 }, color : 'uniform', colorParams: { value: Color(0xFFA500) } }, { tag: 'polymer' });
     // await update.commit();
 
