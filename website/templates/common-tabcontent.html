@@ -39,7 +39,7 @@
                 </form>
             </div>
              <div class="form-group" align="center">
-                <form class="navbar-form navbar-top" method=post target="_blank" enctype="multipart/form-data" action="" id="pdb_entry_block" style="display: none">
+                <form class="navbar-form navbar-top" method="post" target="_blank" enctype="multipart/form-data" action="" id="pdb_entry_block" style="display: none">
                     <h5 class="text-center"> <b>Option 3: PDB Entry</b> </h5>
                     <br>
                     <!--Creating box for protein sequence input, and placing explanation text above-->
@@ -52,6 +52,29 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById("pdb_file").onchange = function() {
+        localStorage.clear();
+        const form = document.forms[2];
+        var formData = new FormData(form);
+        console.log(formData);
+        const file = formData.get('pdb_file');
+        console.log(file)
+        if (file) {
+        const fileReader = new FileReader();
+        fileReader.onload = () => {
+        const fileContent = fileReader.result;
+        console.log(fileContent);
+        localStorage.setItem("pdb_file", fileContent);
+        };
+        fileReader.readAsText(file);
+     }
+        
+    }
+    console.log(localStorage.getItem("pdb_file"))
+</script>
+
 
 
 <!--About Page Contents-->
