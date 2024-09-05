@@ -74,8 +74,23 @@
       bottom: 0;
       text-align: center;
       width: 100%;
-      height: 2.5rem;            /* Footer height */
+      height: 8rem;            /* Footer height */
     }
+    #mobile-warning {
+        margin-top: 10%;
+    }
+    /* Hide the div by default */
+    .mobile-only {
+      display: none;
+    }
+
+    /* Show the div only on mobile view */
+    @media (max-width: 767px) {
+      .mobile-only {
+        display: block;
+        text-align: center;
+    }
+}
 
     .form-group {
         text-align: justify;
@@ -144,6 +159,10 @@
                     </div>
                 </div>
             </div>
+            <div class="mobile-only" id="mobile-warning">
+                <p><b>Warning: the blobulator is best viewed on a computer or tablet, not a smart phone.</b></p></footer>
+                <br>
+              </div>
             <!--This creates a row to display the clickable toggling tabs for Home, About, Documentation, and FAQ-->
             <div class="bs-example">
                 <ul class="nav nav-tabs justify-content-center" role="tablist">
@@ -158,7 +177,6 @@
         <footer id="footer">
             <p>Protein Blobulator &mdash; &copy; <a href=https://branniganlab.org/>Brannigan Lab</a> 2022</p>
             <p>Version: <a href=https://github.com/BranniganLab/blobulator/blob/main/CHANGE_LOG.md>0.9.6</a></p>
-            <p>WARNING: the blobulator is best viewed on a computer or tablet, not a smart phone.</p>
     </div>
 </body>
 ​

@@ -32,6 +32,7 @@ namespace eval ::blobulator {
 	variable hydropathyScale3 "Moon-Fleming"
 	variable graphRepOptions "Blob ID"
 
+
 	#Switch variables and default values 
 	variable hydropathyScaleDictionaryList "Kyte-Doolittle"
 	variable resStart 
@@ -42,7 +43,7 @@ namespace eval ::blobulator {
 	variable isFirst 0
 	variable checkForUpdate
 	variable checkForSelect 
-	
+
 
 	} 
 

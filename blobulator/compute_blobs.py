@@ -6,6 +6,7 @@ from .amino_acids import (
     properties_type,     
     properties_hydropathy,
     properties_hydropathy_eisenberg_weiss,
+    properties_hydropathy_moon_fleming,
 )
 
 from importlib.resources import files
@@ -437,10 +438,13 @@ def get_hydrophobicity(residue, hydro_scale):
     Returns:
         hydrophobicity (int): the hydrophobicity for a given residue in the selected scale
     """
+
     if hydro_scale == "kyte_doolittle":
         scale = properties_hydropathy
     elif hydro_scale == "eisenberg_weiss":
         scale = properties_hydropathy_eisenberg_weiss
+    elif hydro_scale == "moon_fleming":
+        scale = properties_hydropathy_moon_fleming
     try: 
         return scale[residue]
     except:
