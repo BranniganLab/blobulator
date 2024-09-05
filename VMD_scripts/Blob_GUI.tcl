@@ -7,14 +7,14 @@ if [winfo exists .blob] {
 namespace eval ::blobulator {
 	# Widths,Heights,Rows and Columns
 	variable buttonWidth 102
-	variable defaultButtonWidth 15
+	variable defaultButtonWidth 7
 	variable dropDownMenuWidth 14 
 	variable canvasWidth 640
 	variable canvasHeight 2
 	variable atomselectWidth 24
 	variable paraWidth 10
 	variable sliderRow 5
-	variable sliderLength 440
+	variable sliderLength 420
 	variable checkmarkColumn 4
 	variable textColumn 0
 	variable paraColumn 1
@@ -70,7 +70,7 @@ proc ::blobulator::GUI {} {
 	#grid [columnconfigure $blobulator::blobs $::blobulator::checkBoxColumn -uniform]
 
 	#Hydropathy Scale grids
-	grid [label $::blobulator::blobs.t2 -text "Hydropathy Scale:                                                              " -height 2] -row 2 -column $::blobulator::text2Column -columnspan 2
+	grid [label $::blobulator::blobs.t2 -text "         Hydropathy Scale:                                                              " -height 2] -row 2 -column $::blobulator::text2Column -columnspan 2
 	grid [checkbutton $::blobulator::blobs.check -text "Auto Updates Hydrophobicity         " \
 	 -variable ::blobulator::checkForUpdate -command {::blobulator::blobulationSlider }] -row 2 -column $::blobulator::checkBoxColumn -columnspan 2 -sticky w
 	grid [ttk::combobox $::blobulator::blobs.dmnu2  -textvariable ::blobulator::hydropathyScaleDictionaryList -width $::blobulator::dropDownMenuWidth \
