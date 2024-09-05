@@ -639,7 +639,7 @@ proc ::blobulator::blobIndex { blob } {
 	
 	
 	set blobChar q
-	set count 1
+	set count 0
 	set countList {}
 	
 
@@ -788,7 +788,7 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 	set clean [atomselect $molid all]
 	$clean set user2 0
 	$clean delete
-
+	
 	set sel [atomselect $molid "alpha and protein"]
 	$sel set user2 $blob2
 	$sel delete
