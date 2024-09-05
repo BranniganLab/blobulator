@@ -37,7 +37,7 @@ namespace eval ::blobulator {
 	variable hydropathyScaleDictionaryList "Kyte-Doolittle"
 	variable resStart 
 	variable resEnd
-	variable Lmin 
+	variable Lmin 4
 	variable H .4
 	variable MolID 
 	variable isFirst 0
