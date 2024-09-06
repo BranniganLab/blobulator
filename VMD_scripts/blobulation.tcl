@@ -295,7 +295,7 @@ proc ::blobulator::getSelect {MolID select} {
 
     set sel [atomselect $nocaseMolID "$select" ]
     set sorted [lsort -unique [$sel get chain]]
-    puts $sorted
+    
 
   	
     
@@ -763,7 +763,7 @@ proc ::blobulator::blobUser2AssignSelector { blob2 MolID chainList} {
 	$clean delete
 
 	set sel [atomselect $molid "protein and alpha and chain $chainList"]
-	puts [$sel get chain]
+
 	$sel set user2 $blob2
 	$sel delete
 
