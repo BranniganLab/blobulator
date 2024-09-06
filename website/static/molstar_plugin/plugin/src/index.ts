@@ -73,43 +73,37 @@ async function createPlugin(parent: HTMLElement) {
     const builder = plugin.builders.structure.representation;
     const update = plugin.build();
 
-    // console.log('as above, so below');
-    // $.get("/json", function(data) {
-    //     console.log(JSON.parse(data));
-    // })
-
     builder.buildRepresentation(update, components.polymer, { type: 'cartoon', typeParams: { alpha: 0.0 }, color : 'uniform', colorParams: { value: Color(0x1A5653) } }, { tag: 'polymer' });
-    // await update.commit();
 
     let blobString = localStorage.getItem('blobSeq')
     let blobArray = blobString?.split(',')
     var p_arr: number[] = []
-    var h_arr: number[] = []
+    var tempHArray: number[] = []
+    var h_arr: number[][] = []
     var s_arr: number[] = []
 
     if (typeof blobArray != 'undefined') {
         for (let i = 0; i < blobArray.length; i++) {
-            var index = i + 1
-            if (blobArray[i] == 'h') {
-                h_arr.push(index)
+            var blobIndex = i + 1
+            var nextArrayIndex = i + 1
+            if (blobArray[i] == 'h' && blobArray[nextArrayIndex] != 'p' && blobArray[nextArrayIndex] != 's') {
+                tempHArray.push(blobIndex)
+            }
+            else if (blobArray[i] == 'h') {
+                h_arr.push(tempHArray)
             }
             else if (blobArray[i] == 'p') {
-                p_arr.push(index)
+                p_arr.push(blobIndex)
             }
             else if (blobArray[i] == 's') {
-                s_arr.push(index)
-            }
-        }
-    }
-
-
-    // let p_arr = [10, 11, 12, 13,  20, 21, 22, 23, 24,  32, 33, 34, 35, 36, 42, 43, 44, 45, 46, 57, 58, 59, 60, 61, 62, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140]
-    // let h_arr = [[1, 2, 3, 4, 5, 6, 7, 8, 9], [14, 15, 16, 17, 18, 19], [25, 26, 27, 28, 29, 30, 31], [37, 38, 39, 40, 41], [47, 48, 49, 50, 51, 52, 53, 54, 55, 56], [63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78], [81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96]]
-    // let s_arr = [79, 80]
+                s_arr.push(blobIndex)
+            };
+        };
+    };
 
     for (var val_h of h_arr) {
         const sel = MS.struct.generator.atomGroups({
-            'residue-test': MS.core.set.has([MS.set(val_h), MS.ammp('label_seq_id')])
+            'residue-test': MS.core.set.has([MS.set(...val_h), MS.ammp('label_seq_id')])
         });
         update.to(structure)
         .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
@@ -139,7 +133,7 @@ async function createPlugin(parent: HTMLElement) {
 
     update.commit();
 
-    }
+    };
 
     for (var val_s of s_arr) {
         const sel = MS.struct.generator.atomGroups({
@@ -155,25 +149,12 @@ async function createPlugin(parent: HTMLElement) {
         }));
 
     update.commit();
+    };
 
-    }
-
-
-        
-
-//     update.to(structure)
-//         .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
-//         .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
-//             type: 'gaussian-surface',
-//             color: 'uniform',
-//             colorParams: { value: Color(0x0096FF) }
-//         }));
-
-//     await update.commit();
-
-
-//     return plugin;
-// }
 };
 
-createPlugin(document.getElementById('app')!); // app is a <div> element with position: relative
+createPlugin(document.getElementById('app')!); // app is a <div> element with position: relativeE
+
+window.addEventListener('storage', function ()) {
+    createPlugin(document.getElementById('app')!)
+}
