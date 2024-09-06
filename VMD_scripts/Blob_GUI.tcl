@@ -7,14 +7,14 @@ if [winfo exists .blob] {
 namespace eval ::blobulator {
 	# Widths,Heights,Rows and Columns
 	variable buttonWidth 102
-	variable defaultButtonWidth 15
+	variable defaultButtonWidth 7
 	variable dropDownMenuWidth 14 
-	variable canvasWidth 718
+	variable canvasWidth 640
 	variable canvasHeight 2
 	variable atomselectWidth 24
 	variable paraWidth 10
 	variable sliderRow 5
-	variable sliderLength 440
+	variable sliderLength 420
 	variable checkmarkColumn 4
 	variable textColumn 0
 	variable paraColumn 1
@@ -32,17 +32,18 @@ namespace eval ::blobulator {
 	variable hydropathyScale3 "Moon-Fleming"
 	variable graphRepOptions "Blob ID"
 
+
 	#Switch variables and default values 
 	variable hydropathyScaleDictionaryList "Kyte-Doolittle"
 	variable resStart 
 	variable resEnd
-	variable Lmin 
+	variable Lmin 4
 	variable H .4
 	variable MolID 
 	variable isFirst 0
 	variable checkForUpdate
 	variable checkForSelect 
-	
+
 
 	} 
 
@@ -70,8 +71,8 @@ proc ::blobulator::GUI {} {
 	#grid [columnconfigure $blobulator::blobs $::blobulator::checkBoxColumn -uniform]
 
 	#Hydropathy Scale grids
-	grid [label $::blobulator::blobs.t2 -text "Hydropathy Scale:                                                              " -height 2] -row 2 -column $::blobulator::text2Column -columnspan 2
-	grid [checkbutton $::blobulator::blobs.check -text "Auto Updates Hydrophobicity             " \
+	grid [label $::blobulator::blobs.t2 -text "         Hydropathy Scale:                                                              " -height 2] -row 2 -column $::blobulator::text2Column -columnspan 2
+	grid [checkbutton $::blobulator::blobs.check -text "Auto Updates Hydrophobicity         " \
 	 -variable ::blobulator::checkForUpdate -command {::blobulator::blobulationSlider }] -row 2 -column $::blobulator::checkBoxColumn -columnspan 2 -sticky w
 	grid [ttk::combobox $::blobulator::blobs.dmnu2  -textvariable ::blobulator::hydropathyScaleDictionaryList -width $::blobulator::dropDownMenuWidth \
 	 -values [list $::blobulator::hydropathyScale1 $::blobulator::hydropathyScale2 $::blobulator::hydropathyScale3] -state readonly] -pady 6 -row 2 -column $::blobulator::dropDownColumn -columnspan 2 -sticky w
@@ -184,10 +185,16 @@ return
 proc ::blobulator::blobulationSlider {} {
 	if {$::blobulator::isFirst == 1} {
 		if {$::blobulator::checkForSelect == 1} {
-			
+			if {$::blobulator::Lmin == ''} {
+			set ::blobulator::Lmin 1 
+			}
+			if {$::blobulator::H == ''} {
+			set ::blobulator::H 1 
+			}
 			if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
 				::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
 				::blobulator::graphRepUser 
+
 			} elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
 				::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
 				::blobulator::graphRepUser2 
@@ -298,7 +305,9 @@ proc ::blobulator::graphRepUser {} {
 	set count 0
 
 	set sel [atomselect $::blobulator::MolID protein]
+	puts [$sel get user2]
 	set user2length [lsort -unique [$sel get user2]]
+	puts $user2length
 	$sel delete 
 	foreach u2 $user2length {
 

@@ -62,7 +62,9 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 				
 			} 
 
+
 			set chainIndex [::blobulator::blobIndex $blobulated ]
+
 			foreach ci $chainIndex { 
 				lappend chainBlobIndex $ci
 			}
@@ -87,6 +89,7 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 
 		} else {
 		
+
 			set sequence [::blobulator::getSequence $MolID]
 			set hydroS [::blobulator::hydropathyScores $usedDictionary $sequence]
 			if {$hydroS == -1} {
@@ -104,6 +107,7 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 				::blobulator::blobUserAssign $blobulated $MolID
 				::blobulator::blobUser2Assign $::blobulator::blobIndexList $MolID
 				blobUser3Assign $groupedBlob $MolID
+
 	}
 	#Makes sure procedures that fail to pass checks can't assign values. 
 
@@ -639,7 +643,7 @@ proc ::blobulator::blobIndex { blob } {
 	
 	
 	set blobChar q
-	set count 1
+	set count 0
 	set countList {}
 	
 
@@ -788,7 +792,7 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 	set clean [atomselect $molid all]
 	$clean set user2 0
 	$clean delete
-
+	
 	set sel [atomselect $molid "alpha and protein"]
 	$sel set user2 $blob2
 	$sel delete
