@@ -40,7 +40,7 @@ namespace eval ::blobulator {
 	variable Lmin 4
 	variable H .4
 	variable MolID 
-	variable isFirst 0
+	variable isFirstTimeBlobulating 0
 	variable checkForUpdate
 	variable checkForSelect 
 
@@ -124,13 +124,13 @@ proc ::blobulator::GUI {} {
 #
 #	Global Arguments:
 #	::blobulator::graphRepOptions (List): A list of graph representation options, decided which graphuser proc called depending on what the variable is set to
-#	isFirst (Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
+#	isFirstTimeBlobulating(Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
 #	::blobulator::blobColorType1 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call ::blobulator::graphRepUser proc
 #	::blobulator::blobColorType2 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call ::blobulator::graphRepUser2 proc
 #	blobs (Object): Overarching window frame
 proc blobulation {} {
 	if {$::blobulator::checkForSelect == 1} {
-		set ::blobulator::isFirst 1
+		set ::blobulator::isFirstTimeBlobulating 1 
 	
 	
 	if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
@@ -144,7 +144,7 @@ proc blobulation {} {
 	}
 
 } else {
-	set ::blobulator::isFirst 1
+	set ::blobulator::isFirstTimeBlobulating 1
 	
 	if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
 		::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
@@ -179,11 +179,11 @@ return
 #	
 #	Global Arguments:
 #	::blobulator::graphRepOptions (List): A list of graph representation options, decided which graphuser proc called depending on what the variable is set to
-#	isFirst (Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
+#	isFirstTimeBlobulating(Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
 #	::blobulator::blobColorType1 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call ::blobulator::graphRepUser proc
 #	::blobulator::blobColorType2 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call ::blobulator::graphRepUser2 proc
 proc ::blobulator::blobulationSlider {} {
-	if {$::blobulator::isFirst == 1} {
+	if {$::blobulator::isFirstTimeBlobulating== 1} {
 		if {$::blobulator::checkForSelect == 1} {
 			if {$::blobulator::Lmin == ''} {
 			set ::blobulator::Lmin 1 
@@ -408,10 +408,10 @@ return
 #	MolID (Integer): An integer that assigns what protein the algorithm looks for 
 #
 #	Global Arguments:
-#	isFirst (Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
+#	isFirstTimeBlobulating(Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
 proc ::blobulator::blobClear {MolID} {
 	global isFirst
-	set isFirst 0
+	set isFirstTimeBlobulating0
 	set range [molinfo $::blobulator::MolID get numreps]
 		for {set i 0} {$i < $range} {incr i} {
 			mol delrep 0 $::blobulator::MolID
