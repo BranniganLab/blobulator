@@ -52,7 +52,7 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 				break
 				return -1
 			}
-
+			
 			set blobulated [lindex [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 0]
 		
 			set index [lindex [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 1]
@@ -81,7 +81,7 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 		if {$chainBlobs != -1} {
 			::blobulator::blobUserAssign $chainBlobs $MolID
 			::blobulator::blobUser2Assign $chainBlobIndex $MolID
-			blobUser3Assign $chainBlobGroup $MolID
+			# blobUser3Assign $chainBlobGroup $MolID
 		
 		
 		}
@@ -106,7 +106,7 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 			if {$blobulated != -1} {
 				::blobulator::blobUserAssign $blobulated $MolID
 				::blobulator::blobUser2Assign $::blobulator::blobIndexList $MolID
-				blobUser3Assign $groupedBlob $MolID
+				# blobUser3Assign $groupedBlob $MolID
 
 	}
 	#Makes sure procedures that fail to pass checks can't assign values. 
@@ -503,7 +503,7 @@ proc ::blobulator::hBlob { digitizedSeq lMin } {
 #    Arguments:
 #    blobList (list): A list of tuples that show the location of hblobs  
 #    digitizedSeq (list): A list of 1's and 0's that are determined by the hydrophobic threshold 
-#	lMin (integer): An integer that decided the minimum length of an hblob
+#	 lMin (integer): An integer that decided the minimum length of an hblob
 #
 #	 Results:
 #	 Should add to the blobList of tuples to include s blobs 
@@ -704,6 +704,12 @@ proc ::blobulator::blobGroup { blob } {
 return $groupList
 }
 
+#
+#	Takes a generated list of 1, 2, and 3s and assigns each residue a user value relating to these numbers
+#
+#	Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for
+#	blob1 (List): A list of 1's, 2's, and 3's. The 1's represent h's the 2's represent s's and the 3's represent p's
 proc ::blobulator::blobUserAssign { blob1 MolID } { 
 	set molid [string tolower $MolID]
 	set clean [atomselect $molid all]
@@ -731,6 +737,13 @@ proc ::blobulator::blobUserAssign { blob1 MolID } {
 	
  }
 
+#
+#	Takes a generated list of 1, 2, and 3s and assigns each residue a user value relating to these numbers, but only for relevant chains
+#
+#	Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for
+#	blob1 (List): A list of 1's, 2's, and 3's. The 1's represent h's the 2's represent s's and the 3's represent p's
+#	chainList (List): A list of chains for a protein that the user values will assign to
 proc ::blobulator::blobUserAssignSelector {blob1 MolID chainList} {
 	
 
@@ -760,6 +773,13 @@ proc ::blobulator::blobUserAssignSelector {blob1 MolID chainList} {
 		
 }
 
+#
+#	Takes a generated list of 1, 2, and 3s and assigns each residue a user value relating to these numbers, but only for relevant chains
+#
+#	Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for
+#	blob1 (List): A list of 1's, 2's, and 3's. The 1's represent h's the 2's represent s's and the 3's represent p's
+#	chainList (List): A list of chains for a protein that the user values will assign to
 proc ::blobulator::blobUser2AssignSelector { blob2 MolID chainList} {
 	set molid [string tolower $MolID]
 	set clean [atomselect $molid all]
@@ -786,6 +806,12 @@ proc ::blobulator::blobUser2AssignSelector { blob2 MolID chainList} {
 	} 
 }
 
+#
+#	Takes a generated list of numbers that refer to grouping in the protein and assigns user values
+#
+#	Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for
+#	blob2 (List): A list of numbers that represent the number of groups in the protein
 proc ::blobulator::blobUser2Assign { blob2 MolID } {
 	
 	set molid [string tolower $MolID]
@@ -812,12 +838,12 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 	} 
 }
 
-proc blobUser3Assign { blob3 MolID } {
-	set lower [string tolower $MolID]
-	set sel [atomselect $lower "alpha and protein" ]
-	$sel set user3 $blob3 
-	$sel delete 
-}
+# proc blobUser3Assign { blob3 MolID } {
+# 	set lower [string tolower $MolID]
+# 	set sel [atomselect $lower "alpha and protein" ]
+# 	$sel set user3 $blob3 
+# 	$sel delete 
+# }
 
 
 
