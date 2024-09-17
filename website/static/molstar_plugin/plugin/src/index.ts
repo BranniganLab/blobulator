@@ -2,62 +2,22 @@ import { DefaultPluginUISpec, PluginUISpec } from '../../node_modules/molstar/li
 import { createPluginUI } from '../../node_modules/molstar/lib/mol-plugin-ui';
 import { renderReact18 } from '../../node_modules/molstar/lib/mol-plugin-ui/react18';
 import { PluginConfig } from '../../node_modules/molstar/lib/mol-plugin/config';
-import { parsePDB } from '../../node_modules/molstar/lib/mol-io/reader/pdb/parser';
-import { Viewer } from '../../node_modules/molstar/lib/apps/viewer';
 
 import { MolScriptBuilder as MS, MolScriptBuilder } from '../../node_modules/molstar/lib/mol-script/language/builder';
 import { Color } from '../../node_modules/molstar/lib/mol-util/color';
 
 import { StateTransforms } from '../../node_modules/molstar/lib/mol-plugin-state/transforms';
 import { createStructureRepresentationParams } from '../../node_modules/molstar/lib/mol-plugin-state/helpers/structure-representation-params'
-import { cwd } from 'process';
-import { readFile } from 'fs';
-import { json } from 'stream/consumers';
 
 
 const MySpec: PluginUISpec = {
     ...DefaultPluginUISpec(),
     config: [
-        [PluginConfig.VolumeStreaming.Enabled, false],
-        // [PluginConfig.Viewport.ShowExpand, false],
-        // [PluginConfig.Viewport.ShowControls, false],
-        // [PluginConfig.Viewport.ShowSettings, false],
-        // [PluginConfig.Viewport.ShowAnimation, false],
+        [PluginConfig.VolumeStreaming.Enabled, false]
     ]
 }
 
-async function createPlugin(parent: HTMLElement) {
-    const defaultSpec = DefaultPluginUISpec();
-    const plugin = await createPluginUI({
-      target: parent,
-      // spec: MySpec,
-      // render: renderReact18
-      render: renderReact18,
-            spec: {
-                ...defaultSpec,
-                layout: {
-                    initial: {
-                        isExpanded: false,
-                        showControls: false
-                    },
-                },
-                components: {
-                    controls: { left: 'none', right: 'none', top: 'none', bottom: 'none' },
-                },
-                canvas3d: {
-                    camera: {
-                        helper: { axes: { name: 'off', params: {} } }
-                    }
-                },
-                config: [
-                    [PluginConfig.Viewport.ShowExpand, false],
-                    [PluginConfig.Viewport.ShowControls, false],
-                    [PluginConfig.Viewport.ShowSelectionMode, false],
-                    [PluginConfig.Viewport.ShowAnimation, false],
-                ]
-            }
-    });
-
+async function createBlobRepresentation(plugin) {
     let contentString = localStorage.getItem('pdb_file');
     localStorage.removeItem('pdb_file')
     const data = await plugin.builders.data.rawData({data: contentString})
@@ -74,7 +34,7 @@ async function createPlugin(parent: HTMLElement) {
     const update = plugin.build();
 
     builder.buildRepresentation(update, components.polymer, { type: 'cartoon', typeParams: { alpha: 0.0 }, color : 'uniform', colorParams: { value: Color(0x1A5653) } }, { tag: 'polymer' });
-
+    
     let blobString = localStorage.getItem('blobSeq')
     let blobArray = blobString?.split(',')
     var p_arr: number[] = []
@@ -150,11 +110,44 @@ async function createPlugin(parent: HTMLElement) {
 
     update.commit();
     };
+}
 
+async function createPlugin(parent: HTMLElement) {
+    const defaultSpec = DefaultPluginUISpec();
+    const plugin = await createPluginUI({
+      target: parent,
+      render: renderReact18,
+            spec: {
+                ...defaultSpec,
+                layout: {
+                    initial: {
+                        isExpanded: false,
+                        showControls: false
+                    },
+                },
+                components: {
+                    controls: { left: 'none', right: 'none', top: 'none', bottom: 'none' },
+                },
+                canvas3d: {
+                    camera: {
+                        helper: { axes: { name: 'off', params: {} } }
+                    }
+                },
+                config: [
+                    [PluginConfig.Viewport.ShowExpand, false],
+                    [PluginConfig.Viewport.ShowControls, false],
+                    [PluginConfig.Viewport.ShowSelectionMode, false],
+                    [PluginConfig.Viewport.ShowAnimation, false],
+                ]
+            }
+    });
+
+    createBlobRepresentation(plugin);
 };
 
 createPlugin(document.getElementById('app')!); // app is a <div> element with position: relativeE
 
-window.addEventListener('storage', function ()) {
+const hydroSlider = document.getElementById("cutoff_user_slider")
+hydroSlider?.addEventListener("change", () => {
     createPlugin(document.getElementById('app')!)
-}
+});
