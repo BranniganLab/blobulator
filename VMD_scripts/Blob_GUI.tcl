@@ -49,7 +49,7 @@ namespace eval ::blobulator {
 
 proc ::blobulator::Window {} {
 variable blobs [toplevel ".blob"]
-	wm title $::blobulator::blobs "Blobulator"
+	wm title $::blobulator::blobs "Blobulation"
 	wm resizable $::blobulator::blobs 0 0
 	wm attributes $::blobulator::blobs -alpha 1;
 	wm attributes $::blobulator::blobs -fullscreen 0
@@ -135,9 +135,11 @@ proc blobulation {} {
 	
 	if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
 		::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
+		
 		::blobulator::graphRepUser 
 	} elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
 		::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
+		
 		::blobulator::graphRepUser2 
 	} else {
 		puts "no value"
@@ -305,9 +307,9 @@ proc ::blobulator::graphRepUser {} {
 	set count 0
 
 	set sel [atomselect $::blobulator::MolID protein]
-	puts [$sel get user2]
+	
 	set user2length [lsort -unique [$sel get user2]]
-	puts $user2length
+	
 	$sel delete 
 	foreach u2 $user2length {
 
@@ -377,7 +379,7 @@ proc ::blobulator::graphRepUser2 {} {
 		incr count 
 	}
 	
-	
+
 	
 	mol representation NewCartoon .3 20
 	mol color ColorID 7
@@ -411,7 +413,7 @@ return
 #	isFirstTimeBlobulating(Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
 proc ::blobulator::blobClear {MolID} {
 	global isFirst
-	set isFirstTimeBlobulating0
+	set isFirstTimeBlobulating 0
 	set range [molinfo $::blobulator::MolID get numreps]
 		for {set i 0} {$i < $range} {incr i} {
 			mol delrep 0 $::blobulator::MolID
