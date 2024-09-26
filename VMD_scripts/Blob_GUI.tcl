@@ -43,6 +43,7 @@ namespace eval ::blobulator {
 	variable isFirst 0
 	variable checkForUpdate
 	variable checkForSelect 
+	variable numOfReps {}
 
 
 	} 
@@ -298,16 +299,23 @@ proc ::blobulator::hDefault {} {
 #	for an h blob
 proc ::blobulator::graphRepUser {} { 
 	
-	set range [molinfo $::blobulator::MolID get numreps]
-	for {set i 0} { $i < $range } {incr i} {
-		mol delrep 0 $::blobulator::MolID
-	}  
-	set count 0
+	if { [llength $::blobulator::numOfReps] > 0 } {
+	set ::blobulator::numOfReps [lreverse $::blobulator::numOfReps]
 
+	foreach nOR $::blobulator::numOfReps {
+		
+		
+		mol delrep $nOR $::blobulator::MolID
+		}
+	}
+	
+	set count 0
+	set ::blobulator::numOfReps {}
+	puts $::blobulator::numOfReps
 	set sel [atomselect $::blobulator::MolID protein]
-	puts [$sel get user2]
+	
 	set user2length [lsort -unique [$sel get user2]]
-	puts $user2length
+	
 	$sel delete 
 	foreach u2 $user2length {
 
@@ -319,7 +327,7 @@ proc ::blobulator::graphRepUser {} {
 
 		mol addrep $::blobulator::MolID 
 		mol modselect $count $::blobulator::MolID "user 1 and user2 $u2"
-		
+		lappend ::blobulator::numOfReps $count
 		incr count 
 	}
 	
@@ -328,18 +336,21 @@ proc ::blobulator::graphRepUser {} {
 	mol color ColorID 7
 	mol addrep $::blobulator::MolID 
 	mol modselect $count $::blobulator::MolID "user 2"
+	lappend ::blobulator::numOfReps $count
 	incr count
 
 	mol representation NewCartoon .3 20 
 	mol color ColorID 3
 	mol addrep $::blobulator::MolID 
 	mol modselect $count $::blobulator::MolID "user 3"
+	lappend ::blobulator::numOfReps $count
 	incr count
 
 	mol representation NewCartoon .3 20 
 	mol color ColorID 23
 	mol addrep $::blobulator::MolID 
 	mol modselect $count $::blobulator::MolID "user 1"
+	lappend ::blobulator::numOfReps $count
 	incr count
 return 
 }
@@ -355,11 +366,19 @@ return
 #	for an h blob
 proc ::blobulator::graphRepUser2 {} {
 	
-	set range [molinfo $::blobulator::MolID get numreps]
-	for {set i 0} {$i < $range} {incr i} {
-		mol delrep 0 $::blobulator::MolID
-	}   
+	if {[llength $::blobulator::numOfReps] > 0 } {
+	set ::blobulator::numOfReps [lreverse $::blobulator::numOfReps]
+
+	foreach nOR $::blobulator::numOfReps {
+		
+		
+		mol delrep $nOR $::blobulator::MolID
+		}
+	}
+	
 	set count 0
+	set ::blobulator::numOfReps {}
+	puts $::blobulator::numOfReps
 	set sel [atomselect $::blobulator::MolID protein]
 	set user2length [lsort -unique [$sel get user2]]
 	$sel delete
@@ -373,7 +392,7 @@ proc ::blobulator::graphRepUser2 {} {
 
 		mol addrep $::blobulator::MolID 
 		mol modselect $count $::blobulator::MolID "user 1 and user2 $u2"
-		
+		lappend ::blobulator::numOfReps $count
 		incr count 
 	}
 	
@@ -383,18 +402,21 @@ proc ::blobulator::graphRepUser2 {} {
 	mol color ColorID 7
 	mol addrep $::blobulator::MolID 
 	mol modselect $count $::blobulator::MolID "user 2"
+	lappend ::blobulator::numOfReps $count
 	incr count 
 	
 	mol representation NewCartoon .3 20 
 	mol color ColorID 3
 	mol addrep $::blobulator::MolID 
 	mol modselect $count $::blobulator::MolID "user 3"
+	lappend ::blobulator::numOfReps $count
 	incr count 
 
 	mol representation NewCartoon .3 20 
 	mol color user2
 	mol addrep $::blobulator::MolID 
 	mol modselect $count $::blobulator::MolID "user 1"
+	lappend ::blobulator::numOfReps $count
 	incr count
 	colorScale
 return
@@ -412,10 +434,16 @@ return
 proc ::blobulator::blobClear {MolID} {
 	global isFirst
 	set isFirst 0
-	set range [molinfo $::blobulator::MolID get numreps]
-		for {set i 0} {$i < $range} {incr i} {
-			mol delrep 0 $::blobulator::MolID
-		} 
+	set ::blobulator::numOfReps [lreverse $::blobulator::numOfReps]
+	foreach nOR $::blobulator::numOfReps {
+		puts $nOR
+		mol delrep $nOR $::blobulator::MolID
+	}
+	set ::blobulator::numOfReps 
+	# set range [molinfo $::blobulator::MolID get numreps]
+	# 	for {set i 0} {$i < $range} {incr i} {
+	# 		mol delrep 0 $::blobulator::MolID
+	# 	} 
 return 
 	}
 	
