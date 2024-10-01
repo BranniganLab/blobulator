@@ -50,7 +50,7 @@ namespace eval ::blobulator {
 
 proc ::blobulator::Window {} {
 variable blobs [toplevel ".blob"]
-	wm title $::blobulator::blobs "Blobulator"
+	wm title $::blobulator::blobs "Blobulation"
 	wm resizable $::blobulator::blobs 0 0
 	wm attributes $::blobulator::blobs -alpha 1;
 	wm attributes $::blobulator::blobs -fullscreen 0
@@ -309,7 +309,7 @@ proc ::blobulator::graphRepUser {} {
 		}
 	}
 	
-	set count 0
+	set count [molinfo $::blobulator::MolID get numreps]
 	set ::blobulator::numOfReps {}
 	puts $::blobulator::numOfReps
 	set sel [atomselect $::blobulator::MolID protein]
@@ -376,7 +376,7 @@ proc ::blobulator::graphRepUser2 {} {
 		}
 	}
 	
-	set count 0
+	set count [molinfo $::blobulator::MolID get numreps]
 	set ::blobulator::numOfReps {}
 	puts $::blobulator::numOfReps
 	set sel [atomselect $::blobulator::MolID protein]
@@ -439,7 +439,7 @@ proc ::blobulator::blobClear {MolID} {
 		puts $nOR
 		mol delrep $nOR $::blobulator::MolID
 	}
-	set ::blobulator::numOfReps 
+	set ::blobulator::numOfReps {}
 	# set range [molinfo $::blobulator::MolID get numreps]
 	# 	for {set i 0} {$i < $range} {incr i} {
 	# 		mol delrep 0 $::blobulator::MolID
