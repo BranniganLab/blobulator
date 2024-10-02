@@ -69,7 +69,7 @@ The backend can be installed independently using with ``` pip install blobulator
 #### Basic usage:
 Open a terminal in the blobulator directory and run:
 ```
-python3 [path_to_repository]/examples/blobulate.py --sequence AFRPGAGQPPRRKECTPEVEEGV --oname ./my_blobulation.csv
+python3 -m blobulator --sequence AFRPGAGQPPRRKECTPEVEEGV --oname ./my_blobulation.csv
 ```
 This will blobulate the sequence "AFRPGAGQPPRRKECTPEVEEGV" and write the result to my_blobulation.csv
 
@@ -89,7 +89,7 @@ You may specify additional paramters using the following options:
 - Place a fasta file with one or more sequences in any directory (Note: they must all be DNA or protein sequences)
 - Open a terminal in the blobulator directory and run:
 ```
-python3 [path_to_repository]/examples/blobulate.py --fasta ./relative/path/to/my_sequences.fasta --oname ./relative/path/to/outputs/
+python3 -m blobulator --fasta ./relative/path/to/my_sequences.fasta --oname ./relative/path/to/outputs/
 ```
 - This will blobulate all sequences in my_sequences.fasta (assuming they are protein sequences) and output the results to the outputs folder prefixed by their sequence id.
 
@@ -98,7 +98,7 @@ There is a fasta file in blobulation/example called b_subtilis.fasta that contai
 To blobulate all those proteins with a cutoff of 0.4 and a minimum blob size of 4, we run:
 ```
 mkdir outputs
-python3 [path_to_repository]/examples/blobulate.py --fasta ../example/b_subtilis.fasta --cutoff 0.4 --minBlob 4 --oname outputs/
+python3 -m blobulator --fasta ../example/b_subtilis.fasta --cutoff 0.4 --minBlob 4 --oname outputs/
 ```
 
 ### CSV Outputs:
