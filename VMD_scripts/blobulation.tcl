@@ -835,7 +835,7 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 	
 		foreach rs $resids {
 			
-			set sel2 [atomselect $molid "residue $rs and protein"]
+			set sel2 [atomselect $molid "resid $rs and protein"]
 			$sel2 set user2 $i
 		}
 	
