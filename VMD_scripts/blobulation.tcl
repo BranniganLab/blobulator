@@ -807,7 +807,11 @@ proc ::blobulator::blobUser2AssignSelector { blob2 MolID chainList} {
 			$sel2 set user2 $i
 		}
 	
-	} 
+	}
+	if {$::blobulator::framesOn == 1} {
+		set numOfFrames [molinfo $molid get numframes]
+		::blobulator::blobTraj $numOfFrames $blob2 $MolID
+	}  
 }
 
 #
