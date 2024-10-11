@@ -411,7 +411,7 @@ return
 #	isFirstTimeBlobulating(Integer): A number that swtiches to 1 when the blobulation proc has been called and 0 when blobulation hasnn't been called
 proc ::blobulator::blobClear {MolID} {
 	global isFirst
-	set isFirstTimeBlobulating0
+	set isFirstTimeBlobulating 0
 	set range [molinfo $::blobulator::MolID get numreps]
 		for {set i 0} {$i < $range} {incr i} {
 			mol delrep 0 $::blobulator::MolID
