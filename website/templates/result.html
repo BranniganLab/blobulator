@@ -106,10 +106,8 @@ $(document).ready( function() {
 
 		//iterate over all figures in figs and update them
 		for (let [key, value] of Object.entries(figs)) { 
-			console.log(key);
 			if (key == "richFig") {
 				if (sel_hydro_scale != 'kyte_doolittle') {
-					console.log(value)
 					value.add_warning_overlay()
 				}
 				else {

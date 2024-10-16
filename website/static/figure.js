@@ -151,7 +151,7 @@ class ZFigure {
 			.attr("y", 100)
 			.attr("font-size", "20px")
 			.attr("id", "warning_text")
-			.text("Enrichment track unavailable for this hydrophobicity scale");
+			.text("Enrichment predictions are only available for the Kyte-Doolittle scale at this time.");
 	}
 
 	remove_warning_overlay() {
