@@ -70,48 +70,48 @@ class ZFigure {
 	// }
 
 	add_resetmutation_button() {
+		// Make a button that allows the user to make an additional mutation
+		var btn = document.createElement("button");
+		btn.innerHTML = "Clear Mutation";
+		btn.id = "reset_mut"
+		btn.type = "button";
+		btn.style.margin = "4px";
+		btn.onclick = function () {
+			if (document.getElementById("mutatebox").checked == true){
+				document.getElementById("mutatebox").click();	
+			};
+			document.getElementById("snp_id").value = 1;
+			document.getElementById("residue_type").value = "R";
+		}
+		var top_container = document.getElementById("result_main_container");
+		top_container.appendChild(btn);
 
-	var btn = document.createElement("button");
-	btn.innerHTML = "Clear Mutation";
-	btn.id = "reset_mut"
-	btn.type = "button";
-	btn.style.margin = "4px";
-	btn.onclick = function () {
-		if (document.getElementById("mutatebox").checked == true){
-			document.getElementById("mutatebox").click();	
-		};
-		document.getElementById("snp_id").value = 1;
-		document.getElementById("residue_type").value = "R";
-	}
-	var top_container = document.getElementById("result_main_container");
-	top_container.appendChild(btn);
+		return this;
+		}
 
-	return this;
-	}
+		add_disappearresultcontrols_button() {
 
-	add_disappearresultcontrols_button() {
+		var btn = document.createElement("button");
+		btn.innerHTML = "Lock Control Panel";
+		btn.id = "lock_ctrl"
+		btn.type = "button";
+		btn.style.margin = "4px";
+		let locked = false
+		btn.onclick = function () {
+			locked = !locked;
+			if (locked) {
+				document.getElementById("result_main_container").style.position = "static";
+				btn.innerHTML = "Unlock Control Panel";
+		}
+			else {
+				document.getElementById("result_main_container").style.position = "sticky";
+				btn.innerHTML = "Lock Control Panel";
+		}
+		}
+		var top_container = document.getElementById("result_main_container");
+		top_container.appendChild(btn);
 
-	var btn = document.createElement("button");
-	btn.innerHTML = "Lock Control Panel";
-	btn.id = "lock_ctrl"
-	btn.type = "button";
-	btn.style.margin = "4px";
-	let locked = false
-	btn.onclick = function () {
-		locked = !locked;
-		if (locked) {
-			document.getElementById("result_main_container").style.position = "static";
-			btn.innerHTML = "Unlock Control Panel";
-	}
-		else {
-			document.getElementById("result_main_container").style.position = "sticky";
-			btn.innerHTML = "Lock Control Panel";
-	}
-	}
-	var top_container = document.getElementById("result_main_container");
-	top_container.appendChild(btn);
-
-	return this;
+		return this;
 	}
 	
 	add_title(title){
@@ -136,6 +136,27 @@ class ZFigure {
 			.attr("font-size", "20px")
 
 		return this;
+	}
+	add_warning_overlay() {
+		this.svg.append("rect")
+			.attr("x", -30)
+			.attr("y", -30)
+			.attr("width", this.WIDTH + 100)
+			.attr("height", this.HEIGHT + 100)
+			.attr("fill", "white")
+			.attr("pointer-events", "all")
+			.attr("id", "overlay")
+		this.svg.append("text")
+			.attr("x", 200)
+			.attr("y", 100)
+			.attr("font-size", "20px")
+			.attr("id", "warning_text")
+			.text("Enrichment predictions are only available for the Kyte-Doolittle scale at this time.");
+	}
+
+	remove_warning_overlay() {
+		this.svg.select("#overlay").remove();
+		this.svg.select("#warning_text").remove();
 	}
 	
 	/* add_tooltip
