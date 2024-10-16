@@ -855,9 +855,27 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 #
 #	Arguments:
 #	MolID (Integer): An integer that assigns what protein the algorithm looks for
+#	blob1 (List): A list of numbers that represent the number of groups in the protein
+#	frames (Intger): An integer representing the number of frames in a trajectory
+proc ::blobulator::blobTrajUser {frames blob1 MolID} {
+	
+}
+
+
+
+
+
+
+
+
+#
+#	Takes a generated list of numbers and applies user values across a trajectory
+#
+#	Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for
 #	blob2 (List): A list of numbers that represent the number of groups in the protein
 #	frames (Intger): An integer representing the number of frames in a trajectory
-proc ::blobulator::blobTraj {frames blob2 MolID} {
+proc ::blobulator::blobTrajUser2 {frames blob2 MolID} {
 	set blobLength [llength [lsort -unique $blob2]]
 	set user2List {}
 	for {set i 0} {$i <= $blobLength} {incr i} {
