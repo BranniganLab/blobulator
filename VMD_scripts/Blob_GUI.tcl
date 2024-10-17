@@ -185,10 +185,10 @@ return
 proc ::blobulator::blobulationSlider {} {
 	if {$::blobulator::isFirstTimeBlobulating== 1} {
 		if {$::blobulator::checkForSelect == 1} {
-			if {$::blobulator::Lmin == ''} {
+			if {$::blobulator::Lmin == NaN} {
 			set ::blobulator::Lmin 1 
 			}
-			if {$::blobulator::H == ''} {
+			if {$::blobulator::H == NaN} {
 			set ::blobulator::H 1 
 			}
 			if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
