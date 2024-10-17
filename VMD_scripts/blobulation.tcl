@@ -52,7 +52,7 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 				break
 				return -1
 			}
-
+			
 			set blobulated [lindex [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 0]
 		
 			set index [lindex [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 1]
@@ -81,7 +81,7 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 		if {$chainBlobs != -1} {
 			::blobulator::blobUserAssign $chainBlobs $MolID
 			::blobulator::blobUser2Assign $chainBlobIndex $MolID
-			blobUser3Assign $chainBlobGroup $MolID
+			# blobUser3Assign $chainBlobGroup $MolID
 		
 		
 		}
@@ -89,23 +89,25 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 
 		} else {
 		
-	set sequence [::blobulator::getSequence $MolID]
-	set hydroS [::blobulator::hydropathyScores $usedDictionary $sequence]
-	if {$hydroS == -1} {
-		return -1
-		}
-	set smoothHydro [::blobulator::hydropathyMean $hydroS $sequence]
-	set digitized [::blobulator::digitize $H $smoothHydro ]
-	set hblob [ ::blobulator::hBlob $digitized $lMin ]
-	set hsblob [ ::blobulator::hsBlob  $hblob $digitized $lMin ]
-	set hpsblob [ ::blobulator::hpsBlob  $hsblob $digitized ]
-	set groupedBlob [::blobulator::blobGroup $hpsblob]
-	set blobulated [::blobulator::blobAssign $hpsblob]
-	set blobIndexList [ ::blobulator::blobIndex $blobulated ]
-	if {$blobulated != -1} {
-		::blobulator::blobUserAssign $blobulated $MolID
-		::blobulator::blobUser2Assign $blobIndexList $MolID
-		blobUser3Assign $groupedBlob $MolID
+
+			set sequence [::blobulator::getSequence $MolID]
+			set hydroS [::blobulator::hydropathyScores $usedDictionary $sequence]
+			if {$hydroS == -1} {
+				return -1
+				}
+			set smoothHydro [::blobulator::hydropathyMean $hydroS $sequence]
+			set digitized [::blobulator::digitize $H $smoothHydro ]
+			set hblob [ ::blobulator::hBlob $digitized $lMin ]
+			set hsblob [ ::blobulator::hsBlob  $hblob $digitized $lMin ]
+			set hpsblob [ ::blobulator::hpsBlob  $hsblob $digitized ]
+			set groupedBlob [::blobulator::blobGroup $hpsblob]
+			set blobulated [::blobulator::blobAssign $hpsblob]
+			set ::blobulator::blobIndexList [ ::blobulator::blobIndex $blobulated ]
+			if {$blobulated != -1} {
+				::blobulator::blobUserAssign $blobulated $MolID
+				::blobulator::blobUser2Assign $::blobulator::blobIndexList $MolID
+				# blobUser3Assign $groupedBlob $MolID
+
 	}
 	#Makes sure procedures that fail to pass checks can't assign values. 
 
@@ -142,6 +144,88 @@ proc ::blobulator::blobulateChain {MolID lMin H Chain usedDictionary} {
     	
 	return [list $blobulated $hpsblob]
 	}	
+
+#
+#	Proc that blobulates by a sequence range
+#
+#	Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for 
+#	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
+# 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
+#	for an h blob
+#	resStart (Integer): An integer that indexes the starting point of the blobulation sequence
+#	resEnd {Integer): An integer that indexes the ending point of the blobulation sequence
+#
+#	Returns:
+#	blobulated (List): A blobulated sequence that is in 1's 2's and 3's
+proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
+	source normalized_hydropathyscales.tcl
+	if {$dictInput == "Kyte-Doolittle"} {
+		set usedDictionary $KD_Normalized
+	}
+
+	if {$dictInput == "Moon-Fleming"} {
+		set usedDictionary $MF_Normalized
+	}
+
+	if {$dictInput == "Eisenberg-Weiss"} {
+		set usedDictionary $EW_Normalized
+	}
+	
+		set chainBlobs {}
+		set chainBlobIndex {}
+		set chainBlobGroup {}
+		set sorted [::blobulator::getSelect $MolID $select]
+		
+		for {set i 0} {$i < [llength $sorted] } { incr i} {
+			set singleChain [lindex $sorted $i] 
+			set chainReturn [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary]
+				if { $chainReturn == -1} {
+				break
+				return -1
+			}	
+			set blobulated [lindex [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 0]
+			
+			set index [lindex [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 1]
+
+			foreach bb $blobulated {
+				lappend chainBlobs $bb
+				
+			} 
+
+			set chainIndex [::blobulator::blobIndex $blobulated ]
+			foreach ci $chainIndex { 
+				lappend chainBlobIndex $ci
+			}
+			
+			set chainGroup [::blobulator::blobGroup $index]
+			foreach cg $chainGroup {
+				lappend chainBlobGroup $cg
+			}
+
+			
+			set completeIndex [::blobulator::blobIndex $blobulated ]
+			
+
+			
+			
+			
+		
+			
+			
+		}
+
+		if {$chainBlobs != -1} {
+		
+		::blobulator::blobUserAssignSelector $chainBlobs $MolID $sorted
+		::blobulator::blobUser2AssignSelector $chainBlobIndex $MolID $sorted
+		
+	
+	
+		}
+		
+		return $chainBlobs
+}
 
 #
 #	Checks the inputs to make sure they're with parameters for future procedures
@@ -198,6 +282,32 @@ proc ::blobulator::getSequence {MolID} {
     
     return $resSeq
 }
+
+#
+#	Proc that only grabs a sequence from a resid range
+#
+#	Arguments:
+#	MolID (integer): number used to organize molecule files in vmd use this to call our desired protein
+#	resStart (Integer): An integer that indexes the starting point of the blobulation sequence
+#	resEnd {Integer): An integer that indexes the ending point of the blobulation sequence
+#
+#	Returns:
+#	resSeq (List): A list of three letter amino acid sequences
+proc ::blobulator::getSelect {MolID select} {
+
+	set nocaseMolID [string tolower $MolID]
+
+    set sel [atomselect $nocaseMolID "$select" ]
+    set sorted [lsort -unique [$sel get chain]]
+    
+
+  	
+    
+    $sel delete
+
+    return $sorted
+}
+
 #
 #	Acquires the MolID and makes a list of the amino acid residues
 #
@@ -230,7 +340,8 @@ proc ::blobulator::hydropathyScores { hydropathyList Sequence } {
 	
 	set hydroScored {}
 	foreach amino $Sequence {
-		if {[lsearch -exact $hydropathyList $amino] == -1} {
+		
+		if {[lsearch $hydropathyList $amino] == -1} {
 			
 			if {$amino == "HID" || $amino == "HIE"} {
 				set value [dict get $hydropathyList "HIS"]
@@ -238,7 +349,7 @@ proc ::blobulator::hydropathyScores { hydropathyList Sequence } {
 				set unknownResidueList {}
 				set count 0
 				foreach aa $Sequence {
-					if {[lsearch -exact $hydropathyList $aa] == -1 } {
+					if {[lsearch $hydropathyList $aa] == -1 } {
 						lappend unknownResidueList $aa
 					}
 					
@@ -267,7 +378,7 @@ proc ::blobulator::hydropathyScores { hydropathyList Sequence } {
 #	Results:
 #	The result is a new list of scores that are averaged between each other
 proc ::blobulator::hydropathyMean { hydroScores Sequence} {
-
+	
 	set hydroList {}
 	set isFirst 1
 	for { set i 0 } { $i < [expr [llength $hydroScores] -1] } {incr i} {
@@ -392,7 +503,7 @@ proc ::blobulator::hBlob { digitizedSeq lMin } {
 #    Arguments:
 #    blobList (list): A list of tuples that show the location of hblobs  
 #    digitizedSeq (list): A list of 1's and 0's that are determined by the hydrophobic threshold 
-#	lMin (integer): An integer that decided the minimum length of an hblob
+#	 lMin (integer): An integer that decided the minimum length of an hblob
 #
 #	 Results:
 #	 Should add to the blobList of tuples to include s blobs 
@@ -532,7 +643,7 @@ proc ::blobulator::blobIndex { blob } {
 	
 	
 	set blobChar q
-	set count 1
+	set count 0
 	set countList {}
 	
 
@@ -593,6 +704,12 @@ proc ::blobulator::blobGroup { blob } {
 return $groupList
 }
 
+#
+#	Takes a generated list of 1, 2, and 3s and assigns each residue a user value relating to these numbers
+#
+#	Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for
+#	blob1 (List): A list of 1's, 2's, and 3's. The 1's represent h's the 2's represent s's and the 3's represent p's
 proc ::blobulator::blobUserAssign { blob1 MolID } { 
 	set molid [string tolower $MolID]
 	set clean [atomselect $molid all]
@@ -620,13 +737,88 @@ proc ::blobulator::blobUserAssign { blob1 MolID } {
 	
  }
 
+#
+#	Takes a generated list of 1, 2, and 3s and assigns each residue a user value relating to these numbers, but only for relevant chains
+#
+#	Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for
+#	blob1 (List): A list of 1's, 2's, and 3's. The 1's represent h's the 2's represent s's and the 3's represent p's
+#	chainList (List): A list of chains for a protein that the user values will assign to
+proc ::blobulator::blobUserAssignSelector {blob1 MolID chainList} {
+	
+
+	set molid [string tolower $MolID]
+	set clean [atomselect $molid all]
+	$clean set user 0
+	$clean delete
+
+
+
+	set sel [atomselect $molid "alpha and chain $chainList"]
+	$sel set user $blob1
+	$sel delete
+
+	for {set i 1} { $i <= 3 } {incr i} {
+		set sel [atomselect $molid "user $i"]
+		set residues [$sel get residue]
+		$sel delete
+		if {[llength $residues] > 1} {
+			foreach rs $residues {
+				set sel2 [atomselect $molid "residue $rs and protein"]
+				$sel2 set user $i
+			}
+			$sel2 delete
+		}
+	}
+		
+}
+
+#
+#	Takes a generated list of 1, 2, and 3s and assigns each residue a user value relating to these numbers, but only for relevant chains
+#
+#	Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for
+#	blob1 (List): A list of 1's, 2's, and 3's. The 1's represent h's the 2's represent s's and the 3's represent p's
+#	chainList (List): A list of chains for a protein that the user values will assign to
+proc ::blobulator::blobUser2AssignSelector { blob2 MolID chainList} {
+	set molid [string tolower $MolID]
+	set clean [atomselect $molid all]
+	$clean set user2 0
+	$clean delete
+
+	set sel [atomselect $molid "protein and alpha and chain $chainList"]
+
+	$sel set user2 $blob2
+	$sel delete
+
+	set blobLength [llength [lsort -unique $blob2]]
+	for {set i 1} { $i < $blobLength } { incr i } {
+		set sel [atomselect $molid "user2 $i"]
+		set residues [$sel get residue]
+		$sel delete
+	
+		foreach rs $residues {
+			
+			set sel2 [atomselect $molid "residue $rs and protein"]
+			$sel2 set user2 $i
+		}
+	
+	} 
+}
+
+#
+#	Takes a generated list of numbers that refer to grouping in the protein and assigns user values
+#
+#	Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for
+#	blob2 (List): A list of numbers that represent the number of groups in the protein
 proc ::blobulator::blobUser2Assign { blob2 MolID } {
 	
 	set molid [string tolower $MolID]
 	set clean [atomselect $molid all]
 	$clean set user2 0
 	$clean delete
-
+	
 	set sel [atomselect $molid "alpha and protein"]
 	$sel set user2 $blob2
 	$sel delete
@@ -646,12 +838,12 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 	} 
 }
 
-proc blobUser3Assign { blob3 MolID } {
-	set lower [string tolower $MolID]
-	set sel [atomselect $lower "alpha and protein" ]
-	$sel set user3 $blob3 
-	$sel delete 
-}
+# proc blobUser3Assign { blob3 MolID } {
+# 	set lower [string tolower $MolID]
+# 	set sel [atomselect $lower "alpha and protein" ]
+# 	$sel set user3 $blob3 
+# 	$sel delete 
+# }
 
 
 
