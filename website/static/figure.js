@@ -146,17 +146,25 @@ class ZFigure {
 			.attr("fill", "white")
 			.attr("pointer-events", "all")
 			.attr("id", "overlay")
+			
 		this.svg.append("text")
-			.attr("x", 200)
+			.attr("x", 110)
 			.attr("y", 100)
 			.attr("font-size", "20px")
+			.attr("fill", "black")
 			.attr("id", "warning_text")
 			.text("Enrichment predictions are only available for the Kyte-Doolittle scale at this time.");
+
+		return this;
+
 	}
 
 	remove_warning_overlay() {
 		this.svg.select("#overlay").remove();
 		this.svg.select("#warning_text").remove();
+		this.svg.selectAll('.skyline').style("opacity", 1.0);
+
+		return this;
 	}
 	
 	/* add_tooltip
@@ -815,7 +823,7 @@ class ZblobChart extends ZChart {
 		points.push({resid: last_resid,
 			height: data[data.length-1].domain_to_numbers});
 
-		this.skyline = this.svg.append('g').classed('skyline', true);
+		this.skyline = this.svg.append('g').classed('skyline', true).attr("id", "skyline");
 		this.skyline.append("path")
 			.attr("class", "mypath")
 			.datum(points)
@@ -833,6 +841,10 @@ class ZblobChart extends ZChart {
 					}
 				})
 				.y((d) => y(d.height)));
+
+		if (!(this.svg.select("#overlay").empty())) {
+			this.svg.selectAll('.skyline').style("opacity", 0);
+		}
 
 		return this;
 	}
