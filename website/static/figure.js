@@ -149,7 +149,7 @@ class ZFigure {
 			
 		this.svg.append("text")
 			.attr("x", 20)
-			.attr("y", 100)
+			.attr("y", 130)
 			.attr("font-size", "20px")
 			.attr("fill", "black")
 			.attr("id", "warning_text")
