@@ -91,18 +91,6 @@ $(document).ready( function() {
 
 		var current_hydro_scale = document.getElementById("hydro_scales")
 		var sel_hydro_scale = current_hydro_scale.value
-		// if (sel_hydro_scale != 'kyte_doolittle') {
-		// 		figs.richfig = new ZblobChart("blobPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
-		// 		.add_title("Enrichment of dSNPs UNAVAILABLE")
-		// 		.add_tooltip("This track is only available for the Kyte and Dooolittle scale");
-		// 	}
-		// else {
-		// 	figs.richFig = new ZblobChart("richPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
-		// 		.add_title("Enrichment of deleterious mutations in blobs with similar properties")
-		// 		.add_tooltip(enrichment_tool_text)
-		// 		.add_zoomtip(zoom_tool_text)
-		// 		.add_ContinuousLegend("RWB", {min: "0.5", med: "1.0", max: "2.0"});
-		// };
 
 		//iterate over all figures in figs and update them
 		for (let [key, value] of Object.entries(figs)) { 
