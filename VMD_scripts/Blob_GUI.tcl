@@ -38,7 +38,7 @@ namespace eval ::blobulator {
 	variable resStart 
 	variable resEnd
 	variable Lmin 4
-	variable H .4
+	variable H 0.4
 	variable MolID 
 	variable isFirstTimeBlobulating 0
 	variable checkForUpdate
@@ -272,14 +272,14 @@ proc ::blobulator::hDefault {} {
 	
 	
 	if {$::blobulator::hydropathyScaleDictionaryList == "Kyte-Doolittle"} {
-		set ::blobulator::H .4
+		set ::blobulator::H 0.4
 	}
 
 	if {$::blobulator::hydropathyScaleDictionaryList == "Eisenberg-Weiss"} {
-		set ::blobulator::H .72
+		set ::blobulator::H 0.72
 	}
 	if {$::blobulator::hydropathyScaleDictionaryList == "Moon-Fleming"} {
-		set ::blobulator::H .35
+		set ::blobulator::H 0.35
 	}
 
 	::blobulator::blobulationSlider 
