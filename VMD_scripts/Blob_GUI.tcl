@@ -45,6 +45,7 @@ namespace eval ::blobulator {
 	variable checkForSelect 
 
 
+
 	} 
 
 proc ::blobulator::Window {} {
@@ -135,10 +136,10 @@ proc blobulation {} {
 	
 	if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
 		::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
-		::blobulator::graphRepUser 
+		::blobulator::graphRepUserSelect $::blobulator::select
 	} elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
 		::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
-		::blobulator::graphRepUser2 
+		::blobulator::graphRepUser2Select $::blobulator::select
 	} else {
 		puts "no value"
 	}
@@ -193,11 +194,11 @@ proc ::blobulator::blobulationSlider {} {
 			}
 			if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
 				::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
-				::blobulator::graphRepUser 
+				::blobulator::graphRepUserSelect $::blobulator::select
 
 			} elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
 				::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
-				::blobulator::graphRepUser2 
+				::blobulator::graphRepUser2Select $::blobulator::select
 			} else {
 				puts "no value"
 			}
@@ -305,9 +306,9 @@ proc ::blobulator::graphRepUser {} {
 	set count 0
 
 	set sel [atomselect $::blobulator::MolID protein]
-	puts [$sel get user2]
+	
 	set user2length [lsort -unique [$sel get user2]]
-	puts $user2length
+	
 	$sel delete 
 	foreach u2 $user2length {
 
@@ -344,6 +345,58 @@ proc ::blobulator::graphRepUser {} {
 return 
 }
 
+#
+#	Runs graphical representations showing hblobs in QuickSurf, p and s blobs in NewCartoon and contrains it to the range provided. 
+#
+#	Arguments:
+#	select (string): A string that creates the ranges for what to graphically show
+proc ::blobulator::graphRepUserSelect {select} { 
+	
+	set range [molinfo $::blobulator::MolID get numreps]
+	for {set i 0} { $i < $range } {incr i} {
+		mol delrep 0 $::blobulator::MolID
+	}  
+	set count 0
+
+	set sel [atomselect $::blobulator::MolID $select]
+	
+	set user2length [lsort -unique [$sel get user2]]
+	
+	$sel delete 
+	foreach u2 $user2length {
+
+		mol representation QuickSurf 1.21 1 .5 3
+		mol material AOChalky
+		mol color ColorID 23
+		
+		
+
+		mol addrep $::blobulator::MolID 
+		mol modselect $count $::blobulator::MolID "user 1 and user2 $u2"
+		
+		incr count 
+	}
+	
+
+	mol representation NewCartoon .3 20
+	mol color ColorID 7
+	mol addrep $::blobulator::MolID 
+	mol modselect $count $::blobulator::MolID "$select and user 2"
+	incr count
+
+	mol representation NewCartoon .3 20 
+	mol color ColorID 3
+	mol addrep $::blobulator::MolID 
+	mol modselect $count $::blobulator::MolID "$select and user 3"
+	incr count
+
+	mol representation NewCartoon .3 20 
+	mol color ColorID 23
+	mol addrep $::blobulator::MolID 
+	mol modselect $count $::blobulator::MolID "$select and user 1"
+	incr count
+return 
+}
 #
 #	Runs graphical representations showing hblobs in QuickSurf (by blob grouping), p and s blobs in NewCartoon
 #
@@ -400,6 +453,57 @@ proc ::blobulator::graphRepUser2 {} {
 return
 }
 
+#
+#	Runs graphical representations showing hblobs in QuickSurf, p and s blobs in NewCartoon and contrains it to the range provided. 
+#
+#	Arguments:
+#	select (string): A string that creates the ranges for what to graphically show
+proc ::blobulator::graphRepUser2Select {select} {
+	
+	set range [molinfo $::blobulator::MolID get numreps]
+	for {set i 0} {$i < $range} {incr i} {
+		mol delrep 0 $::blobulator::MolID
+	}   
+	set count 0
+	set sel [atomselect $::blobulator::MolID $select]
+	set user2length [lsort -unique [$sel get user2]]
+	$sel delete
+	foreach u2 $user2length {
+
+		mol representation QuickSurf 1.21 1 .5 3
+		mol material AOChalky
+		mol color user2
+		
+		
+
+		mol addrep $::blobulator::MolID 
+		mol modselect $count $::blobulator::MolID "user 1 and user2 $u2"
+		
+		incr count 
+	}
+	
+	
+	
+	mol representation NewCartoon .3 20
+	mol color ColorID 7
+	mol addrep $::blobulator::MolID 
+	mol modselect $count $::blobulator::MolID "$select and user 2"
+	incr count 
+	
+	mol representation NewCartoon .3 20 
+	mol color ColorID 3
+	mol addrep $::blobulator::MolID 
+	mol modselect $count $::blobulator::MolID "$select and user 3"
+	incr count 
+
+	mol representation NewCartoon .3 20 
+	mol color user2
+	mol addrep $::blobulator::MolID 
+	mol modselect $count $::blobulator::MolID "$select and user 1"
+	incr count
+	colorScale
+return
+}
 
 #
 #	Program removes all graphical representations
