@@ -163,6 +163,7 @@ proc blobulation {} {
 	bind $::blobulator::blobs.dmnu <<ComboboxSelected>> {::blobulator::blobulationSlider }
 	bind $::blobulator::blobs.e_Length: <Return> {::blobulator::blobulationSlider }
 	bind $::blobulator::blobs.e_Hydrophobicity: <Return> {::blobulator::blobulationSlider }
+	bind $::blobulator::blobs.select <Return> {::blobulator::blobulationSlider }
 return
 }
 
