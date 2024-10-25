@@ -51,26 +51,187 @@ var spec_1 = require("../../node_modules/molstar/lib/mol-plugin-ui/spec");
 var mol_plugin_ui_1 = require("../../node_modules/molstar/lib/mol-plugin-ui");
 var react18_1 = require("../../node_modules/molstar/lib/mol-plugin-ui/react18");
 var config_1 = require("../../node_modules/molstar/lib/mol-plugin/config");
+var builder_1 = require("../../node_modules/molstar/lib/mol-script/language/builder");
 var color_1 = require("../../node_modules/molstar/lib/mol-util/color");
+var transforms_1 = require("../../node_modules/molstar/lib/mol-plugin-state/transforms");
+var structure_representation_params_1 = require("../../node_modules/molstar/lib/mol-plugin-state/helpers/structure-representation-params");
 var MySpec = __assign(__assign({}, (0, spec_1.DefaultPluginUISpec)()), { config: [
-        [config_1.PluginConfig.VolumeStreaming.Enabled, false],
-        // [PluginConfig.Viewport.ShowExpand, false],
-        // [PluginConfig.Viewport.ShowControls, false],
-        // [PluginConfig.Viewport.ShowSettings, false],
-        // [PluginConfig.Viewport.ShowAnimation, false],
+        [config_1.PluginConfig.VolumeStreaming.Enabled, false]
     ] });
+function createBlobRepresentation(plugin) {
+    return __awaiter(this, void 0, void 0, function () {
+        var contentString, data, trajectory, model, structure, components, builder, update, blobString, blobArray, p_arr, tempHArray, h_arr, s_arr, i, blobIndex, nextArrayIndex, _i, h_arr_1, val_h, sel, _a, p_arr_1, val_p, sel, _b, s_arr_1, val_s, sel, _c, h_arr_2, val_h, sel_1, hydroSlider;
+        var _d;
+        return __generator(this, function (_e) {
+            switch (_e.label) {
+                case 0:
+                    contentString = localStorage.getItem('pdb_file');
+                    localStorage.removeItem('pdb_file');
+                    return [4 /*yield*/, plugin.builders.data.rawData({ data: contentString })];
+                case 1:
+                    data = _e.sent();
+                    return [4 /*yield*/, plugin.builders.structure.parseTrajectory(data, 'pdb')];
+                case 2:
+                    trajectory = _e.sent();
+                    return [4 /*yield*/, plugin.builders.structure.createModel(trajectory)];
+                case 3:
+                    model = _e.sent();
+                    return [4 /*yield*/, plugin.builders.structure.createStructure(model)];
+                case 4:
+                    structure = _e.sent();
+                    _d = {};
+                    return [4 /*yield*/, plugin.builders.structure.tryCreateComponentStatic(structure, 'polymer')];
+                case 5:
+                    components = (_d.polymer = _e.sent(),
+                        _d);
+                    builder = plugin.builders.structure.representation;
+                    update = plugin.build();
+                    builder.buildRepresentation(update, components.polymer, { type: 'cartoon', typeParams: { alpha: 0.0 }, color: 'uniform', colorParams: { value: (0, color_1.Color)(0x1A5653) } }, { tag: 'polymer' });
+                    blobString = localStorage.getItem('blobSeq');
+                    console.log(blobString);
+                    blobArray = blobString === null || blobString === void 0 ? void 0 : blobString.split(',');
+                    p_arr = [];
+                    tempHArray = [];
+                    h_arr = [];
+                    s_arr = [];
+                    if (typeof blobArray != 'undefined') {
+                        for (i = 0; i < blobArray.length; i++) {
+                            blobIndex = i + 1;
+                            nextArrayIndex = i + 1;
+                            if (blobArray[i] == 'h' && blobArray[nextArrayIndex] != 'p' && blobArray[nextArrayIndex] != 's') {
+                                tempHArray.push(blobIndex);
+                            }
+                            else if (blobArray[i] == 'h') {
+                                h_arr.push(tempHArray);
+                            }
+                            else if (blobArray[i] == 'p') {
+                                p_arr.push(blobIndex);
+                            }
+                            else if (blobArray[i] == 's') {
+                                s_arr.push(blobIndex);
+                            }
+                            ;
+                        }
+                        ;
+                    }
+                    ;
+                    for (_i = 0, h_arr_1 = h_arr; _i < h_arr_1.length; _i++) {
+                        val_h = h_arr_1[_i];
+                        sel = builder_1.MolScriptBuilder.struct.generator.atomGroups({
+                            'residue-test': builder_1.MolScriptBuilder.core.set.has([builder_1.MolScriptBuilder.set.apply(builder_1.MolScriptBuilder, val_h), builder_1.MolScriptBuilder.ammp('label_seq_id')])
+                        });
+                        update.to(structure)
+                            .apply(transforms_1.StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
+                            .apply(transforms_1.StateTransforms.Representation.StructureRepresentation3D, (0, structure_representation_params_1.createStructureRepresentationParams)(plugin, structure.data, {
+                            type: 'gaussian-surface',
+                            color: 'uniform',
+                            colorParams: { value: (0, color_1.Color)(0x0096FF) },
+                            typeParams: { alpha: 1.0 }
+                        }));
+                        update.commit();
+                    }
+                    for (_a = 0, p_arr_1 = p_arr; _a < p_arr_1.length; _a++) {
+                        val_p = p_arr_1[_a];
+                        sel = builder_1.MolScriptBuilder.struct.generator.atomGroups({
+                            'residue-test': builder_1.MolScriptBuilder.core.rel.eq([builder_1.MolScriptBuilder.struct.atomProperty.macromolecular.label_seq_id(), val_p]),
+                        });
+                        update.to(structure)
+                            .apply(transforms_1.StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
+                            .apply(transforms_1.StateTransforms.Representation.StructureRepresentation3D, (0, structure_representation_params_1.createStructureRepresentationParams)(plugin, structure.data, {
+                            type: 'cartoon',
+                            color: 'uniform',
+                            colorParams: { value: (0, color_1.Color)(0xFFA500) },
+                            typeParams: { alpha: 1.0 }
+                        }));
+                        update.commit();
+                    }
+                    ;
+                    for (_b = 0, s_arr_1 = s_arr; _b < s_arr_1.length; _b++) {
+                        val_s = s_arr_1[_b];
+                        sel = builder_1.MolScriptBuilder.struct.generator.atomGroups({
+                            'residue-test': builder_1.MolScriptBuilder.core.rel.eq([builder_1.MolScriptBuilder.struct.atomProperty.macromolecular.label_seq_id(), val_s]),
+                        });
+                        update.to(structure);
+                        for (_c = 0, h_arr_2 = h_arr; _c < h_arr_2.length; _c++) {
+                            val_h = h_arr_2[_c];
+                            sel_1 = builder_1.MolScriptBuilder.struct.generator.atomGroups({
+                                'residue-test': builder_1.MolScriptBuilder.core.set.has([builder_1.MolScriptBuilder.set.apply(builder_1.MolScriptBuilder, val_h), builder_1.MolScriptBuilder.ammp('label_seq_id')])
+                            });
+                            update.to(structure)
+                                .apply(transforms_1.StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel_1 })
+                                .apply(transforms_1.StateTransforms.Representation.StructureRepresentation3D, (0, structure_representation_params_1.createStructureRepresentationParams)(plugin, structure.data, {
+                                type: 'gaussian-surface',
+                                color: 'uniform',
+                                colorParams: { value: (0, color_1.Color)(0x0096FF) },
+                                typeParams: { alpha: 1.0 }
+                            }));
+                        }
+                        ;
+                        update.commit();
+                    }
+                    ;
+                    hydroSlider = document.getElementById('cutoff_user_slider');
+                    hydroSlider === null || hydroSlider === void 0 ? void 0 : hydroSlider.addEventListener('change', function () {
+                        var blobString = localStorage.getItem('blobSeq');
+                        console.log(blobString);
+                        var blobArray = blobString === null || blobString === void 0 ? void 0 : blobString.split(',');
+                        var p_arr = [];
+                        var tempHArray = [];
+                        var h_arr = [];
+                        var s_arr = [];
+                        if (typeof blobArray != 'undefined') {
+                            for (var i = 0; i < blobArray.length; i++) {
+                                var blobIndex = i + 1;
+                                var nextArrayIndex = i + 1;
+                                if (blobArray[i] == 'h' && blobArray[nextArrayIndex] != 'p' && blobArray[nextArrayIndex] != 's') {
+                                    tempHArray.push(blobIndex);
+                                }
+                                else if (blobArray[i] == 'h') {
+                                    h_arr.push(tempHArray);
+                                }
+                                else if (blobArray[i] == 'p') {
+                                    p_arr.push(blobIndex);
+                                }
+                                else if (blobArray[i] == 's') {
+                                    s_arr.push(blobIndex);
+                                }
+                                ;
+                            }
+                            ;
+                        }
+                        ;
+                        update.to(structure);
+                        for (var _i = 0, h_arr_3 = h_arr; _i < h_arr_3.length; _i++) {
+                            var val_h = h_arr_3[_i];
+                            var sel = builder_1.MolScriptBuilder.struct.generator.atomGroups({
+                                'residue-test': builder_1.MolScriptBuilder.core.set.has([builder_1.MolScriptBuilder.set.apply(builder_1.MolScriptBuilder, val_h), builder_1.MolScriptBuilder.ammp('label_seq_id')])
+                            });
+                            update.to(structure)
+                                .apply(transforms_1.StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
+                                .apply(transforms_1.StateTransforms.Representation.StructureRepresentation3D, (0, structure_representation_params_1.createStructureRepresentationParams)(plugin, structure.data, {
+                                type: 'gaussian-surface',
+                                color: 'uniform',
+                                colorParams: { value: (0, color_1.Color)(0x0096FF) },
+                                typeParams: { alpha: 1.0 }
+                            }));
+                            update.commit();
+                        }
+                        update.commit();
+                    });
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
 function createPlugin(parent) {
     return __awaiter(this, void 0, void 0, function () {
-        var defaultSpec, plugin, contentString, data, trajectory, model, structure, components, builder, update, blobString;
-        var _a;
-        return __generator(this, function (_b) {
-            switch (_b.label) {
+        var defaultSpec, plugin;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
                 case 0:
                     defaultSpec = (0, spec_1.DefaultPluginUISpec)();
                     return [4 /*yield*/, (0, mol_plugin_ui_1.createPluginUI)({
                             target: parent,
-                            // spec: MySpec,
-                            // render: renderReact18
                             render: react18_1.renderReact18,
                             spec: __assign(__assign({}, defaultSpec), { layout: {
                                     initial: {
@@ -91,90 +252,12 @@ function createPlugin(parent) {
                                 ] })
                         })];
                 case 1:
-                    plugin = _b.sent();
-                    contentString = localStorage.getItem('pdb_file');
-                    localStorage.removeItem('pdb_file');
-                    return [4 /*yield*/, plugin.builders.data.rawData({ data: contentString })];
-                case 2:
-                    data = _b.sent();
-                    return [4 /*yield*/, plugin.builders.structure.parseTrajectory(data, 'pdb')];
-                case 3:
-                    trajectory = _b.sent();
-                    return [4 /*yield*/, plugin.builders.structure.createModel(trajectory)];
-                case 4:
-                    model = _b.sent();
-                    return [4 /*yield*/, plugin.builders.structure.createStructure(model)];
-                case 5:
-                    structure = _b.sent();
-                    _a = {};
-                    return [4 /*yield*/, plugin.builders.structure.tryCreateComponentStatic(structure, 'polymer')];
-                case 6:
-                    components = (_a.polymer = _b.sent(),
-                        _a);
-                    builder = plugin.builders.structure.representation;
-                    update = plugin.build();
-                    blobString = localStorage.getItem('blobSeq');
-                    console.log(blobString);
-                    builder.buildRepresentation(update, components.polymer, { type: 'cartoon', typeParams: { alpha: 1.0 }, color: 'uniform', colorParams: { value: (0, color_1.Color)(0x1A5653) } }, { tag: 'polymer' });
-                    return [4 /*yield*/, update.commit()];
-                case 7:
-                    _b.sent();
-                    // let p_arr = [10, 11, 12, 13,  20, 21, 22, 23, 24,  32, 33, 34, 35, 36, 42, 43, 44, 45, 46, 57, 58, 59, 60, 61, 62, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140]
-                    // let h_arr = [[1, 2, 3, 4, 5, 6, 7, 8, 9], [14, 15, 16, 17, 18, 19], [25, 26, 27, 28, 29, 30, 31], [37, 38, 39, 40, 41], [47, 48, 49, 50, 51, 52, 53, 54, 55, 56], [63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78], [81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96]]
-                    // let s_arr = [79, 80]
-                    // for (var val_h of h_arr) {
-                    //     const sel = MS.struct.generator.atomGroups({
-                    //         'residue-test': MS.core.set.has([MS.set(...val_h), MS.ammp('label_seq_id')])
-                    //     });
-                    //     update.to(structure)
-                    //     .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
-                    //     .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
-                    //         type: 'gaussian-surface',
-                    //         color: 'uniform',
-                    //         colorParams: { value: Color(0x0096FF) },
-                    //         typeParams: { alpha: 1.0}
-                    //     }));
-                    // update.commit();
-                    // }
-                    // for (var val_p of p_arr) {
-                    //     const sel = MS.struct.generator.atomGroups({
-                    //     'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), val_p]),
-                    // });
-                    //     update.to(structure)
-                    //     .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
-                    //     .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
-                    //         type: 'cartoon',
-                    //         color: 'uniform',
-                    //         colorParams: { value: Color(0xFFA500) },
-                    //         typeParams: { alpha: 1.0}
-                    //     }));
-                    // update.commit();
-                    // }
-                    // for (var val_s of s_arr) {
-                    //     const sel = MS.struct.generator.atomGroups({
-                    //     'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), val_s]),
-                    // });
-                    //     update.to(structure)
-                    //     .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
-                    //     .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
-                    //         type: 'cartoon',
-                    //         color: 'uniform',
-                    //         colorParams: { value: Color(0x00FF00) },
-                    //         typeParams: { alpha: 1.0}
-                    //     }));
-                    // update.commit();
-                    // }
-                    // update.to(structure)
-                    //     .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
-                    //     .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
-                    //         type: 'gaussian-surface',
-                    //         color: 'uniform',
-                    //         colorParams: { value: Color(0x0096FF) }
-                    //     }));
-                    // await update.commit();
-                    return [2 /*return*/, plugin];
+                    plugin = _a.sent();
+                    createBlobRepresentation(plugin);
+                    return [2 /*return*/];
             }
         });
     });
 }
-createPlugin(document.getElementById('app')); // app is a <div> element with position: relative
+;
+createPlugin(document.getElementById('app')); // app is a <div> element with position: relativeE
