@@ -60,13 +60,13 @@ var MySpec = __assign(__assign({}, (0, spec_1.DefaultPluginUISpec)()), { config:
     ] });
 function createBlobRepresentation(plugin) {
     return __awaiter(this, void 0, void 0, function () {
-        var contentString, data, trajectory, model, structure, components, builder, update, blobString, blobArray, p_arr, tempHArray, h_arr, s_arr, i, blobIndex, nextArrayIndex, _i, h_arr_1, val_h, sel, _a, p_arr_1, val_p, sel, _b, s_arr_1, val_s, sel, _c, h_arr_2, val_h, sel_1, hydroSlider;
+        var contentString, data, trajectory, model, structure, components, builder, update, blobString, blobArray, p_arr, tempHArray, h_arr, s_arr, i, blobIndex, nextArrayIndex, _i, h_arr_1, val_h, sel, _a, p_arr_1, val_p, sel, _b, s_arr_1, val_s, sel, _c, h_arr_2, val_h, sel_1;
         var _d;
         return __generator(this, function (_e) {
             switch (_e.label) {
                 case 0:
+                    plugin.clear();
                     contentString = localStorage.getItem('pdb_file');
-                    localStorage.removeItem('pdb_file');
                     return [4 /*yield*/, plugin.builders.data.rawData({ data: contentString })];
                 case 1:
                     data = _e.sent();
@@ -88,7 +88,6 @@ function createBlobRepresentation(plugin) {
                     update = plugin.build();
                     builder.buildRepresentation(update, components.polymer, { type: 'cartoon', typeParams: { alpha: 0.0 }, color: 'uniform', colorParams: { value: (0, color_1.Color)(0x1A5653) } }, { tag: 'polymer' });
                     blobString = localStorage.getItem('blobSeq');
-                    console.log(blobString);
                     blobArray = blobString === null || blobString === void 0 ? void 0 : blobString.split(',');
                     p_arr = [];
                     tempHArray = [];
@@ -170,54 +169,6 @@ function createBlobRepresentation(plugin) {
                         update.commit();
                     }
                     ;
-                    hydroSlider = document.getElementById('cutoff_user_slider');
-                    hydroSlider === null || hydroSlider === void 0 ? void 0 : hydroSlider.addEventListener('change', function () {
-                        var blobString = localStorage.getItem('blobSeq');
-                        console.log(blobString);
-                        var blobArray = blobString === null || blobString === void 0 ? void 0 : blobString.split(',');
-                        var p_arr = [];
-                        var tempHArray = [];
-                        var h_arr = [];
-                        var s_arr = [];
-                        if (typeof blobArray != 'undefined') {
-                            for (var i = 0; i < blobArray.length; i++) {
-                                var blobIndex = i + 1;
-                                var nextArrayIndex = i + 1;
-                                if (blobArray[i] == 'h' && blobArray[nextArrayIndex] != 'p' && blobArray[nextArrayIndex] != 's') {
-                                    tempHArray.push(blobIndex);
-                                }
-                                else if (blobArray[i] == 'h') {
-                                    h_arr.push(tempHArray);
-                                }
-                                else if (blobArray[i] == 'p') {
-                                    p_arr.push(blobIndex);
-                                }
-                                else if (blobArray[i] == 's') {
-                                    s_arr.push(blobIndex);
-                                }
-                                ;
-                            }
-                            ;
-                        }
-                        ;
-                        update.to(structure);
-                        for (var _i = 0, h_arr_3 = h_arr; _i < h_arr_3.length; _i++) {
-                            var val_h = h_arr_3[_i];
-                            var sel = builder_1.MolScriptBuilder.struct.generator.atomGroups({
-                                'residue-test': builder_1.MolScriptBuilder.core.set.has([builder_1.MolScriptBuilder.set.apply(builder_1.MolScriptBuilder, val_h), builder_1.MolScriptBuilder.ammp('label_seq_id')])
-                            });
-                            update.to(structure)
-                                .apply(transforms_1.StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
-                                .apply(transforms_1.StateTransforms.Representation.StructureRepresentation3D, (0, structure_representation_params_1.createStructureRepresentationParams)(plugin, structure.data, {
-                                type: 'gaussian-surface',
-                                color: 'uniform',
-                                colorParams: { value: (0, color_1.Color)(0x0096FF) },
-                                typeParams: { alpha: 1.0 }
-                            }));
-                            update.commit();
-                        }
-                        update.commit();
-                    });
                     return [2 /*return*/];
             }
         });
@@ -225,7 +176,7 @@ function createBlobRepresentation(plugin) {
 }
 function createPlugin(parent) {
     return __awaiter(this, void 0, void 0, function () {
-        var defaultSpec, plugin;
+        var defaultSpec, plugin, hydroSlider;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -254,6 +205,12 @@ function createPlugin(parent) {
                 case 1:
                     plugin = _a.sent();
                     createBlobRepresentation(plugin);
+                    hydroSlider = document.getElementById('cutoff_user_slider');
+                    hydroSlider === null || hydroSlider === void 0 ? void 0 : hydroSlider.addEventListener('change', function () {
+                        setTimeout(function () {
+                            createBlobRepresentation(plugin);
+                        }, 1000);
+                    });
                     return [2 /*return*/];
             }
         });
