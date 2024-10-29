@@ -148,12 +148,12 @@ class ZFigure {
 			.attr("id", "overlay")
 			
 		this.svg.append("text")
-			.attr("x", 110)
-			.attr("y", 100)
+			.attr("x", 20)
+			.attr("y", 130)
 			.attr("font-size", "20px")
 			.attr("fill", "black")
 			.attr("id", "warning_text")
-			.text("Enrichment predictions are only available for the Kyte-Doolittle scale at this time.");
+			.text("Predicted enrichment of deleterious mutations only available for the Kyte-Doolittle scale at this time.");
 
 		return this;
 
