@@ -176,7 +176,7 @@ function createBlobRepresentation(plugin) {
 }
 function createPlugin(parent) {
     return __awaiter(this, void 0, void 0, function () {
-        var defaultSpec, plugin, hydroSlider;
+        var defaultSpec, plugin, elementsArray;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -205,11 +205,13 @@ function createPlugin(parent) {
                 case 1:
                     plugin = _a.sent();
                     createBlobRepresentation(plugin);
-                    hydroSlider = document.getElementById('cutoff_user_slider');
-                    hydroSlider === null || hydroSlider === void 0 ? void 0 : hydroSlider.addEventListener('change', function () {
-                        setTimeout(function () {
-                            createBlobRepresentation(plugin);
-                        }, 1000);
+                    elementsArray = document.querySelectorAll('.mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales');
+                    elementsArray.forEach(function (elem) {
+                        elem.addEventListener('change', function () {
+                            setTimeout(function () {
+                                createBlobRepresentation(plugin);
+                            }, 1000);
+                        });
                     });
                     return [2 /*return*/];
             }
