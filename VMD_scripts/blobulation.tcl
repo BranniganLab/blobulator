@@ -733,8 +733,9 @@ proc ::blobulator::blobUserAssign { blob1 MolID } {
 			foreach rs $resids {
 				set sel2 [atomselect $molid "resid $rs and protein"]
 				$sel2 set user $i
+				$sel2 delete
 			}
-			$sel2 delete
+			
 		}
 	}
 			
@@ -770,8 +771,9 @@ proc ::blobulator::blobUserAssignSelector {blob1 MolID chainList} {
 			foreach rs $residues {
 				set sel2 [atomselect $molid "residue $rs and protein"]
 				$sel2 set user $i
+				$sel2 delete
 			}
-			$sel2 delete
+			
 		}
 	}
 		
@@ -805,6 +807,7 @@ proc ::blobulator::blobUser2AssignSelector { blob2 MolID chainList} {
 			
 			set sel2 [atomselect $molid "residue $rs and protein"]
 			$sel2 set user2 $i
+			$sel2 delete
 		}
 	
 	}
@@ -841,6 +844,7 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 			
 			set sel2 [atomselect $molid "resid $rs and protein"]
 			$sel2 set user2 $i
+			$sel2 delete
 		}
 	
 	} 
