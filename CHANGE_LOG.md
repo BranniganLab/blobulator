@@ -56,3 +56,10 @@
 - Bug fixes
 - Added algorithm description to the 'About' tab
 - NCPR track now scaled to be between -0.2 and +0.2
+
+## Version 0.9.8
+- Added option to lock conrol panel to the top of the screen on the output page
+- rs number popup window stays for longer when mouse hovers over it 
+- Minor interface-related bug fixes
+- Warning message appears for enrichment of dSNPs in blobs with similar properties track when hydropathy scale is changed from Kyte-Doolittle
+- Warning message appears if the aspect ratio of the window matches a cellphone
