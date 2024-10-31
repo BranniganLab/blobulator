@@ -5,6 +5,7 @@
 # h's are for hydrophobic blobs, s's are for short blobs, and p's are for polar blobs 
 namespace eval ::blobulator:: {
 	variable framesOn 0
+	variable framesTotal 1
 } 
 #
 #	The overarching proc, users use this to run program
@@ -247,6 +248,7 @@ proc ::blobulator::checker {MolID lMin H} {
 	
 	if {[molinfo $MolID get numframes] > 1} {
 		set ::blobulator::framesOn 1
+		set ::blobulator::framesTotal [molinfo $MolID get numframes]
 	}
 	set res [$sel get resname]
 	if {$lMin < 1} {
@@ -719,26 +721,30 @@ proc ::blobulator::blobUserAssign { blob1 MolID } {
 	set clean [atomselect $molid all]
 	$clean set user 0
 	$clean delete
-
-	set sel [atomselect $molid "alpha and protein"]
-	$sel set user $blob1
-	$sel delete
-
-	#Only have 3 user values and therefore know how many increments are needed 
-	for {set i 1} { $i <= 3 } {incr i} {
-		set sel [atomselect $molid "user $i"]
-		set resids [$sel get resid]
+	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
+		set sel [atomselect $molid "alpha and protein"]
+		$sel frame $i
+		$sel set user $blob1
 		$sel delete
-		if {[llength $resids] > 1} {
-			foreach rs $resids {
-				set sel2 [atomselect $molid "resid $rs and protein"]
-				$sel2 set user $i
-				$sel2 delete
-			}
-			
-		}
 	}
+	#Only have 3 user values and therefore know how many increments are needed 
+	
+	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
+		for {set j 1} { $j <= 3 } {incr j} {
+			set sel [atomselect $molid "user $j"]
+			set resids [$sel get resid]
+			$sel delete
+			if {[llength $resids] > 1} {
+				foreach rs $resids {
+					set sel2 [atomselect $molid "resid $rs and protein"]
+					$sel2 frame $i
+					$sel2 set user $j
+					$sel2 delete
+				}
 			
+			}
+		}
+	}		
 	
  }
 
@@ -758,24 +764,28 @@ proc ::blobulator::blobUserAssignSelector {blob1 MolID chainList} {
 	$clean delete
 
 
-
-	set sel [atomselect $molid "alpha and chain $chainList"]
-	$sel set user $blob1
-	$sel delete
-
-	for {set i 1} { $i <= 3 } {incr i} {
-		set sel [atomselect $molid "user $i"]
-		set residues [$sel get residue]
+	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
+		set sel [atomselect $molid "alpha and chain $chainList"]
+		$sel frame $i
+		$sel set user $blob1
 		$sel delete
-		if {[llength $residues] > 1} {
-			foreach rs $residues {
-				set sel2 [atomselect $molid "residue $rs and protein"]
-				$sel2 set user $i
-				$sel2 delete
-			}
-			
-		}
 	}
+
+	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
+		for {set j 1} { $j <= 3 } {incr j} {
+			set sel [atomselect $molid "user $j"]
+			set residues [$sel get residue]
+			$sel delete
+			if {[llength $residues] > 1} {
+				foreach rs $residues {
+					set sel2 [atomselect $molid "residue $rs and protein"]
+					$sel2 frame $i
+					$sel2 set user $j
+					$sel2 delete
+				}
+				
+			}
+		}
 		
 }
 
@@ -813,7 +823,7 @@ proc ::blobulator::blobUser2AssignSelector { blob2 MolID chainList} {
 	}
 	if {$::blobulator::framesOn == 1} {
 		set numOfFrames [molinfo $molid get numframes]
-		::blobulator::blobTraj $numOfFrames $blob2 $MolID
+		::blobulator::blobTrajUser2 $numOfFrames $blob2 $MolID
 	}  
 }
 
@@ -850,7 +860,7 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 	} 
 	if {$::blobulator::framesOn == 1} {
 		set numOfFrames [molinfo $molid get numframes]
-		::blobulator::blobTraj $numOfFrames $blob2 $MolID
+		::blobulator::blobTrajUser2 $numOfFrames $blob2 $MolID
 	} 
 }
 
@@ -861,8 +871,9 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 #	MolID (Integer): An integer that assigns what protein the algorithm looks for
 #	blob1 (List): A list of numbers that represent the number of groups in the protein
 #	frames (Intger): An integer representing the number of frames in a trajectory
-proc ::blobulator::blobTrajUser {frames blob1 MolID} {
-	
+proc ::blobulator::blobTrajUser {frames blob MolID} {
+	set sel [atomselect $MolID "user"]
+
 }
 
 
