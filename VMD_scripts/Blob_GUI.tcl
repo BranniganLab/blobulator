@@ -191,7 +191,7 @@ proc ::blobulator::blobulationSlider {} {
 			set ::blobulator::Lmin 1 
 			}
 			if {$::blobulator::H == NaN} {
-			set ::blobulator::H 1 
+			set ::blobulator::H .1 
 			}
 			if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
 				::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
@@ -373,6 +373,10 @@ proc ::blobulator::graphRepUserSelect {select} {
 		
 
 		if {[string index $u2 0] == [llength $user2length]} {
+			puts "boolin"
+			mol addrep $::blobulator::MolID 
+			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2 and $select"
+		} elseif {[string index $u2 0] == [lindex $user2length 0]} {
 			
 			mol addrep $::blobulator::MolID 
 			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2 and $select"
@@ -488,6 +492,11 @@ proc ::blobulator::graphRepUser2Select {select} {
 			
 			mol addrep $::blobulator::MolID 
 			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2 and $select"
+		} elseif {[string index $u2 0] == [lindex $user2length 0]} {
+			
+			mol addrep $::blobulator::MolID 
+			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2 and $select"
+
 		} else {
 			
 			mol addrep $::blobulator::MolID 
