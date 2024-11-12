@@ -787,6 +787,7 @@ proc ::blobulator::blobUserAssignSelector {blob1 MolID chainList} {
 			}
 		}
 		
+	}
 }
 
 #
@@ -863,23 +864,6 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 		::blobulator::blobTrajUser2 $numOfFrames $blob2 $MolID
 	} 
 }
-
-#
-#	Takes a generated list of numbers and applies user values across a trajectory
-#
-#	Arguments:
-#	MolID (Integer): An integer that assigns what protein the algorithm looks for
-#	blob1 (List): A list of numbers that represent the number of groups in the protein
-#	frames (Intger): An integer representing the number of frames in a trajectory
-proc ::blobulator::blobTrajUser {frames blob MolID} {
-	set sel [atomselect $MolID "user"]
-
-}
-
-
-
-
-
 
 
 
