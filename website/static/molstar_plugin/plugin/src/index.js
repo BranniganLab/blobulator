@@ -47,14 +47,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var spec_1 = require("../../node_modules/molstar/lib/mol-plugin-ui/spec");
-var mol_plugin_ui_1 = require("../../node_modules/molstar/lib/mol-plugin-ui");
-var react18_1 = require("../../node_modules/molstar/lib/mol-plugin-ui/react18");
-var config_1 = require("../../node_modules/molstar/lib/mol-plugin/config");
-var builder_1 = require("../../node_modules/molstar/lib/mol-script/language/builder");
-var color_1 = require("../../node_modules/molstar/lib/mol-util/color");
-var transforms_1 = require("../../node_modules/molstar/lib/mol-plugin-state/transforms");
-var structure_representation_params_1 = require("../../node_modules/molstar/lib/mol-plugin-state/helpers/structure-representation-params");
+var spec_1 = require("@molstar-lib/mol-plugin-ui/spec");
+var mol_plugin_ui_1 = require("@molstar-lib/mol-plugin-ui");
+var react18_1 = require("@molstar-lib/mol-plugin-ui/react18");
+var config_1 = require("@molstar-lib/mol-plugin/config");
+var builder_1 = require("@molstar-lib/mol-script/language/builder");
+var color_1 = require("@molstar-lib/mol-util/color");
+var transforms_1 = require("@molstar-lib/mol-plugin-state/transforms");
+var structure_representation_params_1 = require("@molstar-lib/mol-plugin-state/helpers/structure-representation-params");
 var MySpec = __assign(__assign({}, (0, spec_1.DefaultPluginUISpec)()), { config: [
         [config_1.PluginConfig.VolumeStreaming.Enabled, false]
     ] });
