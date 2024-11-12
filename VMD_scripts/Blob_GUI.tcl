@@ -35,10 +35,11 @@ namespace eval ::blobulator {
 
 	#Switch variables and default values 
 	variable hydropathyScaleDictionaryList "Kyte-Doolittle"
+	variable select "all"
 	variable resStart 
 	variable resEnd
 	variable Lmin 4
-	variable H .4
+	variable H .40
 	variable MolID 
 	variable isFirstTimeBlobulating 0
 	variable checkForUpdate
@@ -66,15 +67,14 @@ proc ::blobulator::GUI {} {
 	#Atomselect grids
 	grid [label $::blobulator::blobs.lselect -text "         Selection:" ] -row 0 -column $::blobulator::text2Column -sticky e
 	grid [entry $::blobulator::blobs.select -width $::blobulator::atomselectWidth -textvariable ::blobulator::select] -row 0 -column $::blobulator::textVariableColumn -columnspan 1  -sticky w
-	grid [checkbutton $::blobulator::blobs.checkSelect -text "Set to blobulate chain by atomselect" \
-	-variable ::blobulator::checkForSelect ]  -row 0 -column $::blobulator::checkBoxColumn -columnspan 2 
+	
 
 	#grid [columnconfigure $blobulator::blobs $::blobulator::checkBoxColumn -uniform]
 
 	#Hydropathy Scale grids
 	grid [label $::blobulator::blobs.t2 -text "         Hydropathy Scale:                                                              " -height 2] -row 2 -column $::blobulator::text2Column -columnspan 2
-	grid [checkbutton $::blobulator::blobs.check -text "Auto Updates Hydrophobicity         " \
-	 -variable ::blobulator::checkForUpdate -command {::blobulator::blobulationSlider }] -row 2 -column $::blobulator::checkBoxColumn -columnspan 2 -sticky w
+	grid [checkbutton $::blobulator::blobs.check -text "Auto Updates Hydrophobicity     " \
+	 -variable ::blobulator::checkForUpdate -command {::blobulator::blobulationSlider }] -row 0 -column $::blobulator::checkBoxColumn -rowspan 3 -pady 14
 	grid [ttk::combobox $::blobulator::blobs.dmnu2  -textvariable ::blobulator::hydropathyScaleDictionaryList -width $::blobulator::dropDownMenuWidth \
 	 -values [list $::blobulator::hydropathyScale1 $::blobulator::hydropathyScale2 $::blobulator::hydropathyScale3] -state readonly] -pady 6 -row 2 -column $::blobulator::dropDownColumn -columnspan 2 -sticky w
 
@@ -98,7 +98,7 @@ proc ::blobulator::GUI {} {
 	grid [canvas $::blobulator::blobs.c2 -height $::blobulator::canvasHeight -width $::blobulator::canvasWidth -background black] -columnspan 6
 
 	#Visulize grids 
-	grid [label $::blobulator::blobs.t -text "Visualize by: " -height 2] -row 8 -column $::blobulator::text2Column -columnspan 1 -sticky e
+	grid [label $::blobulator::blobs.t -text "Color by: " -height 2] -row 8 -column $::blobulator::text2Column -columnspan 1 -sticky e
 	grid [ttk::combobox $::blobulator::blobs.dmnu -textvariable ::blobulator::graphRepOptions -width $::blobulator::dropDownMenuWidth \
 	-values [list $::blobulator::blobColorType1 $::blobulator::blobColorType2] -state readonly ] -pady 6 -row 8 -column $::blobulator::dropDownColumn -sticky w
 	
@@ -130,7 +130,7 @@ proc ::blobulator::GUI {} {
 #	::blobulator::blobColorType2 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call ::blobulator::graphRepUser2 proc
 #	blobs (Object): Overarching window frame
 proc blobulation {} {
-	if {$::blobulator::checkForSelect == 1} {
+	
 		set ::blobulator::isFirstTimeBlobulating 1 
 	
 	
@@ -144,20 +144,20 @@ proc blobulation {} {
 		puts "no value"
 	}
 
-} else {
-	set ::blobulator::isFirstTimeBlobulating 1
-	
-	if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
-		::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
-		::blobulator::graphRepUser 
-	} elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
-		::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
-		::blobulator::graphRepUser2 
-	} else {
-		puts "no value"
-	}
 
-	}
+	# set ::blobulator::isFirstTimeBlobulating 1
+	
+	# if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
+	# 	::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
+	# 	::blobulator::graphRepUser 
+	# } elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
+	# 	::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
+	# 	::blobulator::graphRepUser2 
+	# } else {
+	# 	puts "no value"
+	# }
+
+	
 	bind $::blobulator::blobs.s_Length: <ButtonRelease> {::blobulator::blobulationSlider } 
 	bind $::blobulator::blobs.s_Hydrophobicity: <ButtonRelease> {::blobulator::blobulationSlider } 
 	bind $::blobulator::blobs.dmnu <<ComboboxSelected>> {::blobulator::blobulationSlider }
@@ -186,7 +186,7 @@ return
 #	::blobulator::blobColorType2 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call ::blobulator::graphRepUser2 proc
 proc ::blobulator::blobulationSlider {} {
 	if {$::blobulator::isFirstTimeBlobulating== 1} {
-		if {$::blobulator::checkForSelect == 1} {
+		
 			if {$::blobulator::Lmin == NaN} {
 			set ::blobulator::Lmin 1 
 			}
@@ -204,17 +204,7 @@ proc ::blobulator::blobulationSlider {} {
 				puts "no value"
 			}
 		return
-		} 
-		if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
-			::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList 
-			::blobulator::graphRepUser 
-		} elseif {$::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
-			::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
-			::blobulator::graphRepUser2 
-
-		} else {
-			puts "no value"
-		}
+		
 	} else {
 		return 
 	} 
@@ -274,7 +264,7 @@ proc ::blobulator::hDefault {} {
 	
 	
 	if {$::blobulator::hydropathyScaleDictionaryList == "Kyte-Doolittle"} {
-		set ::blobulator::H .4
+		set ::blobulator::H .40
 	}
 
 	if {$::blobulator::hydropathyScaleDictionaryList == "Eisenberg-Weiss"} {
