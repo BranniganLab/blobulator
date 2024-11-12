@@ -191,7 +191,7 @@ proc ::blobulator::blobulationSlider {} {
 			set ::blobulator::Lmin 1 
 			}
 			if {$::blobulator::H == NaN} {
-			set ::blobulator::H 1 
+			set ::blobulator::H .1 
 			}
 			if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
 				::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
@@ -362,8 +362,19 @@ proc ::blobulator::graphRepUserSelect {select} {
 		
 		
 
-		mol addrep $::blobulator::MolID 
-		mol modselect $count $::blobulator::MolID "user 1 and user2 $u2"
+		if {[string index $u2 0] == [llength $user2length]} {
+			puts "boolin"
+			mol addrep $::blobulator::MolID 
+			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2 and $select"
+		} elseif {[string index $u2 0] == [lindex $user2length 0]} {
+			
+			mol addrep $::blobulator::MolID 
+			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2 and $select"
+		} else {
+			
+			mol addrep $::blobulator::MolID 
+			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2"
+		}
 		
 		incr count 
 	}
@@ -372,19 +383,19 @@ proc ::blobulator::graphRepUserSelect {select} {
 	mol representation NewCartoon .3 20
 	mol color ColorID 7
 	mol addrep $::blobulator::MolID 
-	mol modselect $count $::blobulator::MolID "$select and user 2"
+	mol modselect $count $::blobulator::MolID "user 2 and $select"
 	incr count
 
 	mol representation NewCartoon .3 20 
 	mol color ColorID 3
 	mol addrep $::blobulator::MolID 
-	mol modselect $count $::blobulator::MolID "$select and user 3"
+	mol modselect $count $::blobulator::MolID "user 3 and $select"
 	incr count
 
 	mol representation NewCartoon .3 20 
 	mol color ColorID 23
 	mol addrep $::blobulator::MolID 
-	mol modselect $count $::blobulator::MolID "$select and user 1"
+	mol modselect $count $::blobulator::MolID "user 1 and $select"
 	incr count
 return 
 }
@@ -458,6 +469,7 @@ proc ::blobulator::graphRepUser2Select {select} {
 	set count 0
 	set sel [atomselect $::blobulator::MolID $select]
 	set user2length [lsort -unique [$sel get user2]]
+	
 	$sel delete
 	foreach u2 $user2length {
 
@@ -465,11 +477,21 @@ proc ::blobulator::graphRepUser2Select {select} {
 		mol material AOChalky
 		mol color user2
 		
-		
 
-		mol addrep $::blobulator::MolID 
-		mol modselect $count $::blobulator::MolID "user 1 and user2 $u2"
-		
+		if {[string index $u2 0] == [llength $user2length]} {
+			
+			mol addrep $::blobulator::MolID 
+			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2 and $select"
+		} elseif {[string index $u2 0] == [lindex $user2length 0]} {
+			
+			mol addrep $::blobulator::MolID 
+			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2 and $select"
+
+		} else {
+			
+			mol addrep $::blobulator::MolID 
+			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2"
+		}
 		incr count 
 	}
 	
@@ -478,19 +500,19 @@ proc ::blobulator::graphRepUser2Select {select} {
 	mol representation NewCartoon .3 20
 	mol color ColorID 7
 	mol addrep $::blobulator::MolID 
-	mol modselect $count $::blobulator::MolID "$select and user 2"
+	mol modselect $count $::blobulator::MolID "user 2 and $select"
 	incr count 
 	
 	mol representation NewCartoon .3 20 
 	mol color ColorID 3
 	mol addrep $::blobulator::MolID 
-	mol modselect $count $::blobulator::MolID "$select and user 3"
+	mol modselect $count $::blobulator::MolID "user 3 and $select"
 	incr count 
 
 	mol representation NewCartoon .3 20 
 	mol color user2
 	mol addrep $::blobulator::MolID 
-	mol modselect $count $::blobulator::MolID "$select and user 1"
+	mol modselect $count $::blobulator::MolID "user 1 and $select"
 	incr count
 	colorScale
 return
