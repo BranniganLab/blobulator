@@ -35,6 +35,7 @@ namespace eval ::blobulator {
 
 	#Switch variables and default values 
 	variable hydropathyScaleDictionaryList "Kyte-Doolittle"
+	variable select "all"
 	variable resStart 
 	variable resEnd
 	variable Lmin 4
@@ -97,7 +98,7 @@ proc ::blobulator::GUI {} {
 	grid [canvas $::blobulator::blobs.c2 -height $::blobulator::canvasHeight -width $::blobulator::canvasWidth -background black] -columnspan 6
 
 	#Visulize grids 
-	grid [label $::blobulator::blobs.t -text "Visualize by: " -height 2] -row 8 -column $::blobulator::text2Column -columnspan 1 -sticky e
+	grid [label $::blobulator::blobs.t -text "Color by: " -height 2] -row 8 -column $::blobulator::text2Column -columnspan 1 -sticky e
 	grid [ttk::combobox $::blobulator::blobs.dmnu -textvariable ::blobulator::graphRepOptions -width $::blobulator::dropDownMenuWidth \
 	-values [list $::blobulator::blobColorType1 $::blobulator::blobColorType2] -state readonly ] -pady 6 -row 8 -column $::blobulator::dropDownColumn -sticky w
 	
