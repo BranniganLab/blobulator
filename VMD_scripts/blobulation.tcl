@@ -882,14 +882,16 @@ proc ::blobulator::blobTrajUser2 {frames blob2 MolID} {
 		
 		set user2 [$sel get user2]
 		lappend user2List {*}$user2
+		$sel delete
 	}
 	
 
-	$sel delete
+	
 	set sel2 [atomselect $MolID "protein"]
 	for {set i 0} { $i <= $frames} {incr i} {
-		$sel2 set user2 $user2List
 		$sel2 frame $i
+		$sel2 set user2 $user2List
+	
 		
 	}
 	$sel2 delete
