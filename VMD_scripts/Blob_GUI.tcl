@@ -35,7 +35,7 @@ namespace eval ::blobulator {
 	variable graphRepOptions "Blob ID"
 
 
-	#Switch variables and default values 
+	#Switch variables and sets intital values
 	variable hydropathyScaleDictionaryList "Kyte-Doolittle"
 	variable select "all"
 	variable resStart 
