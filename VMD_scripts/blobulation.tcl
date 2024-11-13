@@ -843,14 +843,15 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 	
 	set sel [atomselect $molid "alpha and protein"]
 	$sel set user2 $blob2
+	puts [$sel get user2]
 	$sel delete
 
 	set blobLength [llength [lsort -unique $blob2]]
-	for {set i 1} { $i < $blobLength } { incr i } {
+	for {set i 1} { $i <= $blobLength } { incr i } {
 		set sel [atomselect $molid "user2 $i"]
 		set resids [$sel get resid]
 		$sel delete
-	
+		
 		foreach rs $resids {
 			
 			set sel2 [atomselect $molid "resid $rs and protein"]
@@ -859,6 +860,7 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 		}
 	
 	} 
+	
 	if {$::blobulator::framesOn == 1} {
 		set numOfFrames [molinfo $molid get numframes]
 		::blobulator::blobTrajUser2 $numOfFrames $blob2 $MolID
@@ -875,15 +877,19 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 #	blob2 (List): A list of numbers that represent the number of groups in the protein
 #	frames (Intger): An integer representing the number of frames in a trajectory
 proc ::blobulator::blobTrajUser2 {frames blob2 MolID} {
+	puts $blob2
 	set blobLength [llength [lsort -unique $blob2]]
 	set user2List {}
-	for {set i 0} {$i <= $blobLength} {incr i} {
-		set sel [atomselect $MolID "user2 $i and protein"]
+	for {set i 1} {$i <= $blobLength} {incr i} {
+		set sel [atomselect $MolID "user2 $i "]
 		
 		set user2 [$sel get user2]
+		
 		lappend user2List {*}$user2
+
 		$sel delete
 	}
+	puts $user2List
 	
 
 	
