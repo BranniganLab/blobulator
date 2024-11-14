@@ -1,23 +1,28 @@
 import json
 
 import os
+import datetime
 from user_input_form import InputForm
 from blobulator.amino_acids import properties_hydropathy
 from blobulator.compute_blobs import (compute, clean_df)
 from blobulator.compute_snps import pathogenic_snps
 
-from Bio.PDB.PDBParser import PDBParser
-from Bio.PDB.Polypeptide import PPBuilder
+from Bio.PDB import PDBParser
+from Bio.PDB import PPBuilder
 from Bio import SeqIO
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
 
 import pandas as pd
 import numpy as np
 import time
 import io
+from io import StringIO
 from matplotlib.backends.backend_svg import FigureCanvasSVG
 import urllib.parse
 import urllib.request
 import tempfile
+import pathlib
 
 from flask import Flask, render_template, request, Response, session, jsonify, send_file
 from flask_restful import Resource, Api
@@ -242,14 +247,17 @@ def index():
 
         ## If we have a pdb upload
         elif "action_p" in request.form.to_dict():
-            print(request.files)
             pdb_file = request.files["pdb_file"].read()
-            with open('./static/molstar_plugin/plugin/dist/pdb_files/current.pdb', 'w') as saved_pdb:
+            current_datetime = str(datetime.datetime.now())
+            temporary_pdb_file = './static/molstar_plugin/plugin/dist/pdb_files/' + current_datetime + ".pdb"
+            with open(temporary_pdb_file, 'w') as saved_pdb:
                 saved_pdb.write(str(pdb_file).replace("\\n", "\n"))
                 saved_pdb.close()
 
             for record in SeqIO.parse('./static/molstar_plugin/plugin/dist/pdb_files/current.pdb', 'pdb-atom'):
                 my_seq = record.seq
+
+            os.remove(temporary_pdb_file)
 
             session['sequence'] = str(my_seq)
 
