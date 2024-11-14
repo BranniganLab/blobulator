@@ -76,7 +76,7 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 			foreach cg $chainGroup {
 				lappend chainBlobGroup $cg
 			}
-			#puts $chainGroup
+			
 			
 			
 			
@@ -877,7 +877,7 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 #	blob2 (List): A list of numbers that represent the number of groups in the protein
 #	frames (Intger): An integer representing the number of frames in a trajectory
 proc ::blobulator::blobTrajUser2 {frames blob2 MolID} {
-	puts $blob2
+	
 	set blobLength [llength [lsort -unique $blob2]]
 	set user2List {}
 	for {set i 1} {$i <= $blobLength} {incr i} {
@@ -889,7 +889,7 @@ proc ::blobulator::blobTrajUser2 {frames blob2 MolID} {
 
 		$sel delete
 	}
-	puts $user2List
+	
 	
 
 	
