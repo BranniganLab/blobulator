@@ -3,7 +3,7 @@
 ###Abstract 
 # This file takes a protein sequence and creates user values that are assign to blob type
 # h's are for hydrophobic blobs, s's are for short blobs, and p's are for polar blobs 
-
+namespace eval ::blobulator:: {} 
 #
 #	The overarching proc, users use this to run program
 #
@@ -16,7 +16,7 @@
 #
 #	Results:
 #	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
-proc blobulate {MolID lMin H dictInput} {
+proc ::blobulator::blobulate {MolID lMin H dictInput} {
 	
 	set noCaseDictInput [string tolower $dictInput]
 	source normalized_hydropathyscales.tcl
@@ -31,13 +31,12 @@ proc blobulate {MolID lMin H dictInput} {
 	if {$dictInput == "Eisenberg-Weiss"} {
 		set usedDictionary $EW_Normalized
 	}
-	set argumentsOK [checker $MolID $lMin $H]
+	set argumentsOK [::blobulator::checker $MolID $lMin $H]
 	if {$argumentsOK == -1} {
 		puts "Variables are incorrect ending program"
 		return  
 		}
 	if {$argumentsOK == 1} { 
-		
 		set nocaseMolID [string tolower $MolID]
 		set sel [atomselect $nocaseMolID alpha]
 		set sorted [lsort -unique [$sel get chain]]
@@ -48,25 +47,29 @@ proc blobulate {MolID lMin H dictInput} {
 		set chainBlobGroup {}
 		for {set i 0} {$i < [llength $sorted] } { incr i} {
 			set singleChain [lindex $sorted $i] 
-			set chainReturn [blobulateChain $MolID $lMin $H $singleChain $usedDictionary]
+			set chainReturn [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary]
 				if { $chainReturn == -1} {
 				break
 				return -1
 			}
-			set blobulated [lindex [blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 0]
+
+			set blobulated [lindex [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 0]
 		
-			set index [lindex [blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 1]
+			set index [lindex [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 1]
+
 			foreach bb $blobulated {
 				lappend chainBlobs $bb
 				
 			} 
 
-			set chainIndex [blobIndex $blobulated ]
+
+			set chainIndex [::blobulator::blobIndex $blobulated ]
+
 			foreach ci $chainIndex { 
 				lappend chainBlobIndex $ci
 			}
 			
-			set chainGroup [blobGroup $index]
+			set chainGroup [::blobulator::blobGroup $index]
 			foreach cg $chainGroup {
 				lappend chainBlobGroup $cg
 			}
@@ -76,31 +79,32 @@ proc blobulate {MolID lMin H dictInput} {
 			
 		}
 		if {$chainBlobs != -1} {
-			blobUserAssign $chainBlobs $MolID
-			blobUser2Assign $chainBlobIndex $MolID
+			::blobulator::blobUserAssign $chainBlobs $MolID
+			::blobulator::blobUser2Assign $chainBlobIndex $MolID
 			blobUser3Assign $chainBlobGroup $MolID
 		
 		
 		}
-		return $blobulated
+		return $chainBlobs
+
 		} else {
 		
-	set sequence [getSequence $MolID]
-	set hydroS [hydropathyScores $usedDictionary $sequence]
+	set sequence [::blobulator::getSequence $MolID]
+	set hydroS [::blobulator::hydropathyScores $usedDictionary $sequence]
 	if {$hydroS == -1} {
 		return -1
 		}
-	set smoothHydro [hydropathyMean $hydroS $sequence]
-	set digitized [Digitize $H $smoothHydro ]
-	set hblob [ hBlob $digitized $lMin ]
-	set hsblob [ hsBlob $hblob $digitized $lMin ]
-	set hpsblob [ hpsBlob $hsblob $digitized ]
-	set groupedBlob [blobGroup $hpsblob]
-	set blobulated [blobAssign $hpsblob]
-	set blobIndexList [ blobIndex $blobulated ]
+	set smoothHydro [::blobulator::hydropathyMean $hydroS $sequence]
+	set digitized [::blobulator::digitize $H $smoothHydro ]
+	set hblob [ ::blobulator::hBlob $digitized $lMin ]
+	set hsblob [ ::blobulator::hsBlob  $hblob $digitized $lMin ]
+	set hpsblob [ ::blobulator::hpsBlob  $hsblob $digitized ]
+	set groupedBlob [::blobulator::blobGroup $hpsblob]
+	set blobulated [::blobulator::blobAssign $hpsblob]
+	set blobIndexList [ ::blobulator::blobIndex $blobulated ]
 	if {$blobulated != -1} {
-		blobUserAssign $blobulated $MolID
-		blobUser2Assign $blobIndexList $MolID
+		::blobulator::blobUserAssign $blobulated $MolID
+		::blobulator::blobUser2Assign $blobIndexList $MolID
 		blobUser3Assign $groupedBlob $MolID
 	}
 	#Makes sure procedures that fail to pass checks can't assign values. 
@@ -121,20 +125,20 @@ proc blobulate {MolID lMin H dictInput} {
 #
 #	Results:
 #	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
-proc blobulateChain {MolID lMin H Chain usedDictionary} {
+proc ::blobulator::blobulateChain {MolID lMin H Chain usedDictionary} {
 	source normalized_hydropathyscales.tcl
-	set sequence [getSequenceChain $MolID $Chain]
-	set hydroS [hydropathyScores $usedDictionary $sequence]
+	set sequence [::blobulator::getSequenceChain $MolID $Chain]
+	set hydroS [::blobulator::hydropathyScores $usedDictionary $sequence]
 	if {$hydroS == -1} {
 		return -1
 		}
-	set smoothHydro [hydropathyMean $hydroS $sequence]
-	set digitized [Digitize $H $smoothHydro ]
-	set hblob [ hBlob $digitized $lMin ]
-	set hsblob [ hsBlob $hblob $digitized $lMin ]
-	set hpsblob [ hpsBlob $hsblob $digitized ]
-	set groupedBlobs [blobGroup $hpsblob ]
-    set blobulated [blobAssign $hpsblob]
+	set smoothHydro [::blobulator::hydropathyMean $hydroS $sequence]
+	set digitized [::blobulator::digitize $H $smoothHydro ]
+	set hblob [ ::blobulator::hBlob $digitized $lMin ]
+	set hsblob [ ::blobulator::hsBlob  $hblob $digitized $lMin ]
+	set hpsblob [ ::blobulator::hpsBlob  $hsblob $digitized ]
+	set groupedBlobs [::blobulator::blobGroup $hpsblob ]
+    set blobulated [::blobulator::blobAssign $hpsblob]
     	
 	return [list $blobulated $hpsblob]
 	}	
@@ -149,7 +153,7 @@ proc blobulateChain {MolID lMin H Chain usedDictionary} {
 #	Hydropathy Scale (Array): Specifc scale that the package can use
 #	Results:
 #	The result is that each input will be cleared for future procedures
-proc checker {MolID lMin H} {
+proc ::blobulator::checker {MolID lMin H} {
 
 	set nocaseMolID [string tolower $MolID]
 	set sel [atomselect $nocaseMolID "alpha and protein"]
@@ -185,7 +189,7 @@ proc checker {MolID lMin H} {
 #	Results:
 #	Results should be a list that has every resname in the protein seqeunce
 #	in order
-proc getSequence {MolID} {
+proc ::blobulator::getSequence {MolID} {
 
     set nocaseMolID [string tolower $MolID]
     set sel [atomselect $nocaseMolID "alpha and protein"]
@@ -203,9 +207,9 @@ proc getSequence {MolID} {
 #	Results:
 #	Results should be a list that has every resname in the protein seqeunce
 #	in order
-proc getSequenceChain {MolID Chain} {
+proc ::blobulator::getSequenceChain {MolID Chain} {
 	set lower [string tolower $MolID]
-        set sel [atomselect $lower "alpha and chain $Chain"]
+        set sel [atomselect $lower "alpha and protein and chain $Chain"]
         set resSeq [$sel get resname]
         $sel delete
         
@@ -221,7 +225,7 @@ proc getSequenceChain {MolID Chain} {
 #
 #   Results 
 #	The result is a list that has the hydropathy scores
-proc hydropathyScores { hydropathyList Sequence } {
+proc ::blobulator::hydropathyScores { hydropathyList Sequence } {
 
 	
 	set hydroScored {}
@@ -262,7 +266,7 @@ proc hydropathyScores { hydropathyList Sequence } {
 #
 #	Results:
 #	The result is a new list of scores that are averaged between each other
-proc hydropathyMean { hydroScores Sequence} {
+proc ::blobulator::hydropathyMean { hydroScores Sequence} {
 
 	set hydroList {}
 	set isFirst 1
@@ -307,7 +311,7 @@ proc hydropathyMean { hydroScores Sequence} {
 #
 #	Results
 #	A list of 1 and 0 depending on if the value is past the threshold 
-proc Digitize { H smoothHydroean } {
+proc ::blobulator::digitize { H smoothHydroean } {
 
 	
 	set digList {}
@@ -335,7 +339,7 @@ proc Digitize { H smoothHydroean } {
 #
 #   	Results: 
 #  	 The procedure should give a list of tuples that indicate where an hblobs starts and ends	
-proc hBlob { digitizedSeq lMin } {
+proc ::blobulator::hBlob { digitizedSeq lMin } {
 
 
 	set idx 0 
@@ -392,7 +396,7 @@ proc hBlob { digitizedSeq lMin } {
 #
 #	 Results:
 #	 Should add to the blobList of tuples to include s blobs 
-proc hsBlob { blobList digitizedSeq lMin } {
+proc ::blobulator::hsBlob  { blobList digitizedSeq lMin } {
 
 	
 	
@@ -449,7 +453,7 @@ proc hsBlob { blobList digitizedSeq lMin } {
 #
 #   Results:
 #   Proc should return a list of s, h, and p using the bloblist as a guide
-proc hpsBlob { blobList digitizedSeq } {
+proc ::blobulator::hpsBlob  { blobList digitizedSeq } {
 
 	
  	set isFirst 0
@@ -497,7 +501,7 @@ proc hpsBlob { blobList digitizedSeq } {
 #
 #	Results:
 #	A list of values that can be applied to the user filed in vmd	
-proc blobAssign { blob } {
+proc ::blobulator::blobAssign { blob } {
 
 	
 	#Creating a list of numbers where 1 is h, 2 is s, and 3 is p
@@ -524,7 +528,7 @@ proc blobAssign { blob } {
 #
 #	Results:
 #	A list of values that belongs to a group of blobs 
-proc blobIndex { blob } {
+proc ::blobulator::blobIndex { blob } {
 	
 	
 	set blobChar q
@@ -560,7 +564,7 @@ return $countList
 #
 #	Results:
 #	A list of values that belongs to a group of blobs 			
-proc blobGroup { blob } {
+proc ::blobulator::blobGroup { blob } {
 
 	set groupList {}
 	set hCount 1
@@ -589,7 +593,7 @@ proc blobGroup { blob } {
 return $groupList
 }
 
-proc blobUserAssign { blob1 MolID } { 
+proc ::blobulator::blobUserAssign { blob1 MolID } { 
 	set molid [string tolower $MolID]
 	set clean [atomselect $molid all]
 	$clean set user 0
@@ -616,7 +620,7 @@ proc blobUserAssign { blob1 MolID } {
 	
  }
 
-proc blobUser2Assign { blob2 MolID } {
+proc ::blobulator::blobUser2Assign { blob2 MolID } {
 	
 	set molid [string tolower $MolID]
 	set clean [atomselect $molid all]
