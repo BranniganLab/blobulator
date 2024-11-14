@@ -63,7 +63,6 @@ REQUEST_TIMEOUT = 10
 @app.route("/", methods=["GET", "POST"])
 def index():
     form = InputForm(request.form) #reads the user input
-    print(form)
 
     if request.method == "POST":
         #checks if the user has provided uniprot id or residue sequence
