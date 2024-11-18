@@ -7,22 +7,24 @@ if [winfo exists .blob] {
 namespace eval ::blobulator {
 	# Widths,Heights,Rows and Columns
 	variable buttonWidth 102
-	variable defaultButtonWidth 7
+	variable defaultButtonWidth 10
 	variable dropDownMenuWidth 14 
 	variable canvasWidth 640
 	variable canvasHeight 2
 	variable atomselectWidth 24
 	variable paraWidth 10
 	variable sliderRow 5
-	variable sliderLength 420
+	variable sliderLength 380
 	variable checkmarkColumn 4
 	variable textColumn 0
+	variable thresholdColumn 2
 	variable paraColumn 1
 	variable text2Column 2
 	variable textVariableColumn 3
 	variable dropDownColumn 3
 	variable checkBoxColumn 4
 	variable defaultButtonColumn 4
+	variable rowPadding 14
 	
 	#Variables that are strings
 	variable blobColorType1 "Blob Type"
@@ -33,32 +35,37 @@ namespace eval ::blobulator {
 	variable graphRepOptions "Blob ID"
 
 
-	#Switch variables and default values 
+	#Switch variables and sets intital values
+	#Sets the initial hydrophobicity scale
 	variable hydropathyScaleDictionaryList "Kyte-Doolittle"
+
+	#Sets the initial atomselection
 	variable select "all"
+	
 	variable resStart 
 	variable resEnd
 	variable Lmin 4
-	variable H .4
+	variable H .40
 	variable MolID 
 	variable isFirstTimeBlobulating 0
 	variable checkForUpdate
 	variable checkForSelect 
 
 
+
 	} 
 
 proc ::blobulator::Window {} {
 variable blobs [toplevel ".blob"]
-	wm title $::blobulator::blobs "Blobulator"
+	wm title $::blobulator::blobs "Blobulation"
 	wm resizable $::blobulator::blobs 0 0
 	wm attributes $::blobulator::blobs -alpha 1;
 	wm attributes $::blobulator::blobs -fullscreen 0
 }
 proc ::blobulator::GUI {} {
 	::blobulator::Window
-	grid [label $::blobulator::blobs.1_MolID -text MolID: ] -row 0 -column $::blobulator::textColumn -sticky e
-	grid [entry $::blobulator::blobs.tv_MolID -width 10 -textvariable ::blobulator::MolID ] -row 0 -column $::blobulator::paraColumn -columnspan 1 
+	grid [label $::blobulator::blobs.1_MolID -text MolID: ] -row 0 -column $::blobulator::textColumn -sticky e -rowspan 3 -pady $::blobulator::rowPadding
+	grid [entry $::blobulator::blobs.tv_MolID -width 10 -textvariable ::blobulator::MolID ] -row 0 -column $::blobulator::paraColumn -rowspan 3 -pady $::blobulator::rowPadding -columnspan 1 
 	if {$::blobulator::MolID == ""} {
 		set ::blobulator::MolID "top"
 	}
@@ -66,15 +73,14 @@ proc ::blobulator::GUI {} {
 	#Atomselect grids
 	grid [label $::blobulator::blobs.lselect -text "         Selection:" ] -row 0 -column $::blobulator::text2Column -sticky e
 	grid [entry $::blobulator::blobs.select -width $::blobulator::atomselectWidth -textvariable ::blobulator::select] -row 0 -column $::blobulator::textVariableColumn -columnspan 1  -sticky w
-	grid [checkbutton $::blobulator::blobs.checkSelect -text "Set to blobulate chain by atomselect" \
-	-variable ::blobulator::checkForSelect ]  -row 0 -column $::blobulator::checkBoxColumn -columnspan 2 
+	
 
 	#grid [columnconfigure $blobulator::blobs $::blobulator::checkBoxColumn -uniform]
 
 	#Hydropathy Scale grids
 	grid [label $::blobulator::blobs.t2 -text "         Hydropathy Scale:                                                              " -height 2] -row 2 -column $::blobulator::text2Column -columnspan 2
-	grid [checkbutton $::blobulator::blobs.check -text "Auto Updates Hydrophobicity         " \
-	 -variable ::blobulator::checkForUpdate -command {::blobulator::blobulationSlider }] -row 2 -column $::blobulator::checkBoxColumn -columnspan 2 -sticky w
+	grid [checkbutton $::blobulator::blobs.check -text "Auto Updates Hydrophobicity     " \
+	 -variable ::blobulator::checkForUpdate -command {::blobulator::blobulationSlider }] -row 0 -column $::blobulator::checkBoxColumn -rowspan 3 -pady $::blobulator::rowPadding 
 	grid [ttk::combobox $::blobulator::blobs.dmnu2  -textvariable ::blobulator::hydropathyScaleDictionaryList -width $::blobulator::dropDownMenuWidth \
 	 -values [list $::blobulator::hydropathyScale1 $::blobulator::hydropathyScale2 $::blobulator::hydropathyScale3] -state readonly] -pady 6 -row 2 -column $::blobulator::dropDownColumn -columnspan 2 -sticky w
 
@@ -82,7 +88,7 @@ proc ::blobulator::GUI {} {
 	grid [canvas $::blobulator::blobs.c -height $::blobulator::canvasHeight -width $::blobulator::canvasWidth -background black] -columnspan 6
 
 	#Threhold grids
-	grid [label $::blobulator::blobs.thres -text "Thresholds" -height 1 -font [list arial 9 bold]] -column $::blobulator::textColumn -sticky n
+	grid [label $::blobulator::blobs.thres -text "         Thresholds" -height 1 -font [list arial 9 bold]] -column $::blobulator::thresholdColumn -sticky n -columnspan 2
 	set paraList [list Length: ::blobulator::Lmin 1 50 1 Hydrophobicity: ::blobulator::H .1 1 .01]
 	foreach { entry namedVariable min max interval} $paraList {
 		set entryLabels [label $::blobulator::blobs.l_$entry -text $entry]
@@ -92,7 +98,7 @@ proc ::blobulator::GUI {} {
 		
 		grid $entryLabels -row $::blobulator::sliderRow -column $::blobulator::textColumn -sticky e
 		grid $entryVariable -row $::blobulator::sliderRow -column $::blobulator::paraColumn
-		grid $entrySlider -row $::blobulator::sliderRow -column 2 -columnspan 3 	
+		grid $entrySlider -row $::blobulator::sliderRow -column 2 -columnspan 3 -sticky w	
 		incr ::blobulator::sliderRow
 	}
 	grid [canvas $::blobulator::blobs.c2 -height $::blobulator::canvasHeight -width $::blobulator::canvasWidth -background black] -columnspan 6
@@ -103,7 +109,7 @@ proc ::blobulator::GUI {} {
 	-values [list $::blobulator::blobColorType1 $::blobulator::blobColorType2] -state readonly ] -pady 6 -row 8 -column $::blobulator::dropDownColumn -sticky w
 	
 	#Button grids
-	grid [button $::blobulator::blobs.blobulate -text "Blobulate!" -font [list arial 9 bold] -width $::blobulator::buttonWidth -command {blobulation } ] -columnspan 6
+	grid [button $::blobulator::blobs.blobulate -text "Blobulate" -font [list arial 9 bold] -width $::blobulator::buttonWidth -command {blobulation } ] -columnspan 6
 	grid [button $::blobulator::blobs.ldefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::lminDefault }] -padx 0 -pady 1 -row 5 -columnspan 2 -column $::blobulator::defaultButtonColumn -sticky e
 	grid [button $::blobulator::blobs.hdefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::hDefault }] -padx 0 -pady 1 -row 6 -columnspan 2 -column $::blobulator::defaultButtonColumn -sticky e
 	grid [button $::blobulator::blobs.clear -text "Clear representations" -width $::blobulator::buttonWidth -command {::blobulator::blobClear $::blobulator::MolID}] -column 0 -columnspan 6
@@ -130,39 +136,40 @@ proc ::blobulator::GUI {} {
 #	::blobulator::blobColorType2 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call ::blobulator::graphRepUser2 proc
 #	blobs (Object): Overarching window frame
 proc blobulation {} {
-	if {$::blobulator::checkForSelect == 1} {
+	
 		set ::blobulator::isFirstTimeBlobulating 1 
 	
 	
 	if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
 		::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
-		::blobulator::graphRepUser 
+		::blobulator::graphRepUserSelect $::blobulator::select
 	} elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
 		::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
-		::blobulator::graphRepUser2 
+		::blobulator::graphRepUser2Select $::blobulator::select
 	} else {
 		puts "no value"
 	}
 
-} else {
-	set ::blobulator::isFirstTimeBlobulating 1
+
+	# set ::blobulator::isFirstTimeBlobulating 1
 	
-	if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
-		::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
-		::blobulator::graphRepUser 
-	} elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
-		::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
-		::blobulator::graphRepUser2 
-	} else {
-		puts "no value"
-	}
+	# if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
+	# 	::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
+	# 	::blobulator::graphRepUser 
+	# } elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
+	# 	::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
+	# 	::blobulator::graphRepUser2 
+	# } else {
+	# 	puts "no value"
+	# }
 
-	}
+	
 	bind $::blobulator::blobs.s_Length: <ButtonRelease> {::blobulator::blobulationSlider } 
 	bind $::blobulator::blobs.s_Hydrophobicity: <ButtonRelease> {::blobulator::blobulationSlider } 
 	bind $::blobulator::blobs.dmnu <<ComboboxSelected>> {::blobulator::blobulationSlider }
 	bind $::blobulator::blobs.e_Length: <Return> {::blobulator::blobulationSlider }
 	bind $::blobulator::blobs.e_Hydrophobicity: <Return> {::blobulator::blobulationSlider }
+	bind $::blobulator::blobs.select <Return> {::blobulator::blobulationSlider }
 return
 }
 
@@ -185,35 +192,25 @@ return
 #	::blobulator::blobColorType2 (String): A parameter used for ::blobulator::graphRepOptions checks, if it is set to this variable, will call ::blobulator::graphRepUser2 proc
 proc ::blobulator::blobulationSlider {} {
 	if {$::blobulator::isFirstTimeBlobulating== 1} {
-		if {$::blobulator::checkForSelect == 1} {
-			if {$::blobulator::Lmin == ''} {
+		
+			if {$::blobulator::Lmin == NaN} {
 			set ::blobulator::Lmin 1 
 			}
-			if {$::blobulator::H == ''} {
-			set ::blobulator::H 1 
+			if {$::blobulator::H == NaN} {
+			set ::blobulator::H .1 
 			}
 			if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
 				::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
-				::blobulator::graphRepUser 
+				::blobulator::graphRepUserSelect $::blobulator::select
 
 			} elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
 				::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
-				::blobulator::graphRepUser2 
+				::blobulator::graphRepUser2Select $::blobulator::select
 			} else {
 				puts "no value"
 			}
 		return
-		} 
-		if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
-			::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList 
-			::blobulator::graphRepUser 
-		} elseif {$::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
-			::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::hydropathyScaleDictionaryList
-			::blobulator::graphRepUser2 
-
-		} else {
-			puts "no value"
-		}
+		
 	} else {
 		return 
 	} 
@@ -273,7 +270,7 @@ proc ::blobulator::hDefault {} {
 	
 	
 	if {$::blobulator::hydropathyScaleDictionaryList == "Kyte-Doolittle"} {
-		set ::blobulator::H .4
+		set ::blobulator::H .40
 	}
 
 	if {$::blobulator::hydropathyScaleDictionaryList == "Eisenberg-Weiss"} {
@@ -306,9 +303,9 @@ proc ::blobulator::graphRepUser {} {
 	set count 0
 
 	set sel [atomselect $::blobulator::MolID protein]
-	puts [$sel get user2]
+	
 	set user2length [lsort -unique [$sel get user2]]
-	puts $user2length
+	
 	$sel delete 
 	foreach u2 $user2length {
 
@@ -345,6 +342,69 @@ proc ::blobulator::graphRepUser {} {
 return 
 }
 
+#
+#	Runs graphical representations showing hblobs in QuickSurf, p and s blobs in NewCartoon and contrains it to the range provided. 
+#
+#	Arguments:
+#	select (string): A string that creates the ranges for what to graphically show
+proc ::blobulator::graphRepUserSelect {select} { 
+	
+	set range [molinfo $::blobulator::MolID get numreps]
+	for {set i 0} { $i < $range } {incr i} {
+		mol delrep 0 $::blobulator::MolID
+	}  
+	set count 0
+
+	set sel [atomselect $::blobulator::MolID $select]
+	
+	set user2length [lsort -unique [$sel get user2]]
+	
+	$sel delete 
+	foreach u2 $user2length {
+
+		mol representation QuickSurf 1.21 1 .5 3
+		mol material AOChalky
+		mol color ColorID 23
+		
+		
+
+		if {[string index $u2 0] == [llength $user2length]} {
+			puts "boolin"
+			mol addrep $::blobulator::MolID 
+			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2 and $select"
+		} elseif {[string index $u2 0] == [lindex $user2length 0]} {
+			
+			mol addrep $::blobulator::MolID 
+			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2 and $select"
+		} else {
+			
+			mol addrep $::blobulator::MolID 
+			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2"
+		}
+		
+		incr count 
+	}
+	
+
+	mol representation NewCartoon .3 20
+	mol color ColorID 7
+	mol addrep $::blobulator::MolID 
+	mol modselect $count $::blobulator::MolID "user 2 and $select"
+	incr count
+
+	mol representation NewCartoon .3 20 
+	mol color ColorID 3
+	mol addrep $::blobulator::MolID 
+	mol modselect $count $::blobulator::MolID "user 3 and $select"
+	incr count
+
+	mol representation NewCartoon .3 20 
+	mol color ColorID 23
+	mol addrep $::blobulator::MolID 
+	mol modselect $count $::blobulator::MolID "user 1 and $select"
+	incr count
+return 
+}
 #
 #	Runs graphical representations showing hblobs in QuickSurf (by blob grouping), p and s blobs in NewCartoon
 #
@@ -401,6 +461,68 @@ proc ::blobulator::graphRepUser2 {} {
 return
 }
 
+#
+#	Runs graphical representations showing hblobs in QuickSurf, p and s blobs in NewCartoon and contrains it to the range provided. 
+#
+#	Arguments:
+#	select (string): A string that creates the ranges for what to graphically show
+proc ::blobulator::graphRepUser2Select {select} {
+	
+	set range [molinfo $::blobulator::MolID get numreps]
+	for {set i 0} {$i < $range} {incr i} {
+		mol delrep 0 $::blobulator::MolID
+	}   
+	set count 0
+	set sel [atomselect $::blobulator::MolID $select]
+	set user2length [lsort -unique [$sel get user2]]
+	
+	$sel delete
+	foreach u2 $user2length {
+
+		mol representation QuickSurf 1.21 1 .5 3
+		mol material AOChalky
+		mol color user2
+		
+
+		if {[string index $u2 0] == [llength $user2length]} {
+			
+			mol addrep $::blobulator::MolID 
+			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2 and $select"
+		} elseif {[string index $u2 0] == [lindex $user2length 0]} {
+			
+			mol addrep $::blobulator::MolID 
+			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2 and $select"
+
+		} else {
+			
+			mol addrep $::blobulator::MolID 
+			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2"
+		}
+		incr count 
+	}
+	
+	
+	
+	mol representation NewCartoon .3 20
+	mol color ColorID 7
+	mol addrep $::blobulator::MolID 
+	mol modselect $count $::blobulator::MolID "user 2 and $select"
+	incr count 
+	
+	mol representation NewCartoon .3 20 
+	mol color ColorID 3
+	mol addrep $::blobulator::MolID 
+	mol modselect $count $::blobulator::MolID "user 3 and $select"
+	incr count 
+
+	mol representation NewCartoon .3 20 
+	mol color user2
+	mol addrep $::blobulator::MolID 
+	mol modselect $count $::blobulator::MolID "user 1 and $select"
+	incr count
+	colorScale
+return
+}
 
 #
 #	Program removes all graphical representations
