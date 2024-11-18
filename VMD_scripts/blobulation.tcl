@@ -843,7 +843,7 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 	
 	set sel [atomselect $molid "alpha and protein"]
 	$sel set user2 $blob2
-	puts [$sel get user2]
+	
 	$sel delete
 
 	set blobLength [llength [lsort -unique $blob2]]
