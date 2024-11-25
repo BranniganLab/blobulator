@@ -175,6 +175,12 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 		set usedDictionary $EW_Normalized
 	}
 	
+	set argumentsOK [::blobulator::checker $MolID $lMin $H]
+	if {$argumentsOK == -1} {
+		puts "Variables are incorrect ending program"
+		return  
+		}
+
 		set chainBlobs {}
 		set chainBlobIndex {}
 		set chainBlobGroup {}
@@ -245,7 +251,7 @@ proc ::blobulator::checker {MolID lMin H} {
 	set nocaseMolID [string tolower $MolID]
 	set sel [atomselect $nocaseMolID "alpha and protein"]
 	set sorted [lsort -unique [$sel get chain]]
-	
+	puts [molinfo $MolID get numframes]
 	if {[molinfo $MolID get numframes] > 1} {
 		set ::blobulator::framesOn 1
 		set ::blobulator::framesTotal [molinfo $MolID get numframes]
@@ -730,6 +736,7 @@ proc ::blobulator::blobUserAssign { blob1 MolID } {
 	#Only have 3 user values and therefore know how many increments are needed 
 	
 	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
+		puts $i
 		for {set j 1} { $j <= 3 } {incr j} {
 			set sel [atomselect $molid "user $j"]
 			set resids [$sel get resid]
@@ -765,7 +772,7 @@ proc ::blobulator::blobUserAssignSelector {blob1 MolID chainList} {
 
 
 	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
-		set sel [atomselect $molid "alpha and chain $chainList"]
+		set sel [atomselect $molid "protein and alpha and chain $chainList"]
 		$sel frame $i
 		$sel set user $blob1
 		$sel delete
@@ -774,11 +781,11 @@ proc ::blobulator::blobUserAssignSelector {blob1 MolID chainList} {
 	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
 		for {set j 1} { $j <= 3 } {incr j} {
 			set sel [atomselect $molid "user $j"]
-			set residues [$sel get residue]
+			set residues [$sel get resid]
 			$sel delete
 			if {[llength $residues] > 1} {
 				foreach rs $residues {
-					set sel2 [atomselect $molid "residue $rs and protein"]
+					set sel2 [atomselect $molid "resid $rs and protein"]
 					$sel2 frame $i
 					$sel2 set user $j
 					$sel2 delete
@@ -809,19 +816,20 @@ proc ::blobulator::blobUser2AssignSelector { blob2 MolID chainList} {
 	$sel delete
 
 	set blobLength [llength [lsort -unique $blob2]]
-	for {set i 1} { $i < $blobLength } { incr i } {
+	for {set i 1} { $i <= $blobLength } { incr i } {
 		set sel [atomselect $molid "user2 $i"]
-		set residues [$sel get residue]
+		set residues [$sel get resid]
 		$sel delete
 	
 		foreach rs $residues {
 			
-			set sel2 [atomselect $molid "residue $rs and protein"]
+			set sel2 [atomselect $molid "resid $rs and protein"]
 			$sel2 set user2 $i
 			$sel2 delete
 		}
 	
 	}
+	puts $::blobulator::framesOn
 	if {$::blobulator::framesOn == 1} {
 		set numOfFrames [molinfo $molid get numframes]
 		::blobulator::blobTrajUser2 $numOfFrames $blob2 $MolID
@@ -892,9 +900,10 @@ proc ::blobulator::blobTrajUser2 {frames blob2 MolID} {
 	
 	
 
-	
+	puts "made it!"
 	set sel2 [atomselect $MolID "protein"]
 	for {set i 0} { $i <= $frames} {incr i} {
+		puts $i
 		$sel2 frame $i
 		$sel2 set user2 $user2List
 	
