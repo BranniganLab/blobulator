@@ -368,7 +368,7 @@ proc ::blobulator::graphRepUserSelect {select} {
 		
 
 		if {[string index $u2 0] == [llength $user2length]} {
-			puts "boolin"
+	
 			mol addrep $::blobulator::MolID 
 			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2 and $select"
 		} elseif {[string index $u2 0] == [lindex $user2length 0]} {
