@@ -38,6 +38,7 @@ namespace eval ::blobulator {
 	#Switch variables and sets intital values
 	#Sets the initial hydrophobicity scale
 	variable hydropathyScaleDictionaryList "Kyte-Doolittle"
+
 	#Sets the initial atomselection
 	variable select "all"
 	
