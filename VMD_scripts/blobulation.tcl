@@ -192,10 +192,10 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 		set sorted [::blobulator::getSelect $MolID $select]
 		foreach s $sorted {
 			set check [atomselect $nocaseMolID "alpha and protein and canonAA and chain $s"]
-			if {[llength [$check get resname]] < 1} {
+			if {[llength [$check get resname]] < 3} {
 				set idx [lsearch $sorted $s]
 				set sorted [lreplace $sorted $idx $idx]
-				puts $sorted
+				
 			}
 			$check delete
 		}
@@ -264,7 +264,7 @@ proc ::blobulator::checker {MolID lMin H} {
 	set nocaseMolID [string tolower $MolID]
 	set sel [atomselect $nocaseMolID "alpha and protein and canonAA"]
 	set sorted [lsort -unique [$sel get chain]]
-	puts $sorted
+	
 	if {[molinfo $MolID get numframes] > 1} {
 		set ::blobulator::framesOn 1
 		set ::blobulator::framesTotal [molinfo $MolID get numframes]
@@ -795,7 +795,7 @@ proc ::blobulator::blobUserAssignSelector {blob1 MolID chainList} {
 	for {set j 1} { $j <= 3 } {incr j} {
 		set sel [atomselect $molid "user $j"]
 		set residues [$sel get resid]
-		puts $residues
+		
 		$sel delete
 		if {[llength $residues] > 1} {
 			
