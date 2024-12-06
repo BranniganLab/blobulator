@@ -7,6 +7,8 @@ namespace eval ::blobulator:: {
 	variable framesOn 0
 	variable framesTotal 1
 } 
+atomselect macro canonAA {resname ALA ARG ASN ASP CYS GLN GLU GLY HIS HID HIE ILE LEU LYS MET PHE PRO SET THR TRP TYR VAL}
+
 #
 #	The overarching proc, users use this to run program
 #
@@ -20,7 +22,9 @@ namespace eval ::blobulator:: {
 #	Results:
 #	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
 proc ::blobulator::blobulate {MolID lMin H dictInput} {
-	
+
+
+
 	set noCaseDictInput [string tolower $dictInput]
 	source normalized_hydropathyscales.tcl
 	if {$dictInput == "Kyte-Doolittle"} {
@@ -41,9 +45,9 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 		}
 	if {$argumentsOK == 1} { 
 		set nocaseMolID [string tolower $MolID]
-		set sel [atomselect $nocaseMolID alpha]
+		set sel [atomselect $nocaseMolID "alpha"]
 		set sorted [lsort -unique [$sel get chain]]
-		
+
 
 		set chainBlobs {}
 		set chainBlobIndex {}
@@ -162,6 +166,7 @@ proc ::blobulator::blobulateChain {MolID lMin H Chain usedDictionary} {
 #	Returns:
 #	blobulated (List): A blobulated sequence that is in 1's 2's and 3's
 proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
+	set nocaseMolID [string tolower $MolID]
 	source normalized_hydropathyscales.tcl
 	if {$dictInput == "Kyte-Doolittle"} {
 		set usedDictionary $KD_Normalized
@@ -185,7 +190,15 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 		set chainBlobIndex {}
 		set chainBlobGroup {}
 		set sorted [::blobulator::getSelect $MolID $select]
-		
+		foreach s $sorted {
+			set check [atomselect $nocaseMolID "alpha and protein and canonAA and chain $s"]
+			if {[llength [$check get resname]] < 1} {
+				set idx [lsearch $sorted $s]
+				set sorted [lreplace $sorted $idx $idx]
+				puts $sorted
+			}
+			$check delete
+		}
 		for {set i 0} {$i < [llength $sorted] } { incr i} {
 			set singleChain [lindex $sorted $i] 
 			set chainReturn [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary]
@@ -249,9 +262,9 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 proc ::blobulator::checker {MolID lMin H} {
 
 	set nocaseMolID [string tolower $MolID]
-	set sel [atomselect $nocaseMolID "alpha and protein"]
+	set sel [atomselect $nocaseMolID "alpha and protein and canonAA"]
 	set sorted [lsort -unique [$sel get chain]]
-	
+	puts $sorted
 	if {[molinfo $MolID get numframes] > 1} {
 		set ::blobulator::framesOn 1
 		set ::blobulator::framesTotal [molinfo $MolID get numframes]
@@ -288,7 +301,7 @@ proc ::blobulator::checker {MolID lMin H} {
 proc ::blobulator::getSequence {MolID} {
 
     set nocaseMolID [string tolower $MolID]
-    set sel [atomselect $nocaseMolID "alpha and protein"]
+    set sel [atomselect $nocaseMolID "alpha and protein and canonAA"]
     set resSeq [$sel get resname]
     $sel delete
     
@@ -331,7 +344,7 @@ proc ::blobulator::getSelect {MolID select} {
 #	in order
 proc ::blobulator::getSequenceChain {MolID Chain} {
 	set lower [string tolower $MolID]
-        set sel [atomselect $lower "alpha and protein and chain $Chain"]
+        set sel [atomselect $lower "alpha and protein and canonAA and chain $Chain"]
         set resSeq [$sel get resname]
         $sel delete
         
@@ -728,7 +741,7 @@ proc ::blobulator::blobUserAssign { blob1 MolID } {
 	$clean set user 0
 	$clean delete
 	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
-		set sel [atomselect $molid "alpha and protein"]
+		set sel [atomselect $molid "alpha and protein and canonAA"]
 		$sel frame $i
 		$sel set user $blob1
 		$sel delete
@@ -743,7 +756,7 @@ proc ::blobulator::blobUserAssign { blob1 MolID } {
 			$sel delete
 			if {[llength $resids] > 1} {
 				foreach rs $resids {
-					set sel2 [atomselect $molid "resid $rs and protein"]
+					set sel2 [atomselect $molid "resid $rs and protein and canonAA"]
 					$sel2 frame $i
 					$sel2 set user $j
 					$sel2 delete
@@ -772,30 +785,33 @@ proc ::blobulator::blobUserAssignSelector {blob1 MolID chainList} {
 
 
 	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
-		set sel [atomselect $molid "protein and alpha and chain $chainList"]
+		set sel [atomselect $molid "protein and canonAA and alpha and chain $chainList"]
 		$sel frame $i
 		$sel set user $blob1
 		$sel delete
 	}
 
-	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
-		for {set j 1} { $j <= 3 } {incr j} {
-			set sel [atomselect $molid "user $j"]
-			set residues [$sel get resid]
-			$sel delete
-			if {[llength $residues] > 1} {
-				foreach rs $residues {
-					set sel2 [atomselect $molid "resid $rs and protein"]
+	
+	for {set j 1} { $j <= 3 } {incr j} {
+		set sel [atomselect $molid "user $j"]
+		set residues [$sel get resid]
+		puts $residues
+		$sel delete
+		if {[llength $residues] > 1} {
+			
+				set sel2 [atomselect $molid "resid $residues and protein and canonAA"]
+				for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
 					$sel2 frame $i
 					$sel2 set user $j
-					$sel2 delete
 				}
-				
-			}
+				$sel2 delete
+			
+			
 		}
-		
 	}
+		
 }
+
 
 #
 #	Takes a generated list of 1, 2, and 3s and assigns each residue a user value relating to these numbers, but only for relevant chains
@@ -810,7 +826,7 @@ proc ::blobulator::blobUser2AssignSelector { blob2 MolID chainList} {
 	$clean set user2 0
 	$clean delete
 
-	set sel [atomselect $molid "protein and alpha and chain $chainList"]
+	set sel [atomselect $molid "protein and canonAA and alpha and chain $chainList"]
 
 	$sel set user2 $blob2
 	$sel delete
@@ -823,7 +839,7 @@ proc ::blobulator::blobUser2AssignSelector { blob2 MolID chainList} {
 	
 		foreach rs $residues {
 			
-			set sel2 [atomselect $molid "resid $rs and protein"]
+			set sel2 [atomselect $molid "resid $rs and protein and canonAA"]
 			$sel2 set user2 $i
 			$sel2 delete
 		}
@@ -849,7 +865,7 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 	$clean set user2 0
 	$clean delete
 	
-	set sel [atomselect $molid "alpha and protein"]
+	set sel [atomselect $molid "alpha and protein and canonAA"]
 	$sel set user2 $blob2
 	
 	$sel delete
@@ -860,12 +876,12 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 		set resids [$sel get resid]
 		$sel delete
 		
-		foreach rs $resids {
+		
 			
-			set sel2 [atomselect $molid "resid $rs and protein"]
+			set sel2 [atomselect $molid "resid $resids and protein and canonAA"]
 			$sel2 set user2 $i
 			$sel2 delete
-		}
+		
 	
 	} 
 	
@@ -901,7 +917,7 @@ proc ::blobulator::blobTrajUser2 {frames blob2 MolID} {
 	
 
 	
-	set sel2 [atomselect $MolID "protein"]
+	set sel2 [atomselect $MolID "protein and canonAA"]
 	for {set i 0} { $i <= $frames} {incr i} {
 		
 		$sel2 frame $i
