@@ -73,23 +73,6 @@ async function createBlobRepresentation(plugin) {
         };
     };
 
-    for (var val_h of h_arr) {
-        const sel = MS.struct.generator.atomGroups({
-            'residue-test': MS.core.set.has([MS.set(...val_h), MS.ammp('label_seq_id')])
-        });
-        update.to(structure)
-        .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
-        .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
-            type: 'gaussian-surface',
-            color: 'uniform',
-            colorParams: { value: Color(0x0096FF) },
-            typeParams: { alpha: 1.0}
-        }));
-
-    update.commit();
-
-    }
-
     for (var val_p of p_arr) {
         const sel = MS.struct.generator.atomGroups({
         'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), val_p]),
@@ -102,33 +85,37 @@ async function createBlobRepresentation(plugin) {
             colorParams: { value: Color(0xFFA500) },
             typeParams: { alpha: 1.0}
         }));
-
-    update.commit();
-
     };
 
     for (var val_s of s_arr) {
         const sel = MS.struct.generator.atomGroups({
         'residue-test': MS.core.rel.eq([MS.struct.atomProperty.macromolecular.label_seq_id(), val_s]),
-    });
+    })
+    update.to(structure)
+    .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
+        .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
+            type: 'cartoon',
+            color: 'uniform',
+            colorParams: { value: Color(0x66ff00) },
+            typeParams: { alpha: 1.0}
+        }));
+};
+    for (var val_h of h_arr) {
+        const sel = MS.struct.generator.atomGroups({
+            'residue-test': MS.core.set.has([MS.set(...val_h), MS.ammp('label_seq_id')])
+        });
         update.to(structure)
-        for (var val_h of h_arr) {
-            const sel = MS.struct.generator.atomGroups({
-                'residue-test': MS.core.set.has([MS.set(...val_h), MS.ammp('label_seq_id')])
-            });
-            update.to(structure)
-            .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
-            .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
-                type: 'gaussian-surface',
-                color: 'uniform',
-                colorParams: { value: Color(0x0096FF) },
-                typeParams: { alpha: 1.0}
-            }));
-        };
+        .apply(StateTransforms.Model.StructureSelectionFromExpression, { label: 'Surroundings', expression: sel })
+        .apply(StateTransforms.Representation.StructureRepresentation3D, createStructureRepresentationParams(plugin, structure.data, {
+            type: 'gaussian-surface',
+            color: 'uniform',
+            colorParams: { value: Color(0x0096FF) },
+            typeParams: { alpha: 1.0}
+        }));
+    };
 
     update.commit();
-    };
-}
+};
 
 async function createPlugin(parent: HTMLElement) {
     /**
