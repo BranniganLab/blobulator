@@ -246,7 +246,7 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 	
 		}
 		
-		return $chainBlobs
+		return 
 }
 
 #
@@ -846,10 +846,10 @@ proc ::blobulator::blobUser2AssignSelector { blob2 MolID chainList} {
 	
 	}
 	
-	if {$::blobulator::framesOn == 1} {
+	
 		set numOfFrames [molinfo $molid get numframes]
 		::blobulator::blobTrajUser2 $numOfFrames $blob2 $MolID
-	}  
+	
 }
 
 #
@@ -885,10 +885,10 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 	
 	} 
 	
-	if {$::blobulator::framesOn == 1} {
+	
 		set numOfFrames [molinfo $molid get numframes]
 		::blobulator::blobTrajUser2 $numOfFrames $blob2 $MolID
-	} 
+	
 }
 
 
