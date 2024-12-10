@@ -45,11 +45,17 @@
             let dropdown = document.getElementById("sequence_type")
             if (dropdown.value == "id_entry") {
                 document.getElementById("manual_entry_block").style.display = "none";
-                document.getElementById("id_entry_block").style.display = "block"
-            }
-            else {
-                document.getElementById("id_entry_block").style.display = "none";
+                document.getElementById("id_entry_block").style.display = "block";
+                document.getElementById("pdb_entry_block").style.display = "none";
+            } else if (dropdown.value == "sequence_entry") {
                 document.getElementById("manual_entry_block").style.display = "block";
+                document.getElementById("id_entry_block").style.display = "none";
+                document.getElementById("pdb_entry_block").style.display = "none";
+            
+            } else {
+                document.getElementById("manual_entry_block").style.display = "none";
+                document.getElementById("id_entry_block").style.display = "none";
+                document.getElementById("pdb_entry_block").style.display = "block";
             }
         }
     </script>
