@@ -251,9 +251,10 @@ def index():
             temporary_pdb_file = './static/molstar_plugin/plugin/dist/pdb_files/' + current_datetime + ".pdb"
             with open(temporary_pdb_file, 'w') as saved_pdb:
                 saved_pdb.write(str(pdb_file).replace("\\n", "\n"))
+                print(pdb_file)
                 saved_pdb.close()
 
-            for record in SeqIO.parse('./static/molstar_plugin/plugin/dist/pdb_files/current.pdb', 'pdb-atom'):
+            for record in SeqIO.parse(temporary_pdb_file, 'pdb-atom'):
                 my_seq = record.seq
 
             os.remove(temporary_pdb_file)
