@@ -6,6 +6,12 @@
 namespace eval ::blobulator:: {
 	variable framesOn 0
 	variable framesTotal 1
+	
+	variable hBlobRegex 1{$Lmin,}
+
+	variable pBlobRegex "\[10]{$Lmin,}"
+
+	variable sBlobRegex "\[10]{1,$Lmin}"
 } 
 atomselect macro canonAA {resname ALA ARG ASN ASP CYS GLN GLU GLY HIS HID HIE ILE LEU LYS MET PHE PRO SET THR TRP TYR VAL}
 
@@ -136,6 +142,12 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 #	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
 proc ::blobulator::blobulateChain {MolID lMin H Chain usedDictionary} {
 	source normalized_hydropathyscales.tcl
+	
+	set hBlobRegex "1{$lMin,}"
+
+	set pBlobRegex "\[10]{$lMin,}"
+
+	set sBlobRegex "\[10]{1,$lMin}"
 	set sequence [::blobulator::getSequenceChain $MolID $Chain]
 	set hydroS [::blobulator::hydropathyScores $usedDictionary $sequence]
 	if {$hydroS == -1} {
@@ -143,13 +155,24 @@ proc ::blobulator::blobulateChain {MolID lMin H Chain usedDictionary} {
 		}
 	set smoothHydro [::blobulator::hydropathyMean $hydroS $sequence]
 	set digitized [::blobulator::digitize $H $smoothHydro ]
-	set hblob [ ::blobulator::hBlob $digitized $lMin ]
-	set hsblob [ ::blobulator::hsBlob  $hblob $digitized $lMin ]
-	set hpsblob [ ::blobulator::hpsBlob  $hsblob $digitized ]
-	set groupedBlobs [::blobulator::blobGroup $hpsblob ]
-    set blobulated [::blobulator::blobAssign $hpsblob]
+	
+	set stringDigitized [join $digitized ""] 
+	
+	set hString [blobMaker $stringDigitized $hBlobRegex h $lMin]
+	
+	set hpString [blobMaker $hString $pBlobRegex p $lMin] 
+	
+	set hpsString [blobMaker $hpString $sBlobRegex s $lMin]
+	
+	set hpsString [split $hpsString ""]
+	
+	# set hblob [ ::blobulator::hBlob $digitized $lMin ]
+	# set hsblob [ ::blobulator::hsBlob  $hblob $digitized $lMin ]
+	# set hpsblob [ ::blobulator::hpsBlob  $hsblob $digitized ]
+	set groupedBlobs [::blobulator::blobGroup $hpsString ]
+    set blobulated [::blobulator::blobAssign $hpsString]
     	
-	return [list $blobulated $hpsblob]
+	return [list $blobulated $hpsString]
 	}	
 
 #
@@ -199,6 +222,7 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 			}
 			$check delete
 		}
+		
 		for {set i 0} {$i < [llength $sorted] } { incr i} {
 			set singleChain [lindex $sorted $i] 
 			set chainReturn [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary]
@@ -206,9 +230,9 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 				break
 				return -1
 			}	
-			set blobulated [lindex [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 0]
+			set blobulated [lindex $chainReturn 0]
 			
-			set index [lindex [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 1]
+			set index [lindex $chainReturn 1]
 
 			foreach bb $blobulated {
 				lappend chainBlobs $bb
@@ -220,11 +244,7 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 				lappend chainBlobIndex $ci
 			}
 			
-			set chainGroup [::blobulator::blobGroup $index]
-			foreach cg $chainGroup {
-				lappend chainBlobGroup $cg
-			}
-
+			
 			
 			set completeIndex [::blobulator::blobIndex $blobulated ]
 			
@@ -519,6 +539,32 @@ proc ::blobulator::hBlob { digitizedSeq lMin } {
 	
 	return $blist
 }
+
+
+
+
+
+
+
+
+proc blobMaker {digiList regPat letter lmin} {
+	
+	set newDigiList $digiList
+	
+	set i 0
+	while {$i < [llength [regexp -all -inline $regPat $digiList]]} {
+		
+		set regMatch [regexp -inline $regPat $newDigiList]
+		set hLen [string length $regMatch]
+		set replacementStr [string repeat $letter $hLen]
+		set newDigiList [regsub $regPat $newDigiList $replacementStr]
+		
+		incr i
+	}
+	
+return $newDigiList
+}
+
 
 
 #
