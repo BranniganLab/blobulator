@@ -95,11 +95,11 @@ $(document).ready( function() {
 		//iterate over all figures in figs and update them
 		for (let [key, value] of Object.entries(figs)) { 
 			if (key == "richFig") {
-				if (sel_hydro_scale != 'kyte_doolittle') {
+				if (sel_hydro_scale != 'kyte_doolittle' && !document.getElementById("overlay")) {
 					value.add_warning_overlay()
                     console.log("add warning")
 				}
-				else {
+				else if (sel_hydro_scale == 'kyte_doolittle') {
 					value.remove_warning_overlay()
                     console.log("remove warning")
 				}
