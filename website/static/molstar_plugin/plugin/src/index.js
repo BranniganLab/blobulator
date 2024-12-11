@@ -60,7 +60,7 @@ var MySpec = __assign(__assign({}, (0, spec_1.DefaultPluginUISpec)()), { config:
     ] });
 function createBlobRepresentation(plugin) {
     return __awaiter(this, void 0, void 0, function () {
-        var contentString, data, trajectory, model, structure, components, builder, update, blobString, blobArray, p_arr, tempHArray, h_arr, s_arr, i, blobIndex, nextArrayIndex, _i, p_arr_1, val_p, sel, _a, s_arr_1, val_s, sel, _b, h_arr_1, val_h, sel;
+        var contentString, data, trajectory, model, structure, components, builder, update, blobString, shift, blobArray, p_arr, tempHArray, h_arr, s_arr, i, blobIndex, nextArrayIndex, _i, p_arr_1, val_p, sel, _a, s_arr_1, val_s, sel, _b, h_arr_1, val_h, sel;
         var _c;
         return __generator(this, function (_d) {
             switch (_d.label) {
@@ -97,6 +97,7 @@ function createBlobRepresentation(plugin) {
                     update = plugin.build();
                     builder.buildRepresentation(update, components.polymer, { type: 'cartoon', typeParams: { alpha: 0.0 }, color: 'uniform', colorParams: { value: (0, color_1.Color)(0x1A5653) } }, { tag: 'polymer' });
                     blobString = localStorage.getItem('blobSeq');
+                    shift = localStorage.getItem('pdbShift');
                     blobArray = blobString === null || blobString === void 0 ? void 0 : blobString.split(',');
                     p_arr = [];
                     tempHArray = [];
@@ -107,16 +108,16 @@ function createBlobRepresentation(plugin) {
                             blobIndex = i + 1;
                             nextArrayIndex = i + 1;
                             if (blobArray[i] == 'h' && blobArray[nextArrayIndex] != 'p' && blobArray[nextArrayIndex] != 's') {
-                                tempHArray.push(blobIndex);
+                                tempHArray.push(blobIndex + Number(shift));
                             }
                             else if (blobArray[i] == 'h') {
                                 h_arr.push(tempHArray);
                             }
                             else if (blobArray[i] == 'p') {
-                                p_arr.push(blobIndex);
+                                p_arr.push(blobIndex + Number(shift));
                             }
                             else if (blobArray[i] == 's') {
-                                s_arr.push(blobIndex);
+                                s_arr.push(blobIndex + Number(shift));
                             }
                             ;
                         }
