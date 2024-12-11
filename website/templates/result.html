@@ -97,19 +97,21 @@ $(document).ready( function() {
 			if (key == "richFig") {
 				if (sel_hydro_scale != 'kyte_doolittle') {
 					value.add_warning_overlay()
+                    console.log("add warning")
 				}
 				else {
 					value.remove_warning_overlay()
+                    console.log("remove warning")
 				}
 			}
-			else {
-				try {
-					value.update_bars(data);
-				}
-				catch {
-					console.log("Failed to update: " + key)
-				}
-			}
+
+            try {
+                value.update_bars(data);
+            }
+            catch {
+                console.log("Failed to update: " + key)
+            }
+			
 		}
 	}
 
