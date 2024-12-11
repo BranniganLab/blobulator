@@ -224,6 +224,7 @@ def index():
             chart_data = df.round(3).to_dict(orient="records")
             chart_data = json.dumps(chart_data, indent=2)
             data = {"chart_data": chart_data}
+            shift = 0
             return render_template(
                     "result.html",
                     data=data,
@@ -241,7 +242,8 @@ def index():
                     my_name = user_uniprot_name,
                     my_entry_name = user_uniprot_entry,
                     my_original_id = original_accession,
-                    my_hg_value = hg_identifier
+                    my_hg_value = hg_identifier,
+                    shift=shift
                 )
 
         ## If we have a pdb upload
@@ -253,13 +255,20 @@ def index():
                 saved_pdb.write(str(pdb_file).replace("\\n", "\n"))
                 saved_pdb.close()
 
+            structure = PDBParser().get_structure('structure', temporary_pdb_file)
+            first_residue_number = list(structure.get_residues())[0].id[1]
+            print(first_residue_number)
+            if isinstance(first_residue_number, int):
+                shift = int(first_residue_number) - 1
+            else:
+                shift = 0
+
             for record in SeqIO.parse(temporary_pdb_file, 'pdb-atom'):
                 my_seq = record.seq
 
             os.remove(temporary_pdb_file)
 
             session['sequence'] = str(my_seq)
-
 
 
             # Ensure that all characters in sequence actually represent amino acids
@@ -290,7 +299,8 @@ def index():
                 domain_threshold=4,
                 domain_threshold_max=len(str(my_seq)),
                 my_disorder = '0',
-                activetab = '#result-tab'
+                activetab = '#result-tab',
+                shift=shift
             )
 
             
@@ -325,6 +335,7 @@ def index():
             chart_data = df.round(3).to_dict(orient="records")
             chart_data = json.dumps(chart_data, indent=2)
             data = {"chart_data": chart_data}
+            shift = 0
             return render_template(
                 "result.html",
                 data=data,
@@ -338,7 +349,8 @@ def index():
                 domain_threshold=4,
                 domain_threshold_max=len(str(my_seq)),
                 my_disorder = '0',
-                activetab = '#result-tab'
+                activetab = '#result-tab',
+                shift=shift
             )
     else:
          #creates the HTML layout of the home page along with user input fields

@@ -59,7 +59,9 @@ $(document).ready( function() {
 	const uni_id_str = '["' + uni_id + '"]';
 	const my_seq = {{ my_seq | safe }};
 	const my_data = {{ data.chart_data | safe }};
+	const pdb_shift = {{ shift | safe }};
 	localStorage.setItem("blobSeq", my_data.map(row => row.blobtype))
+	localStorage.setItem("pdbShift", pdb_shift)
 
 	
 	//GLOBAL EVENT HANDLERS

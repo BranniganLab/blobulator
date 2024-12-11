@@ -47,6 +47,7 @@ async function createBlobRepresentation(plugin) {
     builder.buildRepresentation(update, components.polymer, { type: 'cartoon', typeParams: { alpha: 0.0 }, color : 'uniform', colorParams: { value: Color(0x1A5653) } }, { tag: 'polymer' });
     
     let blobString = localStorage.getItem('blobSeq')
+    let shift = localStorage.getItem('pdbShift')
 
     let blobArray = blobString?.split(',')
     var p_arr: number[] = []
@@ -55,20 +56,21 @@ async function createBlobRepresentation(plugin) {
     var s_arr: number[] = []
 
     if (typeof blobArray != 'undefined') {
+
         for (let i = 0; i < blobArray.length; i++) {
             var blobIndex = i + 1
             var nextArrayIndex = i + 1
             if (blobArray[i] == 'h' && blobArray[nextArrayIndex] != 'p' && blobArray[nextArrayIndex] != 's') {
-                tempHArray.push(blobIndex)
+                tempHArray.push(blobIndex + Number(shift))
             }
             else if (blobArray[i] == 'h') {
                 h_arr.push(tempHArray)
             }
             else if (blobArray[i] == 'p') {
-                p_arr.push(blobIndex)
+                p_arr.push(blobIndex + Number(shift))
             }
             else if (blobArray[i] == 's') {
-                s_arr.push(blobIndex)
+                s_arr.push(blobIndex+ Number(shift))
             };
         };
     };
