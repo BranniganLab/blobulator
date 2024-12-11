@@ -99,7 +99,7 @@ $(document).ready( function() {
 					value.add_warning_overlay()
                     console.log("add warning")
 				}
-				else if (sel_hydro_scale == 'kyte_doolittle') {
+				else if (sel_hydro_scale == 'kyte_doolittle' && document.getElementById("overlay")) {
 					value.remove_warning_overlay()
                     console.log("remove warning")
 				}
