@@ -12,6 +12,10 @@
 $(document).ready( function() {
 	//--------------Javascript for plotting in d3-------------
 	//tooltips
+	const hydrophobicity_scale_text = ("<p>The hydropathy score of the 20 amino acids will depend on the selected hydrophobicity scale</p> <img src=\"/static/blobulation_digitization_figure.png\" width=\"225\" height=\"225\" align=\"center\">")
+
+	const hydropathy_cutoff_text =  ("<p>TEST 2</p> <img src=\"/static/blobulation_digitization_figure.png\" width=\"225\" height=\"225\" align=\"center\">")
+
 	const hydropathy_tool_text = ("<p>Each residue is classified as hydrophobic or nonhydrophobic, depending on whether the Kyte–Dolittle hydropathy score is above or below the hydrophobicity threshold H<sup>*</sup>. H<sup>*</sup> is determined by the user, and the process of digitizatizing the residues based on whether their hydrophobicity falls above or below this cutoff is shown in the figure below:</p> <img src=\"/static/blobulation_digitization_figure.png\" width=\"225\" height=\"225\" align=\"center\">")
 
 	const blob_track_text = "<p> After the residues are digitized (see the previous tooltip), they are clustered into blobs as shown in the figure below: </p> <img src=\"/static/blobulation_concept_figure.png\" width=\"425\" height=\"250\" align=\"center\"> <p> The value of the \"minimum blob length\" slider determines L<sub>min</sub>. All tracks show residues in h-blobs, s-blobs, and p-blobs as the highest bars, medium bars, and lowest bars respectively. This track also colors the blobs by blob type: h-blobs are blue, p-blobs are orange, and s-blobs are green.h-groups are not indicated graphically, but are noted in the downloadable csv file. </p>"
@@ -368,6 +372,17 @@ $(document).ready( function() {
 				<col style="width: 10%">
 				<col style= "width: 30%">
 				<div text="left">
+
+				<div title style="position: absolute; top: 22px; right: 1090px; cursor: pointer; font-size: larger; fill: blue; z-index: 10;" data-original-title="<a onclick="$(this).closest('div.popover').popover('hide');" type="button" class="close" aria-describedby="popover876181">ⓘ</div>
+				
+				<div class="popover fade bs-popover-top show" role="tooltip" id="popover876181" style="position: absolute; transform: translate3d(765px, 392px, 0px); top: 0px; left: 0px; will-change: transform;" x-placement="top"><div class="arrow" style="left: 251px;"></div><h3 class="popover-header"><a onclick="$(this).closest('div.popover').popover('hide');" type="button" class="close" aria-hidden="true">×</a><br></h3><div class="popover-body"><p>TEST</p></div></div>
+<!-- 					<div class="arrow" style="left: 236px;"></div>
+					<h3 class="popover-header"><a onclick="$(this).closest('div.popover').popover('hide');" type="button" class="close" aria-hidden="true">×</a><br></h3>
+						<a onclick="$(this).closest('div.popover').popover('hide');" type="button" class="close" aria-hidden="true">×</a>
+						<br>
+						</h3>
+					<div class="popover-body"><p>TEST</p> -->
+				
 				<tr><td>Hydrophobicity Scale:</td>
 					<td><select id="hydro_scales" class="hydro_scales">
 						<option selected="selected" value="kyte_doolittle">Kyte and Doolittle</option>
