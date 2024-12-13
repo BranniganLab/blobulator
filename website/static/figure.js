@@ -1,3 +1,4 @@
+
 class ZFigure {
 	constructor(figID, data){
 		// These constants set fixed values for height and width to be used in making all visualizations
@@ -186,7 +187,6 @@ class ZFigure {
 		this.infoIcon.style.fill = "blue";
 		this.infoIcon.innerText = '\u{24D8}';
 		this.infoIcon.type = "button";
-		this.infoIcon.title = '<a onclick="$(this).closest(\'div.popover\').popover(\'hide\');" type="button" class="close" aria-hidden="true">&times;</a><br>';
 		this.infoIcon.style.zIndex = "10"; // Put this element on top of the SVG
 		
 		$(this.infoIcon).popover({
@@ -1086,6 +1086,13 @@ class ZblobChart extends ZChart {
 		linearGradient.append("stop").attr("offset", "100%").attr("stop-color", cend);
 
 		return this;
+	}
+
+
+	window_popup() {
+
+
+
 	}
 
 }
