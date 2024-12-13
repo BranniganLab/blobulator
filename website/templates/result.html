@@ -3,6 +3,7 @@
 {% block css %}
 <style> @import "static/style.css"; </style>
 <style> @import "static/zoomStyle.css"; </style>
+<style> @import "static/molstar_plugin/node_modules/molstar/build/viewer/molstar.css"; </style>
 {% endblock %}
 
 {% block scripts %}
@@ -58,6 +59,9 @@ $(document).ready( function() {
 	const uni_id_str = '["' + uni_id + '"]';
 	const my_seq = {{ my_seq | safe }};
 	const my_data = {{ data.chart_data | safe }};
+	const pdb_shift = {{ shift | safe }};
+	localStorage.setItem("blobSeq", my_data.map(row => row.blobtype))
+	localStorage.setItem("pdbShift", pdb_shift)
 
 	
 	//GLOBAL EVENT HANDLERS
@@ -143,6 +147,8 @@ $(document).ready( function() {
 				var tt = JSON.stringify(eval("(" + data_tmp + ")"));
 				var data_obj = JSON.parse(tt);
 				update_Charts(figs, data_obj);
+				localStorage.removeItem("blobSeq")
+				localStorage.setItem("blobSeq", data_obj.map(row => row.blobtype))
 			});
 	}
 
@@ -367,6 +373,7 @@ $(document).ready( function() {
 				<col style="width: 7%">
 				<col style="width: 10%">
 				<col style= "width: 30%">
+				<col style= "width: 50%">
 				<div text="left">
 				<tr><td>Hydrophobicity Scale:</td>
 					<td><select id="hydro_scales" class="hydro_scales">
@@ -374,7 +381,21 @@ $(document).ready( function() {
 						<option value="eisenberg_weiss">Eisenberg and Weiss</option>
 						<option value="moon_fleming">Moon and Fleming</option></select></td>
 						<td id="hydro-labels" class="hydro_labels" style="width: 50%"></td>
-					<td>&nbsp;</td></div></tr>
+					<td rowspan="5">
+						<style>
+					    #app {
+					        position: relative;
+					        left: 80px;
+					        top: 5px;
+					        width: 425px;
+					        height: 250px;
+					    }
+					</style>
+					<script type="text/javascript" src="static/molstar_plugin/node_modules/molstar/build/viewer/molstar.js"></script>
+					<div id="app"></div>
+					<script type="text/javascript" src="static/molstar_plugin/plugin/dist/main.js"></script>
+
+					</td></div></tr>
 					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
 					</label></td>
@@ -451,14 +472,14 @@ $(document).ready( function() {
 						<option value="P">P - Pro</option>
 					</select> </td>
 				</tr>
-				</div>
+				</div>						
 			</div>
 			</table>
 				<label style = "opacity: 0.0; display: none; position: relative;"> </label>
 				<button type="button" onclick="window.print();return false;">Print Screen</button>
 				<button type="button" id="download_data_link">Download data!</button>
 	</div>
-	
+
 		<!--The div id my_dataviz is the div container for ALL D3 visualization plots, color keys-->
 		<div id="my_dataviz" class="viz_track">
 

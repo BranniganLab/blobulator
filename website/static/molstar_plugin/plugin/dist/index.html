@@ -1,0 +1,234 @@
+<style>
+    #app {
+        position: absolute;
+        left: 100px;
+        top: 100px;
+        width: 800px;
+        height: 600px;
+    }
+</style>
+<!-- 
+    molstar.js and .css are obtained from
+    - the folder build/viewer after cloning and building the molstar package 
+    - from the build/viewer folder in the Mol* NPM package
+-->
+<!-- This is the plugin example from molstar -->
+<!-- <div id='molstar-parent' style='position: absolute; top: 0; left: 0; right: 0; bottom: 0'>
+    <canvas id='molstar-canvas' style='position: absolute; top: 0; left: 0; right: 0; bottom: 0'></canvas>
+</div>
+<script type="module" src="main.js"></script> -->
+
+<link rel="stylesheet" type="text/css" href="../node_modules/molstar/build/viewer/molstar.css" />
+<script type="text/javascript" src="../node_modules/molstar/build/viewer/molstar.js"></script>
+<div id="app"></div>
+<script type="text/javascript" src="main.js"></script>
+
+
+
+
+<!-- This is the viewer -->
+<!-- 
+<script type="text/javascript">
+    molstar.Viewer.create('app', {
+        layoutIsExpanded: false,
+        layoutShowControls: false,
+        layoutShowRemoteState: false,
+        layoutShowSequence: true,
+        layoutShowLog: false,
+        layoutShowLeftPanel: true,
+
+        viewportShowExpand: true,
+        viewportShowSelectionMode: false,
+        viewportShowAnimation: false,
+
+        pdbProvider: 'rcsb',
+        emdbProvider: 'rcsb',
+    }).then(viewer => {
+        viewer.loadPdb('7bv2');
+        });
+</script> -->
+
+ 
+<!-- This is an incomplete example of changing the representation of a given protein to ball and stick -->
+<!-- <script type="module">
+    const pdbData = fetchPdbData(url)
+    const data = window.molstar.builders.data.rawData({
+      data: pdbData,
+      label: fileName,
+      modelIndex: "...",
+    })
+
+    const trajectory = window.molstar.builders.structure.parseTrajectory(
+      data,
+      format
+    )
+
+    const model = window.molstar.builders.structure.createModel(trajectory)
+
+    const struct = window.molstar.builders.structure.createStructure(model)
+
+    window.molstar.builders.structure.representation.addRepresentation(struct, {
+          type: 'ball-and-stick',
+          color: 'secondary-structure',
+          size: 'uniform',
+          sizeParams: { value: 3.33 },
+          typeParams: { aromaticBonds: true }
+        });
+</script>  -->
+
+<!-- This is the lighting demo example js  -->
+<!-- <script type="module">
+    import { createPluginUI } from './node_modules/molstar/lib/mol-plugin-ui';
+    import { renderReact18 } from './node_modules/molstar/lib/mol-plugin-ui/react18.js';
+    import { DefaultPluginUISpec } from './node_modules/molstar/lib/mol-plugin-ui/spec.js';
+    import { PluginCommands } from './node_modules/molstar/lib/mol-plugin/commands.js';
+    import { Asset } from './node_modules/molstar/lib/mol-util/assets.js';
+    import { Color } from './node_modules/molstar/lib/mol-util/color/color.js';
+    // import './index.html';
+    // require('mol-plugin-ui/skin/light.scss');
+    const Canvas3DPresets = {
+        illustrative: {
+            canvas3d: {
+                postprocessing: {
+                    occlusion: {
+                        name: 'on',
+                        params: {
+                            samples: 32,
+                            multiScale: { name: 'off', params: {} },
+                            radius: 5,
+                            bias: 0.8,
+                            blurKernelSize: 15,
+                            resolutionScale: 1,
+                            color: Color(0x000000),
+                        }
+                    },
+                    outline: {
+                        name: 'on',
+                        params: {
+                            scale: 1,
+                            threshold: 0.33,
+                            color: Color(0x000000),
+                            includeTransparent: true,
+                        }
+                    },
+                    shadow: {
+                        name: 'off',
+                        params: {}
+                    },
+                },
+                renderer: {
+                    ambientIntensity: 1.0,
+                    light: []
+                }
+            }
+        },
+        occlusion: {
+            canvas3d: {
+                postprocessing: {
+                    occlusion: {
+                        name: 'on',
+                        params: {
+                            samples: 32,
+                            multiScale: { name: 'off', params: {} },
+                            radius: 5,
+                            bias: 0.8,
+                            blurKernelSize: 15,
+                            resolutionScale: 1,
+                        }
+                    },
+                    outline: {
+                        name: 'off',
+                        params: {}
+                    },
+                    shadow: {
+                        name: 'off',
+                        params: {}
+                    },
+                },
+                renderer: {
+                    ambientIntensity: 0.4,
+                    light: [{ inclination: 180, azimuth: 0, color: Color.fromNormalizedRgb(1.0, 1.0, 1.0),
+                            intensity: 0.6 }]
+                }
+            }
+        },
+        standard: {
+            canvas3d: {
+                postprocessing: {
+                    occlusion: { name: 'off', params: {} },
+                    outline: { name: 'off', params: {} },
+                    shadow: { name: 'off', params: {} },
+                },
+                renderer: {
+                    ambientIntensity: 0.4,
+                    light: [{ inclination: 180, azimuth: 0, color: Color.fromNormalizedRgb(1.0, 1.0, 1.0),
+                            intensity: 0.6 }]
+                }
+            }
+        }
+    };
+    class LightingDemo {
+        constructor() {
+            this.radius = 5;
+            this.bias = 1.1;
+            this.preset = 'illustrative';
+        }
+        async init(target) {
+            this.plugin = await createPluginUI({
+                target: typeof target === 'string' ? document.getElementById(target) : target,
+                render: renderReact18,
+                spec: {
+                    ...DefaultPluginUISpec(),
+                    layout: {
+                        initial: {
+                            isExpanded: false,
+                            showControls: false
+                        },
+                    },
+                    components: {
+                        controls: { left: 'none', right: 'none', top: 'none', bottom: 'none' }
+                    }
+                }
+            });
+            this.setPreset('illustrative');
+        }
+        setPreset(preset) {
+            var _a;
+            const props = Canvas3DPresets[preset];
+            if (((_a = props.canvas3d.postprocessing.occlusion) === null || _a === void 0 ? void 0 : _a.name) === 'on') {
+                props.canvas3d.postprocessing.occlusion.params.radius = this.radius;
+                props.canvas3d.postprocessing.occlusion.params.bias = this.bias;
+            }
+            PluginCommands.Canvas3D.SetSettings(this.plugin, {
+                settings: {
+                    ...props,
+                    renderer: {
+                        ...this.plugin.canvas3d.props.renderer,
+                        ...props.canvas3d.renderer
+                    },
+                    postprocessing: {
+                        ...this.plugin.canvas3d.props.postprocessing,
+                        ...props.canvas3d.postprocessing
+                    },
+                }
+            });
+        }
+        async load({ url, format = 'mmcif', isBinary = true, assemblyId = '' }, radius, bias) {
+            await this.plugin.clear();
+            const data = await this.plugin.builders.data.download({ url: Asset.Url(url), isBinary }, { state: { isGhost: true } });
+            const trajectory = await this.plugin.builders.structure.parseTrajectory(data, format);
+            const model = await this.plugin.builders.structure.createModel(trajectory);
+            const structure = await this.plugin.builders.structure.createStructure(model, assemblyId ? { name: 'assembly', params: { id: assemblyId } } : { name: 'model', params: {} });
+            const polymer = await this.plugin.builders.structure.tryCreateComponentStatic(structure, 'polymer');
+            if (polymer)
+                await this.plugin.builders.structure.representation.addRepresentation(polymer, { type: 'spacefill', color: 'illustrative' });
+            const ligand = await this.plugin.builders.structure.tryCreateComponentStatic(structure, 'ligand');
+            if (ligand)
+                await this.plugin.builders.structure.representation.addRepresentation(ligand, { type: 'ball-and-stick', color: 'element-symbol', colorParams: { carbonColor: { name: 'element-symbol', params: {} } } });
+            this.radius = radius;
+            this.bias = bias;
+            this.setPreset(this.preset);
+        }
+    }
+    window.LightingDemo = new LightingDemo();
+</script> -->
