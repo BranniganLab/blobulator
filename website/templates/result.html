@@ -12,8 +12,6 @@
 $(document).ready( function() {
 	//--------------Javascript for plotting in d3-------------
 	//tooltips
-
-
 	const hydropathy_cutoff_text =  ("<p>The hydropathy cutoff number represents the threshold at which a blob becomes an h-blob.</p> <img src=\"/static/blobulation_digitization_figure.png\" width=\"225\" height=\"225\" align=\"center\">")
 
 	const hydropathy_tool_text = ("<p>Each residue is classified as hydrophobic or nonhydrophobic, depending on whether the Kyte–Dolittle hydropathy score is above or below the hydrophobicity threshold H<sup>*</sup>. H<sup>*</sup> is determined by the user, and the process of digitizatizing the residues based on whether their hydrophobicity falls above or below this cutoff is shown in the figure below:</p> <img src=\"/static/blobulation_digitization_figure.png\" width=\"225\" height=\"225\" align=\"center\">")
@@ -375,7 +373,6 @@ $(document).ready( function() {
 
 
 
-
 				<div
 			        id="infoIcon"
 			        title
@@ -398,7 +395,7 @@ $(document).ready( function() {
 				</div>
 
 
-
+				
 				
 				<tr><td>Hydrophobicity Scale:</td>
 					<td><select id="hydro_scales" class="hydro_scales">
