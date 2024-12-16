@@ -12,4 +12,4 @@ One or two sentences briefly summarizing the PR
 
 
 ## To-dos
-- [ ] 
+- [ ] Rundown of changes that have been made
