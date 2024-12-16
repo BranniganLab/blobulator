@@ -99,21 +99,21 @@ $(document).ready( function() {
 		//iterate over all figures in figs and update them
 		for (let [key, value] of Object.entries(figs)) { 
 			if (key == "richFig") {
-				if (sel_hydro_scale != 'kyte_doolittle') {
+				if (sel_hydro_scale != 'kyte_doolittle' && !document.getElementById("overlay")) {
 					value.add_warning_overlay()
 				}
-				else {
+				else if (sel_hydro_scale == 'kyte_doolittle' && document.getElementById("overlay")) {
 					value.remove_warning_overlay()
 				}
 			}
-			else {
-				try {
-					value.update_bars(data);
-				}
-				catch {
-					console.log("Failed to update: " + key)
-				}
-			}
+
+            try {
+                value.update_bars(data);
+            }
+            catch {
+                console.log("Failed to update: " + key)
+            }
+			
 		}
 	}
 
