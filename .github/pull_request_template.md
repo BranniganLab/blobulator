@@ -10,6 +10,8 @@ One or two sentences briefly summarizing the PR
 - [ ] Security patch
 - [ ] UI/UX improvement
 
+## Associated Issues
+- Link to and summary of issue(s) that this PR addresses
 
 ## To-dos
 - [ ] Rundown of changes that have been made
