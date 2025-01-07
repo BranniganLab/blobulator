@@ -9,6 +9,7 @@ from blobulator.compute_snps import pathogenic_snps
 
 from Bio.PDB import PDBParser
 from Bio.PDB import PPBuilder
+from Bio.PDB.PDBIO import PDBIO
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
@@ -243,6 +244,8 @@ def index():
                     my_entry_name = user_uniprot_entry,
                     my_original_id = original_accession,
                     my_hg_value = hg_identifier,
+                    chain = '',
+                    chain_warning = "dontwarn",
                     shift=shift
                 )
 
@@ -256,8 +259,16 @@ def index():
                 saved_pdb.close()
 
             structure = PDBParser().get_structure('structure', temporary_pdb_file)
+
+            chains = structure.get_chains()
+            chain_list = list(chains)
+            num_chains = len(chain_list)
+            if num_chains > 1:
+                chain_warning = "warn"
+            else:
+                chain_warning = "dontwarn"
+
             first_residue_number = list(structure.get_residues())[0].id[1]
-            print(first_residue_number)
             if isinstance(first_residue_number, int):
                 shift = int(first_residue_number) - 1
             else:
@@ -300,6 +311,7 @@ def index():
                 domain_threshold_max=len(str(my_seq)),
                 my_disorder = '0',
                 activetab = '#result-tab',
+                chain_warning = chain_warning,
                 shift=shift
             )
 
@@ -350,6 +362,8 @@ def index():
                 domain_threshold_max=len(str(my_seq)),
                 my_disorder = '0',
                 activetab = '#result-tab',
+                chain = '',
+                chain_warning = "dontwarn",
                 shift=shift
             )
     else:

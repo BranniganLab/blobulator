@@ -60,8 +60,11 @@ $(document).ready( function() {
 	const my_seq = {{ my_seq | safe }};
 	const my_data = {{ data.chart_data | safe }};
 	const pdb_shift = {{ shift | safe }};
+	// const first_chain = {{ chain | safe }};
+	// console.log(first_chain)
 	localStorage.setItem("blobSeq", my_data.map(row => row.blobtype))
 	localStorage.setItem("pdbShift", pdb_shift)
+	// localStorage.setItem("firstChain", first_chain)
 
 	
 	//GLOBAL EVENT HANDLERS
@@ -159,6 +162,7 @@ $(document).ready( function() {
 		var   my_cut = {{ my_cut | safe }};
 		const my_disorder = {{ my_disorder | tojson | safe }};
 		const domain_threshold_max = {{ domain_threshold_max | safe }};
+		const chain_warning = {{ chain_warning | safe }};
 		if (my_disorder == "0") {
 			var snps = false
 		} else {
@@ -394,7 +398,6 @@ $(document).ready( function() {
 					<script type="text/javascript" src="static/molstar_plugin/node_modules/molstar/build/viewer/molstar.js"></script>
 					<div id="app"></div>
 					<script type="text/javascript" src="static/molstar_plugin/plugin/dist/main.js"></script>
-
 					</td></div></tr>
 					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
@@ -422,7 +425,6 @@ $(document).ready( function() {
 							var trNew = trLast.clone();
 							trNew.attr("id", "mutations_container" + row_count);
 							trLast.before(trNew);
-							console.log(trNew[0]);
 							row_count += 1
 							return this
 						}
@@ -470,8 +472,12 @@ $(document).ready( function() {
 						<option value="C">C - Cys</option>
 						<option value="G">G - Gly</option>
 						<option value="P">P - Pro</option>
-					</select> </td>
-				</tr>
+					</select> </td></tr>
+					<tr><td>
+						{% if chain_warning == "warn" %}
+						Currently only blobulation of single chains and homomers are supported
+						{% endif %}
+					</td></tr>
 				</div>						
 			</div>
 			</table>
