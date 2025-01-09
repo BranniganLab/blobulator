@@ -66,10 +66,8 @@ $(document).ready( function() {
 	molstar_warning_box = document.getElementById("molstar_warning_box");
 	if (molstar_warning == "warn") {
 		molstar_warning_box.style.display = "block";
-		console.log('showing!')
 	} else {
 		molstar_warning_box.style.display = "none";
-		console.log('hidden!')
 	}
 
 	localStorage.setItem("blobSeq", my_data.map(row => row.blobtype))
