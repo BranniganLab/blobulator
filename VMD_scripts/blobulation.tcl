@@ -149,11 +149,13 @@ proc ::blobulator::blobulateChain {MolID lMin H Chain usedDictionary} {
 
 	set sBlobRegex "\[10]{1,$lMin}"
 	set sequence [::blobulator::getSequenceChain $MolID $Chain]
+	puts [llength $sequence]
 	set hydroS [::blobulator::hydropathyScores $usedDictionary $sequence]
 	if {$hydroS == -1} {
 		return -1
 		}
 	set smoothHydro [::blobulator::hydropathyMean $hydroS $sequence]
+	puts [llength $smoothHydro]
 	set digitized [::blobulator::digitize $H $smoothHydro ]
 	puts $digitized
 	set stringDigitized [join $digitized ""] 
@@ -217,6 +219,7 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 		set chainBlobIndex {}
 		set chainBlobGroup {}
 		set sorted [::blobulator::getSelect $MolID $select]
+		
 		foreach s $sorted {
 			set check [atomselect $nocaseMolID "alpha and protein and canonAA and chain $s"]
 			if {[llength [$check get resname]] < 3} {
@@ -502,7 +505,7 @@ proc ::blobulator::digitize { H smoothHydroean } {
 #	Returns:
 #	A list of h's p's and s's indicating blobs
 proc blobMaker {digiList regPat letter lmin} {
-	
+	puts [llength $digiList]
 	set newDigiList $digiList
 	
 	set i 0
