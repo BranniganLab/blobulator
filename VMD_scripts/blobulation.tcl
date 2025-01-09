@@ -8,7 +8,7 @@ namespace eval ::blobulator:: {
 	variable framesTotal 1
 	variable sorted {}
 } 
-atomselect macro canonAA {resname ALA ARG ASN ASP CYS GLN GLU GLY HIS HID HIE ILE LEU LYS MET PHE PRO SET THR TRP TYR VAL}
+atomselect macro canonAA {resname ALA ARG ASN ASP CYS GLN GLU GLY HIS HID HIE ILE LEU LYS MET PHE PRO SER THR TRP TYR VAL}
 
 #
 #	The overarching proc, users use this to run program
@@ -138,6 +138,7 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 proc ::blobulator::blobulateChain {MolID lMin H Chain usedDictionary} {
 	source normalized_hydropathyscales.tcl
 	set sequence [::blobulator::getSequenceChain $MolID $Chain]
+	puts [llength $sequence]
 	set hydroS [::blobulator::hydropathyScores $usedDictionary $sequence]
 	if {$hydroS == -1} {
 		return -1
