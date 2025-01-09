@@ -155,17 +155,21 @@ proc ::blobulator::blobulateChain {MolID lMin H Chain usedDictionary} {
 		}
 	set smoothHydro [::blobulator::hydropathyMean $hydroS $sequence]
 	set digitized [::blobulator::digitize $H $smoothHydro ]
-	
+	puts $digitized
 	set stringDigitized [join $digitized ""] 
-	
+	puts $stringDigitized
+	puts [llength $digitized]
+	puts [string length $stringDigitized]
+
 	set hString [blobMaker $stringDigitized $hBlobRegex h $lMin]
-	
+	puts $hString
 	set hpString [blobMaker $hString $pBlobRegex p $lMin] 
-	
+	puts $hpString
 	set hpsString [blobMaker $hpString $sBlobRegex s $lMin]
-	
+	puts $hpsString
 	set hpsString [split $hpsString ""]
-	
+	puts $hpsString
+	puts [llength $hpsString]
 	# set hblob [ ::blobulator::hBlob $digitized $lMin ]
 	# set hsblob [ ::blobulator::hsBlob  $hblob $digitized $lMin ]
 	# set hpsblob [ ::blobulator::hpsBlob  $hsblob $digitized ]
