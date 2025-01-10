@@ -12,7 +12,6 @@
 $(document).ready( function() {
 	//--------------Javascript for plotting in d3-------------
 	//tooltips
-	const hydropathy_cutoff_text =  ("<p>The hydropathy cutoff number represents the threshold at which a blob becomes an h-blob.</p> <img src=\"/static/blobulation_digitization_figure.png\" width=\"225\" height=\"225\" align=\"center\">")
 
 	const hydropathy_tool_text = ("<p>Each residue is classified as hydrophobic or nonhydrophobic, depending on whether the Kyte–Dolittle hydropathy score is above or below the hydrophobicity threshold H<sup>*</sup>. H<sup>*</sup> is determined by the user, and the process of digitizatizing the residues based on whether their hydrophobicity falls above or below this cutoff is shown in the figure below:</p> <img src=\"/static/blobulation_digitization_figure.png\" width=\"225\" height=\"225\" align=\"center\">")
 
@@ -372,25 +371,48 @@ $(document).ready( function() {
 				<div text="left">
 
 
-
+				<!-- INFO pop up for 'Hydropathy cutoff' below -->
 				<div
-			        id="infoIcon"
+			        id="infoIconHP"
 			        title
-			        style="position: absolute; top: 22px; right: 1090px; cursor: pointer; font-size: larger; fill: blue; z-index: 10;"
+			        style="position: relative; top: 150px; right: 30px; cursor: pointer; font-size: larger; fill: blue; z-index: 10;"
 			        data-toggle="popover"
 			        data-html="true"
-			        data-content="<p id='popoverContent'></p><a onclick='hidePopover()' class='close'>&times;</a>">
+			        data-content="<p id='popoverContentHP'></p><a onclick='hidePopoverHP()' class='close'>&times;</a>">
 			        ⓘ
     			</div>
 
-				<div class="popover fade bs-popover-top show" role="tooltip" id="hydroScalePopover" style="position: absolute; display: none; transform: translate3d(-265px, -55px, 0px); top: 0px; left: 0px; will-change: transform;" x-placement="top">
+				<div class="popover fade bs-popover-top show" role="tooltip" id="hydroCutoffPopover" style="position: absolute; display: none; transform: translate3d(-265px, -55px, 0px); top: 0px; left: 0px; will-change: transform;" x-placement="top">
 					<div class="arrow" style="left: 236px;"></div>
 					<h3 class="popover-header">
-						<button type="button" class="close" aria-hidden="true" id="closePopover()">×</button>
+						<button onclick='hidePopoverHP()' type="button" class="close" aria-hidden="true">×</button>
 						<br>
 					</h3>
 					<div class="popover-body">
-						<p id="popoverContent"></p>
+						<p id="popoverContentHP"></p>
+					</div>
+				</div>
+
+
+				<!-- INFO pop up for 'Minimum blob size' below -->
+				<div
+			        id="infoIconMB"
+			        title
+			        style="position: relative; top: 155px; right: 30px; cursor: pointer; font-size: larger; fill: blue; z-index: 10;"
+			        data-toggle="popover"
+			        data-html="true"
+			        data-content="<p id='popoverContentMB'></p><a onclick='hidePopoverMB()' class='close'>&times;</a>">
+			        ⓘ
+    			</div>
+
+				<div class="popover fade bs-popover-top show" role="tooltip" id="minBlobSizePopover" style="position: absolute; display: none; transform: translate3d(-265px, -55px, 0px); top: 0px; left: 0px; will-change: transform;" x-placement="top">
+					<div class="arrow" style="left: 236px;"></div>
+					<h3 class="popover-header">
+						<button onclick='hidePopoverMB()' type="button" class="close" aria-hidden="true">×</button>
+						<br>
+					</h3>
+					<div class="popover-body">
+						<p id="popoverContentMB"></p>
 					</div>
 				</div>
 
@@ -404,6 +426,7 @@ $(document).ready( function() {
 						<option value="moon_fleming">Moon and Fleming</option></select></td>
 						<td id="hydro-labels" class="hydro_labels" style="width: 50%"></td>
 					<td>&nbsp;</td></div></tr>
+
 					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
 					</label></td>
@@ -411,6 +434,7 @@ $(document).ready( function() {
 					<td style="width: 50%"><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td>
 					<td>&nbsp;</td></tr>
 				<tr>
+
 				<td>Minimum blob size:
 					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
 					</label> </td>
@@ -422,7 +446,7 @@ $(document).ready( function() {
 
 
 
-
+				<!-- JAVA SCRIPT FUNCTIONS-->
 				<script type="text/javascript">
 					row_count = 0
 						function cloneRow() {
@@ -443,38 +467,63 @@ $(document).ready( function() {
 							var $trLast = $table.find("tr:last");
 	    					$trLast.remove();
 	    				}
+ 
+			        // ----------- Function to toggle the 'Hydropathy cutoff' popover -----------
+			        function toggleHydropathyPopover() {
+			            const infoIconHP = document.getElementById('infoIconHP');
+			            const popoverHP = document.getElementById('hydroCutoffPopover');
+			            const popoverContentHP = document.getElementById('popoverContentHP');
 
-			        // Function to toggle the popover
-			        function togglePopover() {
-			            const infoIcon = document.getElementById('infoIcon');
-			            const popover = document.getElementById('hydroScalePopover');
-			            const popoverContent = document.getElementById('popoverContent');
+						const hydropathyCutoffText =  "The hydropathy cutoff number represents the threshold at which a residue is hydrophobic or hydrophilic based on their hydropathy score. For example, if an amino acid has a hydropathy score above the threshold, they will be considered hydrophobic."
+			            popoverContentHP.textContent = hydropathyCutoffText;
 
-
-			            // // Set dynamic content
-
-			            const hydrophobicity_scale_text = "The hydropathy score of the amino acids will depend on the selected hydrophobicity scale."
-			            popoverContent.textContent = hydrophobicity_scale_text;
-
-
-			            if (popover.style.display === 'block') {
-			                popover.style.display = 'none'; // Hide if already visible
+			            if (popoverHP.style.display === 'block') {
+			                popoverHP.style.display = 'none'; // Hide if already visible
 			            } else {
-			                const rect = infoIcon.getBoundingClientRect();
-			                popover.style.top = `${rect.bottom + window.scrollY + -450}px`; // Position below the icon
-			                popover.style.left = `${rect.left + rect.width / 2 + window.scrollX - 200}px`;
-			                popover.style.display = 'block'; // Show the popover
+			                const rect = infoIconHP.getBoundingClientRect();
+			                popoverHP.style.top = `${rect.bottom + window.scrollY + -478}px`; 
+			                popoverHP.style.left = `${rect.left + rect.width / 2 + window.scrollX - 1000}px`;
+			                popoverHP.style.display = 'block'; // Show the popover
 			            }
 			        }
 
 			        // Function to hide the popover
-			        function hidePopover() {
-			            const popover = document.getElementById('hydroScalePopover');
-			            popover.style.display = 'none';
+			        function hidePopoverHP() {
+			            const popoverHP = document.getElementById('hydroCutoffPopover');
+			            popoverHP.style.display = 'none';
 			        }
 
 			        // Add event listener to info icon
-			        document.getElementById('infoIcon').addEventListener('click', togglePopover);
+			        document.getElementById('infoIconHP').addEventListener('click', toggleHydropathyPopover);
+
+
+			        // ----------- Function to toggle the 'Minimum blob size' popover -----------
+			        function toggleMinblobSizePopover() {
+			            const infoIconMB = document.getElementById('infoIconMB');
+			            const popoverMB = document.getElementById('minBlobSizePopover');
+			            const popoverContentMB = document.getElementById('popoverContentMB');
+
+						const minBlobSizeText =  "The minimum blob size refers to the smallest number of amino acids that can create an h-blob or p-blob. Blobs below the minimum blob size are considered s-blobs."
+			            popoverContentMB.textContent = minBlobSizeText;
+
+			            if (popoverMB.style.display === 'block') {
+			                popoverMB.style.display = 'none'; // Hide if already visible
+			            } else {
+			                const rect = infoIconMB.getBoundingClientRect();
+			                popoverMB.style.top = `${rect.bottom + window.scrollY - 458}px`; 
+			                popoverMB.style.left = `${rect.left + rect.width / 2 + window.scrollX - 1000}px`;
+			                popoverMB.style.display = 'block'; // Show the popover
+			            }
+			        }
+
+			        // Function to hide the popover
+			        function hidePopoverMB() {
+			            const popoverMB = document.getElementById('minBlobSizePopover');
+			            popoverMB.style.display = 'none';
+			        }
+
+			        // Add event listener to info icon
+			        document.getElementById('infoIconMB').addEventListener('click', toggleMinblobSizePopover);
     
 				</script>
 
