@@ -13,7 +13,7 @@ namespace eval ::blobulator:: {
 
 	variable sBlobRegex "\[10]{1,$Lmin}"
 } 
-atomselect macro canonAA {resname ALA ARG ASN ASP CYS GLN GLU GLY HIS HID HIE ILE LEU LYS MET PHE PRO SET THR TRP TYR VAL}
+atomselect macro canonAA {resname ALA ARG ASN ASP CYS GLN GLU GLY HIS HID HIE ILE LEU LYS MET PHE PRO SER THR TRP TYR VAL}
 
 #
 #	The overarching proc, users use this to run program
@@ -149,29 +149,26 @@ proc ::blobulator::blobulateChain {MolID lMin H Chain usedDictionary} {
 
 	set sBlobRegex "\[10]{1,$lMin}"
 	set sequence [::blobulator::getSequenceChain $MolID $Chain]
-	puts [llength $sequence]
+	
 	set hydroS [::blobulator::hydropathyScores $usedDictionary $sequence]
 	if {$hydroS == -1} {
 		return -1
 		}
 	set smoothHydro [::blobulator::hydropathyMean $hydroS $sequence]
-	puts [llength $smoothHydro]
+	
 	set digitized [::blobulator::digitize $H $smoothHydro ]
-	puts $digitized
+	
 	set stringDigitized [join $digitized ""] 
-	puts $stringDigitized
-	puts [llength $digitized]
-	puts [string length $stringDigitized]
+	
 
 	set hString [blobMaker $stringDigitized $hBlobRegex h $lMin]
-	puts $hString
+	
 	set hpString [blobMaker $hString $pBlobRegex p $lMin] 
-	puts $hpString
+	
 	set hpsString [blobMaker $hpString $sBlobRegex s $lMin]
-	puts $hpsString
+	
 	set hpsString [split $hpsString ""]
-	puts $hpsString
-	puts [llength $hpsString]
+	
 	# set hblob [ ::blobulator::hBlob $digitized $lMin ]
 	# set hsblob [ ::blobulator::hsBlob  $hblob $digitized $lMin ]
 	# set hpsblob [ ::blobulator::hpsBlob  $hsblob $digitized ]
@@ -438,7 +435,7 @@ proc ::blobulator::hydropathyMean { hydroScores Sequence} {
 			set isFirst 0
 			set indexOfFirstValue [lindex $hydroScores $i] 
 			set indexOfSecondValue [lindex $hydroScores [expr $i +1]]
-			set avgValue [expr ($indexOfFirstValue + $indexOfSecondValue) /2]
+			set avgValue [expr ($indexOfFirstValue + $indexOfSecondValue) * .5]
 			lappend hydroList $avgValue
 			continue
 		} 
@@ -446,14 +443,14 @@ proc ::blobulator::hydropathyMean { hydroScores Sequence} {
 			set	indexOfFirstValue [lindex $hydroScores [expr $i - 1]]
 			set indexOfSecondValue [lindex $hydroScores $i] 
 			set indexOfLastValue [lindex $hydroScores [expr $i + 1]]
-			set avgValue [expr ($indexOfFirstValue + $indexOfSecondValue + $indexOfLastValue) / 3]
+			set avgValue [expr ($indexOfFirstValue + $indexOfSecondValue + $indexOfLastValue) * .33333334]
 			lappend hydroList $avgValue
 		}
 	}
 	
 	set indexSecondToLast [lindex $hydroScores end-1]
 	set indexOfLastValue [lindex $hydroScores end]
-	set lastAvgValue [expr ($indexSecondToLast + $indexOfLastValue) /2]
+	set lastAvgValue [expr ($indexSecondToLast + $indexOfLastValue) * .5]
 	lappend hydroList $lastAvgValue
 	if {[llength $hydroList] != [llength $Sequence] } {
 		puts "Error"
@@ -505,7 +502,7 @@ proc ::blobulator::digitize { H smoothHydroean } {
 #	Returns:
 #	A list of h's p's and s's indicating blobs
 proc blobMaker {digiList regPat letter lmin} {
-	puts [llength $digiList]
+	
 	set newDigiList $digiList
 	
 	set i 0
