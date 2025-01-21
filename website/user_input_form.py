@@ -21,6 +21,9 @@ class InputForm(Form):
     seq_name = StringField(
         label='Seq name:', widget=TextArea(), default='Sequence Name',
         )
+    chain_name = StringField(
+        label='Chain name:', widget=TextArea(),
+    )
     def validate_name(form, field):
         if len(field.data) > 3:
             raise ValidationError('Name must be less than 50 characters')
