@@ -265,12 +265,8 @@ def index():
 
             chains = structure.get_chains()
             chain_list = list(chains)
-            print()
-            print()
-            print("CHAINS")
-            print(chain_list)
-            print(type(chain_list[0]))
             num_chains = len(chain_list)
+
             if num_chains > 1:
                 chain_warning = "warn"
             else:
@@ -281,10 +277,15 @@ def index():
                 shift = int(first_residue_number) - 1
             else:
                 shift = 0
-
+            
+            record_num = 0
             for record in SeqIO.parse(temporary_pdb_file, 'pdb-atom'):
-                print(record.id)
-                my_seq = record.seq
+                if record_num == 0:
+                    my_seq = record.seq
+                if record.annotations['chain'] == chain:
+                    my_seq = record.seq
+                record_num += 1
+
 
             os.remove(temporary_pdb_file)
 
