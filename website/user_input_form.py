@@ -23,6 +23,7 @@ class InputForm(Form):
         )
     chain_name = StringField(
         label='Chain name:', widget=TextArea(),
+        render_kw={'style': 'width: 10%'},
     )
     def validate_name(form, field):
         if len(field.data) > 3:

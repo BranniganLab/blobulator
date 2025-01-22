@@ -44,8 +44,8 @@
                     <p> Upload a PDB File. </p>
                     <p>Warning: Blobulation of PDB files containing multiple chains with disparate sequences is not currently supported.</p>
                     <p> Note: Disease-associated SNPs and disorder prediction are based on UniProt annotation and will not be displayed with this option. </p>
-                    <p> <input id="pdb_file" name="pdb_file" type="file" accept=".pdb">
-                    <label for="chain_name"> Chain Selection:</label>{{ form.chain_name(class_="form-control", rows="1")}}</p>
+                    <p> <input id="pdb_file" name="pdb_file" type="file" accept=".pdb"></p>
+                    <p><label for="chain_name"> Chain Selection:</label>{{ form.chain_name(class_="form-control", rows="1") }}</p>
                     <p><input type=submit name="action_p" class="btn btn-primary" value="Blobulate!"></p>
                 </form>
             </div>
@@ -204,16 +204,17 @@
         if (localStorage.getItem("pdb_file") !== null) {
             localStorage.clear()
         }
-    }
+    };
     function readChainID() {
         var chainID = document.getElementById("chain_name").value;
+        console.log(chainID)
         localStorage.setItem("chainID", chainID);
-    }
+    };
 
     function submitForPDB() {
         deletePDB()
         readChainID()
-    }
+    };
     document.getElementById("pdb_file").onchange = function() {
         deletePDB()
         const form = document.forms[2];
@@ -226,8 +227,8 @@
         localStorage.setItem("pdb_file", fileContent);
         };
         fileReader.readAsText(file);
-     }
-    }
+     };
+    };
 </script>
 <style>
     .row {

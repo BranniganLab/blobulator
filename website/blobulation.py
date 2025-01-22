@@ -252,16 +252,24 @@ def index():
         ## If we have a pdb upload
         elif "action_p" in request.form.to_dict():
             pdb_file = request.files["pdb_file"].read()
+            chain = request.form['chain_name']
             current_datetime = str(datetime.datetime.now())
             temporary_pdb_file = './static/molstar_plugin/plugin/dist/pdb_files/' + current_datetime + ".pdb"
             with open(temporary_pdb_file, 'w') as saved_pdb:
                 saved_pdb.write(str(pdb_file).replace("\\n", "\n"))
                 saved_pdb.close()
 
+            print(chain)
+
             structure = PDBParser().get_structure('structure', temporary_pdb_file)
 
             chains = structure.get_chains()
             chain_list = list(chains)
+            print()
+            print()
+            print("CHAINS")
+            print(chain_list)
+            print(type(chain_list[0]))
             num_chains = len(chain_list)
             if num_chains > 1:
                 chain_warning = "warn"
@@ -275,6 +283,7 @@ def index():
                 shift = 0
 
             for record in SeqIO.parse(temporary_pdb_file, 'pdb-atom'):
+                print(record.id)
                 my_seq = record.seq
 
             os.remove(temporary_pdb_file)
