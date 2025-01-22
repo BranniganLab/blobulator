@@ -322,6 +322,7 @@ def index():
                 my_disorder = '0',
                 activetab = '#result-tab',
                 chain_warning = chain_warning,
+                chain = chain,
                 shift=shift
             )
 
