@@ -246,6 +246,7 @@ def index():
                     my_hg_value = hg_identifier,
                     chain = '',
                     chain_warning = "dontwarn",
+                    pdb_string = '',
                     shift=shift
                 )
 
@@ -259,9 +260,18 @@ def index():
                 saved_pdb.write(str(pdb_file).replace("\\n", "\n"))
                 saved_pdb.close()
 
-            print(chain)
-
+            io = PDBIO()
             structure = PDBParser().get_structure('structure', temporary_pdb_file)
+            for current_chain in structure.get_chains():
+                if current_chain.id == chain:
+                    io.set_structure(current_chain)
+                    io.save(temporary_pdb_file)
+            
+
+            with open(temporary_pdb_file, 'r') as saved_pdb:
+                pdb_string = saved_pdb.read()
+                # print(pdb_string)
+                saved_pdb.close()
 
             chains = structure.get_chains()
             chain_list = list(chains)
@@ -284,6 +294,7 @@ def index():
                     my_seq = record.seq
                 if record.annotations['chain'] == chain:
                     my_seq = record.seq
+
                 record_num += 1
 
 
@@ -323,6 +334,7 @@ def index():
                 activetab = '#result-tab',
                 chain_warning = chain_warning,
                 chain = chain,
+                pdb_string = pdb_string,
                 shift=shift
             )
 
@@ -375,6 +387,7 @@ def index():
                 activetab = '#result-tab',
                 chain = '',
                 chain_warning = "dontwarn",
+                pdb_string = '',
                 shift=shift
             )
     else:

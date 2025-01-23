@@ -22,7 +22,7 @@
                         <option value="ensembl_id">Ensembl ID</option></select>
                     <!--form.uniprot_id calls the UniProt ID field in model_2.py -->
                     <p> {{ form.uniprot_id(class_="form-control", rows="1")}}</p>
-                    <p><input type=submit name="action_u" class="btn btn-primary" value="Blobulate!" onclick="deletePDB()"></p>
+                    <p><input type=submit name="action_u" class="btn btn-primary" value="Blobulate!"></p>
                 </form>
                 </div>
             <div class="form-group" align="center">
@@ -33,7 +33,7 @@
                     <p class="text-monospace"> {{ form.aa_sequence(class_="form-control", rows="4")}}</p>
                     <p> Enter a name for this sequence (optional):</p>
                     <p> {{ form.seq_name(class_="form-control", rows="1")}} </p>
-                    <p><input type=submit name="action_s" class="btn btn-primary" value="Blobulate!" onclick="submitForPDB()"></p>
+                    <p><input type=submit name="action_s" class="btn btn-primary" value="Blobulate!"></p>
                 </form>
             </div>
              <div class="form-group" align="center">
@@ -198,38 +198,6 @@
     </div>
 </div>
 
-
-<script>
-    function deletePDB() {
-        if (localStorage.getItem("pdb_file") !== null) {
-            localStorage.clear()
-        }
-    };
-    function readChainID() {
-        var chainID = document.getElementById("chain_name").value;
-        console.log(chainID)
-        localStorage.setItem("chainID", chainID);
-    };
-
-    function submitForPDB() {
-        deletePDB()
-        readChainID()
-    };
-    document.getElementById("pdb_file").onchange = function() {
-        deletePDB()
-        const form = document.forms[2];
-        var formData = new FormData(form);
-        const file = formData.get('pdb_file');
-        if (file) {
-        const fileReader = new FileReader();
-        fileReader.onload = () => {
-        const fileContent = fileReader.result;
-        localStorage.setItem("pdb_file", fileContent);
-        };
-        fileReader.readAsText(file);
-     };
-    };
-</script>
 <style>
     .row {
         margin: auto;

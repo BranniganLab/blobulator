@@ -61,7 +61,8 @@ $(document).ready( function() {
 	const my_data = {{ data.chart_data | safe }};
 	const pdb_shift = {{ shift | safe }};
 	var molstar_warning = {{ chain_warning | tojson | safe }};
-	var chainID = {{ chain | tojson | safe }}
+	var pdb_string = {{ pdb_string | tojson | safe }};
+	console.log(pdb_string)
 
 	molstar_warning_box = document.getElementById("molstar_warning_box");
 	if (molstar_warning == "warn") {
@@ -72,8 +73,9 @@ $(document).ready( function() {
 
 	localStorage.setItem("blobSeq", my_data.map(row => row.blobtype))
 	localStorage.setItem("pdbShift", pdb_shift)
-	console.log('Chain ID:')
-	console.log(chainID)
+
+	localStorage.removeItem("pdb_file");
+	localStorage.setItem("pdb_file", pdb_string);
 	
 	//GLOBAL EVENT HANDLERS
 	domain_threshold_value.innerHTML = domain_threshold_slider.value;
