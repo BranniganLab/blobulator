@@ -138,7 +138,6 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 proc ::blobulator::blobulateChain {MolID lMin H Chain usedDictionary} {
 	source normalized_hydropathyscales.tcl
 	set sequence [::blobulator::getSequenceChain $MolID $Chain]
-	puts [llength $sequence]
 	set hydroS [::blobulator::hydropathyScores $usedDictionary $sequence]
 	if {$hydroS == -1} {
 		return -1
