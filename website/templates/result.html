@@ -60,7 +60,6 @@ $(document).ready( function() {
 	const my_seq = {{ my_seq | safe }};
 	const my_data = {{ data.chart_data | safe }};
 	const pdb_shift = {{ shift | safe }};
-	var molstar_warning = {{ chain_warning | tojson | safe }};
 	var pdb_string = {{ pdb_string | tojson | safe }};
 	var selected_chain = {{ chain | tojson | safe }};
 
