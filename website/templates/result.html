@@ -62,14 +62,10 @@ $(document).ready( function() {
 	const pdb_shift = {{ shift | safe }};
 	var molstar_warning = {{ chain_warning | tojson | safe }};
 	var pdb_string = {{ pdb_string | tojson | safe }};
-	console.log(pdb_string)
+	var selected_chain = {{ chain | tojson | safe }};
 
 	molstar_warning_box = document.getElementById("molstar_warning_box");
-	if (molstar_warning == "warn") {
-		molstar_warning_box.style.display = "block";
-	} else {
-		molstar_warning_box.style.display = "none";
-	}
+	molstar_warning_box.innerHTML = "Displaying chain: " + selected_chain
 
 	localStorage.setItem("blobSeq", my_data.map(row => row.blobtype))
 	localStorage.setItem("pdbShift", pdb_shift)
@@ -394,7 +390,7 @@ $(document).ready( function() {
 						<option value="eisenberg_weiss">Eisenberg and Weiss</option>
 						<option value="moon_fleming">Moon and Fleming</option></select></td>
 						<td id="hydro-labels" class="hydro_labels" style="width: 50%"></td>
-						<td><p id="molstar_warning_box" style="position: relative; left:80px; display: none;"> Currently only single chain proteins and homomers are supported.</p></td></tr>
+						<td><p id="molstar_warning_box" style="position: relative; left:80px;"></p></td></tr>
 					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
 					</label></td>

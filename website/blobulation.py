@@ -262,10 +262,22 @@ def index():
 
             io = PDBIO()
             structure = PDBParser().get_structure('structure', temporary_pdb_file)
+
+            chain_count = 0
             for current_chain in structure.get_chains():
+                ## Save the first chain
+                if chain_count == 0:
+                    io.set_structure(current_chain)
+                    io.save(temporary_pdb_file)
+                    saved_chain = current_chain.id
+            
+                ## If the user selected chain matches the current chain, save it instead
                 if current_chain.id == chain:
                     io.set_structure(current_chain)
                     io.save(temporary_pdb_file)
+                    saved_chain = current_chain.id
+
+                chain_count += 1
             
 
             with open(temporary_pdb_file, 'r') as saved_pdb:
@@ -333,7 +345,7 @@ def index():
                 my_disorder = '0',
                 activetab = '#result-tab',
                 chain_warning = chain_warning,
-                chain = chain,
+                chain = saved_chain,
                 pdb_string = pdb_string,
                 shift=shift
             )
