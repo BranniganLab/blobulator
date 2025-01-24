@@ -9,6 +9,9 @@ namespace eval ::blobulator:: {
 	variable sorted {}
 } 
 atomselect macro canonAA {resname ALA ARG ASN ASP CYS GLN GLU GLY HIS HID HIE ILE LEU LYS MET PHE PRO SER THR TRP TYR VAL}
+atomselect macro hblobs {user 1}
+atomselect macro pblobs {user 3}
+atomselect macro sblobs {user 2}
 
 #
 #	The overarching proc, users use this to run program
