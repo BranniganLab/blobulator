@@ -370,7 +370,7 @@ $(document).ready( function() {
 
 
 				<!-- ORIGINAL INFO pop up for 'Hydropathy cutoff' below -->
-<!-- 				<div
+ 				<div
 			        id="infoIconHP"
 			        title
 			        style="position: relative; top: 150px; right: 30px; cursor: pointer; font-size: larger; fill: blue; z-index: 10;"
@@ -380,7 +380,11 @@ $(document).ready( function() {
 			        ⓘ
     			</div>
 
-				<div class="popover fade bs-popover-top show" role="tooltip" id="hydroCutoffPopover" style="position: absolute; display: none;">
+				<div 
+					class="popover fade bs-popover-top show" 
+					role="tooltip" id="hydroCutoffPopover" 
+					style="position: absolute; display: none; transform: translate3d(0px, 0px, 0px); top: 0px; left: 0px; will-change: transform;" 
+					x-placement="top">
 					<div class="arrow" style="left: 236px;"></div>
 					<h3 class="popover-header">
 						<button onclick='hidePopoverHP()' type="button" class="close" aria-hidden="true">×</button>
@@ -389,39 +393,7 @@ $(document).ready( function() {
 					<div class="popover-body">
 						<p id="popoverContentHP"></p>
 					</div>
-				</div> -->
-
-
-<!--  				<div 
-					id="infoIconHP" 
-					style="position: relative; top: 150px; right: 30px; cursor: pointer; font-size: larger;">
-				    ⓘ
 				</div>
-
-				<div id="hydroCutoffPopover" style="position: absolute; display: none; background: white; border: 1px solid #ccc; border-radius: 4px; padding: 10px;">
-				    <div>
-				        <button onclick="hidePopoverHP()" type="button" style="float: right;">×</button>
-				    </div>
-				    <div id="popoverContentHP"></div>
-				</div> --> 
-
-				 <div 
-					id="infoIconHP" 
-					style="position: relative; top: 150px; right: 30px; cursor: pointer; font-size: larger;">
-				    ⓘ
-				</div>
-
-				<div class="popover fade bs-popover-top show" role="tooltip" id="hydroCutoffPopover" style="position: absolute; display: none;">
-					<div class="arrow" style="left: 236px;"></div>
-					<h3 class="popover-header">
-						<button onclick='hidePopoverHP()' type="button" class="close" aria-hidden="true">×</button>
-						<br>
-					</h3>
-					<div class="popover-body">
-						<p id="popoverContentHP"></p>
-					</div>
-				</div> 
-
 
 
 				<!-- INFO pop up for 'Minimum blob size' below -->
@@ -435,7 +407,11 @@ $(document).ready( function() {
 			        ⓘ
     			</div>
 
-				<div class="popover fade bs-popover-top show" role="tooltip" id="minBlobSizePopover" style="position: absolute; display: none; transform: translate3d(-265px, -55px, 0px); top: 0px; left: 0px; will-change: transform;" x-placement="top">
+				<div 
+					class="popover fade bs-popover-top show" 
+					role="tooltip" id="minBlobSizePopover" 
+					style="position: absolute; display: none; transform: translate3d(0px, 0px, 0px); top: 0px; left: 0px; will-change: transform;" 
+					x-placement="top">
 					<div class="arrow" style="left: 236px;"></div>
 					<h3 class="popover-header">
 						<button onclick='hidePopoverMB()' type="button" class="close" aria-hidden="true">×</button>
@@ -497,49 +473,27 @@ $(document).ready( function() {
 							var $trLast = $table.find("tr:last");
 	    					$trLast.remove();
 	    				}
+
+
  
 			        // ----------- Function to toggle the 'Hydropathy cutoff' popover -----------
-			        // function toggleHydropathyPopover() {
-			        //     const infoIconHP = document.getElementById('infoIconHP');
-			        //     const popoverHP = document.getElementById('hydroCutoffPopover');
-			        //     const popoverContentHP = document.getElementById('popoverContentHP');
+			        function toggleHydropathyPopover() {
+			            const infoIconHP = document.getElementById('infoIconHP');
+			            const popoverHP = document.getElementById('hydroCutoffPopover');
+			            const popoverContentHP = document.getElementById('popoverContentHP');
 
-					// 	const hydropathyCutoffText =  'The hydropathy cutoff number, denoted as H*, represents the threshold at which a residue is considered hydrophobic or non hydrophobic based on its hydropathy score. For example, if a residue has a hydropathy score above the threshold, it will be considered hydrophobic.'
-			        //     popoverContentHP.innerHTML = hydropathyCutoffText;
+						const hydropathyCutoffText =  'The hydropathy cutoff number, denoted as H<sup>*</sup>, represents the threshold at which a residue is considered hydrophobic or non hydrophobic based on its hydropathy score. For example, if a residue has a hydropathy score above the threshold, it will be considered hydrophobic.'
+			            popoverContentHP.innerHTML = hydropathyCutoffText;
 
-			        //     if (popoverHP.style.display === 'block') {
-			        //         popoverHP.style.display = 'none'; // Hide if already visible
-			        //     } else {
-			        //         const rect = infoIconHP.getBoundingClientRect();
-			        //         popoverHP.style.top = `${rect.bottom + window.scrollY + -478}px`; 
-			        //         popoverHP.style.left = `${rect.left + rect.width / 2 + window.scrollX - 1000}px`;
-			        //         popoverHP.style.display = 'block'; // Show the popover
-			        //     }
-			        // }
-
-
-					function toggleHydropathyPopover() {
-					    const infoIconHP = document.getElementById('infoIconHP');
-					    const popoverHP = document.getElementById('hydroCutoffPopover');
-					    const popoverContentHP = document.getElementById('popoverContentHP');
-
-					    const hydropathyCutoffText = 'The hydropathy cutoff number, denoted as H*, represents the threshold at which a residue is considered hydrophobic or non hydrophobic based on its hydropathy score. For example, if a residue has a hydropathy score above the threshold, it will be considered hydrophobic.';
-					    popoverContentHP.innerHTML = hydropathyCutoffText;
-
-					    if (popoverHP.style.display === 'block') {
-					        popoverHP.style.display = 'none'; // Hide if already visible
-					    } else {
-					        const rect = infoIconHP.getBoundingClientRect();
-
-					        // Positioning relative to the icon
-					        popoverHP.style.position = 'absolute'; // Position relative to the parent container
-					        popoverHP.style.width = '300px'; // Fixed width to prevent stretching
-					        popoverHP.style.maxWidth = '90%'; // Allow responsiveness but limit stretch
-					        popoverHP.style.top = `${rect.bottom + window.scrollY + -540}px`; // Positioned below the icon
-					        popoverHP.style.left = `${rect.left + rect.width / 2 - popoverHP.offsetWidth / 2 + window.scrollX - 1000}px`; // Centered horizontally
-					        popoverHP.style.display = 'block'; // Show the popover
-					    }
-					}
+			            if (popoverHP.style.display === 'block') {
+			                popoverHP.style.display = 'none'; // Hide if already visible
+			            } else {
+			                const rect = infoIconHP.getBoundingClientRect();
+			                popoverHP.style.top = `${rect.bottom + window.scrollY + -500}px`; 
+			                popoverHP.style.left = `${rect.left + rect.width / 2 + window.scrollX - 1000}px`;
+			                popoverHP.style.display = 'block'; // Show the popover
+			            }
+			        }
 
 			        // Hide the popover
 			        function hidePopoverHP() {
@@ -549,8 +503,7 @@ $(document).ready( function() {
 
 			        // Add event listener to info icon
 			        document.getElementById('infoIconHP').addEventListener('click', toggleHydropathyPopover);
-
-
+		
 
 
 
