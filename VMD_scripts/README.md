@@ -21,8 +21,8 @@ are categorized as s blobs.
 **Files Needed:**
 
 ``` 
-Blobulation.tcl
-Blobs_GUI.tcl
+blobulation.tcl
+Blob_GUI.tcl
 normalized_hydropathyscales.tcl
 ```
 
@@ -33,15 +33,18 @@ from the Extensions drop down menu
 `Extensions > Tk Console`
 
 Using the Linux cd command, cd to the downloaded file location.
-Below is an example of accessing the proper directory in the Tk Console 
+Below is an example of accessing the Blob_GUI.tcl file in the Tk console. 
 
-``` cd /VMD/blobulator ```
- 
- then input the following command 
+``` cd /path/to/file/Blob_GUI.tcl ``` 
 
-``` source Blobs_GUI.tcl ``` 
+You will need to source everytime you wish to load the GUI.
 
-You will need to source everytime you wish to load the GUI. 
+### How to access blobulation values: 
+
+The blobulation algorithm will apply all blobs types to the VMD user and user2 values.
+User will store the type of blob it is, user 1 -> h-blobs, user 2 -> s-blobs, user 3 -> p-blobs.
+User2 will store the blob group, user2 1 -> h-blob group 1, user2 2 -> s-blob group 1, user2 3 -> h-blob group 2, etc.
+When coloring by Blob ID, h-blobs will have different colors depending on the user2 value.    
 
 ### Known Limitations:
 
