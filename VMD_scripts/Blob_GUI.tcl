@@ -6,26 +6,28 @@ if [winfo exists .blob] {
 
 namespace eval ::blobulator {
 	# Widths,Heights,Rows and Columns
-	variable buttonWidth 102
+	variable buttonWidth 45
 	variable defaultButtonWidth 10
 	variable dropDownMenuWidth 14 
-	variable canvasWidth 640
+	variable canvasWidth 20
 	variable canvasHeight 2
 	variable atomselectWidth 24
 	variable paraWidth 10
 	variable sliderRow 5
-	variable sliderLength 380
+	variable sliderLength 240
 	variable checkmarkColumn 4
 	variable textColumn 0
-	variable thresholdColumn 2
+	variable thresholdColumn 1
 	variable paraColumn 1
-	variable text2Column 2
-	variable textVariableColumn 3
-	variable dropDownColumn 3
-	variable checkBoxColumn 4
-	variable defaultButtonColumn 4
+	variable text2Column 3
+	variable textVariableColumn 1
+	variable dropDownColumn 2
+	variable checkBoxColumn 2
+	variable defaultButtonColumn 2
 	variable rowPadding 14
-	
+	variable textAboveSlider 4
+	variable scaleName 2
+
 	#Variables that are strings
 	variable blobColorType1 "Blob Type"
 	variable blobColorType2 "Blob ID"
@@ -64,55 +66,56 @@ variable blobs [toplevel ".blob"]
 }
 proc ::blobulator::GUI {} {
 	::blobulator::Window
-	grid [label $::blobulator::blobs.1_MolID -text MolID: ] -row 0 -column $::blobulator::textColumn -sticky e -rowspan 3 -pady $::blobulator::rowPadding
-	grid [entry $::blobulator::blobs.tv_MolID -width 10 -textvariable ::blobulator::MolID ] -row 0 -column $::blobulator::paraColumn -rowspan 3 -pady $::blobulator::rowPadding -columnspan 1 
+	grid [label $::blobulator::blobs.1_MolID -text MolID: ] -row 0 -column 0  -rowspan 2 
+	grid [entry $::blobulator::blobs.tv_MolID -width 10 -textvariable ::blobulator::MolID ] -row 1 -column 0 -rowspan 2  -columnspan 1 
 	if {$::blobulator::MolID == ""} {
 		set ::blobulator::MolID "top"
 	}
 
 	#Atomselect grids
-	grid [label $::blobulator::blobs.lselect -text "         Selection:" ] -row 0 -column $::blobulator::text2Column -sticky e
-	grid [entry $::blobulator::blobs.select -width $::blobulator::atomselectWidth -textvariable ::blobulator::select] -row 0 -column $::blobulator::textVariableColumn -columnspan 1  -sticky w
+	grid [label $::blobulator::blobs.lselect -text "                    Selection:" ] -row 0 -column 1 
+	grid [entry $::blobulator::blobs.select -width $::blobulator::atomselectWidth -textvariable ::blobulator::select] -row 1 -column $::blobulator::textVariableColumn -columnspan 1 
 	
 
 	#grid [columnconfigure $blobulator::blobs $::blobulator::checkBoxColumn -uniform]
 
 	#Hydropathy Scale grids
-	grid [label $::blobulator::blobs.t2 -text "         Hydropathy Scale:                                                              " -height 2] -row 2 -column $::blobulator::text2Column -columnspan 2
+	grid [label $::blobulator::blobs.t2 -text "               Hydropathy Scale:" -height 2] -row 2 -column 1 -columnspan 1 
 	grid [checkbutton $::blobulator::blobs.check -text "Auto Updates Hydrophobicity     " \
-	 -variable ::blobulator::checkForUpdate -command {::blobulator::blobulationSlider }] -row 0 -column $::blobulator::checkBoxColumn -rowspan 3 -pady $::blobulator::rowPadding 
+	 -variable ::blobulator::checkForUpdate -command {::blobulator::blobulationSlider }] -row 2 -column $::blobulator::checkBoxColumn 
 	grid [ttk::combobox $::blobulator::blobs.dmnu2  -textvariable ::blobulator::hydropathyScaleDictionaryList -width $::blobulator::dropDownMenuWidth \
-	 -values [list $::blobulator::hydropathyScale1 $::blobulator::hydropathyScale2 $::blobulator::hydropathyScale3] -state readonly] -pady 6 -row 2 -column $::blobulator::dropDownColumn -columnspan 2 -sticky w
+	 -values [list $::blobulator::hydropathyScale1 $::blobulator::hydropathyScale2 $::blobulator::hydropathyScale3] -state readonly] -pady 1 -row 3 -column 1 -columnspan 1 
 
 
-	grid [canvas $::blobulator::blobs.c -height $::blobulator::canvasHeight -width $::blobulator::canvasWidth -background black] -columnspan 6
+	grid [canvas $::blobulator::blobs.c -height $::blobulator::canvasHeight -width $::blobulator::canvasWidth -background black] -columnspan 3
 
 	#Threhold grids
-	grid [label $::blobulator::blobs.thres -text "         Thresholds" -height 1 -font [list arial 9 bold]] -column $::blobulator::thresholdColumn -sticky n -columnspan 2
-	set paraList [list Length: ::blobulator::Lmin 1 50 1 Hydrophobicity: ::blobulator::H .1 1 .01]
-	foreach { entry namedVariable min max interval} $paraList {
+	grid [label $::blobulator::blobs.thres -text "      Thresholds" -height 1 -font [list arial 9 bold]] -column $::blobulator::thresholdColumn -sticky n -columnspan 1
+	set paraList [list Length: ::blobulator::Lmin 1 50 1 ::blobulator::sliderRow Hydrophobicity: ::blobulator::H .1 1 .01 ::blobulator::sliderRow]
+	foreach { entry namedVariable min max interval SliderRow} $paraList {
 		set entryLabels [label $::blobulator::blobs.l_$entry -text $entry]
 		set entryVariable [entry $::blobulator::blobs.e_$entry -width $::blobulator::paraWidth -textvariable $namedVariable]
 		set entrySlider [scale $::blobulator::blobs.s_$entry -orient horizontal -from $min -to $max -length $::blobulator::sliderLength -resolution $interval -tickinterval 0 -variable $namedVariable -showvalue 0]
 		
 		
-		grid $entryLabels -row $::blobulator::sliderRow -column $::blobulator::textColumn -sticky e
-		grid $entryVariable -row $::blobulator::sliderRow -column $::blobulator::paraColumn
-		grid $entrySlider -row $::blobulator::sliderRow -column 2 -columnspan 3 -sticky w	
+		grid $entryLabels -row $::blobulator::sliderRow -column 0 
+		incr ::blobulator::sliderRow
+		grid $entryVariable -row $::blobulator::sliderRow -column 0
+		grid $entrySlider -row $::blobulator::sliderRow -column 1 -columnspan 1	
 		incr ::blobulator::sliderRow
 	}
-	grid [canvas $::blobulator::blobs.c2 -height $::blobulator::canvasHeight -width $::blobulator::canvasWidth -background black] -columnspan 6
+	grid [canvas $::blobulator::blobs.c2 -height $::blobulator::canvasHeight -width $::blobulator::canvasWidth -background black] -columnspan 3
 
 	#Visulize grids 
-	grid [label $::blobulator::blobs.t -text "Color by: " -height 2] -row 8 -column $::blobulator::text2Column -columnspan 1 -sticky e
+	grid [label $::blobulator::blobs.t -text "                   Color by: " -height 2] -row 10 -column 1 -columnspan 1  -pady .1 
 	grid [ttk::combobox $::blobulator::blobs.dmnu -textvariable ::blobulator::graphRepOptions -width $::blobulator::dropDownMenuWidth \
-	-values [list $::blobulator::blobColorType1 $::blobulator::blobColorType2] -state readonly ] -pady 6 -row 8 -column $::blobulator::dropDownColumn -sticky w
+	-values [list $::blobulator::blobColorType1 $::blobulator::blobColorType2] -state readonly ] -pady 6 -row 11 -column 1 -columnspan 1
 	
 	#Button grids
-	grid [button $::blobulator::blobs.blobulate -text "Blobulate" -font [list arial 9 bold] -width $::blobulator::buttonWidth -command {blobulation } ] -columnspan 6
-	grid [button $::blobulator::blobs.ldefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::lminDefault }] -padx 0 -pady 1 -row 5 -columnspan 2 -column $::blobulator::defaultButtonColumn -sticky e
-	grid [button $::blobulator::blobs.hdefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::hDefault }] -padx 0 -pady 1 -row 6 -columnspan 2 -column $::blobulator::defaultButtonColumn -sticky e
-	grid [button $::blobulator::blobs.clear -text "Clear representations" -width $::blobulator::buttonWidth -command {::blobulator::blobClear $::blobulator::MolID}] -column 0 -columnspan 6
+	grid [button $::blobulator::blobs.blobulate -text "Blobulate"  -width $::blobulator::buttonWidth -command {blobulation } ] -columnspan 3
+	grid [button $::blobulator::blobs.ldefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::lminDefault }] -padx 0 -pady 1 -row 6 -columnspan 1 -column $::blobulator::defaultButtonColumn -sticky w
+	grid [button $::blobulator::blobs.hdefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::hDefault }] -padx 0 -pady 1 -row 8 -columnspan 1 -column $::blobulator::defaultButtonColumn -sticky w
+	grid [button $::blobulator::blobs.clear -text "Clear representations" -width $::blobulator::buttonWidth -command {::blobulator::blobClear $::blobulator::MolID}] -column 0 -columnspan 3
 	bind $::blobulator::blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu }
 	
 
@@ -369,7 +372,7 @@ proc ::blobulator::graphRepUserSelect {select} {
 		
 
 		if {[string index $u2 0] == [llength $user2length]} {
-	
+			puts "boolin"
 			mol addrep $::blobulator::MolID 
 			mol modselect $count $::blobulator::MolID "user 1 and user2 $u2 and $select"
 		} elseif {[string index $u2 0] == [lindex $user2length 0]} {
