@@ -7,11 +7,6 @@ namespace eval ::blobulator:: {
 	variable framesOn 0
 	variable framesTotal 1
 	
-	variable hBlobRegex 1{$Lmin,}
-
-	variable pBlobRegex "\[10]{$Lmin,}"
-
-	variable sBlobRegex "\[10]{1,$Lmin}"
 } 
 atomselect macro canonAA {resname ALA ARG ASN ASP CYS GLN GLU GLY HIS HID HIE ILE LEU LYS MET PHE PRO SER THR TRP TYR VAL}
 
