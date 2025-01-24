@@ -268,18 +268,19 @@ def index():
                 ## Save the first chain
                 if chain_count == 0:
                     io.set_structure(current_chain)
-                    io.save(temporary_pdb_file)
                     saved_chain = current_chain.id
             
                 ## If the user selected chain matches the current chain, save it instead
                 ## Save the temporary pdb file because biopython requires a file to exist
-                if current_chain.id == chain:
+                elif current_chain.id == chain:
                     io.set_structure(current_chain)
-                    io.save(temporary_pdb_file)
                     saved_chain = current_chain.id
+                    break
 
                 chain_count += 1
-                
+            os.remove(temporary_pdb_file)
+            io.save(temporary_pdb_file)
+            
             ## Save the contents of the output file as a string
             with open(temporary_pdb_file, 'r') as saved_pdb:
                 pdb_string = saved_pdb.read()
