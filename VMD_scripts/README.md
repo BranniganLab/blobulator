@@ -3,11 +3,10 @@
 **A VMD application for blobulation needs**
 
 This tool is a visualization tool for Blobulator. Blobulator tracks amino 
-acid sequences of proteins to determine hydrophobicity. If a section of an 
+acid sequences of proteins to determine hydrophobicity. If a stretch in the 
 amino acid chain is hydrophobic, and longer than the
-threshold, it is considered a h blob. If a section of
-an amino acid chain is hydrophilic, and longer than the 
-threshold, it is considered a p blob. All other sections are too short and
+threshold, it is considered a h blob. If a stretch in the amino acid chain is non-hydrophobic, and longer than the 
+threshold, it is considered a p blob. All other stretches are too short and
 are categorized as s blobs.  
 
 ## How to use VMD Blobulation:
@@ -37,7 +36,7 @@ Below is an example of accessing the Blob_GUI.tcl file in the Tk console.
 
 ``` cd /path/to/file/Blob_GUI.tcl ``` 
 
-You will need to source everytime you wish to load the GUI.
+You will need to source everytime you wish to load the Plugin.
 
 ### How to access blobulation values: 
 
