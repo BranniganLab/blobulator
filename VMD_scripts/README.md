@@ -42,8 +42,11 @@ You will need to source everytime you wish to load the GUI.
 ### How to access blobulation values: 
 
 The blobulation algorithm will apply all blobs types to the VMD user and user2 values.
+
 User will store the type of blob it is, user 1 -> h-blobs, user 2 -> s-blobs, user 3 -> p-blobs.
+
 User2 will store the blob group, user2 1 -> h-blob group 1, user2 2 -> s-blob group 1, user2 3 -> h-blob group 2, etc.
+
 When coloring by Blob ID, h-blobs will have different colors depending on the user2 value.    
 
 ### Known Limitations:
