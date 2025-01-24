@@ -12,9 +12,10 @@
 $(document).ready( function() {
 	//--------------Javascript for plotting in d3-------------
 	//tooltips
-
+	const hydropathyCutoffText =  "<p>The hydropathy cutoff number, denoted as H<sup>*</sup>, represents the threshold at which a residue is considered hydrophobic or non hydrophobic based on its hydropathy score. For example, if a residue has a hydropathy score above the threshold, it will be considered hydrophobic.</p>"
+	const minBlobSizeText = "<p>The minimum blob size, L<sub>min</sub>, refers to the smallest number of contiguous residues that can create an h-blob or p-blob. Blobs below the minimum blob size are considered s-blobs. More information regarding the minimum blob size can be found <a href=\"https://pmc.ncbi.nlm.nih.gov/articles/PMC10827107/\" target=\"_blank\">here</a>.</p>"
 	const hydropathy_tool_text = ("<p>Each residue is classified as hydrophobic or nonhydrophobic, depending on whether the Kyte–Dolittle hydropathy score is above or below the hydrophobicity threshold H<sup>*</sup>. H<sup>*</sup> is determined by the user, and the process of digitizatizing the residues based on whether their hydrophobicity falls above or below this cutoff is shown in the figure below:</p> <img src=\"/static/blobulation_digitization_figure.png\" width=\"225\" height=\"225\" align=\"center\">")
-	const blob_track_text = "<p> After the residues are digitized (see the previous tooltip), they are clustered into blobs as shown in the figure below: </p> <img src=\"/static/blobulation_concept_figure.png\" width=\"425\" height=\"250\" align=\"center\"> <p> The value of the \"minimum blob length\" slider determines L<sub>min</sub>. All tracks show residues in h-blobs, s-blobs, and p-blobs as the highest bars, medium bars, and lowest bars respectively. This track also colors the blobs by blob type: h-blobs are blue, p-blobs are orange, and s-blobs are green.h-groups are not indicated graphically, but are noted in the downloadable csv file. </p>"
+	const blob_track_text = "<p>After the residues are digitized (see the previous tooltip), they are clustered into blobs as shown in the figure below: </p> <img src=\"/static/blobulation_concept_figure.png\" width=\"425\" height=\"250\" align=\"center\"> <p> The value of the \"minimum blob length\" slider determines L<sub>min</sub>. All tracks show residues in h-blobs, s-blobs, and p-blobs as the highest bars, medium bars, and lowest bars respectively. This track also colors the blobs by blob type: h-blobs are blue, p-blobs are orange, and s-blobs are green.h-groups are not indicated graphically, but are noted in the downloadable csv file. </p>"
 	const Das_Pappu_text = "<p>The Das-Pappu phase diagram provides a means to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. </p> <img src=\"/static/daspappu_graph.png\" width=\"425\" height=\"350\"> "+
 		"<p> <i> <b> Figure adapted from: </b> <a href=\"https://www.pnas.org/content/early/2013/07/29/1304749110\" target=\"_blank\"> Das RK, Pappu RV (2013) Conformations of intrinsically disordered proteins are influenced by linear sequence distributions of oppositely charged residues PNAS 110(33):13392–13397.</i> </p>"
 	const ncpr_tool_text = "<p>For each blob its net charge per residue (NCPR) is calculated. Each blob is evaluated based on its fraction of both positively and negatively charged residues. The darker blue a blob is shown here, the higher the fraction of positively charged residues are present within the blob. Alternatively, the darker red a blob is shown here, the higher the fraction of negatively charged residues are present within the blob. An even fraction of positive or negative, or a low fraction of any charged residues, results in a grey color.</p>"
@@ -263,6 +264,35 @@ $(document).ready( function() {
 		updateHydroscaleTicks(sel_hydro_scale.toString())
 	});
 
+
+
+
+
+
+	// // Function to place tool tip icons on the floating table ////////////////////////////////////////////////////////////////
+	// function addMainContainterTooltips(result_main_container, hydropathyCutoffText, xpos, ypos) {
+	//     // Find the container where the tooltip will be added
+	//     const container = document.getElementById(result_main_container);
+
+	//     // Create an instance of ZFigure
+	//     const tooltipHP = new ZFigure();
+
+	//     // Set required properties for the instance
+	//     tooltipHP.container = container; // Reference to the container
+	//     tooltipHP.WIDTH = xpos || 50; // Default x position if none provided
+	//     tooltipHP.MARGIN = { top: ypos || 20 }; // Default y position if none provided
+
+	//     // Call the `add_tooltip` method to place the tooltip
+	//     tooltipHP.add_tooltip(hydropathyCutoffText, tooltipHP.WIDTH, tooltipHP.MARGIN.top);
+	// 	}
+
+
+
+
+
+
+
+
 	// Function to update the ticks
 	function updateHydroscaleTicks(selected_hydro_scale) {
         // Hydropathy scales (unnormalized) if a hydropathy scale is added in the future note that these dictionaries need to be ordered from highest to lowest value
@@ -369,7 +399,30 @@ $(document).ready( function() {
 				<div text="left">
 
 
-				<!-- ORIGINAL INFO pop up for 'Hydropathy cutoff' below -->
+
+
+
+
+<!-- 				<div 
+					id="new-tooltip-container" 
+					style="position: relative; height: 100px; width: 100px; background-color: #f9f9f9; z-index: 10;">
+
+				</div>
+
+
+
+
+ -->
+
+
+
+
+
+
+
+
+
+ 				 <!-- ORIGINAL INFO pop up for 'Hydropathy cutoff' below  -->
  				<div
 			        id="infoIconHP"
 			        title
@@ -396,7 +449,7 @@ $(document).ready( function() {
 				</div>
 
 
-				<!-- INFO pop up for 'Minimum blob size' below -->
+				 <!-- INFO pop up for 'Minimum blob size' below  -->
 				<div
 			        id="infoIconMB"
 			        title
@@ -474,6 +527,16 @@ $(document).ready( function() {
 	    					$trLast.remove();
 	    				}
 
+	    				document.addEventListener("DOMContentLoaded", function () {
+					    // Add a new tooltip to a specific container
+					    addMainContainterTooltips(
+					        "new-tooltip-container", // ID of the container
+					        "This is a custom tooltip message!", // Tooltip content
+					        150, // X-coordinate (from left of the container)
+					        50 // Y-coordinate (from top of the container)
+						    );
+						});
+
 
  
 			        // ----------- Function to toggle the 'Hydropathy cutoff' popover -----------
@@ -489,8 +552,8 @@ $(document).ready( function() {
 			                popoverHP.style.display = 'none'; // Hide if already visible
 			            } else {
 			                const rect = infoIconHP.getBoundingClientRect();
-			                popoverHP.style.top = `${rect.bottom + window.scrollY + -500}px`; 
-			                popoverHP.style.left = `${rect.left + rect.width / 2 + window.scrollX - 1000}px`;
+			                popoverHP.style.top = `${rect.top - 510}px`; 
+			                popoverHP.style.left = `${rect.left - 800}px`;
 			                popoverHP.style.display = 'block'; // Show the popover
 			            }
 			        }
@@ -520,7 +583,7 @@ $(document).ready( function() {
 			                popoverMB.style.display = 'none'; // Hide if already visible
 			            } else {
 			                const rect = infoIconMB.getBoundingClientRect();
-			                popoverMB.style.top = `${rect.bottom + window.scrollY - 458}px`; 
+			                popoverMB.style.top = `${rect.top + window.scrollY - 500}px`; 
 			                popoverMB.style.left = `${rect.left + rect.width / 2 + window.scrollX - 1000}px`;
 			                popoverMB.style.display = 'block'; // Show the popover
 			            }
@@ -532,10 +595,49 @@ $(document).ready( function() {
 			            popoverMB.style.display = 'none';
 			        }
 
+
 			        // Add event listener to info icon
 			        document.getElementById('infoIconMB').addEventListener('click', toggleMinblobSizePopover);
-    
-				</script>
+
+					// Ensure the popover stays in place on window resize
+					window.addEventListener('resize', function() {
+					    const popoverMB = document.getElementById('minBlobSizePopover');
+					    const infoIconMB = document.getElementById('infoIconMB');
+
+					    if (popoverMB.style.display === 'block') {
+					        const rect = infoIconMB.getBoundingClientRect();
+					        popoverMB.style.top = `${rect.top - 500}px`;
+					        popoverMB.style.left = `${rect.left + rect.width / 2 + window.scrollX - 1000}px`;
+					    }
+					});
+
+					// // Recalculate position after page load (to fix initial positioning after refresh)
+					// document.addEventListener('DOMContentLoaded', function() {
+					//     const popoverMB = document.getElementById('minBlobSizePopover');
+					//     const infoIconMB = document.getElementById('infoIconMB');
+
+					//     if (popoverMB.style.display === 'block') {
+					//         const rect = infoIconMB.getBoundingClientRect();
+					//         popoverMB.style.top = `${rect.bottom + window.scrollY}px`;
+					//         popoverMB.style.left = `${rect.left + rect.width / 2 + window.scrollX - popoverMB.offsetWidth / 2}px`;
+					//     }
+					// });
+
+					// window.addEventListener('resize', function() {
+			        //     const popoverMB = document.getElementById('minBlobSizePopover');
+			        //     if (popoverMB.style.display === 'block') {
+			        //         const infoIconMB = document.getElementById('infoIconMB');
+			        //         const rect = infoIconMB.getBoundingClientRect();
+			        //         const containerRect = infoIconMB.parentNode.getBoundingClientRect();
+
+			        //         // Reposition the popover based on the icon's updated position
+			        //         popoverMB.style.top = `${rect.bottom - containerRect.top + 10}px`;
+			        //         popoverMB.style.left = `${rect.left - containerRect.left + rect.width / 2 - popoverMB.offsetWidth / 2}px`;			
+			        //     }
+			        // });	
+
+
+	    		</script>
 
 
 
