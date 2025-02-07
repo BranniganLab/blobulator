@@ -44,9 +44,9 @@
                     <p> Upload a PDB File. </p>
                     <p>Warning: Blobulation of PDB files containing multiple chains with disparate sequences is not currently supported.</p>
                     <p> Note: Disease-associated SNPs and disorder prediction are based on UniProt annotation and will not be displayed with this option. </p>
-                    <p> <input id="pdb_file" name="pdb_file" type="file" accept=".pdb"></p>
-                    <p><label for="chain_name"> Chain Selection:</label>{{ form.chain_name(class_="form-control", rows="1") }}</p>
-                    <p><input type=submit name="action_p" class="btn btn-primary" value="Blobulate!"></p>
+                    <p> <input id="pdb_file" name="pdb_file" type="file" accept=".pdb"> </p>
+                    <p id="chain_name"></p>
+                    <p><input type=submit name="action_p" class="btn btn-primary" value="Blobulate!"></p></br>
                 </form>
             </div>
         </div>
@@ -197,6 +197,50 @@
     <p> We recommend using our back end code found on our <a href="https://github.com/BranniganLab/blobulator" target="_blank"> GitHub</a>. If you think a specific feature would be generally useful, please email us at connor.pitman@rutgers.edu or grace.brannigan@rutgers.edu.</p>
     </div>
 </div>
+
+<script>
+    function deletePDB() {
+        if (localStorage.getItem("pdb_file") !== null) {
+            localStorage.clear()
+        }
+    }
+    document.getElementById("pdb_file").onchange = function() {
+        deletePDB();
+        const form = document.getElementById("pdb_entry_block");
+        var formData = new FormData(form);
+        const file = formData.get('pdb_file');
+        if (file) {
+            const fileReader = new FileReader();
+            fileReader.onload = () => {
+                const fileContent = fileReader.result;
+                localStorage.setItem("pdb_file", fileContent);
+
+                // The replace() call is for \r\n from DOS/Windows files
+				const lines = fileContent.replace(/\r/g, '').split('\n');
+				let chains = new Set();
+				for(const line of lines) {
+					if(line.startsWith('ATOM')) {
+						// We use a magic number here because that is how Protein Data Bank defines it
+						chains.add(line[21].trim());
+					}
+				}
+                let s = '<label for="chain_select">Select chain:</label> <select name="chain_select" id="chain_select">';
+                s += '<option value="">All chains</option>';
+                for(const chain of chains) {
+                    s += `<option value="${chain}">${chain}</option>`;
+                }
+                s += '</select>';
+                document.getElementById('chain_name').innerHTML = s;
+
+            };
+			fileReader.onerror = (e) => {
+				console.log('TOM: error reading file', file);
+                document.getElementById('chain_name').innerHTML = '';
+			}
+            fileReader.readAsText(file);
+        }
+    }
+</script>
 
 <style>
     .row {

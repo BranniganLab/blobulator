@@ -251,8 +251,9 @@ def index():
 
         ## If we have a pdb upload
         elif "action_p" in request.form.to_dict():
+            print(request.form.to_dict)
             pdb_file = request.files["pdb_file"].read()
-            chain = request.form['chain_name']
+            chain = request.form['chain_select']
             current_datetime = str(datetime.datetime.now())
             temporary_pdb_file = './static/molstar_plugin/plugin/dist/pdb_files/' + current_datetime + ".pdb"
             with open(temporary_pdb_file, 'w') as saved_pdb:

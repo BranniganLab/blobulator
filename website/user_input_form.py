@@ -1,4 +1,4 @@
-from wtforms import Form, FloatField, validators, StringField, FieldList
+from wtforms import Form, FloatField, validators, StringField, FieldList, SelectField
 from math import pi
 from wtforms.widgets import TextArea
 
@@ -21,10 +21,6 @@ class InputForm(Form):
     seq_name = StringField(
         label='Seq name:', widget=TextArea(), default='Sequence Name',
         )
-    chain_name = StringField(
-        label='Chain name:', widget=TextArea(),
-        render_kw={'style': 'width: 10%'},
-    )
     def validate_name(form, field):
         if len(field.data) > 3:
             raise ValidationError('Name must be less than 50 characters')
