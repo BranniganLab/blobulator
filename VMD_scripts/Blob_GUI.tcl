@@ -81,7 +81,7 @@ proc ::blobulator::GUI {} {
 
 	#Hydropathy Scale grids
 	grid [label $::blobulator::blobs.t2 -text "Hydropathy Scale:" -height 2] -row 3 -column 0 -columnspan 1 -pady 2
-	grid [checkbutton $::blobulator::blobs.check -text "Auto Updates Hydrophobicity     " \
+	grid [checkbutton $::blobulator::blobs.check -text "Auto Update Hydrophobicity Threshold  " \
 	 -variable ::blobulator::checkForUpdate -command {::blobulator::blobulationSlider }] -row 3 -column $::blobulator::checkBoxColumn -columnspan 2 -sticky e
 	grid [ttk::combobox $::blobulator::blobs.dmnu2  -textvariable ::blobulator::hydropathyScaleDictionaryList -width $::blobulator::dropDownMenuWidth \
 	 -values [list $::blobulator::hydropathyScale1 $::blobulator::hydropathyScale2 $::blobulator::hydropathyScale3] -state readonly] -pady 1 -row 3 -column 1 -columnspan 1 -sticky w
@@ -90,7 +90,7 @@ proc ::blobulator::GUI {} {
 	grid [canvas $::blobulator::blobs.c -height $::blobulator::canvasHeight -width $::blobulator::canvasWidth -background black] -row 4 -columnspan 3
 
 	#Threhold grids
-	grid [label $::blobulator::blobs.thres -text "      Thresholds" -height 1 ] -row 5 -column $::blobulator::thresholdColumn -sticky n -columnspan 1
+	grid [label $::blobulator::blobs.thres -text "Thresholds" -height 1 ] -row 5 -column $::blobulator::thresholdColumn -sticky n -columnspan 1
 	set paraList [list Length: ::blobulator::Lmin 1 50 1 ::blobulator::sliderRow Hydrophobicity: ::blobulator::H .1 1 .01 ::blobulator::sliderRow]
 	foreach { entry namedVariable min max interval SliderRow} $paraList {
 		set entryLabels [label $::blobulator::blobs.l_$entry -text $entry]
