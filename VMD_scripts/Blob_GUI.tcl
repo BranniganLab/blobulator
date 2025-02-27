@@ -66,23 +66,23 @@ variable blobs [toplevel ".blob"]
 }
 proc ::blobulator::GUI {} {
 	::blobulator::Window
-	grid [label $::blobulator::blobs.1_MolID -text MolID: ] -row 0 -column 0  -rowspan 2 
-	grid [entry $::blobulator::blobs.tv_MolID -width 10 -textvariable ::blobulator::MolID ] -row 1 -column 0 -rowspan 2  -columnspan 1 
+	grid [label $::blobulator::blobs.1_MolID -text MolID: ] -row 0 -column 0  -rowspan 2 -pady 2
+	grid [entry $::blobulator::blobs.tv_MolID -width 10 -textvariable ::blobulator::MolID ] -row 0 -column 1 -rowspan 2  -columnspan 1 -pady 2
 	if {$::blobulator::MolID == ""} {
 		set ::blobulator::MolID "top"
 	}
 
 	#Atomselect grids
-	grid [label $::blobulator::blobs.lselect -text "                    Selection:" ] -row 0 -column 1 
-	grid [entry $::blobulator::blobs.select -width $::blobulator::atomselectWidth -textvariable ::blobulator::select] -row 1 -column $::blobulator::textVariableColumn -columnspan 1 
+	grid [label $::blobulator::blobs.lselect -text "Selection:" ] -row 2 -column 0 -pady 2
+	grid [entry $::blobulator::blobs.select -width $::blobulator::atomselectWidth -textvariable ::blobulator::select] -row 2 -column $::blobulator::textVariableColumn -columnspan 1 -pady 2
 	
 
 	#grid [columnconfigure $blobulator::blobs $::blobulator::checkBoxColumn -uniform]
 
 	#Hydropathy Scale grids
-	grid [label $::blobulator::blobs.t2 -text "               Hydropathy Scale:" -height 2] -row 2 -column 1 -columnspan 1 
+	grid [label $::blobulator::blobs.t2 -text "Hydropathy Scale:" -height 2] -row 3 -column 0 -columnspan 1 -pady 2
 	grid [checkbutton $::blobulator::blobs.check -text "Auto Updates Hydrophobicity     " \
-	 -variable ::blobulator::checkForUpdate -command {::blobulator::blobulationSlider }] -row 2 -column $::blobulator::checkBoxColumn 
+	 -variable ::blobulator::checkForUpdate -command {::blobulator::blobulationSlider }] -row 3 -column $::blobulator::checkBoxColumn 
 	grid [ttk::combobox $::blobulator::blobs.dmnu2  -textvariable ::blobulator::hydropathyScaleDictionaryList -width $::blobulator::dropDownMenuWidth \
 	 -values [list $::blobulator::hydropathyScale1 $::blobulator::hydropathyScale2 $::blobulator::hydropathyScale3] -state readonly] -pady 1 -row 3 -column 1 -columnspan 1 
 
