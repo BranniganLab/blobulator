@@ -6,10 +6,10 @@ if [winfo exists .blob] {
 
 namespace eval ::blobulator {
 	# Widths,Heights,Rows and Columns
-	variable buttonWidth 45
+	variable buttonWidth 65
 	variable defaultButtonWidth 10
 	variable dropDownMenuWidth 14 
-	variable canvasWidth 20
+	variable canvasWidth 425
 	variable canvasHeight 2
 	variable atomselectWidth 24
 	variable paraWidth 10
