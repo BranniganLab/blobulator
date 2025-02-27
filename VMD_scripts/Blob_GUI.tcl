@@ -15,14 +15,14 @@ namespace eval ::blobulator {
 	variable paraWidth 10
 	variable sliderRow 5
 	variable sliderLength 240
-	variable checkmarkColumn 4
+	variable checkmarkColumn 3
 	variable textColumn 0
 	variable thresholdColumn 1
 	variable paraColumn 1
 	variable text2Column 3
 	variable textVariableColumn 1
 	variable dropDownColumn 2
-	variable checkBoxColumn 2
+	variable checkBoxColumn 1
 	variable defaultButtonColumn 2
 	variable rowPadding 14
 	variable textAboveSlider 4
@@ -82,7 +82,7 @@ proc ::blobulator::GUI {} {
 	#Hydropathy Scale grids
 	grid [label $::blobulator::blobs.t2 -text "Hydropathy Scale:" -height 2] -row 3 -column 0 -columnspan 1 -pady 2
 	grid [checkbutton $::blobulator::blobs.check -text "Auto Updates Hydrophobicity     " \
-	 -variable ::blobulator::checkForUpdate -command {::blobulator::blobulationSlider }] -row 3 -column $::blobulator::checkBoxColumn 
+	 -variable ::blobulator::checkForUpdate -command {::blobulator::blobulationSlider }] -row 3 -column $::blobulator::checkBoxColumn -columnspan 2 -sticky e
 	grid [ttk::combobox $::blobulator::blobs.dmnu2  -textvariable ::blobulator::hydropathyScaleDictionaryList -width $::blobulator::dropDownMenuWidth \
 	 -values [list $::blobulator::hydropathyScale1 $::blobulator::hydropathyScale2 $::blobulator::hydropathyScale3] -state readonly] -pady 1 -row 3 -column 1 -columnspan 1 -sticky w
 
