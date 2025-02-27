@@ -13,7 +13,7 @@ namespace eval ::blobulator {
 	variable canvasHeight 2
 	variable atomselectWidth 24
 	variable paraWidth 10
-	variable sliderRow 5
+	variable sliderRow 6
 	variable sliderLength 240
 	variable checkmarkColumn 3
 	variable textColumn 0
@@ -87,10 +87,10 @@ proc ::blobulator::GUI {} {
 	 -values [list $::blobulator::hydropathyScale1 $::blobulator::hydropathyScale2 $::blobulator::hydropathyScale3] -state readonly] -pady 1 -row 3 -column 1 -columnspan 1 -sticky w
 
 
-	grid [canvas $::blobulator::blobs.c -height $::blobulator::canvasHeight -width $::blobulator::canvasWidth -background black] -columnspan 3
+	grid [canvas $::blobulator::blobs.c -height $::blobulator::canvasHeight -width $::blobulator::canvasWidth -background black] -row 4 -columnspan 3
 
 	#Threhold grids
-	grid [label $::blobulator::blobs.thres -text "      Thresholds" -height 1 -font [list arial 9 bold]] -column $::blobulator::thresholdColumn -sticky n -columnspan 1
+	grid [label $::blobulator::blobs.thres -text "      Thresholds" -height 1 ] -row 5 -column $::blobulator::thresholdColumn -sticky n -columnspan 1
 	set paraList [list Length: ::blobulator::Lmin 1 50 1 ::blobulator::sliderRow Hydrophobicity: ::blobulator::H .1 1 .01 ::blobulator::sliderRow]
 	foreach { entry namedVariable min max interval SliderRow} $paraList {
 		set entryLabels [label $::blobulator::blobs.l_$entry -text $entry]
@@ -107,14 +107,14 @@ proc ::blobulator::GUI {} {
 	grid [canvas $::blobulator::blobs.c2 -height $::blobulator::canvasHeight -width $::blobulator::canvasWidth -background black] -columnspan 3
 
 	#Visulize grids 
-	grid [label $::blobulator::blobs.t -text "Color by: " -height 2] -row 10 -column 0 -columnspan 1  -pady .1 
+	grid [label $::blobulator::blobs.t -text "Color by: " -height 2] -row 11 -column 0 -columnspan 1  -pady .1 
 	grid [ttk::combobox $::blobulator::blobs.dmnu -textvariable ::blobulator::graphRepOptions -width $::blobulator::dropDownMenuWidth \
-	-values [list $::blobulator::blobColorType1 $::blobulator::blobColorType2] -state readonly ] -pady 6 -row 10 -column 1 -columnspan 1 -sticky w
+	-values [list $::blobulator::blobColorType1 $::blobulator::blobColorType2] -state readonly ] -pady 6 -row 11 -column 1 -columnspan 1 -sticky w
 	
 	#Button grids
 	grid [button $::blobulator::blobs.blobulate -text "Blobulate"  -width $::blobulator::buttonWidth -command {blobulation } ] -columnspan 3
-	grid [button $::blobulator::blobs.ldefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::lminDefault }] -padx 0 -pady 1 -row 6 -columnspan 1 -column $::blobulator::defaultButtonColumn -sticky w
-	grid [button $::blobulator::blobs.hdefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::hDefault }] -padx 0 -pady 1 -row 8 -columnspan 1 -column $::blobulator::defaultButtonColumn -sticky w
+	grid [button $::blobulator::blobs.ldefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::lminDefault }] -padx 0 -pady 1 -row 7 -columnspan 1 -column $::blobulator::defaultButtonColumn -sticky w
+	grid [button $::blobulator::blobs.hdefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::hDefault }] -padx 0 -pady 1 -row 9 -columnspan 1 -column $::blobulator::defaultButtonColumn -sticky w
 	grid [button $::blobulator::blobs.clear -text "Clear representations" -width $::blobulator::buttonWidth -command {::blobulator::blobClear $::blobulator::MolID}] -column 0 -columnspan 3
 	bind $::blobulator::blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu }
 	
