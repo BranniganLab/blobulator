@@ -7,11 +7,8 @@
 
 {% block scripts %}
 <script src="https://d3js.org/d3.v6.js"></script>
-<script src="static/figure.js"></script>
-<script>
-$(document).ready( function() {
-	//--------------Javascript for plotting in d3-------------
-	//tooltips
+<script src="{{ url_for('static', filename='figure.js') }}"></script>
+<script type="text/javascript">
 	const hydropathyCutoffText =  "<p>The hydropathy cutoff number, denoted as H<sup>*</sup>, represents the threshold at which a residue is considered hydrophobic or non hydrophobic based on its hydropathy score. For example, if a residue has a hydropathy score above the threshold, it will be considered hydrophobic.</p>"
 	const minBlobSizeText = "<p>The minimum blob size, L<sub>min</sub>, refers to the smallest number of contiguous residues that can create an h-blob or p-blob. Blobs below the minimum blob size are considered s-blobs. More information regarding the minimum blob size can be found <a href=\"https://pmc.ncbi.nlm.nih.gov/articles/PMC10827107/\" target=\"_blank\">here</a>.</p>"
 	const hydropathy_tool_text = ("<p>Each residue is classified as hydrophobic or nonhydrophobic, depending on whether the Kyte–Dolittle hydropathy score is above or below the hydrophobicity threshold H<sup>*</sup>. H<sup>*</sup> is determined by the user, and the process of digitizatizing the residues based on whether their hydrophobicity falls above or below this cutoff is shown in the figure below:</p> <img src=\"/static/blobulation_digitization_figure.png\" width=\"225\" height=\"225\" align=\"center\">")
@@ -24,81 +21,18 @@ $(document).ready( function() {
 	const disorder_tool_text = "<p>For each blob its fraction of ordered and disordered residues is calculated. Dark orange corresponds to a high fraction of ordered residues. This disorder calculation is only available if the user uses the Uniprot ID, and uses information provided by the Database of Disordered Protein Prediction. <i> <a href=\"https://academic.oup.com/nar/article/41/D1/D508/1069637\" target=\"_blank\"> Oates et al., D2P2: database of disordered protein predictions, Nucleic Acids Research, Volume 41, Issue D1, 1 January 2013, Pages D508–D516, https://doi.org/10.1093/nar/gks1226</i></p>"
 	const zoom_tool_text = "<p>You can zoom into a region of the protein sequence by clicking and dragging on any of the charts. Zoom out by double-clicking on any chart, or by clicking the Reset Zoom button.</p>"
 
-	//tooltip for SNPs link
-	let Tooltip_snps = d3.select("body")
-		.append("div") // declare the tooltip div 
-		.attr("class", "tooltip")
-		.style("opacity", 0);
-
-
-
-	// Call the function
-	updateHydroscaleTicks(sel_hydro_scale)
-
-	// Add event listeners for each of the ticks, on click update the hydropathy input and slider
-
-
-	// updates the slider/box value entered by the user
-	const cutoff_slider_value = document.getElementById("cutoff_user");
-	const cutoff_slider = document.getElementById("cutoff_user_slider");
-
-	//Cutoff Box
-	const cutoff_box = document.getElementById("cutoff_user_box");
-
-	//Threshold Slider
-	const domain_threshold_value = document.getElementById("domain_threshold_user");
-	const domain_threshold_slider = document.getElementById("domain_threshold_user_slider");
-		
-	//Threshold Box
-	const domain_threshold_box = document.getElementById("domain_threshold_user_box");
-
-	
-	//reads the input variable from flask
-	const uni_id = {{ my_uni_id | safe }};
-	const uni_id_str = '["' + uni_id + '"]';
-	const my_seq = {{ my_seq | safe }};
-	const my_data = {{ data.chart_data | safe }};
-
-	
-	//GLOBAL EVENT HANDLERS
-	domain_threshold_value.innerHTML = domain_threshold_slider.value;
-	cutoff_slider_value.innerHTML = cutoff_slider.value;
-	cutoff_slider.oninput = function() {
-		cutoff_box.value = this.value;
-		cutoff_slider_value.innerHTML = this.value;
-		}
-	domain_threshold_box.oninput = function() {
-		domain_threshold_slider.value = this.value;
-		domain_threshold_value.innerHTML = this.value;
-		}
-	domain_threshold_slider.oninput = function() {
-		domain_threshold_box.value = this.value;
-		domain_threshold_value.innerHTML = this.value;
-		}
-	cutoff_box.oninput = function() {
-		cutoff_slider.value = this.value;
-		cutoff_slider_value.innerHTML = this.value;
-		}
-
-	// make the plots
-	draw(my_data);
-
-	//FUNCTION DECLARATIONS
 
 	// A function that updates the charts
 	function update_Charts(figs, data) {
 		figs.pathyFig.update_cutoff_line(d3.select("#cutoff_user").text());
-
-		var current_hydro_scale = document.getElementById("hydro_scales")
-		var sel_hydro_scale = current_hydro_scale.value
+		const sel_hydro_scale = document.getElementById("hydro_scales").value;
 
 		//iterate over all figures in figs and update them
 		for (let [key, value] of Object.entries(figs)) { 
 			if (key == "richFig") {
 				if (sel_hydro_scale != 'kyte_doolittle') {
 					value.add_warning_overlay()
-				}
-				else {
+				} else {
 					value.remove_warning_overlay()
 				}
 			}
@@ -113,37 +47,68 @@ $(document).ready( function() {
 		}
 	}
 
-	// Update the output when parameters are changed
-	function do_update(figs, data) {
-        let my_seq = {{ my_seq | safe }};
-		// If the box is checked, I mutate the amino acid
-		if(d3.selectAll(".mutatebox").property("checked")){
-			const snp_id = document.getElementById("snp_id").value;
-			const amino_acid = document.getElementById("residue_type").value;
-			my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
-		} 
+	// Function to update the ticks
+	function updateHydroscaleTicks(selected_hydro_scale) {
+		// Hydropathy scales (unnormalized) if a hydropathy scale is added in the future note that these dictionaries need to be ordered from highest to lowest value
+		// Parameter: selected_hydro_scale: (str) what hydropathy scale is currently selected?
+	
+		const kyte_res = {"I": 4.500, "V": 4.200, "L": 3.800, "F": 2.800, "C": 2.500, "M": 1.900, "A": 1.800, "G": -0.400, "W": -0.900, "S": -0.800, "T": -0.700, "Y": -1.300, "P": -1.600, "H": -3.200, "N": -3.500, "Q": -3.500, "E": -3.500, "D": -3.500, "K": -3.900, "R": -4.500}
+		const eisenberg_res = {"I": 0.73, "F": 0.61, "V": 0.54, "L": 0.53, "W": 0.37, "M": 0.26, "A": 0.25, "G": 0.16,"C": 0.04, "Y": 0.02, "P": -0.07, "T": -0.18, "S": -0.26, "H": -0.40, "E": -0.62, "N": -0.64, "Q": -0.69, "D": -0.72, "K": -1.10, "R": -1.80}
+		const moon_res = {"F": 2.20, "L": 1.81, "I": 1.56, "P": 1.52, "Y": 1.09, "V": 0.78, "M": 0.76, "W": 0.38, "A": 0.0, "C": -0.49, "E": -1.64, "G": -1.72, "T": -1.78, "S": -1.83, "D": -2.95, "Q": -3.01, "N": -3.47, "R": -3.715, "H": -4.76, "K": -5.39}
 
-		var snp_id_box = document.getElementById("snp_id")
-		var residue_type_box = document.getElementById("residue_type")
-		var mutatecheckbox = document.getElementById("mutatebox")
-		snp_id_box.addEventListener('change', function(){
-			d3.selectAll("#snp_triangles").attr("fill", "black")
-		});
-		residue_type_box.addEventListener('change', function(){
-			d3.selectAll("#snp_triangles").attr("fill", "black")
-		});
-		const d_value = d3.select("#domain_threshold_user").text();
-		const selectedValue = d3.select("#cutoff_user").text();
-		var hydro_scale = document.getElementById("hydro_scales").value;
-		const m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, hydro_scale: hydro_scale, my_disorder: {{ my_disorder | tojson | safe }}};
+		let chosen_scale = kyte_res;
+		switch(document.getElementById("hydro_scales").value) {
+			case "eisenberg_weiss":
+				chosen_scale = eisenberg_res;
+				break;
+			case "moon_fleming":
+				chosen_scale = moon_res;
+				break;
+		}
 
-		$.post( "/postmethod", m_str , "json")
-			.then(function(data) {
-				var data_tmp = data.chart_data;
-				var tt = JSON.stringify(eval("(" + data_tmp + ")"));
-				var data_obj = JSON.parse(tt);
-				update_Charts(figs, data_obj);
-			});
+		let res_letters = "";
+		let last_pos = 0;
+		let px = 0;
+		let res_dict = {};
+		// Normalize hydropathy values on a 0-100 scale, to be used as x-coordinates in the UI
+		let vals = Object.values(chosen_scale);
+		// Math.max/min don't take arrays, so we have to extract the values with the "..." operator
+		let min_val = Math.min(...vals);
+		let span = Math.max(...vals) - min_val;
+		for (const [key, value] of Object.entries(chosen_scale)) {
+			res_dict[key] = (value - min_val) / span * 100;
+		}
+		// Iterate through the dictionary of normalized values, assign each residue a position based on what value they fall on, and raise their vertical height if they are too close to the neighboring amino acid on the scale (their letters overlap)
+		// var offset = 0.5
+		for (const [key, value] of Object.entries(res_dict)){
+			if (last_pos == value || last_pos - 1.5 <= value) {
+				px += 14
+			} else {
+				px = 0;
+			}
+			var offset = (value - 0.45) / 1.002
+			res_letters += `<div class="residue-label" style="left: ${offset}%; bottom: ${px}px">${key}</div>`;
+			last_pos = value;
+		}
+		document.getElementById("hydro-labels").innerHTML = res_letters;
+
+		let all_res = document.getElementsByClassName("residue-label")
+
+		for (let i = 0; i < all_res.length; i++) {
+				all_res[i].addEventListener("click", function() {
+					let res_value = Math.round((res_dict[all_res[i].innerHTML] * 10))/1000
+					document.getElementById("cutoff_user_slider").value = res_value;
+					document.getElementById("cutoff_user_box").value = res_value;
+					document.getElementById("cutoff_user").innerHTML = res_value;
+					current_cutoff_box.dispatchEvent(new Event("change"));
+				}, false);
+				all_res[i].addEventListener("mouseover", function () {
+					all_res[i].style.color = "red";
+				});
+				all_res[i].addEventListener("mouseout", function () {
+					all_res[i].style.color = "black";
+				});
+		}
 	}
 
 	// Drawing the plots to be displayed on the result page
@@ -159,7 +124,12 @@ $(document).ready( function() {
 			var snps = true
 		}
 		let figs = [];
-	
+		//tooltip for SNPs link
+		let Tooltip_snps = d3.select("body")
+			.append("div") // declare the tooltip div 
+			.attr("class", "tooltip")
+			.style("opacity", 0);
+
 		figs.pathyFig = new ZHydropathy("pathyPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_zoomout_button("pathyPlot", data)
 			.add_resetmutation_button()
@@ -173,7 +143,7 @@ $(document).ready( function() {
 		node.style.position = "relative";
 		node.innerHTML += "<br><br><p style='text-align:center; font-size:25px; '>Blobs colored according to . . .</p>"
 		LabelHeader = document.getElementById("my_dataviz").appendChild(node);	
-    
+	
 		figs.blobFig = new ZblobChart("blobPlot", data, my_snp, my_seq, Tooltip_snps, my_cut)
 			.add_title("Blob type")
 			.add_tooltip(blob_track_text)
@@ -203,7 +173,7 @@ $(document).ready( function() {
 			.add_tooltip(uversky_tool_text)
 			.add_zoomtip(zoom_tool_text)
 			.add_ContinuousLegend("PuOr", {min: "More ordered", med: "", max: "More disordered"});
-    
+	
 		if (my_disorder == 0) {
 			figs.disorderFig = new ZFigure("disorderPlot", data)
 				.add_title("DISORDER UNAVAILABLE")
@@ -216,11 +186,9 @@ $(document).ready( function() {
 				.add_ContinuousLegend("PuOr", {min: "0.0", med: "0.5", max: "1.0"});
 		}
 
-
 		// Set up UI element change handler
 		d3.selectAll(".mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales").on("change", function(){do_update(figs, data)});
 		
-
 		// Mutate residue function
 		d3.select('#download_data_link').on('click', function() {
 			// If the box is check, I mutate the amino acid
@@ -254,115 +222,95 @@ $(document).ready( function() {
 		});  
 	}
 
-		//Hydropathy slider ticks
+	// Update the output when parameters are changed
+	function do_update(figs, data) {
+		let my_seq = {{ my_seq | safe }};
+		// If the box is checked, I mutate the amino acid
+		if(d3.selectAll(".mutatebox").property("checked")){
+			const snp_id = document.getElementById("snp_id").value;
+			const amino_acid = document.getElementById("residue_type").value;
+			my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
+		} 
 
-	// Get the current hydropathy scale, added event listener calls the update function if the hydropathy scale changes so the ticks update
-	var current_hydro_scale = document.getElementById("hydro_scales")
-	var sel_hydro_scale = current_hydro_scale.value
-	current_hydro_scale.addEventListener('change', function(){
-		sel_hydro_scale = current_hydro_scale.value
-		updateHydroscaleTicks(sel_hydro_scale.toString())
-	});
-
-
-
-
-
-
-	// // Function to place tool tip icons on the floating table ////////////////////////////////////////////////////////////////
-	// function addMainContainterTooltips(result_main_container, hydropathyCutoffText, xpos, ypos) {
-	//     // Find the container where the tooltip will be added
-	//     const container = document.getElementById(result_main_container);
-
-	//     // Create an instance of ZFigure
-	//     const tooltipHP = new ZFigure();
-
-	//     // Set required properties for the instance
-	//     tooltipHP.container = container; // Reference to the container
-	//     tooltipHP.WIDTH = xpos || 50; // Default x position if none provided
-	//     tooltipHP.MARGIN = { top: ypos || 20 }; // Default y position if none provided
-
-	//     // Call the `add_tooltip` method to place the tooltip
-	//     tooltipHP.add_tooltip(hydropathyCutoffText, tooltipHP.WIDTH, tooltipHP.MARGIN.top);
-	// 	}
-
-
-
-
-
-
-
-
-	// Function to update the ticks
-	function updateHydroscaleTicks(selected_hydro_scale) {
-        // Hydropathy scales (unnormalized) if a hydropathy scale is added in the future note that these dictionaries need to be ordered from highest to lowest value
-        // Parameter: selected_hydro_scale: (str) what hydropathy scale is currently selected?
+		document.getElementById("snp_id").addEventListener('change', function() {
+			d3.selectAll("#snp_triangles").attr("fill", "black");
+		});
+		document.getElementById("residue_type").addEventListener('change', function(){
+			d3.selectAll("#snp_triangles").attr("fill", "black");
+		});
+		const m_str = {my_seq: my_seq,
+			domain_threshold: document.getElementById("domain_threshold_user_box").value,
+			cutoff: document.getElementById("cutoff_user_box").value,
+			hydro_scale: document.getElementById("hydro_scales").value,
+			my_disorder: {{ my_disorder | tojson | safe }}};
 	
-		const kyte_res = {"I": 4.500, "V": 4.200, "L": 3.800, "F": 2.800, "C": 2.500, "M": 1.900, "A": 1.800, "G": -0.400, "W": -0.900, "S": -0.800, "T": -0.700, "Y": -1.300, "P": -1.600, "H": -3.200, "N": -3.500, "Q": -3.500, "E": -3.500, "D": -3.500, "K": -3.900, "R": -4.500}
-		const eisenberg_res = {"I": 0.73, "F": 0.61, "V": 0.54, "L": 0.53, "W": 0.37, "M": 0.26, "A": 0.25, "G": 0.16,"C": 0.04, "Y": 0.02, "P": -0.07, "T": -0.18, "S": -0.26, "H": -0.40, "E": -0.62, "N": -0.64, "Q": -0.69, "D": -0.72, "K": -1.10, "R": -1.80}
-        const moon_res = {"F": 2.20, "L": 1.81, "I": 1.56, "P": 1.52, "Y": 1.09, "V": 0.78, "M": 0.76, "W": 0.38, "A": 0.0, "C": -0.49, "E": -1.64, "G": -1.72, "T": -1.78, "S": -1.83, "D": -2.95, "Q": -3.01, "N": -3.47, "R": -3.715, "H": -4.76, "K": -5.39}
-
-        let chosen_scale;
-        if(selected_hydro_scale == "eisenberg_weiss") {
-            chosen_scale = eisenberg_res;
-        } else if (selected_hydro_scale == "moon_fleming") {
-            chosen_scale = moon_res;
-        } else {
-            chosen_scale = kyte_res;
-        }
-
-		let res_letters = "";
-		let last_pos = 0;
-		let px = 0;
-        let res_dict = {};
-        // Normalize hydropathy values on a 0-100 scale, to be used as x-coordinates in the UI
-        let vals = Object.values(chosen_scale);
-        // Math.max/min don't take arrays, so we have to extract the values with the "..." operator
-        let min_val = Math.min(...vals);
-        let span = Math.max(...vals) - min_val;
-        for (const [key, value] of Object.entries(chosen_scale)) {
-            res_dict[key] = (value - min_val) / span * 100;
-        }
-	    // Iterate through the dictionary of normalized values, assign each residue a position based on what value they fall on, and raise their vertical height if they are too close to the neighboring amino acid on the scale (their letters overlap)
-	    // var offset = 0.5
-		for (const [key, value] of Object.entries(res_dict)){
-			if (last_pos == value || last_pos - 1.5 <= value) {
-				px += 14
-			} else {
-				px = 0;
-			}
-			var offset = (value - 0.45) / 1.002
-            res_letters += `<div class="residue-label" style="left: ${offset}%; bottom: ${px}px">${key}</div>`;
-			last_pos = value;
-		}
-	    	document.getElementById("hydro-labels").innerHTML = res_letters;
-
-	    var all_res = document.getElementsByClassName("residue-label")
-
-		for (let i = 0; i < all_res.length; i++) {
-				all_res[i].addEventListener("click", function() {
-					var current_cutoff_box = document.getElementById("cutoff_user_box");
-					var current_slider = document.getElementById("cutoff_user_slider");
-					var current_cutoff = document.getElementById("cutoff_user")
-					//var res_value = parseInt(all_res[i].style.left)*0.01;
-					let res_value = Math.round((res_dict[all_res[i].innerHTML] * 10))/1000
-					current_slider.value = res_value;
-					current_cutoff_box.value = res_value;
-					current_cutoff.innerHTML = res_value;
-					const e = new Event("change");
-					current_cutoff_box.dispatchEvent(e);
-
-				}, false);
-				all_res[i].addEventListener("mouseover", function () {
-					all_res[i].style.color = "red";
-				});
-				all_res[i].addEventListener("mouseout", function () {
-					all_res[i].style.color = "black";
-				});
-		}
+		$.post( "/postmethod", m_str , "json")
+			.then(function(data) {
+				var data_tmp = data.chart_data;
+				var tt = JSON.stringify(eval("(" + data_tmp + ")"));
+				var data_obj = JSON.parse(tt);
+				update_Charts(figs, data_obj);
+			});
 	}
-});
 
+
+	$(document).ready( function() {
+		// Activate all popovers handled by popover.js
+		$('[data-toggle="popover"]').popover();
+
+		updateHydroscaleTicks(document.getElementById("hydro_scales").value);
+
+		// Add event listeners for each of the ticks, on click update the hydropathy input and slider
+		// updates the slider/box value entered by the user
+		const cutoff_slider_value = document.getElementById("cutoff_user");
+		const cutoff_slider = document.getElementById("cutoff_user_slider");
+
+		//Cutoff Box
+		const cutoff_box = document.getElementById("cutoff_user_box");
+
+		//Threshold Slider
+		const domain_threshold_value = document.getElementById("domain_threshold_user");
+		const domain_threshold_slider = document.getElementById("domain_threshold_user_slider");
+			
+		//Threshold Box
+		const domain_threshold_box = document.getElementById("domain_threshold_user_box");
+		
+		//reads the input variable from flask
+		const uni_id = {{ my_uni_id | safe }};
+		const uni_id_str = '["' + uni_id + '"]';
+		const my_seq = {{ my_seq | safe }};
+		const my_data = {{ data.chart_data | safe }};
+		
+		//GLOBAL EVENT HANDLERS
+		domain_threshold_value.innerHTML = domain_threshold_slider.value;
+		cutoff_slider_value.innerHTML = cutoff_slider.value;
+		cutoff_slider.oninput = () => {
+			cutoff_box.value = this.value;
+			cutoff_slider_value.innerHTML = this.value;
+		};
+		domain_threshold_box.oninput = () => {
+			domain_threshold_slider.value = this.value;
+			domain_threshold_value.innerHTML = this.value;
+		};
+		domain_threshold_slider.oninput = () => {
+			domain_threshold_box.value = this.value;
+			domain_threshold_value.innerHTML = this.value;
+		};
+		cutoff_box.oninput = () => {
+			cutoff_slider.value = this.value;
+			cutoff_slider_value.innerHTML = this.value;
+		}
+
+		// make the plots
+		draw(my_data);
+
+		//Hydropathy slider ticks
+		// Get the current hydropathy scale, added event listener calls the update function if the hydropathy scale changes so the ticks update
+		document.getElementById("hydro_scales").addEventListener('change', function() {
+			updateHydroscaleTicks(document.getElementById("hydro_scales").value.toString())
+		});
+
+	});
 </script>
 
 {% endblock %}
@@ -398,103 +346,40 @@ $(document).ready( function() {
 				<col style= "width: 30%">
 				<div text="left">
 
+	
+				<tr><td>
+				Hydrophobicity Scale: <span
+				id="infoIconHP"
+				style="cursor: pointer"
+				data-toggle="popover"
+				data-placement="top"
+				data-html="true"
+				data-content="The hydropathy cutoff number, denoted as H<sup>*</sup>, represents the threshold at which a residue is considered hydrophobic or non hydrophobic based on its hydropathy score. For example, if a residue has a hydropathy score above the threshold, it will be considered hydrophobic.">ⓘ</span>
+			</td>
+			<td><select id="hydro_scales" class="hydro_scales">
+				<option selected="selected" value="kyte_doolittle">Kyte and Doolittle</option>
+				<option value="eisenberg_weiss">Eisenberg and Weiss</option>
+				<option value="moon_fleming">Moon and Fleming</option></select></td>
+				<td id="hydro-labels" class="hydro_labels" style="width: 50%"></td>
+			<td>&nbsp;</td></div></tr>
 
-
-
-
-
-<!-- 				<div 
-					id="new-tooltip-container" 
-					style="position: relative; height: 100px; width: 100px; background-color: #f9f9f9; z-index: 10;">
-
-				</div>
-
-
-
-
- -->
-
-
-
-
-
-
-
-
-
- 				 <!-- ORIGINAL INFO pop up for 'Hydropathy cutoff' below  -->
- 				<div
-			        id="infoIconHP"
-			        title
-			        style="position: relative; top: 150px; right: 30px; cursor: pointer; font-size: larger; fill: blue; z-index: 10;"
-			        data-toggle="popover"
-			        data-html="true"
-			        data-content="<p id='popoverContentHP'></p><a onclick='hidePopoverHP()' class='close'>&times;</a>">
-			        ⓘ
-    			</div>
-
-				<div 
-					class="popover fade bs-popover-top show" 
-					role="tooltip" id="hydroCutoffPopover" 
-					style="position: absolute; display: none; transform: translate3d(0px, 0px, 0px); top: 0px; left: 0px; will-change: transform;" 
-					x-placement="top">
-					<div class="arrow" style="left: 236px;"></div>
-					<h3 class="popover-header">
-						<button onclick='hidePopoverHP()' type="button" class="close" aria-hidden="true">×</button>
-						<br>
-					</h3>
-					<div class="popover-body">
-						<p id="popoverContentHP"></p>
-					</div>
-				</div>
-
-
-				 <!-- INFO pop up for 'Minimum blob size' below  -->
-				<div
-			        id="infoIconMB"
-			        title
-			        style="position: relative; top: 155px; right: 30px; cursor: pointer; font-size: larger; fill: blue; z-index: 10;"
-			        data-toggle="popover"
-			        data-html="true"
-			        data-content="<p id='popoverContentMB'></p><a onclick='hidePopoverMB()' class='close'>&times;</a>">
-			        ⓘ
-    			</div>
-
-				<div 
-					class="popover fade bs-popover-top show" 
-					role="tooltip" id="minBlobSizePopover" 
-					style="position: absolute; display: none; transform: translate3d(0px, 0px, 0px); top: 0px; left: 0px; will-change: transform;" 
-					x-placement="top">
-					<div class="arrow" style="left: 236px;"></div>
-					<h3 class="popover-header">
-						<button onclick='hidePopoverMB()' type="button" class="close" aria-hidden="true">×</button>
-						<br>
-					</h3>
-					<div class="popover-body">
-						<p id="popoverContentMB"></p>
-					</div>
-				</div>
-
-
-				
-				
-				<tr><td>Hydrophobicity Scale:</td>
-					<td><select id="hydro_scales" class="hydro_scales">
-						<option selected="selected" value="kyte_doolittle">Kyte and Doolittle</option>
-						<option value="eisenberg_weiss">Eisenberg and Weiss</option>
-						<option value="moon_fleming">Moon and Fleming</option></select></td>
-						<td id="hydro-labels" class="hydro_labels" style="width: 50%"></td>
-					<td>&nbsp;</td></div></tr>
-
-					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
-						<span id="cutoff_user"></span>
-					</label></td>
-					<td><input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
-					<td style="width: 50%"><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td>
-					<td>&nbsp;</td></tr>
-				<tr>
-
-				<td>Minimum blob size:
+			<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
+				<span id="cutoff_user"></span>
+			</label></td>
+			<td><input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
+			<td style="width: 50%"><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td>
+			<td>&nbsp;</td>
+			</tr>
+			<tr>
+				<td>
+				Minimum blob size:
+				<span
+				id="infoIconMB"
+				style="cursor: pointer"
+				data-toggle="popover"
+				data-placement="top"
+				data-html="true"
+				data-content="The minimum blob size, L<sub>min</sub>, refers to the smallest number of contiguous residues that can create an h-blob or p-blob. Blobs below the minimum blob size are considered s-blobs. More information regarding the minimum blob size can be found <a href='https://pmc.ncbi.nlm.nih.gov/articles/PMC10827107/' target='_blank'>here</a>.">ⓘ</span>
 					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
 					</label> </td>
 					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> 
@@ -502,147 +387,7 @@ $(document).ready( function() {
 					<td style="width: 50%"><input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider1" step=1> </td>
 				<td>&nbsp;</td></tr>
 				</div>
-
-
-
-				<!-- JAVA SCRIPT FUNCTIONS-->
-				<script type="text/javascript">
-					row_count = 0
-						function cloneRow() {
-							var btn = document.getElementById("add_mut");
-							var $table = $("#results_table");
-							var trLast = $table.find("tr:last");
-							console.log(trLast[0])
-							var trNew = trLast.clone();
-							trNew.attr("id", "mutations_container" + row_count);
-							trLast.before(trNew);
-							console.log(trNew[0]);
-							row_count += 1
-							return this
-						}
-
-						function deleterow() {
-							var $table = $("#results_table");
-							var $trLast = $table.find("tr:last");
-	    					$trLast.remove();
-	    				}
-
-	    				document.addEventListener("DOMContentLoaded", function () {
-					    // Add a new tooltip to a specific container
-					    addMainContainterTooltips(
-					        "new-tooltip-container", // ID of the container
-					        "This is a custom tooltip message!", // Tooltip content
-					        150, // X-coordinate (from left of the container)
-					        50 // Y-coordinate (from top of the container)
-						    );
-						});
-
-
- 
-			        // ----------- Function to toggle the 'Hydropathy cutoff' popover -----------
-			        function toggleHydropathyPopover() {
-			            const infoIconHP = document.getElementById('infoIconHP');
-			            const popoverHP = document.getElementById('hydroCutoffPopover');
-			            const popoverContentHP = document.getElementById('popoverContentHP');
-
-						const hydropathyCutoffText =  'The hydropathy cutoff number, denoted as H<sup>*</sup>, represents the threshold at which a residue is considered hydrophobic or non hydrophobic based on its hydropathy score. For example, if a residue has a hydropathy score above the threshold, it will be considered hydrophobic.'
-			            popoverContentHP.innerHTML = hydropathyCutoffText;
-
-			            if (popoverHP.style.display === 'block') {
-			                popoverHP.style.display = 'none'; // Hide if already visible
-			            } else {
-			                const rect = infoIconHP.getBoundingClientRect();
-			                popoverHP.style.top = `${rect.top - 510}px`; 
-			                popoverHP.style.left = `${rect.left - 800}px`;
-			                popoverHP.style.display = 'block'; // Show the popover
-			            }
-			        }
-
-			        // Hide the popover
-			        function hidePopoverHP() {
-			            const popoverHP = document.getElementById('hydroCutoffPopover');
-			            popoverHP.style.display = 'none';
-			        }
-
-			        // Add event listener to info icon
-			        document.getElementById('infoIconHP').addEventListener('click', toggleHydropathyPopover);
-		
-
-
-
-			        // ----------- Function to toggle the 'Minimum blob size' popover -----------
-			        function toggleMinblobSizePopover() {
-			            const infoIconMB = document.getElementById('infoIconMB');
-			            const popoverMB = document.getElementById('minBlobSizePopover');
-			            const popoverContentMB = document.getElementById('popoverContentMB');
-
-						const minBlobSizeText = 'The minimum blob size, L<sub>min</sub>, refers to the smallest number of contiguous residues that can create an h-blob or p-blob. Blobs below the minimum blob size are considered s-blobs. More information regarding the minimum blob size can be found <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10827107/" target="_blank">here</a>.';
-						popoverContentMB.innerHTML = minBlobSizeText;
-
-			            if (popoverMB.style.display === 'block') {
-			                popoverMB.style.display = 'none'; // Hide if already visible
-			            } else {
-			                const rect = infoIconMB.getBoundingClientRect();
-			                popoverMB.style.top = `${rect.top + window.scrollY - 500}px`; 
-			                popoverMB.style.left = `${rect.left + rect.width / 2 + window.scrollX - 1000}px`;
-			                popoverMB.style.display = 'block'; // Show the popover
-			            }
-			        }
-
-			        // Hide the popover
-			        function hidePopoverMB() {
-			            const popoverMB = document.getElementById('minBlobSizePopover');
-			            popoverMB.style.display = 'none';
-			        }
-
-
-			        // Add event listener to info icon
-			        document.getElementById('infoIconMB').addEventListener('click', toggleMinblobSizePopover);
-
-					// Ensure the popover stays in place on window resize
-					window.addEventListener('resize', function() {
-					    const popoverMB = document.getElementById('minBlobSizePopover');
-					    const infoIconMB = document.getElementById('infoIconMB');
-
-					    if (popoverMB.style.display === 'block') {
-					        const rect = infoIconMB.getBoundingClientRect();
-					        popoverMB.style.top = `${rect.top - 500}px`;
-					        popoverMB.style.left = `${rect.left + rect.width / 2 + window.scrollX - 1000}px`;
-					    }
-					});
-
-					// // Recalculate position after page load (to fix initial positioning after refresh)
-					// document.addEventListener('DOMContentLoaded', function() {
-					//     const popoverMB = document.getElementById('minBlobSizePopover');
-					//     const infoIconMB = document.getElementById('infoIconMB');
-
-					//     if (popoverMB.style.display === 'block') {
-					//         const rect = infoIconMB.getBoundingClientRect();
-					//         popoverMB.style.top = `${rect.bottom + window.scrollY}px`;
-					//         popoverMB.style.left = `${rect.left + rect.width / 2 + window.scrollX - popoverMB.offsetWidth / 2}px`;
-					//     }
-					// });
-
-					// window.addEventListener('resize', function() {
-			        //     const popoverMB = document.getElementById('minBlobSizePopover');
-			        //     if (popoverMB.style.display === 'block') {
-			        //         const infoIconMB = document.getElementById('infoIconMB');
-			        //         const rect = infoIconMB.getBoundingClientRect();
-			        //         const containerRect = infoIconMB.parentNode.getBoundingClientRect();
-
-			        //         // Reposition the popover based on the icon's updated position
-			        //         popoverMB.style.top = `${rect.bottom - containerRect.top + 10}px`;
-			        //         popoverMB.style.left = `${rect.left - containerRect.left + rect.width / 2 - popoverMB.offsetWidth / 2}px`;			
-			        //     }
-			        // });	
-
-
-	    		</script>
-
-
-
-
-
+				
 				<div>
 					<tr id="mutations_container"> <td> <input type="checkbox" id="mutatebox" class="mutatebox" value="True"> <label for="mutatebox">Mutate residue:</label> </td>
 					<!-- my_seq includes single quotes in the string so we have to do this subscripting here -->
@@ -688,12 +433,11 @@ $(document).ready( function() {
 				<button type="button" id="download_data_link">Download data!</button>
 	</div>
 	
-		<!--The div id my_dataviz is the div container for ALL D3 visualization plots, color keys-->
-		<div id="my_dataviz" class="viz_track">
-
-		</div>
+	<!--The div id my_dataviz is the div container for ALL D3 visualization plots, color keys-->
+	<div id="my_dataviz" class="viz_track">
 
 	</div>
+
 </div>
 
 {% endblock %}
