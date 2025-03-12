@@ -22,7 +22,7 @@ namespace eval ::blobulator {
 	variable text2Column 3
 	variable textVariableColumn 1
 	variable dropDownColumn 2
-	variable checkBoxColumn 1
+	variable checkBoxColumn 2
 	variable defaultButtonColumn 2
 	variable rowPadding 14
 	variable textAboveSlider 4
@@ -66,7 +66,7 @@ variable blobs [toplevel ".blob"]
 }
 proc ::blobulator::GUI {} {
 	::blobulator::Window
-	grid [label $::blobulator::blobs.1_MolID -text MolID: ] -row 0 -column 0  -rowspan 2 -pady 2
+	grid [label $::blobulator::blobs.1_MolID -text "Mol ID:" ] -row 0 -column 0  -rowspan 2 -pady 2
 	grid [entry $::blobulator::blobs.tv_MolID -width 10 -textvariable ::blobulator::MolID ] -row 0 -column 1 -rowspan 2  -columnspan 1 -pady 2 -sticky w
 	if {$::blobulator::MolID == ""} {
 		set ::blobulator::MolID "top"
@@ -81,10 +81,10 @@ proc ::blobulator::GUI {} {
 
 	#Hydropathy Scale grids
 	grid [label $::blobulator::blobs.t2 -text "Hydropathy Scale:" -height 2] -row 3 -column 0 -columnspan 1 -pady 2
-	grid [checkbutton $::blobulator::blobs.check -text "Auto Update Hydrophobicity Threshold  " \
-	 -variable ::blobulator::checkForUpdate -command {::blobulator::blobulationSlider }] -row 3 -column $::blobulator::checkBoxColumn -columnspan 2 -sticky e
+	grid [checkbutton $::blobulator::blobs.check -text "Auto-Update Threshold" \
+	 -variable ::blobulator::checkForUpdate -command {::blobulator::blobulationSlider }] -row 3 -column 1 -columnspan 2 -sticky e
 	grid [ttk::combobox $::blobulator::blobs.dmnu2  -textvariable ::blobulator::hydropathyScaleDictionaryList -width $::blobulator::dropDownMenuWidth \
-	 -values [list $::blobulator::hydropathyScale1 $::blobulator::hydropathyScale2 $::blobulator::hydropathyScale3] -state readonly] -pady 1 -row 3 -column 1 -columnspan 1 -sticky w
+	 -values [list $::blobulator::hydropathyScale1 $::blobulator::hydropathyScale2 $::blobulator::hydropathyScale3] -state readonly] -pady 1 -row 3 -column 1 -columnspan 2 -sticky w
 
 
 	grid [canvas $::blobulator::blobs.c -height $::blobulator::canvasHeight -width $::blobulator::canvasWidth -background black] -row 4 -columnspan 3
