@@ -16,7 +16,6 @@ const MySpec: PluginUISpec = {
         [PluginConfig.VolumeStreaming.Enabled, false]
     ]
 }
-
 async function createBlobRepresentation(plugin) {
     /**
      * Take a submitted pdb file from localStorage, display it in the molstar window, and add visualizations to indicate blobs.
@@ -159,7 +158,9 @@ async function createPlugin(parent: HTMLElement) {
             }
     });
 
-    createBlobRepresentation(plugin);
+    setTimeout(() => {
+        createBlobRepresentation(plugin)
+        }, 1000);
 
     let elementsArray = document.querySelectorAll('.mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales')
     elementsArray.forEach(function(elem) {
