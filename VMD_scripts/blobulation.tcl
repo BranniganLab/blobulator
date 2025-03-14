@@ -224,7 +224,7 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 			}
 			$check delete
 		}
-		puts $::blobulator::sorted
+		
 		
 		for {set i 0} {$i < [llength $::blobulator::sorted] } { incr i} {
 			set singleChain [lindex $::blobulator::sorted $i] 
