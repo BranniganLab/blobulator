@@ -6,7 +6,7 @@
 namespace eval ::blobulator:: {
 	variable framesOn 0
 	variable framesTotal 1
-
+	variable sorted {}
 	
 
 } 
@@ -213,9 +213,8 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 		set chainBlobIndex {}
 		set chainBlobGroup {}
 
-		set sorted [::blobulator::getSelect $MolID $select]
-		
-		foreach s $sorted {
+		set ::blobulator::sorted [::blobulator::getSelect $MolID $select]
+		foreach s $::blobulator::sorted {
 
 			set check [atomselect $nocaseMolID "alpha and protein and canonAA and chain $s"]
 			if {[llength [$check get resname]] < 3} {
@@ -225,10 +224,10 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 			}
 			$check delete
 		}
-
+		puts $::blobulator::sorted
 		
-		for {set i 0} {$i < [llength $sorted] } { incr i} {
-			set singleChain [lindex $sorted $i] 
+		for {set i 0} {$i < [llength $::blobulator::sorted] } { incr i} {
+			set singleChain [lindex $::blobulator::sorted $i] 
 
 			set chainReturn [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary]
 				if { $chainReturn == -1} {
