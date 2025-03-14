@@ -6,7 +6,9 @@
 namespace eval ::blobulator:: {
 	variable framesOn 0
 	variable framesTotal 1
-	variable sorted {}
+
+	
+
 } 
 atomselect macro canonAA {resname ALA ARG ASN ASP CYS GLN GLU GLY HIS HID HIE ILE LEU LYS MET PHE PRO SER THR TRP TYR VAL}
 
@@ -137,20 +139,40 @@ proc ::blobulator::blobulate {MolID lMin H dictInput} {
 #	The results is a user value applied to the protein of choice the differentiates h blobs, p blobs, and s blobs. 
 proc ::blobulator::blobulateChain {MolID lMin H Chain usedDictionary} {
 	source normalized_hydropathyscales.tcl
+	
+	set hBlobRegex "1{$lMin,}"
+
+	set pBlobRegex "\[10]{$lMin,}"
+
+	set sBlobRegex "\[10]{1,$lMin}"
 	set sequence [::blobulator::getSequenceChain $MolID $Chain]
+	
 	set hydroS [::blobulator::hydropathyScores $usedDictionary $sequence]
 	if {$hydroS == -1} {
 		return -1
 		}
 	set smoothHydro [::blobulator::hydropathyMean $hydroS $sequence]
+	
 	set digitized [::blobulator::digitize $H $smoothHydro ]
-	set hblob [ ::blobulator::hBlob $digitized $lMin ]
-	set hsblob [ ::blobulator::hsBlob  $hblob $digitized $lMin ]
-	set hpsblob [ ::blobulator::hpsBlob  $hsblob $digitized ]
-	set groupedBlobs [::blobulator::blobGroup $hpsblob ]
-    set blobulated [::blobulator::blobAssign $hpsblob]
+	
+	set stringDigitized [join $digitized ""] 
+	
+
+	set hString [blobMaker $stringDigitized $hBlobRegex h $lMin]
+	
+	set hpString [blobMaker $hString $pBlobRegex p $lMin] 
+	
+	set hpsString [blobMaker $hpString $sBlobRegex s $lMin]
+	
+	set hpsString [split $hpsString ""]
+	
+	# set hblob [ ::blobulator::hBlob $digitized $lMin ]
+	# set hsblob [ ::blobulator::hsBlob  $hblob $digitized $lMin ]
+	# set hpsblob [ ::blobulator::hpsBlob  $hsblob $digitized ]
+	set groupedBlobs [::blobulator::blobGroup $hpsString ]
+    set blobulated [::blobulator::blobAssign $hpsString]
     	
-	return [list $blobulated $hpsblob]
+	return [list $blobulated $hpsString]
 	}	
 
 #
@@ -190,8 +212,11 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 		set chainBlobs {}
 		set chainBlobIndex {}
 		set chainBlobGroup {}
-		set ::blobulator::sorted [::blobulator::getSelect $MolID $select]
-		foreach s $::blobulator::sorted {
+
+		set sorted [::blobulator::getSelect $MolID $select]
+		
+		foreach s $sorted {
+
 			set check [atomselect $nocaseMolID "alpha and protein and canonAA and chain $s"]
 			if {[llength [$check get resname]] < 3} {
 				set idx [lsearch $::blobulator::sorted $s]
@@ -200,16 +225,19 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 			}
 			$check delete
 		}
-		for {set i 0} {$i < [llength $::blobulator::sorted] } { incr i} {
-			set singleChain [lindex $::blobulator::sorted $i] 
+
+		
+		for {set i 0} {$i < [llength $sorted] } { incr i} {
+			set singleChain [lindex $sorted $i] 
+
 			set chainReturn [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary]
 				if { $chainReturn == -1} {
 				break
 				return -1
 			}	
-			set blobulated [lindex [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 0]
+			set blobulated [lindex $chainReturn 0]
 			
-			set index [lindex [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary] 1]
+			set index [lindex $chainReturn 1]
 
 			foreach bb $blobulated {
 				lappend chainBlobs $bb
@@ -221,11 +249,7 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 				lappend chainBlobIndex $ci
 			}
 			
-			set chainGroup [::blobulator::blobGroup $index]
-			foreach cg $chainGroup {
-				lappend chainBlobGroup $cg
-			}
-
+			
 			
 			set completeIndex [::blobulator::blobIndex $blobulated ]
 			
@@ -393,7 +417,7 @@ proc ::blobulator::hydropathyScores { hydropathyList Sequence } {
 	
 	return $hydroScored
 }
-
+ 
 
 #
 #	Takes a list of hydropathy scores and creates a list of smoothed hydropathy scores
@@ -412,7 +436,7 @@ proc ::blobulator::hydropathyMean { hydroScores Sequence} {
 			set isFirst 0
 			set indexOfFirstValue [lindex $hydroScores $i] 
 			set indexOfSecondValue [lindex $hydroScores [expr $i +1]]
-			set avgValue [expr ($indexOfFirstValue + $indexOfSecondValue) /2]
+			set avgValue [expr ($indexOfFirstValue + $indexOfSecondValue) * .5]
 			lappend hydroList $avgValue
 			continue
 		} 
@@ -420,14 +444,14 @@ proc ::blobulator::hydropathyMean { hydroScores Sequence} {
 			set	indexOfFirstValue [lindex $hydroScores [expr $i - 1]]
 			set indexOfSecondValue [lindex $hydroScores $i] 
 			set indexOfLastValue [lindex $hydroScores [expr $i + 1]]
-			set avgValue [expr ($indexOfFirstValue + $indexOfSecondValue + $indexOfLastValue) / 3]
+			set avgValue [expr ($indexOfFirstValue + $indexOfSecondValue + $indexOfLastValue) * .33333334]
 			lappend hydroList $avgValue
 		}
 	}
 	
 	set indexSecondToLast [lindex $hydroScores end-1]
 	set indexOfLastValue [lindex $hydroScores end]
-	set lastAvgValue [expr ($indexSecondToLast + $indexOfLastValue) /2]
+	set lastAvgValue [expr ($indexSecondToLast + $indexOfLastValue) * .5]
 	lappend hydroList $lastAvgValue
 	if {[llength $hydroList] != [llength $Sequence] } {
 		puts "Error"
@@ -468,167 +492,37 @@ proc ::blobulator::digitize { H smoothHydroean } {
 }                                                                                     	
 
 #
-#   	Proc will find digitized hblobs based off the lMin parameter 
-#   	
+#	Proc that converts digitized list into a string of h's p's and s's using regular expressions
+#
 #	Arguments:
-#	digitizedSeq (list): A list of 1's and 0's that are determined by the hydrophobic threshold 
-#   	lMin (integer): An integer that decided the minimum length of an hblob
+#	digiList: A list of 1's and 0's 
+#	regPat: The regular expression used to convert binary to letters
+#	letter: The letter that the regular expression replaces the binary to
+#	lmin: The length threshold required to be an h blob or p blob
 #
-#   	Results: 
-#  	 The procedure should give a list of tuples that indicate where an hblobs starts and ends	
-proc ::blobulator::hBlob { digitizedSeq lMin } {
-
-
-	set idx 0 
-	set start 0
-	set finish 0 
-	set count 0
-	set blist {}
-	set isFirst 1
+#	Returns:
+#	A list of h's p's and s's indicating blobs
+proc blobMaker {digiList regPat letter lmin} {
 	
-	for {set i 0} {$i < [llength $digitizedSeq]} { incr i } {
-		set resDigit [lindex $digitizedSeq $i]
-		if {$resDigit == 1} {
-			#residue is hydrophobic 
-			incr count
-			if {$isFirst == 1} {
-				set isFirst 0
-				set start $i 
-			}
-			if { $i == [expr [llength $digitizedSeq] -1]} {
-				if {$count >= $lMin } {
-					set finish $i
-					lappend blist "$start $finish {h}"
-				} else {
-					break
-				}
-			} 
-		} else {
-			#residue is not hydrophobic 
-			if {$isFirst == 0} {
-				#previous residue was hydrophobic
-				if { $count >= $lMin } {
-					#there were enough hydrophobic residues to form a blob
-					set finish [expr $i - 1 ]
-					lappend blist "$start $finish {h}"
-					} 
-			}
-			set count 0
-			set isFirst 1
-		}
-	}
+	set newDigiList $digiList
 	
-	return $blist
-}
-
-
-#
-#
-#    A procedure that uses the list provided by the blobH procedure to determine short blob locations
-#
-#    Arguments:
-#    blobList (list): A list of tuples that show the location of hblobs  
-#    digitizedSeq (list): A list of 1's and 0's that are determined by the hydrophobic threshold 
-#	 lMin (integer): An integer that decided the minimum length of an hblob
-#
-#	 Results:
-#	 Should add to the blobList of tuples to include s blobs 
-proc ::blobulator::hsBlob  { blobList digitizedSeq lMin } {
-
-	
-	
-	if {[llength $blobList] == 0} {
+	set i 0
+	while {$i < [llength [regexp -all -inline $regPat $digiList]]} {
 		
-		return -1
+		set regMatch [regexp -inline $regPat $newDigiList]
+		set hLen [string length $regMatch]
+		set replacementStr [string repeat $letter $hLen]
+		set newDigiList [regsub $regPat $newDigiList $replacementStr]
+		
+		incr i
 	}
-
-	set slist {}
-	#Checks the beginning of the list for an s blob 
-	if {[lindex $blobList 0 0] != 0 } {
-		if {[lindex $blobList 0 0] < $lMin  } {
-			set start 0
-			set finish [expr [lindex $blobList 0 0] -1]
-			lappend slist "$start $finish {s}"
-			}
-		}
-	#Checks the end of the list for an s blob 
-	if {[lindex $blobList end 1] != [expr [llength $digitizedSeq]-1 ]} {
-		set lengthOfseq [expr [llength $digitizedSeq] - 1 ]
-		if { [expr $lengthOfseq - [lindex $blobList end 1]] < $lMin } {
-			set start [expr [lindex $blobList end 1] +1] 
-			set finish [expr [llength $digitizedSeq] -1 ]
-			lappend slist "$start $finish {s}"
-		} 
-	}
-
-	#Looks between the hblobs, from previous proc, to see gaps less than the Lmin  	
-	for {set i 0} {$i < [expr [llength $blobList] -1 ]} { incr i } {
-		set endOffirlist [lindex $blobList $i 1]
-		set startOfseclist [lindex $blobList [expr $i + 1] 0]
-		if { [expr $startOfseclist - $endOffirlist] <= $lMin  } {
-			set start [expr $endOffirlist + 1 ]
-			set finish [expr $startOfseclist - 1]
-			lappend slist "$start $finish {s}"
-		} else {
-			continue
-		}
-	}
-	foreach sb $slist {
-		lappend blobList $sb
-	}
-	set blobList [lsort -index 0 $blobList] 
 	
-	return $blobList
+return $newDigiList
 }
 
-#
-#   Returns a list of s, h, and p that determine the hydrophobic region
-#
-#   Arguments:
-#	blobList (list): A list of tuples that show the ranges of s and h blobs 
-#   digitizedSeq (list): A list of 1's and 0's that are determined by the hydrophobic threshold 
-#
-#   Results:
-#   Proc should return a list of s, h, and p using the bloblist as a guide
-proc ::blobulator::hpsBlob  { blobList digitizedSeq } {
 
-	
- 	set isFirst 0
- 	set hpsList {}
- 	if { $blobList == -1 } {
- 		foreach q $digitizedSeq {
- 			lappend hpsList "p"
- 		}
- 		return $hpsList
- 	}
- 		
- 	foreach b $digitizedSeq {
- 		lappend hpsList "q"
- 	}
- 		 
- 	set i 0 
- 	#Goes through created list and replaces q with h or s 
- 	while {$i <= [expr [llength $blobList]-1]} {
- 	for {set count [lindex $blobList $i 0]} { $count <= [lindex $blobList $i 1]} {incr count} {
- 		set hpsList [lreplace $hpsList $count $count [lindex $blobList $i 2]]
- 	}
-	incr i
- 	}
- 	#Goes through created list and turns remaining q's to p
- 	for {set j 0} { $j < [llength $hpsList]} {incr j} {
- 		if {[lindex $hpsList $j] == "q"} {
- 			set hpsList [lreplace $hpsList $j $j "p"]
- 		} else {
- 			continue
- 		}
- 	}
- 	if {[string match -nocase *q $hpsList] == 1} {
- 		puts "error: illegal character"
- 		break
- 	}
- 	
- 	return $hpsList
- }
+
+
 
 #
 #	Takes a list of h's, s's , and p's and returns a set of numbers corresponding to 1 as h, 2 as s, and 3 as p.
