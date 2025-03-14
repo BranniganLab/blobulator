@@ -6,7 +6,9 @@
 namespace eval ::blobulator:: {
 	variable framesOn 0
 	variable framesTotal 1
+
 	
+
 } 
 atomselect macro canonAA {resname ALA ARG ASN ASP CYS GLN GLU GLY HIS HID HIE ILE LEU LYS MET PHE PRO SER THR TRP TYR VAL}
 
@@ -210,20 +212,24 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 		set chainBlobs {}
 		set chainBlobIndex {}
 		set chainBlobGroup {}
+
 		set sorted [::blobulator::getSelect $MolID $select]
 		
 		foreach s $sorted {
+
 			set check [atomselect $nocaseMolID "alpha and protein and canonAA and chain $s"]
 			if {[llength [$check get resname]] < 3} {
-				set idx [lsearch $sorted $s]
-				set sorted [lreplace $sorted $idx $idx]
+				set idx [lsearch $::blobulator::sorted $s]
+				set ::blobulator::sorted [lreplace $::blobulator::sorted $idx $idx]
 				
 			}
 			$check delete
 		}
+
 		
 		for {set i 0} {$i < [llength $sorted] } { incr i} {
 			set singleChain [lindex $sorted $i] 
+
 			set chainReturn [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary]
 				if { $chainReturn == -1} {
 				break
@@ -258,8 +264,8 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 
 		if {$chainBlobs != -1} {
 		
-		::blobulator::blobUserAssignSelector $chainBlobs $MolID $sorted
-		::blobulator::blobUser2AssignSelector $chainBlobIndex $MolID $sorted
+		::blobulator::blobUserAssignSelector $chainBlobs $MolID $::blobulator::sorted
+		::blobulator::blobUser2AssignSelector $chainBlobIndex $MolID $::blobulator::sorted
 		
 	
 	
@@ -806,7 +812,7 @@ proc ::blobulator::blobTrajUser2 {frames blob2 MolID} {
 	
 
 	
-	set sel2 [atomselect $MolID "protein and canonAA"]
+	set sel2 [atomselect $MolID "protein and canonAA and chain $::blobulator::sorted"]
 	for {set i 0} { $i <= $frames} {incr i} {
 		
 		$sel2 frame $i

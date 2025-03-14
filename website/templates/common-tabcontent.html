@@ -8,7 +8,9 @@
             <p><b>Select input method: </b>
             <select name="sequence_type" id="sequence_type" onchange="hideDiv(this)">
                 <option value="id_entry">ID Entry</option>
-                <option value="sequence_entry">Manual Entry</option></select></p>
+                <option value="sequence_entry">Manual Entry</option>
+                <option value="pdb_entry">PDB Entry</option></select></p></centering>
+
             <div class="form-group" align="center">
                 <br>
                 <form class="navbar-form navbar-top" method=post target="_blank" action="" id="id_entry_block">
@@ -17,7 +19,7 @@
                     <label for="input-types">Choose an input type:</label>
                     <select name="input_type" id="input_type">
                         <option value="uniprot_id">UniProt ID</option>
-                        <option value="ensembl_id">Ensembl ID</option> </select>
+                        <option value="ensembl_id">Ensembl ID</option></select>
                     <!--form.uniprot_id calls the UniProt ID field in model_2.py -->
                     <p> {{ form.uniprot_id(class_="form-control", rows="1")}}</p>
                     <p><input type=submit name="action_u" class="btn btn-primary" value="Blobulate!"></p>
@@ -34,10 +36,22 @@
                     <p><input type=submit name="action_s" class="btn btn-primary" value="Blobulate!"></p>
                 </form>
             </div>
+             <div class="form-group" align="center">
+                <form class="navbar-form navbar-top" method="post" target="_blank" enctype="multipart/form-data" action="" id="pdb_entry_block" style="display: none">
+                    <h5 class="text-center"> <b>Option 3: PDB Entry</b> </h5>
+                    <br>
+                    <!--Creating box for protein sequence input, and placing explanation text above-->
+                    <p> Upload a PDB File. </p>
+                    <p>Warning: Blobulation of PDB files containing multiple chains with disparate sequences is not currently supported.</p>
+                    <p> Note: Disease-associated SNPs and disorder prediction are based on UniProt annotation and will not be displayed with this option. </p>
+                    <p> <input id="pdb_file" name="pdb_file" type="file" accept=".pdb"> </p>
+                    <p id="chain_name"></p>
+                    <p><input type=submit name="action_p" class="btn btn-primary" value="Blobulate!"></p></br>
+                </form>
+            </div>
         </div>
     </div>
 </div>
-
 
 <!--About Page Contents-->
 <div class="tab-pane fade" id="about">
@@ -183,6 +197,50 @@
     <p> We recommend using our back end code found on our <a href="https://github.com/BranniganLab/blobulator" target="_blank"> GitHub</a>. If you think a specific feature would be generally useful, please email us at connor.pitman@rutgers.edu or grace.brannigan@rutgers.edu.</p>
     </div>
 </div>
+
+<script>
+    function deletePDB() {
+        if (localStorage.getItem("pdb_file") !== null) {
+            localStorage.clear()
+        }
+    }
+    document.getElementById("pdb_file").onchange = function() {
+        deletePDB();
+        const form = document.getElementById("pdb_entry_block");
+        var formData = new FormData(form);
+        const file = formData.get('pdb_file');
+        if (file) {
+            const fileReader = new FileReader();
+            fileReader.onload = () => {
+                const fileContent = fileReader.result;
+                localStorage.setItem("pdb_file", fileContent);
+
+                // The replace() call is for \r\n from DOS/Windows files
+				const lines = fileContent.replace(/\r/g, '').split('\n');
+				let chains = new Set();
+				for(const line of lines) {
+					if(line.startsWith('ATOM')) {
+						// We use a magic number here because that is how Protein Data Bank defines it
+						chains.add(line[21].trim());
+					}
+				}
+                let s = '<label for="chain_select">Select chain:</label> <select name="chain_select" id="chain_select">';
+                // s += '<option value="">All chains</option>';
+                for(const chain of chains) {
+                    s += `<option value="${chain}">${chain}</option>`;
+                }
+                s += '</select>';
+                document.getElementById('chain_name').innerHTML = s;
+
+            };
+			fileReader.onerror = (e) => {
+				console.log('TOM: error reading file', file);
+                document.getElementById('chain_name').innerHTML = '';
+			}
+            fileReader.readAsText(file);
+        }
+    }
+</script>
 
 <style>
     .row {
