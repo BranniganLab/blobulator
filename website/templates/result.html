@@ -9,8 +9,7 @@
 <script src="https://d3js.org/d3.v6.js"></script>
 <script src="{{ url_for('static', filename='figure.js') }}"></script>
 <script type="text/javascript">
-	const hydropathyCutoffText =  "<p>The hydropathy cutoff number, denoted as H<sup>*</sup>, represents the threshold at which a residue is considered hydrophobic or non hydrophobic based on its hydropathy score. For example, if a residue has a hydropathy score above the threshold, it will be considered hydrophobic.</p>"
-	const minBlobSizeText = "<p>The minimum blob size, L<sub>min</sub>, refers to the smallest number of contiguous residues that can create an h-blob or p-blob. Blobs below the minimum blob size are considered s-blobs. More information regarding the minimum blob size can be found <a href=\"https://pmc.ncbi.nlm.nih.gov/articles/PMC10827107/\" target=\"_blank\">here</a>.</p>"
+
 	const hydropathy_tool_text = ("<p>Each residue is classified as hydrophobic or nonhydrophobic, depending on whether the Kyte–Dolittle hydropathy score is above or below the hydrophobicity threshold H<sup>*</sup>. H<sup>*</sup> is determined by the user, and the process of digitizatizing the residues based on whether their hydrophobicity falls above or below this cutoff is shown in the figure below:</p> <img src=\"/static/blobulation_digitization_figure.png\" width=\"225\" height=\"225\" align=\"center\">")
 	const blob_track_text = "<p>After the residues are digitized (see the previous tooltip), they are clustered into blobs as shown in the figure below: </p> <img src=\"/static/blobulation_concept_figure.png\" width=\"425\" height=\"250\" align=\"center\"> <p> The value of the \"minimum blob length\" slider determines L<sub>min</sub>. All tracks show residues in h-blobs, s-blobs, and p-blobs as the highest bars, medium bars, and lowest bars respectively. This track also colors the blobs by blob type: h-blobs are blue, p-blobs are orange, and s-blobs are green.h-groups are not indicated graphically, but are noted in the downloadable csv file. </p>"
 	const Das_Pappu_text = "<p>The Das-Pappu phase diagram provides a means to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. </p> <img src=\"/static/daspappu_graph.png\" width=\"425\" height=\"350\"> "+
@@ -348,13 +347,7 @@
 
 	
 				<tr><td>
-				Hydrophobicity Scale: <span
-				id="infoIconHP"
-				style="cursor: pointer"
-				data-toggle="popover"
-				data-placement="top"
-				data-html="true"
-				data-content="The hydropathy cutoff number, denoted as H<sup>*</sup>, represents the threshold at which a residue is considered hydrophobic or non hydrophobic based on its hydropathy score. For example, if a residue has a hydropathy score above the threshold, it will be considered hydrophobic.">ⓘ</span>
+				Hydrophobicity Scale: 
 			</td>
 			<td><select id="hydro_scales" class="hydro_scales">
 				<option selected="selected" value="kyte_doolittle">Kyte and Doolittle</option>
@@ -363,13 +356,25 @@
 				<td id="hydro-labels" class="hydro_labels" style="width: 50%"></td>
 			<td>&nbsp;</td></div></tr>
 
-			<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
+			<tr><td>Hydropathy cutoff:
+				<span
+				id="infoIconHP"
+				style="cursor: pointer"
+				data-toggle="popover"
+				data-placement="top"
+				data-html="true"
+				data-content='<button type="button" class="btn-close" onclick="hidePopover()"></button> <p>The hydropathy cutoff number, denoted as H<sup>*</sup>, represents the threshold at which a residue is considered hydrophobic or non hydrophobic based on its hydropathy score. For example, if a residue has a hydropathy score above the threshold, it will be considered hydrophobic.</p>'>ⓘ</span>
+				<label style = "opacity: 0.0; display: none;">
 				<span id="cutoff_user"></span>
 			</label></td>
 			<td><input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
 			<td style="width: 50%"><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td>
 			<td>&nbsp;</td>
 			</tr>
+
+
+
+
 			<tr>
 				<td>
 				Minimum blob size:
@@ -379,6 +384,7 @@
 				data-toggle="popover"
 				data-placement="top"
 				data-html="true"
+				data-dismiss="popover"
 				data-content="The minimum blob size, L<sub>min</sub>, refers to the smallest number of contiguous residues that can create an h-blob or p-blob. Blobs below the minimum blob size are considered s-blobs. More information regarding the minimum blob size can be found <a href='https://pmc.ncbi.nlm.nih.gov/articles/PMC10827107/' target='_blank'>here</a>.">ⓘ</span>
 					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
 					</label> </td>
@@ -387,6 +393,8 @@
 					<td style="width: 50%"><input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider1" step=1> </td>
 				<td>&nbsp;</td></tr>
 				</div>
+
+
 				
 				<div>
 					<tr id="mutations_container"> <td> <input type="checkbox" id="mutatebox" class="mutatebox" value="True"> <label for="mutatebox">Mutate residue:</label> </td>
