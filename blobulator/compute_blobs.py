@@ -123,7 +123,6 @@ def name_blobs(res_types):
     
     i = 1
     previous_residue = ''
-    print(group_nums)
     for item in preliminary_names:
         if item[0] == 'h' and (int(item[1:]) in group_nums):
             item += to_base26(i)
@@ -147,9 +146,9 @@ def domain_to_numbers(blob_properties_array):
         int: height for each residue
 
     """
-    if blob_properties_array[0][0] == "p":
+    if blob_properties_array.iloc[0][0] == "p":
         return 0.2
-    elif blob_properties_array[0][0] == "h":
+    elif blob_properties_array.iloc[0][0] == "h":
         return 0.6
     else:
         return 0.4
@@ -169,10 +168,10 @@ def lookup_color_das_pappu(blob_properties_array):
         color (str): the rgb value for each residue bar based on its Das-Pappu class
     """
 
-    fcr = blob_properties_array[1]
-    ncpr = blob_properties_array[0]
-    fp = blob_properties_array[2]
-    fn = blob_properties_array[3]
+    fcr = blob_properties_array.iloc[1]
+    ncpr = blob_properties_array.iloc[0]
+    fp = blob_properties_array.iloc[2]
+    fn = blob_properties_array.iloc[3]
 
     # if we're in region 1
     if fcr < 0.25:
@@ -214,10 +213,10 @@ def lookup_number_das_pappu(blob_properties_array):
         region (str): returns the number associated to the Das-Pappu class for each residue
     """
 
-    fcr = blob_properties_array[1]
-    ncpr = blob_properties_array[0]
-    fp = blob_properties_array[2]
-    fn = blob_properties_array[3]
+    fcr = blob_properties_array.iloc[1]
+    ncpr = blob_properties_array.iloc[0]
+    fp = blob_properties_array.iloc[2]
+    fn = blob_properties_array.iloc[3]
 
     # if we're in region 1
     if fcr < 0.25:
@@ -260,9 +259,9 @@ def lookup_color_blob(blob_properties_array):
     Returns:
         color (str): color for each residue based on its blob type
     """
-    if blob_properties_array[0][0] == "p":
+    if blob_properties_array.iloc[0][0] == "p":
         return "#F7931E"
-    elif blob_properties_array[0][0] == "h":
+    elif blob_properties_array.iloc[0][0] == "h":
         return "#0071BC"
     else:
         return "#2DB11A"
@@ -278,8 +277,8 @@ def lookup_number_uversky(blob_properties_array):
     Returns:
         distance (int): the distance of each blob from the from the disorder/order boundary on the uversky diagram
     """
-    h = blob_properties_array[1]*1.0
-    ncpr = abs(blob_properties_array[0])
+    h = blob_properties_array.iloc[1]*1.0
+    ncpr = abs(blob_properties_array.iloc[0])
     c = 0.413 # intercept of diagram
     a = (1/2.785)
     b=-1
@@ -309,7 +308,7 @@ def lookup_color_ncpr(blob_properties_array):
 
     norm = matplotlib.colors.Normalize(vmin=-0.2, vmax=0.2)
     
-    fraction = np.round(blob_properties_array[0], 2)
+    fraction = np.round(blob_properties_array.iloc[0], 2)
     
     returned_rgb = matplotlib.colors.to_rgba(cmap(norm(fraction)))
     return "rgb(" + str(returned_rgb[0] * 255) + "," + str(returned_rgb[1] * 255) + "," + str(returned_rgb[2] * 255) + ")"
@@ -329,7 +328,7 @@ def lookup_color_uversky(blob_properties_array):
         color (str): a string containing the color value for each residue based on the distance from the uversky diagram's disorder/order boundary line of the blob that it's contained in
     """
 
-    val = blob_properties_array[0]
+    val = blob_properties_array.iloc[0]
     return uverskyDict.loc[np.round(val, 2)]
 
 fname = blobulator_path.joinpath("disorderCMap.csv")
@@ -345,7 +344,7 @@ def lookup_color_disorder(blob_properties_array):
     Returns:
         color (str): a string containing the color value for each residue based on how disordered the blob that contains it is predicted to be
     """
-    val = blob_properties_array[0]
+    val = blob_properties_array.iloc[0]
     return disorderDict.loc[np.round(val, 2)]
 
 fname = blobulator_path.joinpath("enrichCMap.csv")
@@ -372,9 +371,9 @@ def lookup_color_predicted_dsnp_enrichment(blob_properties_array):
         color (str): a string containing the color value for each residue based on sensitive to mutation the blob that contains it is estimated to be
     """
     
-    min_hydrophobicity = round(blob_properties_array[1], 2)
-    blob_length = blob_properties_array[0]
-    blob_type = blob_properties_array[2]
+    min_hydrophobicity = round(blob_properties_array.iloc[1], 2)
+    blob_length = blob_properties_array.iloc[0]
+    blob_type = blob_properties_array.iloc[2]
     #check if blob type is h AND the cutoff/bloblength combination exists in the reference set
     if blob_type == 'h':
         try:
@@ -404,10 +403,10 @@ def lookup_number_predicted_dsnp_enrichment(blob_properties_array):
     Returns:
         color (str): a string containing the color value for each residue based on sensitive to mutation the blob that contains it is estimated to be, if it's an h-blob
     """
-    cutoff = round(blob_properties_array[1], 2)
-    if blob_properties_array[2] == 'h':
+    cutoff = round(blob_properties_array.iloc[1], 2)
+    if blob_properties_array.iloc[2] == 'h':
         try:
-            enrich_value = enrich_df.Enrichment.loc[cutoff, blob_properties_array[0]]
+            enrich_value = enrich_df.Enrichment.loc[cutoff, blob_properties_array.iloc[0]]
             return enrich_value
         except KeyError:
             return 0
@@ -666,7 +665,7 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
     # ..........................Define domain names.........................................................#
     domain_list = df['domain'].to_list()
     df['domain'] = pd.Series(name_blobs(domain_list))
-    df['domain'].fillna(value='s', inplace=True)
+    df.fillna({'domain': 's'}, inplace=True)
 
 
 
