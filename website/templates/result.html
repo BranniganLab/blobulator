@@ -54,7 +54,7 @@ $(document).ready( function() {
 	const domain_threshold_box = document.getElementById("domain_threshold_user_box");
 
 	
-	//reads the input variable from flask
+	//reads the input variable from the landing page
 	const uni_id = {{ my_uni_id | safe }};
 	const uni_id_str = '["' + uni_id + '"]';
 	const my_seq = {{ my_seq | safe }};
@@ -178,6 +178,7 @@ $(document).ready( function() {
 			.add_zoomout_button("pathyPlot", data)
 			.add_resetmutation_button()
 			.add_disappearresultcontrols_button()
+			.add_reset_default_settings_button()
 			.add_smoothed_hydro_title("Smoothed hydropathy per residue")
 			.add_tooltip_hydropathy(hydropathy_tool_text)
 			.add_zoomtip_hydropathy(zoom_tool_text);
@@ -233,6 +234,7 @@ $(document).ready( function() {
 
 		// Set up UI element change handler
 		d3.selectAll(".mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales").on("change", function(){do_update(figs, data)});
+		d3.selectAll("#reset_def").on("click", function(){do_update(figs, data)});
 		
 
 		// Mutate residue function
