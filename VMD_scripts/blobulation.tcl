@@ -739,11 +739,11 @@ proc ::blobulator::blobUserAssign { blob1 MolID } {
 		
 		for {set j 1} { $j <= 3 } {incr j} {
 			set sel [atomselect $molid "user $j"]
-			set resids [$sel get resid]
+			set resids [$sel get residue]
 			$sel delete
 			if {[llength $resids] > 1} {
 				foreach rs $resids {
-					set sel2 [atomselect $molid "resid $rs and protein"]
+					set sel2 [atomselect $molid "residue $rs and protein"]
 					$sel2 frame $i
 					$sel2 set user $j
 					$sel2 delete
@@ -781,11 +781,11 @@ proc ::blobulator::blobUserAssignSelector {blob1 MolID chainList} {
 	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
 		for {set j 1} { $j <= 3 } {incr j} {
 			set sel [atomselect $molid "user $j"]
-			set residues [$sel get resid]
+			set residues [$sel get residue]
 			$sel delete
 			if {[llength $residues] > 1} {
 				foreach rs $residues {
-					set sel2 [atomselect $molid "resid $rs and protein"]
+					set sel2 [atomselect $molid "residue $rs and protein"]
 					$sel2 frame $i
 					$sel2 set user $j
 					$sel2 delete
@@ -818,12 +818,12 @@ proc ::blobulator::blobUser2AssignSelector { blob2 MolID chainList} {
 	set blobLength [llength [lsort -unique $blob2]]
 	for {set i 1} { $i <= $blobLength } { incr i } {
 		set sel [atomselect $molid "user2 $i"]
-		set residues [$sel get resid]
+		set residues [$sel get residue]
 		$sel delete
 	
 		foreach rs $residues {
 			
-			set sel2 [atomselect $molid "resid $rs and protein"]
+			set sel2 [atomselect $molid "residue $rs and protein"]
 			$sel2 set user2 $i
 			$sel2 delete
 		}
@@ -857,12 +857,12 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 	set blobLength [llength [lsort -unique $blob2]]
 	for {set i 1} { $i <= $blobLength } { incr i } {
 		set sel [atomselect $molid "user2 $i"]
-		set resids [$sel get resid]
+		set resids [$sel get residue]
 		$sel delete
 		
 		foreach rs $resids {
 			
-			set sel2 [atomselect $molid "resid $rs and protein"]
+			set sel2 [atomselect $molid "residue $rs and protein"]
 			$sel2 set user2 $i
 			$sel2 delete
 		}
