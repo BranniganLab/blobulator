@@ -196,18 +196,22 @@ return
 proc ::blobulator::blobulationSlider {} {
 	if {$::blobulator::isFirstTimeBlobulating== 1} {
 		
-			if {$::blobulator::Lmin == NaN} {
-			set ::blobulator::Lmin 1 
-			}
-			if {$::blobulator::H == NaN} {
-			set ::blobulator::H .1 
-			}
+			# if {$::blobulator::Lmin == NaN} {
+			# set ::blobulator::Lmin 1 
+			# }
+			# if {$::blobulator::H == NaN} {
+			# set ::blobulator::H .1 
+			# }
 			if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
-				::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
+				if catch {[::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList]} {
+					continue
+				}
 				::blobulator::graphRepUserSelect $::blobulator::select
 
 			} elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
-				::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
+				if catch {[::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList]} {
+					continue
+				}
 				::blobulator::graphRepUser2Select $::blobulator::select
 			} else {
 				puts "no value"
