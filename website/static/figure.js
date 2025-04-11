@@ -113,6 +113,34 @@ class ZFigure {
 
 		return this;
 	}
+
+	add_reset_default_settings_button() {
+
+		var btn = document.createElement("button");
+		btn.innerHTML = "Reset To Default Settings";
+		btn.id = "reset_def"
+		btn.type = "button";
+		btn.style.margin = "4px";
+		btn.onclick = function () {
+			var current_cutoff_box = document.getElementById("cutoff_user_box");
+			var current_slider = document.getElementById("cutoff_user_slider");
+			var current_cutoff = document.getElementById("cutoff_user")
+			current_cutoff_box.value = 0.4;
+			current_cutoff.innerHTML = 0.4;
+			current_slider.value = 0.4
+
+			var domain_threshold_box = document.getElementById("domain_threshold_user_box");
+			var domain_threshold_value = document.getElementById("domain_threshold_user");
+			var domain_threshold_slider = document.getElementById("domain_threshold_user_slider");
+			domain_threshold_box.value = 4;
+			domain_threshold_value.innerHTML = 4;
+			domain_threshold_slider.value = 4;
+		}
+		var top_container = document.getElementById("result_main_container");
+		top_container.appendChild(btn);
+
+		return this;
+	}
 	
 	add_title(title){
 	    // Creates the title
