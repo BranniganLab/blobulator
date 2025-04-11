@@ -117,7 +117,7 @@ class ZFigure {
 	add_reset_default_settings_button() {
 
 		var btn = document.createElement("button");
-		btn.innerHTML = "Reset Default Settings";
+		btn.innerHTML = "Reset To Default Settings";
 		btn.id = "reset_def"
 		btn.type = "button";
 		btn.style.margin = "4px";
