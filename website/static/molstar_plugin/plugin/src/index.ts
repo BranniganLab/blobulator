@@ -162,13 +162,16 @@ async function createPlugin(parent: HTMLElement) {
         createBlobRepresentation(plugin)
         }, 1000);
 
-    let elementsArray = document.querySelectorAll('.mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales')
+    let elementsArray = document.querySelectorAll('.mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales,#app')
     elementsArray.forEach(function(elem) {
         elem.addEventListener('change', function() {
-        setTimeout(() => {
-        createBlobRepresentation(plugin)
+            console.log('change');
+            setTimeout(() => {
+            createBlobRepresentation(plugin)
         }, 1000)});
     });
 };
+
+
 
 createPlugin(document.getElementById('app')!); // app is a <div> element with position: relativeE
