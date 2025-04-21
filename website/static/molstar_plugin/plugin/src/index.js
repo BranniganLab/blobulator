@@ -178,7 +178,7 @@ function createBlobRepresentation(plugin) {
 ;
 function createPlugin(parent) {
     return __awaiter(this, void 0, void 0, function () {
-        var defaultSpec, plugin, elementsArray;
+        var defaultSpec, plugin, elementsArray, molstarWindow;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -216,6 +216,20 @@ function createPlugin(parent) {
                                 createBlobRepresentation(plugin);
                             }, 1000);
                         });
+                    });
+                    molstarWindow = document.querySelector('#app');
+                    molstarWindow === null || molstarWindow === void 0 ? void 0 : molstarWindow.addEventListener('drop', function (event) {
+                        var _a;
+                        localStorage.clear();
+                        var file = (_a = event.dataTransfer) === null || _a === void 0 ? void 0 : _a.files[0];
+                        var reader = new FileReader();
+                        reader.onload = function () {
+                            localStorage.setItem("pdb_file", reader.result);
+                        };
+                        reader.readAsText(file);
+                        setTimeout(function () {
+                            createBlobRepresentation(plugin);
+                        }, 1000);
                     });
                     return [2 /*return*/];
             }

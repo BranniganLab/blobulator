@@ -162,14 +162,28 @@ async function createPlugin(parent: HTMLElement) {
         createBlobRepresentation(plugin)
         }, 1000);
 
-    let elementsArray = document.querySelectorAll('.mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales,#app')
+    let elementsArray = document.querySelectorAll('.mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales')
     elementsArray.forEach(function(elem) {
         elem.addEventListener('change', function() {
-            console.log('change');
             setTimeout(() => {
             createBlobRepresentation(plugin)
         }, 1000)});
     });
+
+    let molstarWindow = document.querySelector('#app')
+    molstarWindow?.addEventListener('drop', function(event){
+        localStorage.clear()
+        var file = (event as DragEvent).dataTransfer?.files[0];
+        var reader = new FileReader();
+        reader.onload = function() {
+            localStorage.setItem("pdb_file", reader.result as string);
+        }
+        reader.readAsText(file);
+        setTimeout(() => {
+        createBlobRepresentation(plugin)
+        }, 1000)
+    });
+
 };
 
 
