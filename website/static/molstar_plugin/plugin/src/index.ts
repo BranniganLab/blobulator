@@ -172,16 +172,13 @@ async function createPlugin(parent: HTMLElement) {
 
     let molstarWindow = document.querySelector('#app')
     molstarWindow?.addEventListener('drop', function(event){
-        localStorage.clear()
         var file = (event as DragEvent).dataTransfer?.files[0];
         var reader = new FileReader();
         reader.onload = function() {
             localStorage.setItem("pdb_file", reader.result as string);
+            createBlobRepresentation(plugin);
         }
         reader.readAsText(file);
-        setTimeout(() => {
-        createBlobRepresentation(plugin)
-        }, 1000)
     });
 
 };
