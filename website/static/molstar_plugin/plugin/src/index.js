@@ -220,16 +220,15 @@ function createPlugin(parent) {
                     molstarWindow = document.querySelector('#app');
                     molstarWindow === null || molstarWindow === void 0 ? void 0 : molstarWindow.addEventListener('drop', function (event) {
                         var _a;
-                        localStorage.clear();
                         var file = (_a = event.dataTransfer) === null || _a === void 0 ? void 0 : _a.files[0];
                         var reader = new FileReader();
                         reader.onload = function () {
                             localStorage.setItem("pdb_file", reader.result);
+                            createBlobRepresentation(plugin);
+                            var molstar_warning_box = document.getElementById("molstar_warning_box");
+                            molstar_warning_box.innerHTML = "";
                         };
                         reader.readAsText(file);
-                        setTimeout(function () {
-                            createBlobRepresentation(plugin);
-                        }, 1000);
                     });
                     return [2 /*return*/];
             }

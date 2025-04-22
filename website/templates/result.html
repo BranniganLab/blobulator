@@ -64,8 +64,12 @@ $(document).ready( function() {
 	var selected_chain = {{ chain | tojson | safe }};
 
 	molstar_warning_box = document.getElementById("molstar_warning_box");
-	molstar_warning_box.innerHTML = "Displaying chain: " + selected_chain
-
+	if (pdb_string != '') {
+		molstar_warning_box.innerHTML = "Displaying chain: " + selected_chain
+	} else {
+		molstar_warning_box.innerHTML = "Drag and drop a pdb corresponding to this protein below to view blobs in a 3D structure!"
+	}
+	
 	localStorage.setItem("blobSeq", my_data.map(row => row.blobtype))
 	localStorage.setItem("pdbShift", pdb_shift)
 

@@ -177,6 +177,8 @@ async function createPlugin(parent: HTMLElement) {
         reader.onload = function() {
             localStorage.setItem("pdb_file", reader.result as string);
             createBlobRepresentation(plugin);
+            let molstar_warning_box = document.getElementById("molstar_warning_box");
+            molstar_warning_box.innerHTML = "";
         }
         reader.readAsText(file);
     });
