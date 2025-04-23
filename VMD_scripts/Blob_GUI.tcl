@@ -91,7 +91,7 @@ proc ::blobulator::GUI {} {
 
 	#Threhold grids
 	grid [label $::blobulator::blobs.thres -text "Thresholds" -height 1 ] -row 5 -column $::blobulator::thresholdColumn -sticky n -columnspan 1
-	set paraList [list Length: ::blobulator::Lmin 1 50 1 ::blobulator::sliderRow Hydrophobicity: ::blobulator::H .1 1 .01 ::blobulator::sliderRow]
+	set paraList [list Hydrophobicity: ::blobulator::H .1 1 .01 ::blobulator::sliderRow Length: ::blobulator::Lmin 1 50 1 ::blobulator::sliderRow ]
 	foreach { entry namedVariable min max interval SliderRow} $paraList {
 		set entryLabels [label $::blobulator::blobs.l_$entry -text $entry]
 		set entryVariable [entry $::blobulator::blobs.e_$entry -width $::blobulator::paraWidth -textvariable $namedVariable]
