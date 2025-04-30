@@ -50,5 +50,5 @@ When coloring by Blob ID, h-blobs will have different colors depending on the us
 
 ### Known Limitations:
 
-VMD blobulator can not run its blobulation alogorithm on proteins that contain
+VMD blobulator can not run its blobulation algorithm on proteins that contain
 non-standard amino acids
