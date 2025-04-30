@@ -124,27 +124,59 @@ These CSVs are organized with each residue in its own row and columns as follows
 - Normalized_Kyte-Doolittle_hydropathy: K-D hydropathy normalized to be between 0 and 1. See Kyte-Doolittle_hydropathy.
 - Kyte-Doolittle_hydropathy: Traditional K-D hydropathy (on a scale from -4.5 to 4.5). This is a very common hydrophobicity scale dating to 1982: https://doi.org/10.1016%2F0022-2836%2882%2990515-0
 
+# VMD Blobulation
 
-### Visualizing in VMD
-There is a tcl script in the VMD_scripts directory that will read a csv from the website or the local tool.
+**A VMD application for blobulation needs**
 
-To use it:
-1. Load your protein of choice into a vmd session and open the tkconsole
-2. Source this file using:
-3. source /path/to/bctool.tcl
-4. Get the protein sequence using:
+This tool is a visualization tool for Blobulator. Blobulator tracks amino 
+acid sequences of proteins to determine hydrophobicity. If a stretch in the 
+amino acid chain is hydrophobic, and longer than the
+threshold, it is considered a h blob. If a stretch in the amino acid chain is non-hydrophobic, and longer than the 
+threshold, it is considered a p blob. All other stretches are too short and
+are categorized as s blobs.  
+
+## How to use VMD Blobulation:
+
+### Installation guide:
+
+**Software requirements:** 
+
+```VMD```
+
+**Files Needed:**
+
+``` 
+blobulation.tcl
+Blob_GUI.tcl
+normalized_hydropathyscales.tcl
 ```
-set protSel [atomselect top "protein"]
-get_sequence $protSel
-```
-6. Copy and paste the sequence into the blobulator and blobulate according to your needs
-7. Download the data using the "Download Data" button on the website
-8. Copy the csv to your working directory
-9. Import the blobulation data using:
-```
-getBlobs my_blobulation.csv $protSel
-```
-11. Visualize according to your needs. 
-- User will contain 1=hydrophobic blob, 2=polar blob, 3=short blob
-- User2 will contain the blob id number
+
+### Using in VMD:
+
+Keep all files in one directory, in the VMD program access the Tk console
+from the Extensions drop down menu 
+`Extensions > Tk Console`
+
+Using the Linux cd command, cd to the downloaded file location.
+Below is an example of accessing the Blob_GUI.tcl file in the Tk console. 
+
+``` cd /path/to/file/Blob_GUI.tcl ``` 
+
+You will need to source everytime you wish to load the Plugin.
+
+### How to access blobulation values: 
+
+The blobulation algorithm will apply all blobs types to the VMD user and user2 values.
+
+User will store the type of blob it is, user 1 -> h-blobs, user 2 -> s-blobs, user 3 -> p-blobs.
+
+User2 will store the blob group, user2 1 -> h-blob group 1, user2 2 -> s-blob group 1, user2 3 -> h-blob group 2, etc.
+
+When coloring by Blob ID, h-blobs will have different colors depending on the user2 value.    
+
+### Known Limitations:
+
+VMD blobulator can not run its blobulation algorithm on proteins that contain
+non-standard amino acids
+
 
