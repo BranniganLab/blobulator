@@ -206,7 +206,9 @@ function createPlugin(parent) {
                         })];
                 case 1:
                     plugin = _a.sent();
-                    createBlobRepresentation(plugin);
+                    setTimeout(function () {
+                        createBlobRepresentation(plugin);
+                    }, 1000);
                     elementsArray = document.querySelectorAll('.mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales');
                     elementsArray.forEach(function (elem) {
                         elem.addEventListener('change', function () {

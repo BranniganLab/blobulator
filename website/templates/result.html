@@ -54,15 +54,23 @@ $(document).ready( function() {
 	const domain_threshold_box = document.getElementById("domain_threshold_user_box");
 
 	
-	//reads the input variable from flask
+	//reads the input variable from the landing page
 	const uni_id = {{ my_uni_id | safe }};
 	const uni_id_str = '["' + uni_id + '"]';
 	const my_seq = {{ my_seq | safe }};
 	const my_data = {{ data.chart_data | safe }};
 	const pdb_shift = {{ shift | safe }};
+	var pdb_string = {{ pdb_string | tojson | safe }};
+	var selected_chain = {{ chain | tojson | safe }};
+
+	molstar_warning_box = document.getElementById("molstar_warning_box");
+	molstar_warning_box.innerHTML = "Displaying chain: " + selected_chain
+
 	localStorage.setItem("blobSeq", my_data.map(row => row.blobtype))
 	localStorage.setItem("pdbShift", pdb_shift)
 
+	localStorage.removeItem("pdb_file");
+	localStorage.setItem("pdb_file", pdb_string);
 	
 	//GLOBAL EVENT HANDLERS
 	domain_threshold_value.innerHTML = domain_threshold_slider.value;
@@ -170,6 +178,7 @@ $(document).ready( function() {
 			.add_zoomout_button("pathyPlot", data)
 			.add_resetmutation_button()
 			.add_disappearresultcontrols_button()
+			.add_reset_default_settings_button()
 			.add_smoothed_hydro_title("Smoothed hydropathy per residue")
 			.add_tooltip_hydropathy(hydropathy_tool_text)
 			.add_zoomtip_hydropathy(zoom_tool_text);
@@ -225,6 +234,7 @@ $(document).ready( function() {
 
 		// Set up UI element change handler
 		d3.selectAll(".mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales").on("change", function(){do_update(figs, data)});
+		d3.selectAll("#reset_def").on("click", function(){do_update(figs, data)});
 		
 
 		// Mutate residue function
@@ -381,6 +391,13 @@ $(document).ready( function() {
 						<option value="eisenberg_weiss">Eisenberg and Weiss</option>
 						<option value="moon_fleming">Moon and Fleming</option></select></td>
 						<td id="hydro-labels" class="hydro_labels" style="width: 50%"></td>
+						<td><p id="molstar_warning_box" style="position: relative; left:80px;"></p></td></tr>
+					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
+						<span id="cutoff_user"></span>
+					</label></td>
+					<td><input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
+					<td style="width: 50%"><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td>
+					
 					<td rowspan="5">
 						<style>
 					    #app {
@@ -394,14 +411,7 @@ $(document).ready( function() {
 					<script type="text/javascript" src="static/molstar_plugin/node_modules/molstar/build/viewer/molstar.js"></script>
 					<div id="app"></div>
 					<script type="text/javascript" src="static/molstar_plugin/plugin/dist/main.js"></script>
-
-					</td></div></tr>
-					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
-						<span id="cutoff_user"></span>
-					</label></td>
-					<td><input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
-					<td style="width: 50%"><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td>
-					<td>&nbsp;</td></tr>
+					</td></tr>
 				<tr>
 				<td>Minimum blob size:
 					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
