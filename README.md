@@ -128,12 +128,12 @@ These CSVs are organized with each residue in its own row and columns as follows
 
 **A VMD application for blobulation needs**
 
-This tool is a visualization tool for Blobulator using VMD. Blobulator tracks each amino 
-acid in a sequence of a human protein to determine consecutive hydrophobic stretches. If a stretch in the 
-amino acid chain is hydrophobic, and longer than the
-threshold, it is considered a h blob. If a stretch in the amino acid chain is non-hydrophobic, and longer than the 
-threshold, it is considered a p blob. All other stretches are too short and
-are categorized as s blobs.  
+This tool is a visualization tool for Blobulator using VMD. The blobulator tracks each amino 
+acid in a human protein sequence to determine consecutive hydrophobic stretches. If a stretch in the 
+amino acid chain is hydrophobic and longer than the
+threshold, it is considered a h-blob. If a stretch in the amino acid chain is non-hydrophobic and longer than the 
+threshold, it is a p-blob. All other stretches are too short and
+categorized as s-blobs. 
 
 ## How to use VMD Blobulation:
 
@@ -150,33 +150,22 @@ blobulation.tcl
 Blob_GUI.tcl
 normalized_hydropathyscales.tcl
 ```
+Users can download these in the VMD_scripts folder.
 
-### Using in VMD:
+### Using blobulation in VMD:
 
-Keep all files in one directory, in the VMD program access the Tk console
-from the Extensions drop down menu 
+Keep all files in one directory; in the VMD program, access the Tk console
+from the Extensions drop-down menu 
 `Extensions > Tk Console`
 
 Using the Linux cd command, cd to the downloaded file location.
 Below is an example of accessing the Blob_GUI.tcl file in the Tk console. 
 
-``` cd /path/to/file/Blob_GUI.tcl ``` 
+``` cd /path/to/blobulator/VMD_scripts ``` 
+```source Blob_GUI.tcl```
 
-You will need to source everytime you wish to load the Plugin.
+You must source Blob_GUI.tcl every time you wish to load the Plugin.
 
-### How to access blobulation values: 
-
-The blobulation algorithm will apply all blobs types to the VMD user and user2 values.
-
-User will store the type of blob it is, user 1 -> h-blobs, user 2 -> s-blobs, user 3 -> p-blobs.
-
-User2 will store the blob group, user2 1 -> h-blob group 1, user2 2 -> s-blob group 1, user2 3 -> h-blob group 2, etc.
-
-When coloring by Blob ID, h-blobs will have different colors depending on the user2 value.    
-
-### Known Limitations:
-
-VMD blobulator can not run its blobulation algorithm on proteins that contain
-non-standard amino acids
+More information about the VMD Plugin can be found here: https://github.com/BranniganLab/blobulator/tree/main/VMD_scripts
 
 
