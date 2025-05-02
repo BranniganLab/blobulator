@@ -152,7 +152,7 @@ normalized_hydropathyscales.tcl
 ```
 Users can download these in the VMD_scripts folder.
 
-### Using in blobulation in VMD:
+### Using blobulation in VMD:
 
 Keep all files in one directory; in the VMD program, access the Tk console
 from the Extensions drop-down menu 
