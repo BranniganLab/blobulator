@@ -124,48 +124,38 @@ These CSVs are organized with each residue in its own row and columns as follows
 - Normalized_Kyte-Doolittle_hydropathy: K-D hydropathy normalized to be between 0 and 1. See Kyte-Doolittle_hydropathy.
 - Kyte-Doolittle_hydropathy: Traditional K-D hydropathy (on a scale from -4.5 to 4.5). This is a very common hydrophobicity scale dating to 1982: https://doi.org/10.1016%2F0022-2836%2882%2990515-0
 
-# VMD Blobulation
+# Blobulating proteins in VMD
 
-**A VMD application for blobulation needs**
+**A plugin to blobulate protein structures in VMD**
 
-This tool is a visualization tool for Blobulator using VMD. The blobulator tracks each amino 
-acid in a human protein sequence to determine consecutive hydrophobic stretches. If a stretch in the 
-amino acid chain is hydrophobic and longer than the
-threshold, it is considered a h-blob. If a stretch in the amino acid chain is non-hydrophobic and longer than the 
-threshold, it is a p-blob. All other stretches are too short and
-categorized as s-blobs. 
-
-## How to use VMD Blobulation:
-
-### Installation guide:
+This plugin allows users to blobulate and view blobs on a protien structure in Visual Molecular Dynamics (VMD). The functionality of this plugin provides users an interface by which they can tune parameters and alter the representation of blobs on a given protein structure.
 
 **Software requirements:** 
 
 ```VMD```
 
-**Files Needed:**
+## Installation guide:
 
+To obtain this plugin, download the following files from the VMD_scripts folder into a single directory:
 ``` 
 blobulation.tcl
 Blob_GUI.tcl
 normalized_hydropathyscales.tcl
 ```
-Users can download these in the VMD_scripts folder.
 
-### Using blobulation in VMD:
+## Example usage
 
-Keep all files in one directory; in the VMD program, access the Tk console
-from the Extensions drop-down menu 
+Load a protein into VMD (if you have multiple proteins loaded, set the one you wish to blobulated as the `top` molecule).
+
+To load the plugin, perform the following steps:
+
+Access the Tk console via the Extensions dropdown menu
 `Extensions > Tk Console`
 
-Using the Linux cd command, cd to the downloaded file location.
-Below is an example of accessing the Blob_GUI.tcl file in the Tk console. 
-
+In the Tk console, change directory to the directory where you downloaded the above scripts
 ``` cd /path/to/blobulator/VMD_scripts ``` 
+
+And source the plugin (note: this must be sourced for each new VMD session)
 ```source Blob_GUI.tcl```
 
-You must source Blob_GUI.tcl every time you wish to load the Plugin.
-
-More information about the VMD Plugin can be found here: https://github.com/BranniganLab/blobulator/tree/main/VMD_scripts
-
-
+More information on the VMD plugin can be found here https://github.com/BranniganLab/blobulator/tree/main/VMD_scripts
