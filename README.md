@@ -150,7 +150,7 @@ The plugin (Blob_GUI.tcl) can now be sourced via the VMD tk console after naviga
 1. Load a protein into VMD.
 2. Access the Tk console via the Extensions dropdown menu `Extensions > Tk Console`.
 3. In the Tk console, change directory to the directory where you downloaded the above scripts
-`cd /path/to/blobulator/VMD_scripts `.
+`cd /path/to/VMD/plugin/scripts`.
 4. And source the plugin (note: this must be sourced for each new VMD session)
 `source Blob_GUI.tcl`.
 5. Select the MolID you wish to blobulate (defaults to "top").
@@ -162,8 +162,7 @@ The plugin (Blob_GUI.tcl) can now be sourced via the VMD tk console after naviga
     b. Blob ID - Colors h-blobs by blob ID, p-blobs are orange, s-blobs are green, and h-blobs are a color from green to blue.
 10. Click the blobulate button to generate the graphical representation in VMD. 
 11. To remove all representations, click the 'Clear representation' button.
-
-Clicking the 'Default' buttons will return the threshold buttons to their default positions.
+12. Clicking the 'Default' buttons will return the threshold buttons to their default positions.
 For 'Length', the default will always be set to 4. For 'Hydrophobicity', this value updates depending
 on the Hydropathy Scale. To automatically assign the default value when switching scales, click the 'Auto Update Hydrophobicity' checkbox. 
 
