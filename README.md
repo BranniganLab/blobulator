@@ -159,10 +159,10 @@ normalized_hydropathyscales.tcl
     * Blob Color - Colors by blob type: h-blobs are blue, p-blobs are orange, and s-blobs are green.
     * Blob ID - Colors h-blobs by blob ID, p-blobs are orange, s-blobs are green, and h-blobs are a color from green to blue.
 10. Click the blobulate button to generate the graphical representation in VMD. 
-11. To remove all representations, click the 'Clear representation' button.
+11. To remove all representations, click the 'Clear representations' button.
 12. Clicking the 'Default' buttons will return the threshold buttons to their default positions.
 For 'Length', the default will always be set to 4. For 'Hydrophobicity', this value updates depending
-on the Hydropathy Scale. To automatically assign the default value when switching scales, click the 'Auto Update Hydrophobicity' checkbox. 
+on the Hydropathy Scale. To automatically assign the default value when switching scales, click the 'Auto-Update Threshold' checkbox. 
 
 ### How to access blob representation: 
 
