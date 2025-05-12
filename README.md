@@ -128,7 +128,7 @@ These CSVs are organized with each residue in its own row and columns as follows
 
 **A plugin to blobulate protein structures in VMD**
 
-This plugin allows users to blobulate and view blobs on a protien structure in Visual Molecular Dynamics (VMD). The functionality of this plugin provides users an interface by which they can tune parameters and alter the representation of blobs on a given protein structure.
+This plugin allows users to blobulate and view blobs on a protein structure in Visual Molecular Dynamics (VMD). The functionality of this plugin is to provide users with an interface by which they can tune parameters and alter the representation of blobs on a given protein structure.
 
 **Software requirements:** 
 
@@ -143,8 +143,6 @@ Blob_GUI.tcl
 normalized_hydropathyscales.tcl
 ```
 
-The plugin (Blob_GUI.tcl) can now be sourced via the VMD tk console after navigating to this directory.
-
 ## Example usage
 
 1. Load a protein into VMD.
@@ -158,8 +156,8 @@ The plugin (Blob_GUI.tcl) can now be sourced via the VMD tk console after naviga
 7. Select your desired scale (defaults to "Kyte-Doolittle").
 8. Adjust the 'Length' and 'Hydrophobicity' thresholds to your chosen parameters (if applicable).
 9. Select how you color your blobs; blob representations apply to every frame in a loaded trajectory. 
-    a. Blob Color - Colors by blob type: h-blobs are blue, p-blobs are orange, and s-blobs are green.
-    b. Blob ID - Colors h-blobs by blob ID, p-blobs are orange, s-blobs are green, and h-blobs are a color from green to blue.
+    * Blob Color - Colors by blob type: h-blobs are blue, p-blobs are orange, and s-blobs are green.
+    * Blob ID - Colors h-blobs by blob ID, p-blobs are orange, s-blobs are green, and h-blobs are a color from green to blue.
 10. Click the blobulate button to generate the graphical representation in VMD. 
 11. To remove all representations, click the 'Clear representation' button.
 12. Clicking the 'Default' buttons will return the threshold buttons to their default positions.
