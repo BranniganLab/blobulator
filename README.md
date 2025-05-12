@@ -164,7 +164,7 @@ normalized_hydropathyscales.tcl
 For 'Length', the default will always be set to 4. For 'Hydrophobicity', this value updates depending
 on the Hydropathy Scale. To automatically assign the default value when switching scales, click the 'Auto-Update Threshold' checkbox. 
 
-### How to access blob representation: 
+### How to access blob representations: 
 
 The blobulation algorithm will apply all blob types to the VMD user and user2 values.
 
