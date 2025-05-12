@@ -1,44 +1,36 @@
 # VMD Blobulation
 
-**A VMD application for blobulation needs**
+**A plugin to blobulate protein structures in VMD**
 
-This tool is a visualization tool for Blobulator using VMD. The blobulator tracks each amino 
-acid in a human protein sequence to determine consecutive hydrophobic stretches. If a stretch in the 
-amino acid chain is hydrophobic and longer than the
-threshold, it is considered a h-blob. If a stretch in the amino acid chain is non-hydrophobic and longer than the 
-threshold, it is a p-blob. All other stretches are too short and
-categorized as s-blobs. 
-
-## How to use VMD Blobulation:
-
-### Installation guide:
+This plugin allows users to blobulate and view blobs on a protien structure in Visual Molecular Dynamics (VMD). The functionality of this plugin provides users an interface by which they can tune parameters and alter the representation of blobs on a given protein structure.
 
 **Software requirements:** 
 
 ```VMD```
 
-**Files Needed:**
+## Installation guide:
 
+To obtain this plugin, download the following files from the VMD_scripts folder into a single directory:
 ``` 
 blobulation.tcl
 Blob_GUI.tcl
 normalized_hydropathyscales.tcl
 ```
-Users can download these in the VMD_scripts folder.
 
-### Using blobulation in VMD:
+## Example usage
 
-Keep all files in one directory; in the VMD program, access the Tk console
-from the Extensions drop-down menu 
+Load a protein into VMD (if you have multiple proteins loaded, set the one you wish to blobulated as the `top` molecule).
+
+To load the plugin, perform the following steps:
+
+Access the Tk console via the Extensions dropdown menu
 `Extensions > Tk Console`
 
-Using the Linux cd command, cd to the downloaded file location.
-Below is an example of accessing the Blob_GUI.tcl file in the Tk console. 
-
+In the Tk console, change directory to the directory where you downloaded the above scripts
 ``` cd /path/to/blobulator/VMD_scripts ``` 
-```source Blob_GUI.tcl```
 
-You must source Blob_GUI.tcl every time you wish to load the Plugin.
+And source the plugin (note: this must be sourced for each new VMD session)
+```source Blob_GUI.tcl```
 
 ### VMD Plugin Features
 
@@ -47,18 +39,18 @@ human proteins.
 1. Select the MolID you wish to blobulation (defaults to "top")
 2. Select the residues you wish to blobulate (defaults to "all") 
 3. Select your desired scale (defaults to "Kyte-Doolittle") 
-4. Adjust the 'Length' and 'Hydrophobicity' thresholds to your liking
-5. Select how you color your blobs; blob representations apply to every frame in a simulation. 
+4. Adjust the 'Length' and 'Hydrophobicity' thresholds to your chosen parameters
+5. Select how you color your blobs; blob representations apply to every frame in a loaded trajectory. 
     a. Blob Color - Colors by blob type: h-blobs are blue, p-blobs are orange, and s-blobs are green
     b. Blob ID - Colors h-blobs by blob ID, p-blobs are orange, s-blobs are green, and h-blobs are a color from green to blue.
 6. Click the blobulate button to generate the graphical representation in VMD. 
 7. To remove all representations, click the 'Clear representation' button
 
-The 'Default' buttons will return the threshold buttons to their default positions. 
-For 'Length', this will always be set to 4. For 'Hydrophobicity', this value changes depending
-on the Hydropathy Scale. To automatically assign the default value when switching scales, click the 'Auto Updates Hydrophobicity' checkbox. 
+Clicking the 'Default' buttons will return the threshold buttons to their default positions.
+For 'Length', the default will always be set to 4. For 'Hydrophobicity', this value updates depending
+on the Hydropathy Scale. To automatically assign the default value when switching scales, click the 'Auto Update Hydrophobicity' checkbox. 
 
-### How to access blobulation values: 
+### How to access blobs: 
 
 The blobulation algorithm will apply all blob types to the VMD user and user2 values.
 
@@ -70,5 +62,4 @@ When coloring by Blob ID, h-blobs will have different colors depending on the us
 
 ### Known Limitations:
 
-VMD blobulator can not run its blobulation algorithm on proteins that contain
-non-standard amino acids.
+VMD blobulator can not run its blobulation algorithm on proteins that contain non-standard amino acids.
