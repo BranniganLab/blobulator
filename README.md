@@ -143,7 +143,7 @@ Blob_GUI.tcl
 normalized_hydropathyscales.tcl
 ```
 
-## Example usage
+## Example usage:
 
 1. Load a protein into VMD.
 2. Access the Tk console via the Extensions dropdown menu `Extensions > Tk Console`.
