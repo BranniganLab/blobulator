@@ -147,21 +147,21 @@ The plugin (Blob_GUI.tcl) can now be sourced via the VMD tk console after naviga
 
 ## Example usage
 
-1. Load a protein into VMD
-2. Access the Tk console via the Extensions dropdown menu `Extensions > Tk Console`
+1. Load a protein into VMD.
+2. Access the Tk console via the Extensions dropdown menu `Extensions > Tk Console`.
 3. In the Tk console, change directory to the directory where you downloaded the above scripts
-``` cd /path/to/blobulator/VMD_scripts ``` 
+`cd /path/to/blobulator/VMD_scripts `.
 4. And source the plugin (note: this must be sourced for each new VMD session)
-```source Blob_GUI.tcl```
-5. Select the MolID you wish to blobulate (defaults to "top")
-6. Select the residues you wish to blobulate (defaults to "all") 
-7. Select your desired scale (defaults to "Kyte-Doolittle") 
-8. Adjust the 'Length' and 'Hydrophobicity' thresholds to your chosen parameters
+`source Blob_GUI.tcl`.
+5. Select the MolID you wish to blobulate (defaults to "top").
+6. Select the residues you wish to blobulate (defaults to "all").
+7. Select your desired scale (defaults to "Kyte-Doolittle").
+8. Adjust the 'Length' and 'Hydrophobicity' thresholds to your chosen parameters (if applicable).
 9. Select how you color your blobs; blob representations apply to every frame in a loaded trajectory. 
-    a. Blob Color - Colors by blob type: h-blobs are blue, p-blobs are orange, and s-blobs are green
+    a. Blob Color - Colors by blob type: h-blobs are blue, p-blobs are orange, and s-blobs are green.
     b. Blob ID - Colors h-blobs by blob ID, p-blobs are orange, s-blobs are green, and h-blobs are a color from green to blue.
 10. Click the blobulate button to generate the graphical representation in VMD. 
-11. To remove all representations, click the 'Clear representation' button
+11. To remove all representations, click the 'Clear representation' button.
 
 Clicking the 'Default' buttons will return the threshold buttons to their default positions.
 For 'Length', the default will always be set to 4. For 'Hydrophobicity', this value updates depending
