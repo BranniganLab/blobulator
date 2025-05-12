@@ -1,42 +1,11 @@
-# VMD Blobulation
+## Installation
 
-**A plugin to blobulate protein structures in VMD**
-
-This plugin allows users to blobulate and view blobs on a protien structure in Visual Molecular Dynamics (VMD). The functionality of this plugin provides users an interface by which they can tune parameters and alter the representation of blobs on a given protein structure.
-
-**Software requirements:** 
-
-```VMD```
-
-## Installation guide:
-
-To obtain this plugin, download the following files from the VMD_scripts folder into a single directory:
-``` 
-blobulation.tcl
-Blob_GUI.tcl
-normalized_hydropathyscales.tcl
-```
-
-## Example usage
-
-Load a protein into VMD (if you have multiple proteins loaded, set the one you wish to blobulated as the `top` molecule).
-
-To load the plugin, perform the following steps:
-
-Access the Tk console via the Extensions dropdown menu
-`Extensions > Tk Console`
-
-In the Tk console, change directory to the directory where you downloaded the above scripts
-``` cd /path/to/blobulator/VMD_scripts ``` 
-
-And source the plugin (note: this must be sourced for each new VMD session)
-```source Blob_GUI.tcl```
+Installation instructions for the VMD plugin can be found here: https://github.com/BranniganLab/blobulator/tree/main
 
 ### VMD Plugin Features
 
-The VMD plugin offers a quick and easy method to apply the blobulation algorithm to most
-human proteins. 
-1. Select the MolID you wish to blobulation (defaults to "top")
+The VMD plugin offers a quick and easy method to apply the blobulation algorithm to most human proteins. 
+1. Select the MolID you wish to blobulate (defaults to "top")
 2. Select the residues you wish to blobulate (defaults to "all") 
 3. Select your desired scale (defaults to "Kyte-Doolittle") 
 4. Adjust the 'Length' and 'Hydrophobicity' thresholds to your chosen parameters
