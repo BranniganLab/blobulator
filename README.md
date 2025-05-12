@@ -143,6 +143,8 @@ Blob_GUI.tcl
 normalized_hydropathyscales.tcl
 ```
 
+The plugin can now be sourced via the VMD tk console after navigating to this directory.
+
 ## Example usage
 
 Load a protein into VMD (if you have multiple proteins loaded, set the one you wish to blobulated as the `top` molecule).
