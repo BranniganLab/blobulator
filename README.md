@@ -143,26 +143,26 @@ Blob_GUI.tcl
 normalized_hydropathyscales.tcl
 ```
 
-## Example usage:
-
+## Quickstart:
 1. Load a protein into VMD.
 2. Access the Tk console via the Extensions dropdown menu `Extensions > Tk Console`.
 3. In the Tk console, change directory to the directory where you downloaded the above scripts
-`cd /path/to/VMD/plugin/scripts`.
-4. And source the plugin (note: this must be sourced for each new VMD session)
-`source Blob_GUI.tcl`.
-5. Select the MolID you wish to blobulate (defaults to "top").
-6. Select the residues you wish to blobulate (defaults to "all").
-7. Select your desired scale (defaults to "Kyte-Doolittle").
-8. Adjust the 'Length' and 'Hydrophobicity' thresholds to your chosen parameters (if applicable).
-9. Select how you color your blobs; blob representations apply to every frame in a loaded trajectory. 
+`cd /path/to/blobulator/scripts`.
+4. Source the plugin `source Blob_GUI.tcl`.
+5. Click the blobulate button to generate the corresponding graphical representation in VMD.
+
+## Optional Settings:
+* Select the residues you wish to blobulate (defaults to "all").
+* Select your desired scale (defaults to "Kyte-Doolittle").
+* Adjust the 'Length' and 'Hydrophobicity' thresholds to your chosen parameters (if applicable).
+* Select how you color your blobs; blob representations apply to every frame in a loaded trajectory. 
     * Blob Color - Colors by blob type: h-blobs are blue, p-blobs are orange, and s-blobs are green.
     * Blob ID - Colors h-blobs by blob ID, p-blobs are orange, s-blobs are green, and h-blobs are a color from green to blue.
-10. Click the blobulate button to generate the graphical representation in VMD. 
-11. To remove all representations, click the 'Clear representations' button.
-12. Clicking the 'Default' buttons will return the threshold buttons to their default positions.
-For 'Length', the default will always be set to 4. For 'Hydrophobicity', this value updates depending
-on the Hydropathy Scale. To automatically assign the default value when switching scales, click the 'Auto-Update Threshold' checkbox. 
+* To remove all representations, click the 'Clear representations' button.
+* Clicking the 'Default' buttons will return the threshold buttons to their default positions.
+    * For 'Length', the default will always be set to 4.
+    * For 'Hydrophobicity', this value updates depending on the Hydropathy Scale. 
+    * To automatically assign the default value when switching scales, click the 'Auto-Update Threshold' checkbox. 
 
 ### How to access blob representations: 
 
