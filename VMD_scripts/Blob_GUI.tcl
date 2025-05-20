@@ -173,6 +173,12 @@ proc blobulation {} {
 	bind $::blobulator::blobs.e_Length: <Return> {::blobulator::blobulationSlider }
 	bind $::blobulator::blobs.e_Hydrophobicity: <Return> {::blobulator::blobulationSlider }
 	bind $::blobulator::blobs.select <Return> {::blobulator::blobulationSlider }
+	bind $::blobulator::blobs.s_Length: <BackSpace> {break} 
+	bind $::blobulator::blobs.s_Hydrophobicity: <BackSpace> {break} 
+	bind $::blobulator::blobs.dmnu <BackSpace> {break} 
+	bind $::blobulator::blobs.e_Length: <BackSpace> {break} 
+	bind $::blobulator::blobs.e_Hydrophobicity: <BackSpace> {break} 
+	bind $::blobulator::blobs.select <BackSpace> {break} 
 return
 }
 
