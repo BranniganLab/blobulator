@@ -133,7 +133,12 @@ def index():
                 for future in as_completed(futures):
                     try:
                         tag, data = future.result()
-                        fetched_data[tag] = data
+                        if tag  is None or data is None:
+                            return render_template("error.html",
+                                title="ID Accession Error",
+                                message="""There seems to be an error with the ID accession. In the meantime, you may use Manual Sequence Entry until it comes back online.""")
+                        else:
+                            fetched_data[tag] = data
                     except ValueError as e:
                         # print(f"Task generated exception: {e}")
                         fetched_data[tag] = None
