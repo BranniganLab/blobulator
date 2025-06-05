@@ -703,6 +703,7 @@ proc ::blobulator::blobUserAssignSelector {blob1 MolID chainList} {
 		}
 	}
 		
+  }
 }
 
 
