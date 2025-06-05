@@ -254,20 +254,8 @@ def index():
             print(request.form.to_dict)
             pdb_file = request.files["pdb_file"].read()
             chain = request.form['chain_select']
-            current_datetime = str(datetime.datetime.now())
-            temporary_pdb_file = './static/molstar_plugin/plugin/dist/pdb_files/' + current_datetime + ".pdb"
-            with open(temporary_pdb_file, 'w') as saved_pdb:
-                saved_pdb.write(str(pdb_file).replace("\\n", "\n"))
-                saved_pdb.close()
 
-            io = PDBIO()
-            structure = PDBParser().get_structure('structure', temporary_pdb_file)
-
-            my_seq, shift, saved_chain, pdb_string = extract_chain(chain, temporary_pdb_file, io, structure)
-            
-            # Cleanup
-            os.remove(temporary_pdb_file)
-
+            my_seq, shift, saved_chain, pdb_string = read_pdb_file(pdb_file, chain)
             session['sequence'] = str(my_seq)
 
 
@@ -360,6 +348,7 @@ def index():
          #creates the HTML layout of the home page along with user input fields
         return render_template("index.html", form=form, activetab='#home-tab')
 
+
 def extract_chain(chain, temporary_pdb_file, io, structure):
     """
     Extract a single chain from a PDB file and save it as a temporary PDB file
@@ -432,6 +421,48 @@ def extract_chain(chain, temporary_pdb_file, io, structure):
         record_num += 1
     return my_seq,shift,saved_chain,pdb_string
 
+def read_pdb_file(pdb_file, chain):
+    """
+    Reads a PDB file and returns a PDBStructure object.
+
+    Parameters
+    ----------
+    pdb_file : str
+        The contents of the PDB file as a string.
+    
+    chain : str
+        The name of the chain to extract
+
+    Returns
+    -------
+    my_seq : str
+        The sequence of the extracted chain.
+    shift : int
+        The shift in residue numbering required to match the PDB file.
+    saved_chain : str
+        The chain id of the saved chain.
+    pdb_string : str
+        The contents of the temporary PDB file as a string.
+
+    Notes
+    -----
+    This function assumes that the PDB file contains a single chain. If the file contains multiple chains, the function will extract the first chain.
+    """
+    current_datetime = str(datetime.datetime.now())
+    temporary_pdb_file = './static/molstar_plugin/plugin/dist/pdb_files/' + current_datetime + ".pdb"
+    with open(temporary_pdb_file, 'w') as saved_pdb:
+        saved_pdb.write(str(pdb_file).replace("\\n", "\n"))
+        saved_pdb.close()
+
+    io = PDBIO()
+    structure = PDBParser().get_structure('structure', temporary_pdb_file)
+
+    my_seq, shift, saved_chain, pdb_string = extract_chain(chain, temporary_pdb_file, io, structure)
+    
+    # Cleanup
+    os.remove(temporary_pdb_file)
+
+    return my_seq, shift, saved_chain, pdb_string
 
 
 @app.route('/api/query', methods=['GET'])
@@ -565,6 +596,14 @@ def calc_plot():
 
         return Response(output_pdf.getvalue(), mimetype="image/pdf", headers={"Content-disposition":
                    "attachment; filename=plot.pdf", "Cache-Control": "no-store"})
+    
+@app.route("/PDB", methods=["GET", "POST"])
+def analyze_pdb():
+    pdb_file = str(request.form)
+    chain = 'A'
+    my_seq, shift, saved_chain, pdb_string = read_pdb_file(pdb_file, chain)
+    print(my_seq, shift, saved_chain, pdb_string)
+    return render_template("result.html", my_seq=my_seq, shift=shift, saved_chain=saved_chain, pdb_string=pdb_string)
 
 if __name__ == "__main__":
     app.run(debug=True)
