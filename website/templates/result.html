@@ -137,7 +137,7 @@ $(document).ready( function() {
 			const snp_id = document.getElementById("snp_id").value;
 			const amino_acid = document.getElementById("residue_type").value;
 			my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
-		} 
+		};
 
 		var snp_id_box = document.getElementById("snp_id")
 		var residue_type_box = document.getElementById("residue_type")
@@ -162,6 +162,68 @@ $(document).ready( function() {
 				localStorage.removeItem("blobSeq")
 				localStorage.setItem("blobSeq", data_obj.map(row => row.blobtype))
 
+			});
+	};
+
+	function doPDBUpdate(pdbFile, figs, data) {
+		const fileReader = new FileReader();
+		fileReader.onload = () => {
+			const fileContent = fileReader.result;
+			localStorage.setItem("pdb_file", fileContent);
+
+			// The replace() call is for \r\n from DOS/Windows files
+			const lines = fileContent.replace(/\r/g, '').split('\n');
+			let chains = new Set();
+			for(const line of lines) {
+				if(line.startsWith('ATOM')) {
+					// We use a magic number here because that is how Protein Data Bank defines it
+					chains.add(line[21].trim());
+				}
+			}
+
+			var pdbString = fileContent
+			console.log(pdbString)
+			$.post( "/PDB", pdbString, "json")
+				.then(function(data) {
+					console.log('inside .then block')
+					var my_seq = data.my_seq;
+					console.log(my_seq);
+			})
+				.catch(function(error) {
+					console.error("Error occurred:", error);
+			});
+
+		};
+		fileReader.readAsText(pdbFile);
+
+		if(d3.selectAll(".mutatebox").property("checked")){
+			const snp_id = document.getElementById("snp_id").value;
+			const amino_acid = document.getElementById("residue_type").value;
+			my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
+		};
+
+		var snp_id_box = document.getElementById("snp_id")
+		var residue_type_box = document.getElementById("residue_type")
+		var mutatecheckbox = document.getElementById("mutatebox")
+		snp_id_box.addEventListener('change', function(){
+			d3.selectAll("#snp_triangles").attr("fill", "black")
+		});
+		residue_type_box.addEventListener('change', function(){
+			d3.selectAll("#snp_triangles").attr("fill", "black")
+		});
+		const d_value = d3.select("#domain_threshold_user").text();
+		const selectedValue = d3.select("#cutoff_user").text();
+		var hydro_scale = document.getElementById("hydro_scales").value;
+		const m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, hydro_scale: hydro_scale, my_disorder: {{ my_disorder | tojson | safe }}};
+
+		$.post( "/postmethod", m_str , "json")
+			.then(function(data) {
+				var data_tmp = data.chart_data;
+				var tt = JSON.stringify(eval("(" + data_tmp + ")"));
+				var data_obj = JSON.parse(tt);
+				update_Charts(figs, data_obj);
+				localStorage.removeItem("blobSeq")
+				localStorage.setItem("blobSeq", data_obj.map(row => row.blobtype))
 			});
 	}
 
@@ -240,8 +302,14 @@ $(document).ready( function() {
 		// Set up UI element change handler
 		d3.selectAll(".mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales").on("change", function(){do_update(figs, data)});
 		d3.selectAll("#reset_def").on("click", function(){do_update(figs, data)});
+		d3.selectAll("#app").on("drop", function(event){
+			const dt = event.dataTransfer;
+    		const files = dt.files;
+			if (files.length > 0) {
+				const file = files[0];
+				doPDBUpdate(file, figs, data);}
+		});
 		
-
 		// Mutate residue function
 		d3.select('#download_data_link').on('click', function() {
 			// If the box is check, I mutate the amino acid

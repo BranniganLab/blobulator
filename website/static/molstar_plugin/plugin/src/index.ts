@@ -111,7 +111,7 @@ async function createBlobRepresentation(plugin) {
             type: 'gaussian-surface',
             color: 'uniform',
             colorParams: { value: Color(0x0096FF) },
-            typeParams: { alpha: 1.0}
+            typeParams: { alpha: 1.0 }
         }));
     };
 
