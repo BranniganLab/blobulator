@@ -599,11 +599,10 @@ def calc_plot():
     
 @app.route("/PDB", methods=["GET", "POST"])
 def analyze_pdb():
-    pdb_file = str(request.form)
+    pdb_string = request.form['pdb']
     chain = 'A'
-    my_seq, shift, saved_chain, pdb_string = read_pdb_file(pdb_file, chain)
-    print(my_seq, shift, saved_chain, pdb_string)
-    return render_template("result.html", my_seq=my_seq, shift=shift, saved_chain=saved_chain, pdb_string=pdb_string)
+    my_seq, shift, saved_chain, pdb_string = read_pdb_file(pdb_string, chain)
+    return str(my_seq)
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -180,13 +180,11 @@ $(document).ready( function() {
 					chains.add(line[21].trim());
 				}
 			}
-
 			var pdbString = fileContent
-			console.log(pdbString)
-			$.post( "/PDB", pdbString, "json")
+			$.post( "/PDB", {'pdb': pdbString}, "json") //pdbString, "json")
 				.then(function(data) {
 					console.log('inside .then block')
-					var my_seq = data.my_seq;
+					var my_seq = data
 					console.log(my_seq);
 			})
 				.catch(function(error) {
