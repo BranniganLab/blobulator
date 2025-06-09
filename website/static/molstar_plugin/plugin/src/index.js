@@ -178,7 +178,7 @@ function createBlobRepresentation(plugin) {
 ;
 function createPlugin(parent) {
     return __awaiter(this, void 0, void 0, function () {
-        var defaultSpec, plugin, elementsArray, molstarWindow;
+        var defaultSpec, plugin, elementsArray, dropwindow, molstarWindow;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -216,6 +216,12 @@ function createPlugin(parent) {
                                 createBlobRepresentation(plugin);
                             }, 1000);
                         });
+                    });
+                    dropwindow = document.querySelector('#app');
+                    dropwindow === null || dropwindow === void 0 ? void 0 : dropwindow.addEventListener('drop', function (event) {
+                        setTimeout(function () {
+                            createBlobRepresentation(plugin);
+                        }, 1000);
                     });
                     molstarWindow = document.querySelector('#app');
                     molstarWindow === null || molstarWindow === void 0 ? void 0 : molstarWindow.addEventListener('drop', function (event) {

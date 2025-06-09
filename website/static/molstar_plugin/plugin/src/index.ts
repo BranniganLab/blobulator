@@ -170,6 +170,12 @@ async function createPlugin(parent: HTMLElement) {
         }, 1000)});
     });
 
+    let dropwindow = document.querySelector('#app')
+    dropwindow?.addEventListener('drop', function(event){
+        setTimeout(() => {
+            createBlobRepresentation(plugin)
+        }, 1000)});
+
     let molstarWindow = document.querySelector('#app')
     molstarWindow?.addEventListener('drop', function(event){
         var file = (event as DragEvent).dataTransfer?.files[0];
