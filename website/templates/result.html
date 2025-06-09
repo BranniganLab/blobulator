@@ -210,22 +210,24 @@ $(document).ready( function() {
 			const m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, hydro_scale: hydro_scale, my_disorder: {{ my_disorder | tojson | safe }}};
 			console.log('3')
 			console.log(m_str)
+
+			$.post( "/postmethod", m_str , "json")
+			.then(function(data) {
+				console.log('inside the postmethod')
+				var data_tmp = data.chart_data;
+				var tt = JSON.stringify(eval("(" + data_tmp + ")"));
+				var data_obj = JSON.parse(tt);
+				update_Charts(figs, data_obj);
+				localStorage.removeItem("blobSeq")
+				localStorage.setItem("blobSeq", data_obj.map(row => row.blobtype))
+			});
 			
 			});
 
-			$.post( "/postmethod", m_str , "json")
-				.then(function(data) {
-					console.log('inside the postmethod')
-					var data_tmp = data.chart_data;
-					var tt = JSON.stringify(eval("(" + data_tmp + ")"));
-					var data_obj = JSON.parse(tt);
-					update_Charts(figs, data_obj);
-					localStorage.removeItem("blobSeq")
-					localStorage.setItem("blobSeq", data_obj.map(row => row.blobtype))
-				});
-
 		};
+
 		fileReader.readAsText(pdbFile);
+
 	}
 
 	// Drawing the plots to be displayed on the result page
