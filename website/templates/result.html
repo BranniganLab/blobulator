@@ -120,7 +120,7 @@ $(document).ready( function() {
 			}
 
             try {
-                value.update_bars(data);
+				value.update_bars(data);
             }
             catch {
                 console.log("Failed to update: " + key)
@@ -152,12 +152,11 @@ $(document).ready( function() {
 		const selectedValue = d3.select("#cutoff_user").text();
 		var hydro_scale = document.getElementById("hydro_scales").value;
 		const m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, hydro_scale: hydro_scale, my_disorder: {{ my_disorder | tojson | safe }}};
-
 		$.post( "/postmethod", m_str , "json")
 			.then(function(data) {
 				var data_tmp = data.chart_data;
 				var tt = JSON.stringify(eval("(" + data_tmp + ")"));
-				var data_obj = JSON.parse(tt);
+				var data_obj = JSON.parse(tt)
 				update_Charts(figs, data_obj);
 				localStorage.removeItem("blobSeq")
 				localStorage.setItem("blobSeq", data_obj.map(row => row.blobtype))
@@ -181,40 +180,24 @@ $(document).ready( function() {
 				}
 			}
 			var pdbString = fileContent
-			$.post( "/PDB", {'pdb': pdbString}, "json") //pdbString, "json")
-				.then(function(data) {
-					var my_seq = data
 
-			if(d3.selectAll(".mutatebox").property("checked")){
-				const snp_id = document.getElementById("snp_id").value;
-				const amino_acid = document.getElementById("residue_type").value;
-				my_seq = my_seq.slice(0, snp_id-1) + amino_acid + my_seq.substr(snp_id, my_seq.length);
-			};
+			let formData = new FormData();
+			formData.append("action_p", "upload_file")
+			formData.append("pdb_file", pdbFile);
+			formData.append("chain_select", "A");
 
-			var snp_id_box = document.getElementById("snp_id")
-			var residue_type_box = document.getElementById("residue_type")
-			var mutatecheckbox = document.getElementById("mutatebox")
-			snp_id_box.addEventListener('change', function(){
-				d3.selectAll("#snp_triangles").attr("fill", "black")
-			});
-			residue_type_box.addEventListener('change', function(){
-				d3.selectAll("#snp_triangles").attr("fill", "black")
-			});
-			const d_value = d3.select("#domain_threshold_user").text();
-			const selectedValue = d3.select("#cutoff_user").text();
-			var hydro_scale = document.getElementById("hydro_scales").value;
-			const m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, hydro_scale: hydro_scale, my_disorder: {{ my_disorder | tojson | safe }}};
-
-			$.post( "/postmethod", m_str , "json")
-			.then(function(data) {
-				var data_tmp = data.chart_data;
-				var tt = JSON.stringify(eval("(" + data_tmp + ")"));
-				var data_obj = JSON.parse(tt);
-				update_Charts(figs, data_obj);
-				localStorage.removeItem("blobSeq")
-				localStorage.setItem("blobSeq", data_obj.map(row => row.blobtype))
-			});
-			
+			$.ajax({
+				url: "/",
+				type: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function(response) {
+					document.open();
+					document.write(response);
+					document.close();
+					
+				}
 			});
 
 		};
