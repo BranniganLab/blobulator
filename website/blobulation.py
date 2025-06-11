@@ -251,7 +251,6 @@ def index():
 
         ## If we have a pdb upload
         elif "action_p" in request.form.to_dict():
-            print(request.form.to_dict)
             pdb_file = request.files["pdb_file"].read()
             chain = request.form['chain_select']
 
@@ -602,6 +601,7 @@ def analyze_pdb():
     pdb_string = request.form['pdb']
     chain = 'A'
     my_seq, shift, saved_chain, pdb_string = read_pdb_file(pdb_string, chain)
+    session["my_seq"] = my_seq
     return str(my_seq)
 
 if __name__ == "__main__":

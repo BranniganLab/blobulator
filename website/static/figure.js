@@ -411,6 +411,7 @@ class ZChart extends ZFigure{
 	
 		// A quick and dirty function to generate a sequence of integers, because of course JavaScript doesn't have that
 		const range = ([min, max]) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
+		
 
 		// Recover the figID of the plot object related to this brush event
 		// (we saved it as an attribute to its svg element)
@@ -684,7 +685,6 @@ class ZHydropathy extends ZChart{
 	update_bars(data, x=this.x, y=this.y, timing=1000) {
 		this.data = data;
 		this.bars.data(data);
-		//console.log(this.bars.data())
 		this.update_xAxis(x); // because there might have been a mutation
 		this.bars.transition()
 			.duration(timing)
