@@ -696,8 +696,9 @@ proc ::blobulator::blobUserAssignSelector {blob1 MolID chainList} {
 					set sel2 [atomselect $molid "residue $rs and protein"]
 					$sel2 frame $i
 					$sel2 set user $j
+					$sel2 delete
 				}
-				$sel2 delete
+				
 			
 			
 		}
