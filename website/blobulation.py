@@ -155,6 +155,27 @@ def index():
             seq_file_snp = fetched_data['SNP']
             seq_file_coords = fetched_data['Coordinates']
 
+            alphafold_url = f"https://alphafold.ebi.ac.uk/files/AF-{user_uniprot_id}-F1-model_v4.pdb"
+            response = requests.get(alphafold_url)
+
+            if response.ok:
+                alphafold_pdb = response.text
+                # Optional: save to file
+                temporary_pdb_file = f"{user_uniprot_id}_alphafold.pdb"
+                with open(temporary_pdb_file, "w") as f:
+                    f.write(alphafold_pdb)
+            else:
+                print(f"\nAlphaFold structure not found for {user_uniprot_id}")
+
+            io = PDBIO()
+            structure = PDBParser().get_structure('structure', temporary_pdb_file)
+            chain = "A"
+
+            my_seq, shift, saved_chain, pdb_string = extract_chain(chain, temporary_pdb_file, io, structure)
+            
+            # Cleanup
+            os.remove(f"{user_uniprot_id}_alphafold.pdb")
+
             if 'errorMessage' in seq_file:
                 return render_template("error.html",
                     title="UniProt server returned an error",
@@ -245,7 +266,7 @@ def index():
                     my_original_id = original_accession,
                     my_hg_value = hg_identifier,
                     chain = '',
-                    pdb_string = '',
+                    pdb_string = pdb_string,
                     shift=shift
                 )
 
