@@ -262,9 +262,20 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 		}
 
 		if {$chainBlobs != -1} {
+
+			::blobulator::blobUserAssignSelector $chainBlobs $MolID $::blobulator::sorted
+
+			set checkChain [atomselect $MolID "protein and alpha"]
+			if {[llength [lsort -unique [$checkChain get chain]]] > 1} {
+				puts "multiple chains found!"
+				puts [lsort -unique [$checkChain get chain]]
+				::blobulator::blobUser2AssignSelectorChain $chainBlobIndex $MolID $::blobulator::sorted
+			} else {
+				::blobulator::blobUser2AssignSelector $chainBlobIndex $MolID $::blobulator::sorted
+			}
+			$checkChain delete
 		
-		::blobulator::blobUserAssignSelector $chainBlobs $MolID $::blobulator::sorted
-		::blobulator::blobUser2AssignSelector $chainBlobIndex $MolID $::blobulator::sorted
+		
 		
 	
 	
@@ -716,6 +727,40 @@ proc ::blobulator::blobUserAssignSelector {blob1 MolID chainList} {
 #	blob1 (List): A list of 1's, 2's, and 3's. The 1's represent h's the 2's represent s's and the 3's represent p's
 #	chainList (List): A list of chains for a protein that the user values will assign to
 proc ::blobulator::blobUser2AssignSelector { blob2 MolID chainList} {
+	set molid [string tolower $MolID]
+	set clean [atomselect $molid all]
+	$clean set user2 0
+	$clean delete
+
+	set sel [atomselect $molid "protein and canonAA and alpha and chain $chainList"]
+
+	$sel set user2 $blob2
+	$sel delete
+
+	set blobLength [llength [lsort -unique $blob2]]
+	for {set i 1} { $i <= $blobLength } { incr i } {
+		set sel [atomselect $molid "user2 $i"]
+		set residues [$sel get resid]
+		$sel delete
+	
+		foreach rs $residues {
+			
+
+			set sel2 [atomselect $molid "resid $rs and protein"]
+			$sel2 set user2 $i
+			$sel2 delete
+		}
+	
+	}
+	
+	
+		set numOfFrames [molinfo $molid get numframes]
+		::blobulator::blobTrajUser2 $numOfFrames $blob2 $MolID
+	
+}
+
+
+proc ::blobulator::blobUser2AssignSelectorChain { blob2 MolID chainList} {
 	set molid [string tolower $MolID]
 	set clean [atomselect $molid all]
 	$clean set user2 0
