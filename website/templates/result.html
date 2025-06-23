@@ -158,6 +158,48 @@ $(document).ready( function() {
 				localStorage.removeItem("blobSeq")
 				localStorage.setItem("blobSeq", data_obj.map(row => row.blobtype))
 			});
+	};
+
+	function doPDBUpdate(pdbFile, figs, data) {
+		const fileReader = new FileReader();
+		fileReader.onload = () => {
+			const fileContent = fileReader.result;
+			localStorage.setItem("pdb_file", fileContent);
+
+			// The replace() call is for \r\n from DOS/Windows files
+			const lines = fileContent.replace(/\r/g, '').split('\n');
+			let chains = new Set();
+			for(const line of lines) {
+				if(line.startsWith('ATOM')) {
+					// We use a magic number here because that is how Protein Data Bank defines it
+					chains.add(line[21].trim());
+				}
+			}
+			var pdbString = fileContent
+
+			let formData = new FormData();
+			formData.append("action_p", "upload_file")
+			formData.append("pdb_file", pdbFile);
+			formData.append("chain_select", "A");
+
+			$.ajax({
+				url: "/",
+				type: "POST",
+				data: formData,
+				processData: false,
+				contentType: false,
+				success: function(response) {
+					document.open();
+					document.write(response);
+					document.close();
+					
+				}
+			});b
+
+		};
+
+		fileReader.readAsText(pdbFile);
+
 	}
 
 	// Drawing the plots to be displayed on the result page
