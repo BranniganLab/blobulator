@@ -265,7 +265,8 @@ def index():
                     my_entry_name = user_uniprot_entry,
                     my_original_id = original_accession,
                     my_hg_value = hg_identifier,
-                    chain = '',
+                    molstarwindow_pre_text = '',
+                    chain = 'AlphaFold structure',
                     pdb_string = pdb_string,
                     shift=shift
                 )
@@ -321,6 +322,7 @@ def index():
                 domain_threshold_max=len(str(my_seq)),
                 my_disorder = '0',
                 activetab = '#result-tab',
+                molstarwindow_pre_text = 'chain: ',
                 chain = saved_chain,
                 pdb_string = pdb_string,
                 shift=shift
@@ -373,6 +375,7 @@ def index():
                 domain_threshold_max=len(str(my_seq)),
                 my_disorder = '0',
                 activetab = '#result-tab',
+                molstarwindow_pre_text = '',
                 chain = '',
                 pdb_string = '',
                 shift=shift

@@ -198,7 +198,7 @@
     </div>
 </div>
 
-<script>
+<script>   
     function deletePDB() {
         if (localStorage.getItem("pdb_file") !== null) {
             localStorage.clear()
@@ -240,6 +240,14 @@
             fileReader.readAsText(file);
         }
     }
+<<<<<<< HEAD
+=======
+    document.getElementById("pdb_file").onchange = function() {
+        deletePDB();
+        const form = document.getElementById("pdb_entry_block");
+        acceptPDB(form);
+    }
+>>>>>>> 363e5cc (result page now says that alphafold structure is being displayed when an ID is used, and which chain is being displayed when a pdb is uploaded)
 </script>
 
 <style>
