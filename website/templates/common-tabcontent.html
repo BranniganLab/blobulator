@@ -198,7 +198,7 @@
     </div>
 </div>
 
-<script>
+<script>   
     function deletePDB() {
         if (localStorage.getItem("pdb_file") !== null) {
             localStorage.clear()
@@ -244,7 +244,6 @@
         const form = document.getElementById("pdb_entry_block");
         acceptPDB(form);
     }
-    export { acceptPDB };
 </script>
 
 <style>
