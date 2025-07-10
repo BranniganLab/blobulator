@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from .amino_acids import (
+from amino_acids import (
     properties_charge,
     THREE_TO_ONE,
     properties_type,
@@ -516,6 +516,17 @@ def clean_df(df):
 
     return df
 
+def calculate_smoothed_hydropathy(hydropath):
+    """Calculates the smoothed hydropathy of a given residue with its two ajacent neighbors
+        
+        Arguments:
+            hydropath(int): The hydropathy for a given residue
+
+        NOTE: This function makes sue of the center=True pandas rolling argument to ensure the residue in question is at the center of smoothing calculation
+        It is important to run the regression test to check that the smoothed hydropathy is expected (see github Wiki/Regression Checklist for instructions on how to perform this test."""
+    smoothed_hydropath = hydropath.rolling(window=3, min_periods=0, center=True).mean()
+    return smoothed_hydropath
+
 def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=3, disorder_residues=[]):
     """
     A function that runs the blobulation algorithm
@@ -616,16 +627,66 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
                 s_counter = 0
                 return blob_properties_array[1]#
 
-    def calculate_smoothed_hydropathy(hydropath):
-        """Calculates the smoothed hydropathy of a given residue with its two ajacent neighbors
-            
-            Arguments:
-                hydropath(int): The hydropathy for a given residue
 
-            NOTE: This function makes sue of the center=True pandas rolling argument to ensure the residue in question is at the center of smoothing calculation
-            It is important to run the regression test to check that the smoothed hydropathy is expected (see github Wiki/Regression Checklist for instructions on how to perform this test."""
-        smoothed_hydropath = hydropath.rolling(window=3, min_periods=0, center=True).mean()
-        return smoothed_hydropath
+
+    df = blobulation(seq, cutoff, domain_threshold)
+
+
+
+    # ..........................Define the properties of each identified domain.........................................................#
+    domain_group = df.groupby(["domain"])
+
+    df["N"] = domain_group["resid"].transform("count")
+    df["H"] = domain_group["hydropathy"].transform("mean")
+    df["min_h"] = domain_group["hydropathy_3_window_mean"].transform("min")
+    df["NCPR"] = domain_group["charge"].transform("mean")
+    df["disorder"] = domain_group["disorder"].transform("mean")
+    df["f+"] = domain_group["charge"].transform(lambda x: count_var(x, 1))
+    df["f-"] = domain_group["charge"].transform(lambda x: count_var(x, -1))
+    df["fcr"] = df["f-"] + df["f+"]
+    df['h_blob_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lookup_color_predicted_dsnp_enrichment, axis=1)
+    df['h_numerical_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lambda x: lookup_number_predicted_dsnp_enrichment(x), axis=1)
+
+    df["blob_color"] = df[["domain", "hydropathy"]].apply(
+        lookup_color_blob, axis=1)
+    df["P_diagram"] = df[["NCPR", "fcr", "f+", "f-"]].apply(
+        lookup_color_das_pappu, axis=1
+    )
+    df["blob_charge_class"] = df[["NCPR", "fcr", "f+", "f-"]].apply(
+        lookup_number_das_pappu, axis=1
+    )
+    df["U_diagram"] = df[["NCPR", "H"]].apply(
+        lookup_number_uversky, axis=1
+    )
+    df["NCPR_color"] = df[["NCPR", "fcr"]].apply(
+        lookup_color_ncpr, axis=1
+    )
+    df["uversky_color"] = df[["U_diagram", "fcr"]].apply(
+        lookup_color_uversky, axis=1
+    )
+
+    df["disorder_color"] = df[["disorder", "fcr"]].apply(
+        lookup_color_disorder, axis=1
+    )
+
+    return df
+
+def blobulation(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=3, disorder_residues=[]):
+    """
+    Performs blobulation on a sequence using specified hydropathy and domain thresholds.
+
+    Arguments:
+        seq (str): The amino acid sequence to be blobulated.
+        cutoff (float): The hydropathy cutoff for determining blob types.
+        domain_threshold (int): Minimum length required to classify a domain as hydrophobic or polar.
+        hydro_scale (str, optional): The hydrophobicity scale to use, default is 'kyte_doolittle'.
+        window (int, optional): The size of the moving window for hydropathy calculation, default is 3.
+        disorder_residues (list, optional): List of residue positions considered disordered.
+
+    Returns:
+        df (pandas.DataFrame): A DataFrame containing blobulated sequence data including sequence names,
+                               residue numbers, hydropathy, charge, domain types, and other properties.
+    """
 
     window_factor = int((window - 1) / 2)
     seq_start = 1  # starting resid for the seq
@@ -666,43 +727,4 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
     domain_list = df['domain'].to_list()
     df['domain'] = pd.Series(name_blobs(domain_list))
     df.fillna({'domain': 's'}, inplace=True)
-
-
-
-    # ..........................Define the properties of each identified domain.........................................................#
-    domain_group = df.groupby(["domain"])
-
-    df["N"] = domain_group["resid"].transform("count")
-    df["H"] = domain_group["hydropathy"].transform("mean")
-    df["min_h"] = domain_group["hydropathy_3_window_mean"].transform("min")
-    df["NCPR"] = domain_group["charge"].transform("mean")
-    df["disorder"] = domain_group["disorder"].transform("mean")
-    df["f+"] = domain_group["charge"].transform(lambda x: count_var(x, 1))
-    df["f-"] = domain_group["charge"].transform(lambda x: count_var(x, -1))
-    df["fcr"] = df["f-"] + df["f+"]
-    df['h_blob_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lookup_color_predicted_dsnp_enrichment, axis=1)
-    df['h_numerical_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lambda x: lookup_number_predicted_dsnp_enrichment(x), axis=1)
-
-    df["blob_color"] = df[["domain", "hydropathy"]].apply(
-        lookup_color_blob, axis=1)
-    df["P_diagram"] = df[["NCPR", "fcr", "f+", "f-"]].apply(
-        lookup_color_das_pappu, axis=1
-    )
-    df["blob_charge_class"] = df[["NCPR", "fcr", "f+", "f-"]].apply(
-        lookup_number_das_pappu, axis=1
-    )
-    df["U_diagram"] = df[["NCPR", "H"]].apply(
-        lookup_number_uversky, axis=1
-    )
-    df["NCPR_color"] = df[["NCPR", "fcr"]].apply(
-        lookup_color_ncpr, axis=1
-    )
-    df["uversky_color"] = df[["U_diagram", "fcr"]].apply(
-        lookup_color_uversky, axis=1
-    )
-
-    df["disorder_color"] = df[["disorder", "fcr"]].apply(
-        lookup_color_disorder, axis=1
-    )
-
     return df
