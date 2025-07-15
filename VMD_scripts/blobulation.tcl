@@ -741,13 +741,13 @@ proc ::blobulator::blobUser2AssignSelector { blob2 MolID chainList} {
 	set blobLength [llength [lsort -unique $blob2]]
 	for {set i 1} { $i <= $blobLength } { incr i } {
 		set sel [atomselect $molid "user2 $i"]
-		set residues [$sel get resid]
+		set residues [$sel get residue]
 		$sel delete
 	
 		foreach rs $residues {
 			
 
-			set sel2 [atomselect $molid "resid $rs and protein"]
+			set sel2 [atomselect $molid "residue $rs and protein"]
 			$sel2 set user2 $i
 			$sel2 delete
 		}
