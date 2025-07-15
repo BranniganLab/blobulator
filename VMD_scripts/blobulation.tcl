@@ -27,6 +27,8 @@ atomselect macro canonAA {resname ALA ARG ASN ASP CYS GLN GLU GLY HIS HID HIE IL
 #	Returns:
 #	blobulatedSequence (List): A blobulated sequence that is in 1's 2's and 3's
 proc ::blobulator::blobulate {MolID lMin H select dictInput} {
+	# Source is in the proc so the GUI can call both 
+	source normalized_hydropathyscales.tcl
 	set nocaseMolID [string tolower $MolID]
 	if {$dictInput == "Kyte-Doolittle"} {
 		set usedDictionary $KD_Normalized
@@ -52,10 +54,11 @@ proc ::blobulator::blobulate {MolID lMin H select dictInput} {
 
 	set ::blobulator::sortedChains [::blobulator::getSelect $MolID $select]
 	foreach chain $::blobulator::sortedChains {
-
-		set check [atomselect $nocaseMolID "alpha and protein and canonAA and chain $s"]
+		puts "$chain"
+		set check [atomselect $nocaseMolID "alpha and protein and canonAA and chain $chain"]
 		set minimum_residue_length 3
 		if {[llength [$check get resname]] < $minimum_residue_length} {
+			puts "Ignoring chain $chain, too small to blobulate"
 			set idxOfChain [lsearch $::blobulator::sortedChains $chain]
 			set ::blobulator::sortedChains [lreplace $::blobulator::sortedChains $idxOfChain $idxOfChain]
 			
