@@ -33,7 +33,7 @@ proc ::blobulator::blobulate {MolID lMin H select dictInput} {
 	if {$dictInput == "Kyte-Doolittle"} {
 		set usedDictionary $KD_Normalized
 	}
-
+ 
 	if {$dictInput == "Moon-Fleming"} {
 		set usedDictionary $MF_Normalized
 	}
@@ -51,7 +51,7 @@ proc ::blobulator::blobulate {MolID lMin H select dictInput} {
 	set chainBlobs {}
 	set chainBlobIndex {}
 	set chainBlobGroup {}
-
+	set start [clock microseconds]
 	set ::blobulator::sortedChains [::blobulator::getSelect $MolID $select]
 	foreach chain $::blobulator::sortedChains {
 		puts "$chain"
@@ -101,12 +101,15 @@ proc ::blobulator::blobulate {MolID lMin H select dictInput} {
 		
 		
 	}
+	set end [clock microseconds]
+	puts "Blobulation Time: [expr {($end - $start)}] microseconds per iteration"
 
 	if {$chainBlobs != -1} {
-	
-	::blobulator::blobUserAssignSelector $chainBlobs $MolID $::blobulator::sortedChains
-	::blobulator::blobUser2AssignSelector $chainBlobIndex $MolID $::blobulator::sortedChains
-	
+	set start [clock microseconds]
+	::blobulator::blobUserAssign $chainBlobs $MolID $::blobulator::sortedChains
+	::blobulator::blobUser2Assign $chainBlobIndex $MolID $::blobulator::sortedChains
+	set end [clock microseconds]
+	puts "Assign Blob Time: [expr {($end - $start)}] microseconds per iteration"
 
 
 	}
@@ -299,7 +302,7 @@ proc ::blobulator::hydropathyScores { hydropathyDict Sequence } {
 			
 			
 		} else {
-		set hydroScore [dict get $hydropathyDict $amino] 
+			set hydroScore [dict get $hydropathyDict $amino] 
 		}
 		lappend hydroScoreList $hydroScore
 	}
@@ -319,31 +322,25 @@ proc ::blobulator::hydropathyScores { hydropathyDict Sequence } {
 proc ::blobulator::hydropathyMean { hydroScores Sequence} {
 	
 	set meanHydroList {}
-	set isFirst 1
-	for { set i 0 } { $i < [expr [llength $hydroScores] -1] } {incr i} {
-		if {$isFirst == 1} {
-			set isFirst 0
-			set indexOfFirstValue [lindex $hydroScores $i] 
-			set indexOfSecondValue [lindex $hydroScores [expr $i +1]]
-			set avgValue [expr ($indexOfFirstValue + $indexOfSecondValue) * .5]
+	set denominatorEnds 2
+	set denominator 3
+	set indexOfFirstValue [lindex $hydroScores 0] 
+	set indexOfSecondValue [lindex $hydroScores [expr 1]]
+	set avgValue [expr ($indexOfFirstValue + $indexOfSecondValue) / $denominatorEnds]
+	lappend meanHydroList $avgValue
+	for { set scoreIndex 1 } { $scoreIndex < [expr [llength $hydroScores] -1] } {incr scoreIndex} {
+			set	indexOfFirstValue [lindex $hydroScores [expr $scoreIndex - 1]]
+			set indexOfSecondValue [lindex $hydroScores $scoreIndex] 
+			set indexOfLastValue [lindex $hydroScores [expr $scoreIndex + 1]]
+			set avgValue [expr ($indexOfFirstValue + $indexOfSecondValue + $indexOfLastValue) / $denominator]
 			lappend meanHydroList $avgValue
-			continue
-		} 
-		if {$isFirst == 0} {
-			set	indexOfFirstValue [lindex $hydroScores [expr $i - 1]]
-			set indexOfSecondValue [lindex $hydroScores $i] 
-			set indexOfLastValue [lindex $hydroScores [expr $i + 1]]
-			set avgValue [expr ($indexOfFirstValue + $indexOfSecondValue + $indexOfLastValue) * .33333334]
-			lappend meanHydroList $avgValue
-		}
 	}
-	
 	set indexSecondToLast [lindex $hydroScores end-1]
 	set indexOfLastValue [lindex $hydroScores end]
-	set lastAvgValue [expr ($indexSecondToLast + $indexOfLastValue) * .5]
+	set lastAvgValue [expr ($indexSecondToLast + $indexOfLastValue) / $denominatorEnds]
 	lappend meanHydroList $lastAvgValue
 	if {[llength $meanHydroList] != [llength $Sequence] } {
-		puts "Error"
+		puts "Error: Number of hydropathy scores doesn't match the number of sequences"
 		return
 	}
 	
@@ -356,7 +353,7 @@ proc ::blobulator::hydropathyMean { hydroScores Sequence} {
 #	based on if exceeds/meets H or goes below it respecitively 
 #	
 # 	Arguments:
-# 	H (float): Float number between 0 and 1 that the amino sequences will compare to
+# 	H (float): Float number between 0 and 1, this number is the minimum value requirement to become a hydrophobic residue
 # 	hydroScores (list): a list of averaged hydropathy scores 
 #
 #	Results
@@ -522,29 +519,30 @@ return $groupList
 #	chainList (List): A list of chains for a protein that the user values will assign to
 proc ::blobulator::blobUserAssign {blob1 MolID chainList} {
 	
-
+	
 	set molid [string tolower $MolID]
 	set clean [atomselect $molid all]
 	$clean set user 0
 	$clean delete
 	set blobGroupNumber 3
-
+	set start [clock microseconds]
 	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
 		set sel [atomselect $molid "protein and canonAA and alpha and chain $chainList"]
 		$sel frame $i
 		$sel set user $blob1
 		$sel delete
 	}
-
-
+	set end [clock microseconds]
+	puts "Assign user 1 for loop 1 Blob Time: [expr {($end - $start)}] microseconds per iteration"
+	set start [clock microseconds]
 	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
 		for {set j 1} { $j <= $blobGroupNumber } {incr j} {
 			set sel [atomselect $molid "user $j"]
-			set residues [$sel get residue]
+			set residues [$sel get resid]
 			$sel delete
 			if {[llength $residues] > 1} {
 				foreach rs $residues {
-					set sel2 [atomselect $molid "residue $rs and protein"]
+					set sel2 [atomselect $molid "resid $rs and protein"]
 					$sel2 frame $i
 					$sel2 set user $j
 					$sel2 delete
@@ -556,6 +554,8 @@ proc ::blobulator::blobUserAssign {blob1 MolID chainList} {
 	}
 		
   }
+	  set end [clock microseconds]
+	  puts "Assign user 1 for loop 2 Blob Time: [expr {($end - $start)}] microseconds per iteration"
 }
 
 
@@ -571,8 +571,8 @@ proc ::blobulator::blobUser2Assign { blob2 MolID chainList} {
 	set clean [atomselect $molid all]
 	$clean set user2 0
 	$clean delete
-
-	set sel [atomselect $molid "protein and canonAA and alpha and chain $chainList"]
+	set start [clock microseconds]
+	set sel [atomselect $molid "protein and canonAA and alpha and chain $::blobulator::sortedChains"]
 
 	$sel set user2 $blob2
 	$sel delete
@@ -580,23 +580,25 @@ proc ::blobulator::blobUser2Assign { blob2 MolID chainList} {
 	set blobLength [llength [lsort -unique $blob2]]
 	for {set i 1} { $i <= $blobLength } { incr i } {
 		set sel [atomselect $molid "user2 $i"]
-		set residues [$sel get residue]
+		set residues [$sel get resid]
 		$sel delete
 	
 		foreach rs $residues {
 			
 
-			set sel2 [atomselect $molid "residue $rs and protein"]
+			set sel2 [atomselect $molid "resid $rs and protein"]
 			$sel2 set user2 $i
 			$sel2 delete
 		}
 	
 	}
-	
-	
-		set numOfFrames [molinfo $molid get numframes]
-		::blobulator::blobTrajUser2 $numOfFrames $blob2 $MolID
-	
+	set end [clock microseconds]
+	puts "Assign user 2 Blob Time: [expr {($end - $start)}] microseconds per iteration"
+	set start [clock microseconds]
+	set numOfFrames [molinfo $molid get numframes]
+	::blobulator::blobTrajUser2 $numOfFrames $blob2 $MolID
+	set end [clock microseconds]
+	puts "Trajectory Assign Time: [expr {($end - $start)}] microseconds per iteration"
 }
 
 
@@ -609,7 +611,7 @@ proc ::blobulator::blobUser2Assign { blob2 MolID chainList} {
 #	MolID (Integer): An integer that assigns what protein the algorithm looks for
 #	blob2 (List): A list of numbers that represent the number of groups in the protein
 #	frames (Intger): An integer representing the number of frames in a trajectory
-proc ::blobulator::blobTrajUser2 {frames blob2 MolID} {
+proc ::blobulator::blobTrajUser2 {totalFrames blob2 MolID} {
 	
 	set blobLength [llength [lsort -unique $blob2]]
 	set user2List {}
@@ -627,9 +629,9 @@ proc ::blobulator::blobTrajUser2 {frames blob2 MolID} {
 
 	puts $::blobulator::sortedChains
 	set sel2 [atomselect $MolID "protein and canonAA and chain $::blobulator::sortedChains"]
-	for {set i 0} { $i <= $frames} {incr i} {
+	for {set frame 0} { $frame <= $totalFrames} {incr frame} {
 		
-		$sel2 frame $i
+		$sel2 frame $frame
 		$sel2 set user2 $user2List
 	
 		
