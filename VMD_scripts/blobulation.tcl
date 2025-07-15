@@ -262,9 +262,7 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 		}
 
 		if {$chainBlobs != -1} {
-
 			::blobulator::blobUserAssignSelector $chainBlobs $MolID $::blobulator::sorted
-
 			set checkChain [atomselect $MolID "protein and alpha"]
 			if {[llength [lsort -unique [$checkChain get chain]]] > 1} {
 				puts "multiple chains found!"
@@ -697,25 +695,28 @@ proc ::blobulator::blobUserAssignSelector {blob1 MolID chainList} {
 	}
 
 
-	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
-		for {set j 1} { $j <= 3 } {incr j} {
-			set sel [atomselect $molid "user $j"]
-			set residues [$sel get residue]
-			$sel delete
-			if {[llength $residues] > 1} {
-				foreach rs $residues {
-					set sel2 [atomselect $molid "residue $rs and protein"]
-					$sel2 frame $i
-					$sel2 set user $j
-					$sel2 delete
-				}
+	
+	for {set j 1} { $j <= 3 } {incr j} {
+		set sel [atomselect $molid "user $j"]
+		set residues [$sel get residue]
+		$sel delete
+		if {[llength $residues] > 1} {
+			foreach rs $residues {
+				set sel2 [atomselect $molid "residue $rs and protein"]
+				
+				$sel2 set user $j
+				$sel2 delete
+			}
 				
 			
 			
 		}
 	}
 		
-  }
+  
+
+    set numOfFrames [molinfo $molid get numframes]
+    ::blobulator::blobTrajUser $numOfFrames $blob1 $MolID
 }
 
 
@@ -760,39 +761,6 @@ proc ::blobulator::blobUser2AssignSelector { blob2 MolID chainList} {
 }
 
 
-proc ::blobulator::blobUser2AssignSelectorChain { blob2 MolID chainList} {
-	set molid [string tolower $MolID]
-	set clean [atomselect $molid all]
-	$clean set user2 0
-	$clean delete
-
-	set sel [atomselect $molid "protein and canonAA and alpha and chain $chainList"]
-
-	$sel set user2 $blob2
-	$sel delete
-
-	set blobLength [llength [lsort -unique $blob2]]
-	for {set i 1} { $i <= $blobLength } { incr i } {
-		set sel [atomselect $molid "user2 $i"]
-		set residues [$sel get residue]
-		$sel delete
-	
-		foreach rs $residues {
-			
-
-			set sel2 [atomselect $molid "residue $rs and protein"]
-			$sel2 set user2 $i
-			$sel2 delete
-		}
-	
-	}
-	
-	
-		set numOfFrames [molinfo $molid get numframes]
-		::blobulator::blobTrajUser2 $numOfFrames $blob2 $MolID
-	
-}
-
 #
 #	Takes a generated list of numbers that refer to grouping in the protein and assigns user values
 #
@@ -833,7 +801,41 @@ proc ::blobulator::blobUser2Assign { blob2 MolID } {
 	
 }
 
+#
+#	Takes a generated list of numbers and applies user values across a trajectory
+#
+#	Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for
+#	blob2 (List): A list of numbers that represent the number of groups in the protein
+#	frames (Intger): An integer representing the number of frames in a trajectory
+proc ::blobulator::blobTrajUser {frames blob1 MolID} {
+	
+	set blobLength [llength [lsort -unique $blob1]]
+	
+	set userList {}
 
+	set sel [atomselect $MolID "user 1 or user 2 or user 3 "]
+	
+	set user [$sel get user]
+	
+	lappend userList {*}$user
+
+	$sel delete
+	
+	
+	
+
+	
+	set sel2 [atomselect $MolID "protein and canonAA and chain $::blobulator::sorted"]
+	for {set i 0} { $i <= $frames} {incr i} {
+		
+		$sel2 frame $i
+		$sel2 set user $userList
+	
+		
+	}
+	$sel2 delete
+}
 
 #
 #	Takes a generated list of numbers and applies user values across a trajectory
