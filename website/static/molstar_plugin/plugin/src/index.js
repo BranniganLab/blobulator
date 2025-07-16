@@ -195,6 +195,7 @@ function createPlugin(parent) {
                                     controls: { left: 'none', right: 'none', top: 'none', bottom: 'none' },
                                 }, canvas3d: {
                                     camera: {
+                                        mode: "orthographic",
                                         helper: { axes: { name: 'off', params: {} } }
                                     }
                                 }, config: [
