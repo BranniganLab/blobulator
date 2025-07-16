@@ -258,25 +258,13 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 			
 		
 			
-			
 		}
 
 		if {$chainBlobs != -1} {
 			::blobulator::blobUserAssignSelector $chainBlobs $MolID $::blobulator::sorted
-			set checkChain [atomselect $MolID "protein and alpha"]
-			if {[llength [lsort -unique [$checkChain get chain]]] > 1} {
-				puts "multiple chains found!"
-				puts [lsort -unique [$checkChain get chain]]
-				::blobulator::blobUser2AssignSelectorChain $chainBlobIndex $MolID $::blobulator::sorted
-			} else {
-				::blobulator::blobUser2AssignSelector $chainBlobIndex $MolID $::blobulator::sorted
-			}
-			$checkChain delete
+			::blobulator::blobUser2AssignSelector $chainBlobIndex $MolID $::blobulator::sorted
 		
 		
-		
-	
-	
 		}
 		
 		return 
