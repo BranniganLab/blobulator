@@ -146,6 +146,7 @@ async function createPlugin(parent: HTMLElement) {
                 },
                 canvas3d: {
                     camera: {
+                        mode: "orthographic",
                         helper: { axes: { name: 'off', params: {} } }
                     }
                 },
