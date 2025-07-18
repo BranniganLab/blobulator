@@ -62,15 +62,7 @@ $(document).ready( function() {
 	const pdb_shift = {{ shift | safe }};
 	var pdb_string = {{ pdb_string | tojson | safe }};
 	var selected_chain = {{ chain | tojson | safe }};
-	var molstarwindow_pre_text = {{ molstarwindow_pre_text | tojson | safe }};
 
-	molstar_warning_box = document.getElementById("molstar_warning_box");
-	if (pdb_string != '') {
-		molstar_warning_box.innerHTML = "Displaying " + molstarwindow_pre_text + selected_chain
-	} else {
-		molstar_warning_box.innerHTML = "Drag and drop a pdb corresponding to this protein below to view blobs in a 3D structure!"
-	}
-	
 	localStorage.setItem("blobSeq", my_data.map(row => row.blobtype))
 	localStorage.setItem("pdbShift", pdb_shift)
 
