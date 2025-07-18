@@ -62,10 +62,15 @@ $(document).ready( function() {
 	const pdb_shift = {{ shift | safe }};
 	var pdb_string = {{ pdb_string | tojson | safe }};
 	var selected_chain = {{ chain | tojson | safe }};
+	var molstarwindow_pre_text = {{ molstarwindow_pre_text | tojson | safe }};
 
 	molstar_warning_box = document.getElementById("molstar_warning_box");
-	molstar_warning_box.innerHTML = "Displaying chain: " + selected_chain
-
+	if (pdb_string != '') {
+		molstar_warning_box.innerHTML = "Displaying " + molstarwindow_pre_text + selected_chain
+	} else {
+		molstar_warning_box.innerHTML = "Use ID or PDB Entry in New Query to see a blobulated structure"
+	}
+	
 	localStorage.setItem("blobSeq", my_data.map(row => row.blobtype))
 	localStorage.setItem("pdbShift", pdb_shift)
 
@@ -150,6 +155,7 @@ $(document).ready( function() {
 		const m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, hydro_scale: hydro_scale, my_disorder: {{ my_disorder | tojson | safe }}};
 
 		$.post( "/postmethod", m_str , "json")
+			// When the parameters are changed, upate the PDB representation in molstar as well as the charts
 			.then(function(data) {
 				var data_tmp = data.chart_data;
 				var tt = JSON.stringify(eval("(" + data_tmp + ")"));
@@ -158,7 +164,8 @@ $(document).ready( function() {
 				localStorage.removeItem("blobSeq")
 				localStorage.setItem("blobSeq", data_obj.map(row => row.blobtype))
 			});
-	}
+	};
+
 
 	// Drawing the plots to be displayed on the result page
 	function draw(data) {
