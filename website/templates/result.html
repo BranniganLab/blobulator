@@ -68,7 +68,7 @@ $(document).ready( function() {
 	if (pdb_string != '') {
 		molstar_warning_box.innerHTML = "Displaying " + molstarwindow_pre_text + selected_chain
 	} else {
-		molstar_warning_box.innerHTML = "Use ID PDB Entry using New Query to see a blobulated structure"
+		molstar_warning_box.innerHTML = "Use ID or PDB Entry in New Query to see a blobulated structure"
 	}
 	
 	localStorage.setItem("blobSeq", my_data.map(row => row.blobtype))
