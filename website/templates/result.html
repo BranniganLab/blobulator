@@ -177,7 +177,8 @@ $(document).ready( function() {
 			for(const line of lines) {
 				if(line.startsWith('ATOM')) {
 					// We use a magic number here because that is how Protein Data Bank defines it
-					chains.add(line[21].trim());
+					var chainColumn = 21
+					chains.add(line[chainColumn].trim());
 				}
 			}
 			var pdbString = fileContent
