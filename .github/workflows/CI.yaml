@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: 
+      - "main" 
+      - "629_Continuous_Integration"
+
+  pull_request:
+    branches: 
+      - "main"
+      - "629_Continuous_Integration"
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }}, Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macOS-latest, ubuntu-latest, windows-latest]
+        python-version: [3.9, 3.10, 3.11]
