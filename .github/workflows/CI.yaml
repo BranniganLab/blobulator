@@ -24,8 +24,7 @@ jobs:
 - uses: mamba-org/setup-micromamba@v1
   with:
     python-version: ${{ matrix.python-version }}
-    environment-file: conda_env/blobulator_env.yaml
-    condarc: |
+    environment-file: conda-env/test_env.yaml
       channels:
         - conda-forge
         - defaults
