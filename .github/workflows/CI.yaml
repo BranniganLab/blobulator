@@ -19,20 +19,20 @@ jobs:
       matrix:
         os: [macOS-latest, ubuntu-latest, windows-latest]
         python-version: [3.9, 3.10, 3.11]
+steps:
+  # More info on options: https://github.com/marketplace/actions/setup-micromamba
+  - uses: mamba-org/setup-micromamba@v1
+    with:
+      python-version: ${{ matrix.python-version }}
+      environment-file: conda-env/test_env.yaml
+        channels:
+          - conda-forge
+          - defaults
 
-# More info on options: https://github.com/marketplace/actions/setup-micromamba
-- uses: mamba-org/setup-micromamba@v1
-  with:
-    python-version: ${{ matrix.python-version }}
-    environment-file: conda-env/test_env.yaml
-      channels:
-        - conda-forge
-        - defaults
+  - name: Run tests
 
- - name: Run tests
+    # conda setup requires this special shell
+    shell: bash -l {0}
 
-   # conda setup requires this special shell
-   shell: bash -l {0}
-
-    run: |
-      pytest -v -cov-report=xml --color=yes tests/
+      run: |
+        pytest -v -cov-report=xml --color=yes tests/
