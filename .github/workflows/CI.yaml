@@ -19,3 +19,13 @@ jobs:
       matrix:
         os: [macOS-latest, ubuntu-latest, windows-latest]
         python-version: [3.9, 3.10, 3.11]
+
+# More info on options: https://github.com/marketplace/actions/setup-micromamba
+- uses: mamba-org/setup-micromamba@v1
+  with:
+    python-version: ${{ matrix.python-version }}
+    environment-file: ./blobulator_env.yaml
+    condarc: |
+      channels:
+        - conda-forge
+        - defaults
