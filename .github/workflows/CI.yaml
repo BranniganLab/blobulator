@@ -25,9 +25,9 @@ steps:
     with:
       python-version: ${{ matrix.python-version }}
       environment-file: conda-env/test_env.yaml
-        channels:
-          - conda-forge
-          - defaults
+      channels:
+        - conda-forge
+        - defaults
 
   - name: Run tests
 
