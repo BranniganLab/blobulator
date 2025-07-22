@@ -29,3 +29,11 @@ jobs:
       channels:
         - conda-forge
         - defaults
+
+ - name: Run tests
+
+   # conda setup requires this special shell
+   shell: bash -l {0}
+
+    run: |
+      pytest -v -cov-report=xml --color=yes tests/
