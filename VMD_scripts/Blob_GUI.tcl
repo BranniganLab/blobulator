@@ -145,10 +145,10 @@ proc blobulation {} {
 	
 	
 	if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
-		::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
+		::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
 		::blobulator::graphRepUserSelect $::blobulator::select
 	} elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
-		::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
+		::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
 		::blobulator::graphRepUser2Select $::blobulator::select
 	} else {
 		puts "no value"
@@ -204,11 +204,11 @@ proc ::blobulator::blobulationSlider {} {
 			set ::blobulator::H .1 
 			}
 			if {$::blobulator::graphRepOptions == $::blobulator::blobColorType1} {
-				::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
+				::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
 				::blobulator::graphRepUserSelect $::blobulator::select
 
 			} elseif { $::blobulator::graphRepOptions == $::blobulator::blobColorType2} {
-				::blobulator::blobulate $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
+				::blobulator::blobulateSelection $::blobulator::MolID $::blobulator::Lmin $::blobulator::H $::blobulator::select $::blobulator::hydropathyScaleDictionaryList
 				::blobulator::graphRepUser2Select $::blobulator::select
 			} else {
 				puts "no value"
