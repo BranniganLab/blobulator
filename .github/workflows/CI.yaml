@@ -28,4 +28,4 @@ jobs:
       
     - name: Run tests
       run: |
-        pytest -v -cov-report=xml --color=yes tests/
+        pytest -v -cov-report=xml --color=yes /blobulator/tests/
