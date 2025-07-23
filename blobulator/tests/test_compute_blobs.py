@@ -19,9 +19,6 @@ def test_blobulator():
     # Do the blobulation
     blobDF = blobulator.compute(sequence, cutoff, min_blob, hscale)
     
-    # Cleanup the dataframe (make it more human-readable)
-    blobDF = blobulator.clean_df(blobDF)
-    
     # Save it as a csv for later use
     testDF = pd.read_csv("blobulator/tests/test_blob.csv")
 
