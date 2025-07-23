@@ -19,8 +19,17 @@ def test_blobulator():
     # Do the blobulation
     blobDF = blobulator.compute(sequence, cutoff, min_blob, hscale)
     
+    # Cleanup the dataframe (make it more human-readable)
+    blobDF = blobulator.clean_df(blobDF)
+
+    oname = "hello_blob.csv"
+    blobDF.to_csv(oname, index=False)
+    
     # Save it as a csv for later use
+    newDF = pd.read_csv("hello_blob.csv")
     testDF = pd.read_csv("blobulator/tests/test_blob.csv")
+
+    os.remove("hello_blob.csv")
 
     assert blobDF == testDF
     
