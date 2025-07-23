@@ -1,6 +1,7 @@
 import pytest
 import blobulator
 import pandas as pd
+import os
 
 
 def test_CI():
