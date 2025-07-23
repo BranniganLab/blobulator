@@ -1,6 +1,5 @@
 import pytest
 import blobulator
-import os
 import pandas as pd
 
 
@@ -11,7 +10,7 @@ def test_CI():
 def test_blobulator():
     """ A test to make sure that the current compute_blobs.py has the same output as the old compute_blobs.py  """
 
-    A very simple oligopeptide and standard settings
+    # A very simple oligopeptide and standard settings
     sequence = "RRRRRRRRRIIIIIIIII"
     cutoff = 0.4
     min_blob = 4
