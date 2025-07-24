@@ -51,5 +51,5 @@ def test_blob_uversky(current_blobulation, previous_blobulator_output):
 
 def test_kytedoolittle_hydropathy(current_blobulation, previous_blobulator_output):
     """ Tests that the Kyte hydropathy column is consistent between both the old and new blobulator outputs"""
-    assert current_blobulation["Kyte-Doolittle_hydropathy"].equals(previous_blobulator_output["Kyte-Doolittle_hydropathy"])
+    assert current_blobulation["Smoothed_Hydropathy"].equals(previous_blobulator_output["Smoothed_Hydropathy"])
 
