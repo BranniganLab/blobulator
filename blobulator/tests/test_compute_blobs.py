@@ -10,46 +10,46 @@ def current_blobulation():
     min_blob = 4
     hscale = "kyte_doolittle"
     
-    bltestBlobDFobDF = blobulator.compute(sequence, cutoff, min_blob, hscale)
+    blobDF = blobulator.compute(sequence, cutoff, min_blob, hscale)
     
-    testBlobDF = blobulator.clean_df(blobDF)
+    current_blobulation = blobulator.clean_df(blobDF)
     
-    return testBlobDF
+    return current_blobulation
 @pytest.fixture
 def previous_blobulator_output():
-    previousBlobDF = pd.read_csv("blobulator/tests/test_blob.csv")
-    return previousBlobDF
+    previous_blobulator_output = pd.read_csv("blobulator/tests/test_blob.csv")
+    return previous_blobulator_output
 
 
 def test_CI():
     """ Simple test to make sure CI is working"""
     assert True
 
-def test_min_blob_hydropathy(testBlobDF, previousBlobDF):
+def test_min_blob_hydropathy(current_blobulation, previous_blobulator_output):
     """ Tests that the hydropathy column is consistent between both the old and new blobulator outputs"""
-    assert testBlobDF["Min_Blob_Hydropathy"] == previousBlobDF["Min_Blob_Hydropathy"]
+    assert current_blobulation["Min_Blob_Hydropathy"] == previous_blobulator_output["Min_Blob_Hydropathy"]
 
-def test_blob_index_number(testBlobDF, previousBlobDF):
+def test_blob_index_number(current_blobulation, previous_blobulator_output):
     """ Tests that the index column is consistent between both the old and new blobulator outputs"""
-    assert testBlobDF["Blob_Index_Number"] == previousBlobDF["Blob_Index_Number"]
+    assert current_blobulation["Blob_Index_Number"] == previous_blobulator_output["Blob_Index_Number"]
 
-def test_blob_ncpr(testBlobDF, previousBlobDF):
+def test_blob_ncpr(current_blobulation, previous_blobulator_output):
     """ Tests that the NCPR column is consistent between both the old and new blobulator outputs"""
-    assert testBlobDF["Blob_NCPR"] == previousBlobDF["Blob_NCPR"]
+    assert current_blobulation["Blob_NCPR"] == previous_blobulator_output["Blob_NCPR"]
 
-def test_blob_dsnp_enrichment(testBlobDF, previousBlobDF):
+def test_blob_dsnp_enrichment(current_blobulation, previous_blobulator_output):
     """ Tests that the dSNP_enrichment column is consistent between both the old and new blobulator outputs"""
-    assert testBlobDF["dSNP_enrichment"] == previousBlobDF["dSNP_enrichment"]
+    assert current_blobulation["dSNP_enrichment"] == previous_blobulator_output["dSNP_enrichment"]
 
-def test_blob_daspappu(testBlobDF, previousBlobDF):
+def test_blob_daspappu(current_blobulation, previous_blobulator_output):
     """ Tests that the Das-Pappu class column is consistent between both the old and new blobulator outputs"""
-    assert testBlobDF["Blob_Das-Pappu_Class"] == previousBlobDF["Blob_Das-Pappu_Class"]
+    assert current_blobulation["Blob_Das-Pappu_Class"] == previous_blobulator_output["Blob_Das-Pappu_Class"]
 
-def test_blob_uversky(testBlobDF, previousBlobDF):
+def test_blob_uversky(current_blobulation, previous_blobulator_output):
     """ Tests that the uversky column is consistent between both the old and new blobulator outputs"""
-    assert testBlobDF["Uversky_Diagram_Score"] == previousBlobDF["Uversky_Diagram_Score"]
+    assert current_blobulation["Uversky_Diagram_Score"] == previous_blobulator_output["Uversky_Diagram_Score"]
 
-def test_smoothed_hydropathy(testBlobDF, previousBlobDF):
+def test_smoothed_hydropathy(current_blobulation, previous_blobulator_output):
     """ Tests that the smoothed hydropathy column is consistent between both the old and new blobulator outputs"""
-    assert testBlobDF["Smoothed_Hydropathy"] == previousBlobDF["Smoothed_Hydropathy"]
+    assert current_blobulation["Smoothed_Hydropathy"] == previous_blobulator_output["Smoothed_Hydropathy"]
 
