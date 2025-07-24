@@ -36,7 +36,7 @@ def test_blob_index_number(current_blobulation, previous_blobulator_output):
 
 def test_blob_ncpr(current_blobulation, previous_blobulator_output):
     """ Tests that the NCPR column is consistent between both the old and new blobulator outputs"""
-    assert current_blobulation["Blob_NCPR"], previous_blobulator_output["Blob_NCPR"])
+    assert tm.assert_series_equal(current_blobulation["Blob_NCPR"], previous_blobulator_output["Blob_NCPR"])
 
 def test_blob_dsnp_enrichment(current_blobulation, previous_blobulator_output):
     """ Tests that the dSNP_enrichment column is consistent between both the old and new blobulator outputs"""
