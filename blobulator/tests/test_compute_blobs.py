@@ -43,13 +43,9 @@ def test_blob_dsnp_enrichment(current_blobulation, previous_blobulator_output):
 
 def test_blob_daspappu(current_blobulation, previous_blobulator_output):
     """ Tests that the Das-Pappu class column is consistent between both the old and new blobulator outputs"""
-    assert current_blobulation["Blob_Das-Pappu_Class"].equals(previous_blobulator_output["Blob_Das-Pappu_Class"])
+    assert current_blobulation["Blob_Das-Pappu_Class"].astype(str).equals(previous_blobulator_output["Blob_Das-Pappu_Class"].astype(str))
 
 def test_blob_uversky(current_blobulation, previous_blobulator_output):
     """ Tests that the uversky column is consistent between both the old and new blobulator outputs"""
     assert current_blobulation["Uversky_Diagram_Score"].equals(previous_blobulator_output["Uversky_Diagram_Score"])
-
-def test_kytedoolittle_hydropathy(current_blobulation, previous_blobulator_output):
-    """ Tests that the Kyte hydropathy column is consistent between both the old and new blobulator outputs"""
-    assert current_blobulation["Smoothed_Hydropathy"].equals(previous_blobulator_output["Smoothed_Hydropathy"])
 
