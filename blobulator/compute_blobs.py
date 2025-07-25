@@ -469,14 +469,15 @@ def clean_df(df):
     del df["uversky_color"]
     del df["disorder_color"]
     del df["hydropathy_digitized"]
-    del df["charge"]
+    del df["residue_charge"]
     del df["domain_to_numbers"]
+    del df["residue_disorder"]
     df['residue_number'] = df['residue_number'].astype(int)
     df = df[[ 'residue_number',
              'residue_name',
-             'window',
-             'm_cutoff',
-             'domain_threshold',
+             'smoothing_window_length',
+             'hydropathy_cutoff',
+             'length_minimum',
              'N',
              'H',
              'min_h',
@@ -490,14 +491,14 @@ def clean_df(df):
              'U_diagram',
              'h_numerical_enrichment',
              'disorder',
-             'hydropathy',
-             'hydropathy_3_window_mean']]
+             'residue_hydropathy',
+             'residue_smoothed_hydropathy']]
     df = df.rename(columns={'residue_name': 'Residue_Name', 
                             'residue_number': 'Residue_Number', 
                             'disorder': 'Blob_Disorder', 
-                            'window': 'Window', 
-                            'm_cutoff': 'Hydropathy_Cutoff', 
-                            'domain_threshold': 'Minimum_Blob_Length', 
+                            'smoothing_window_length': 'Window', 
+                            'hydropathy_cutoff': 'Hydropathy_Cutoff', 
+                            'length_minimum': 'Minimum_Blob_Length', 
                             'blobtype':'Blob_Type', 
                             'H': 'Normalized_Mean_Blob_Hydropathy',
                             'min_h': 'Min_Blob_Hydropathy', 
@@ -510,20 +511,20 @@ def clean_df(df):
                             'blob_charge_class': 'Blob_Das-Pappu_Class', 
                             'U_diagram': 'Uversky_Diagram_Score', 
                             'hydropathy': 'Normalized_hydropathy',
-                            'hydropathy_3_window_mean': 'Smoothed_Hydropathy',
+                            'residue_smoothed_hydropathy': 'Smoothed_Hydropathy',
                             'N': 'blob_length'})
     #df['Kyte-Doolittle_hydropathy'] = df['Normalized_Kyte-Doolittle_hydropathy']*9-4.5
 
     return df
 
-def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=3, disorder_residues=[]):
+def compute(seq, hydropathy_cutoff, length_minimum, hydro_scale='kyte_doolittle', smoothing_window_length=3, disorder_residues=[]):
     """
     A function that runs the blobulation algorithm
 
     Arguments:
         seq (str): A sequence of amino acids
         cutoff (float): the user-selected cutoff
-        domain_threshold (int): the minimum length cutoff
+        length_minimum (int): the minimum length cutoff
         hydro_scale (str): the selected hydrophobicity scale
         window (int): the smoothing window for calculating residue hydrophobicity
         disorder_residues (list): known disorder values for each residue
@@ -532,7 +533,7 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
         df (dataframe): A dataframe containing the output from blobulation
     """
 
-    def calculate_smoothed_hydropathy(residue):
+    def calculate_smoothed_hydropathy(residue, smoothing_window_length):
         """Calculates the smoothed hydropathy of a given residue with its two ajacent neighbors
             
             Arguments:
@@ -540,10 +541,10 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
 
             NOTE: This function makes sue of the center=True pandas rolling argument to ensure the residue in question is at the center of smoothing calculation
             It is important to run the regression test to check that the smoothed hydropathy is expected (see github Wiki/Regression Checklist for instructions on how to perform this test."""
-        residue_smoothed_hydropathy = residue.rolling(window=3, min_periods=0, center=True).mean()
+        residue_smoothed_hydropathy = residue.rolling(smoothing_window_length, min_periods=0, center=True).mean()
         return residue_smoothed_hydropathy
 
-    window_factor = int((window - 1) / 2)
+    window_factor = int((smoothing_window_length - 1) / 2)
     seq_start = 1  # starting resid for the seq
     residue_range = range(seq_start, len(seq) + 1 + seq_start)
 
@@ -554,28 +555,28 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
         residue_number.append(j)
 
     df = pd.DataFrame({"residue_name": residue_name, "residue_number": residue_number,})
-    df["disorder"] = df["residue_number"].apply(lambda x: 1 if x in disorder_residues else 0 )
-    df["hydropathy"] = [get_hydrophobicity(x, hydro_scale) for x in df["residue_name"]]
-    df["charge"] = [properties_charge[x] for x in df["residue_name"]]           
-    df["charge"] = df["charge"].astype('int')
-    df["window"] = window
-    df["m_cutoff"] = cutoff
-    df["domain_threshold"] = domain_threshold
+    df["residue_disorder"] = df["residue_number"].apply(lambda x: 1 if x in disorder_residues else 0 )
+    df["residue_hydropathy"] = [get_hydrophobicity(x, hydro_scale) for x in df["residue_name"]]
+    df["residue_charge"] = [properties_charge[x] for x in df["residue_name"]]           
+    df["residue_charge"] = df["residue_charge"].astype('int')
+    df["smoothing_window_length"] = smoothing_window_length
+    df["hydropathy_cutoff"] = hydropathy_cutoff
+    df["length_minimum"] = length_minimum
 
     #........................calcutes three residue moving window mean............................#
-    df["hydropathy_3_window_mean"] = calculate_smoothed_hydropathy(df["hydropathy"])
-    df["hydropathy_digitized"] = [ 1 if x > cutoff else 0 if np.isnan(x)  else -1 for x in df["hydropathy_3_window_mean"]]
+    df["residue_smoothed_hydropathy"] = calculate_smoothed_hydropathy(df["residue_hydropathy"], smoothing_window_length)
+    df["hydropathy_digitized"] = [ 1 if x > hydropathy_cutoff else 0 if np.isnan(x)  else -1 for x in df["residue_smoothed_hydropathy"]]
     #define continous stretch of residues
     df["domain_pre"] = (df["hydropathy_digitized"].groupby(df["hydropathy_digitized"].ne(df["hydropathy_digitized"].shift()).cumsum()).transform("count"))
-    df["hydropathy_digitized"] = [ 1 if x > cutoff else 0 if np.isnan(x)  else -1 for x in df["hydropathy_3_window_mean"]]    
+    df["hydropathy_digitized"] = [ 1 if x > hydropathy_cutoff else 0 if np.isnan(x)  else -1 for x in df["residue_smoothed_hydropathy"]]    
 
     # ..........................Define domains.........................................................#
-    df["domain"] = ['h' if (x >= domain_threshold and y == 1) else 't' if y==0  else 'p' for x, y in zip(df['domain_pre'], df["hydropathy_digitized"].astype(int)) ]    
+    df["domain"] = ['h' if (x >= length_minimum and y == 1) else 't' if y==0  else 'p' for x, y in zip(df['domain_pre'], df["hydropathy_digitized"].astype(int)) ]    
     df["domain_pre"] = (df["domain"].groupby(df["domain"].ne(df["domain"].shift()).cumsum()).transform("count"))  
-    df["domain"] = ['t' if y=='t' else y if (x >= domain_threshold) else 's' for x, y in zip(df['domain_pre'], df["domain"]) ]
+    df["domain"] = ['t' if y=='t' else y if (x >= length_minimum) else 's' for x, y in zip(df['domain_pre'], df["domain"]) ]
     df['blobtype'] = df['domain']
 
-    df["domain_to_numbers"] = df[["domain", "hydropathy"]].apply(
+    df["domain_to_numbers"] = df[["domain", "residue_hydropathy"]].apply(
         domain_to_numbers, axis=1)
 
     # ..........................Define domain names.........................................................#
@@ -589,17 +590,17 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
     domain_group = df.groupby(["domain"])
 
     df["N"] = domain_group["residue_number"].transform("count")
-    df["H"] = domain_group["hydropathy"].transform("mean")
-    df["min_h"] = domain_group["hydropathy_3_window_mean"].transform("min")
-    df["NCPR"] = domain_group["charge"].transform("mean")
-    df["disorder"] = domain_group["disorder"].transform("mean")
-    df["f+"] = domain_group["charge"].transform(lambda x: count_var(x, 1))
-    df["f-"] = domain_group["charge"].transform(lambda x: count_var(x, -1))
+    df["H"] = domain_group["residue_hydropathy"].transform("mean")
+    df["min_h"] = domain_group["residue_smoothed_hydropathy"].transform("min")
+    df["NCPR"] = domain_group["residue_charge"].transform("mean")
+    df["disorder"] = domain_group["residue_disorder"].transform("mean")
+    df["f+"] = domain_group["residue_charge"].transform(lambda x: count_var(x, 1))
+    df["f-"] = domain_group["residue_charge"].transform(lambda x: count_var(x, -1))
     df["fcr"] = df["f-"] + df["f+"]
     df['h_blob_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lookup_color_predicted_dsnp_enrichment, axis=1)
     df['h_numerical_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lambda x: lookup_number_predicted_dsnp_enrichment(x), axis=1)
 
-    df["blob_color"] = df[["domain", "hydropathy"]].apply(
+    df["blob_color"] = df[["domain", "residue_hydropathy"]].apply(
         lookup_color_blob, axis=1)
     df["P_diagram"] = df[["NCPR", "fcr", "f+", "f-"]].apply(
         lookup_color_das_pappu, axis=1
