@@ -31,16 +31,16 @@ pd.options.mode.chained_assignment = 'raise'
 
 # accessing the properties of the given sequence
 
-counter_s = 0  # this is global variable used for annotating domains in number_blobs
+counter_s = 0  # this is global variable used for annotating blob_types in number_blobs
 counter_p = 0  
 counter_h = 0
 
-s_counter = 0 # this is global variable used for annotating domains in group_blobs
+s_counter = 0 # this is global variable used for annotating blob_types in group_blobs
 
 
-# character naming of domain names
+# character naming of blob_type names
 ch = "a"
-counter_domain_naming = ord(ch)
+counter_blob_type_naming = ord(ch)
 
 
 ## COLOR MAPS
@@ -135,7 +135,7 @@ def name_blobs(res_types):
     
     return grouped_names
         
-def domain_to_numbers(blob_properties_array):
+def blob_type_to_numbers(blob_properties_array):
     """
     A function that assigns heights to each residue for output tracks based on what type of blob they fall into
 
@@ -462,7 +462,7 @@ def clean_df(df):
     """
     #print (df.head)
     #df = df.drop(range(0, 1))
-    del df['domain_pre']
+    del df['blob_type_pre']
     del df['NCPR_color']
     del df['blob_color']
     del df["P_diagram"]
@@ -470,7 +470,7 @@ def clean_df(df):
     del df["disorder_color"]
     del df["hydropathy_digitized"]
     del df["residue_charge"]
-    del df["domain_to_numbers"]
+    del df["blob_type_to_numbers"]
     del df["residue_disorder"]
     df['residue_number'] = df['residue_number'].astype(int)
     df = df[[ 'residue_number',
@@ -482,7 +482,7 @@ def clean_df(df):
              'H',
              'min_h',
              'blobtype',
-             'domain',
+             'blob_type',
              'blob_charge_class',
              'NCPR',
              'f+',
@@ -502,7 +502,7 @@ def clean_df(df):
                             'blobtype':'Blob_Type', 
                             'H': 'Normalized_Mean_Blob_Hydropathy',
                             'min_h': 'Min_Blob_Hydropathy', 
-                            'domain': 'Blob_Index_Number', 
+                            'blob_type': 'Blob_Index_Number', 
                             'NCPR': 'Blob_NCPR', 
                             'f+': "Fraction_of_Positively_Charged_Residues", 
                             'f-': "Fraction_of_Negatively_Charged_Residues", 
@@ -567,40 +567,40 @@ def compute(seq, hydropathy_cutoff, length_minimum, hydro_scale='kyte_doolittle'
     df["residue_smoothed_hydropathy"] = calculate_smoothed_hydropathy(df["residue_hydropathy"], smoothing_window_length)
     df["hydropathy_digitized"] = [ 1 if x > hydropathy_cutoff else 0 if np.isnan(x)  else -1 for x in df["residue_smoothed_hydropathy"]]
     #define continous stretch of residues
-    df["domain_pre"] = (df["hydropathy_digitized"].groupby(df["hydropathy_digitized"].ne(df["hydropathy_digitized"].shift()).cumsum()).transform("count"))
+    df["blob_type_pre"] = (df["hydropathy_digitized"].groupby(df["hydropathy_digitized"].ne(df["hydropathy_digitized"].shift()).cumsum()).transform("count"))
     df["hydropathy_digitized"] = [ 1 if x > hydropathy_cutoff else 0 if np.isnan(x)  else -1 for x in df["residue_smoothed_hydropathy"]]    
 
-    # ..........................Define domains.........................................................#
-    df["domain"] = ['h' if (x >= length_minimum and y == 1) else 't' if y==0  else 'p' for x, y in zip(df['domain_pre'], df["hydropathy_digitized"].astype(int)) ]    
-    df["domain_pre"] = (df["domain"].groupby(df["domain"].ne(df["domain"].shift()).cumsum()).transform("count"))  
-    df["domain"] = ['t' if y=='t' else y if (x >= length_minimum) else 's' for x, y in zip(df['domain_pre'], df["domain"]) ]
-    df['blobtype'] = df['domain']
+    # ..........................Define blob_types.........................................................#
+    df["blob_type"] = ['h' if (x >= length_minimum and y == 1) else 't' if y==0  else 'p' for x, y in zip(df['blob_type_pre'], df["hydropathy_digitized"].astype(int)) ]    
+    df["blob_type_pre"] = (df["blob_type"].groupby(df["blob_type"].ne(df["blob_type"].shift()).cumsum()).transform("count"))  
+    df["blob_type"] = ['t' if y=='t' else y if (x >= length_minimum) else 's' for x, y in zip(df['blob_type_pre'], df["blob_type"]) ]
+    df['blobtype'] = df['blob_type']
 
-    df["domain_to_numbers"] = df[["domain", "residue_hydropathy"]].apply(
-        domain_to_numbers, axis=1)
+    df["blob_type_to_numbers"] = df[["blob_type", "residue_hydropathy"]].apply(
+        blob_type_to_numbers, axis=1)
 
-    # ..........................Define domain names.........................................................#
-    domain_list = df['domain'].to_list()
-    df['domain'] = pd.Series(name_blobs(domain_list))
-    df.fillna({'domain': 's'}, inplace=True)
+    # ..........................Define blob_type names.........................................................#
+    blob_type_list = df['blob_type'].to_list()
+    df['blob_type'] = pd.Series(name_blobs(blob_type_list))
+    df.fillna({'blob_type': 's'}, inplace=True)
 
 
 
-    # ..........................Define the properties of each identified domain.........................................................#
-    domain_group = df.groupby(["domain"])
+    # ..........................Define the properties of each identified blob_type.........................................................#
+    blob_type_group = df.groupby(["blob_type"])
 
-    df["N"] = domain_group["residue_number"].transform("count")
-    df["H"] = domain_group["residue_hydropathy"].transform("mean")
-    df["min_h"] = domain_group["residue_smoothed_hydropathy"].transform("min")
-    df["NCPR"] = domain_group["residue_charge"].transform("mean")
-    df["disorder"] = domain_group["residue_disorder"].transform("mean")
-    df["f+"] = domain_group["residue_charge"].transform(lambda x: count_var(x, 1))
-    df["f-"] = domain_group["residue_charge"].transform(lambda x: count_var(x, -1))
+    df["N"] = blob_type_group["residue_number"].transform("count")
+    df["H"] = blob_type_group["residue_hydropathy"].transform("mean")
+    df["min_h"] = blob_type_group["residue_smoothed_hydropathy"].transform("min")
+    df["NCPR"] = blob_type_group["residue_charge"].transform("mean")
+    df["disorder"] = blob_type_group["residue_disorder"].transform("mean")
+    df["f+"] = blob_type_group["residue_charge"].transform(lambda x: count_var(x, 1))
+    df["f-"] = blob_type_group["residue_charge"].transform(lambda x: count_var(x, -1))
     df["fcr"] = df["f-"] + df["f+"]
     df['h_blob_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lookup_color_predicted_dsnp_enrichment, axis=1)
     df['h_numerical_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lambda x: lookup_number_predicted_dsnp_enrichment(x), axis=1)
 
-    df["blob_color"] = df[["domain", "residue_hydropathy"]].apply(
+    df["blob_color"] = df[["blob_type", "residue_hydropathy"]].apply(
         lookup_color_blob, axis=1)
     df["P_diagram"] = df[["NCPR", "fcr", "f+", "f-"]].apply(
         lookup_color_das_pappu, axis=1
