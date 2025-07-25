@@ -471,9 +471,9 @@ def clean_df(df):
     del df["hydropathy_digitized"]
     del df["charge"]
     del df["domain_to_numbers"]
-    df['resid'] = df['resid'].astype(int)
-    df = df[[ 'resid',
-             'seq_name',
+    df['residue_number'] = df['residue_number'].astype(int)
+    df = df[[ 'residue_number',
+             'residue_name',
              'window',
              'm_cutoff',
              'domain_threshold',
@@ -492,8 +492,8 @@ def clean_df(df):
              'disorder',
              'hydropathy',
              'hydropathy_3_window_mean']]
-    df = df.rename(columns={'seq_name': 'Residue_Name', 
-                            'resid': 'Residue_Number', 
+    df = df.rename(columns={'residue_name': 'Residue_Name', 
+                            'residue_number': 'Residue_Number', 
                             'disorder': 'Blob_Disorder', 
                             'window': 'Window', 
                             'm_cutoff': 'Hydropathy_Cutoff', 
@@ -545,18 +545,18 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
 
     window_factor = int((window - 1) / 2)
     seq_start = 1  # starting resid for the seq
-    resid_range = range(seq_start, len(seq) + 1 + seq_start)
+    residue_range = range(seq_start, len(seq) + 1 + seq_start)
 
-    seq_name = []
-    resid = []
-    for i, j in zip(seq, resid_range):
-        seq_name.append(str(i))
-        resid.append(j)
+    residue_name = []
+    residue_number = []
+    for i, j in zip(seq, residue_range):
+        residue_name.append(str(i))
+        residue_number.append(j)
 
-    df = pd.DataFrame({"seq_name": seq_name, "resid": resid,})
-    df["disorder"] = df["resid"].apply(lambda x: 1 if x in disorder_residues else 0 )
-    df["hydropathy"] = [get_hydrophobicity(x, hydro_scale) for x in df["seq_name"]]
-    df["charge"] = [properties_charge[x] for x in df["seq_name"]]           
+    df = pd.DataFrame({"residue_name": residue_name, "residue_number": residue_number,})
+    df["disorder"] = df["residue_number"].apply(lambda x: 1 if x in disorder_residues else 0 )
+    df["hydropathy"] = [get_hydrophobicity(x, hydro_scale) for x in df["residue_name"]]
+    df["charge"] = [properties_charge[x] for x in df["residue_name"]]           
     df["charge"] = df["charge"].astype('int')
     df["window"] = window
     df["m_cutoff"] = cutoff
@@ -588,7 +588,7 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
     # ..........................Define the properties of each identified domain.........................................................#
     domain_group = df.groupby(["domain"])
 
-    df["N"] = domain_group["resid"].transform("count")
+    df["N"] = domain_group["residue_number"].transform("count")
     df["H"] = domain_group["hydropathy"].transform("mean")
     df["min_h"] = domain_group["hydropathy_3_window_mean"].transform("min")
     df["NCPR"] = domain_group["charge"].transform("mean")
