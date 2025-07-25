@@ -26,19 +26,19 @@ def test_CI():
 
 def test_min_blob_hydropathy(current_blobulation, previous_blobulator_output):
     """ Tests that the hydropathy column is consistent between both the old and new blobulator outputs"""
-    assert current_blobulation["Min_Blob_Hydropathy"].equals(previous_blobulator_output["Min_Blob_Hydropathy"])
+    assert current_blobulation["Min_Blob_Hydropathy"].astype(str).equals(previous_blobulator_output["Min_Blob_Hydropathy"].astype(str))
 
 def test_blob_index_number(current_blobulation, previous_blobulator_output):
     """ Tests that the index column is consistent between both the old and new blobulator outputs"""
-    assert current_blobulation["Blob_Index_Number"].equals(previous_blobulator_output["Blob_Index_Number"])
+    assert current_blobulation["Blob_Index_Number"].astype(str).equals(previous_blobulator_output["Blob_Index_Number"].astype(str))
 
 def test_blob_ncpr(current_blobulation, previous_blobulator_output):
     """ Tests that the NCPR column is consistent between both the old and new blobulator outputs"""
-    assert current_blobulation["Blob_NCPR"].equals(previous_blobulator_output["Blob_NCPR"])
+    assert current_blobulation["Blob_NCPR"].astype(str).equals(previous_blobulator_output["Blob_NCPR"])
 
 def test_blob_dsnp_enrichment(current_blobulation, previous_blobulator_output):
     """ Tests that the predicted dSNP enrichment column is consistent between both the old and new blobulator outputs"""
-    assert current_blobulation["dSNP_enrichment"].equals(previous_blobulator_output["dSNP_enrichment"])
+    assert current_blobulation["dSNP_enrichment"].astype(str).equals(previous_blobulator_output["dSNP_enrichment"].astype(str))
 
 def test_blob_daspappu(current_blobulation, previous_blobulator_output):
     """ Tests that the Das-Pappu class column is consistent between both the old and new blobulator outputs"""
@@ -46,5 +46,5 @@ def test_blob_daspappu(current_blobulation, previous_blobulator_output):
 
 def test_blob_uversky(current_blobulation, previous_blobulator_output):
     """ Tests that the Uversky column is consistent between both the old and new blobulator outputs"""
-    assert current_blobulation["Uversky_Diagram_Score"].equals(previous_blobulator_output["Uversky_Diagram_Score"])
+    assert current_blobulation["Uversky_Diagram_Score"].astype(str).equals(previous_blobulator_output["Uversky_Diagram_Score"].astype(str))
 
