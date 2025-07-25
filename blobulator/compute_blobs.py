@@ -169,32 +169,32 @@ def lookup_color_das_pappu(blob_properties_array):
         color (str): the rgb value for each residue bar based on its Das-Pappu class
     """
 
-    fcr = blob_properties_array.iloc[1]
+    fraction_of_charged_residues = blob_properties_array.iloc[1]
     ncpr = blob_properties_array.iloc[0]
-    fp = blob_properties_array.iloc[2]
-    fn = blob_properties_array.iloc[3]
+    fraction_of_positively_charged_residues = blob_properties_array.iloc[2]
+    fraction_of_negatively_charged_residues = blob_properties_array.iloc[3]
 
     # if we"re in region 1
-    if fcr < 0.25:
+    if fraction_of_charged_residues < 0.25:
         return "rgb(138.0,251.0,69.0)"
 
         # if we"re in region 2
-    elif fcr >= 0.25 and fcr <= 0.35:
+    elif fraction_of_charged_residues >= 0.25 and fraction_of_charged_residues <= 0.35:
         return "rgb(254.0,230.0,90.0)"
 
         # if we"re in region 3
-    elif fcr > 0.35 and abs(ncpr) < 0.35:
+    elif fraction_of_charged_residues > 0.35 and abs(ncpr) < 0.35:
         return "mediumorchid"
 
         # if we"re in region 4 or 5
-    elif fp > 0.35:
-        if fn > 0.35:
+    elif fraction_of_positively_charged_residues > 0.35:
+        if fraction_of_negatively_charged_residues > 0.35:
             raise SequenceException(
                 "Algorithm bug when coping with phase plot regions"
             )
         return "blue"
 
-    elif fn > 0.35:
+    elif fraction_of_negatively_charged_residues > 0.35:
         return "red"
 
     else:  # This case is impossible but here for completeness\
@@ -214,32 +214,32 @@ def lookup_number_das_pappu(blob_properties_array):
         region (str): returns the number associated to the Das-Pappu class for each residue
     """
 
-    fcr = blob_properties_array.iloc[1]
+    fraction_of_charged_residues = blob_properties_array.iloc[1]
     ncpr = blob_properties_array.iloc[0]
-    fp = blob_properties_array.iloc[2]
-    fn = blob_properties_array.iloc[3]
+    fraction_of_positively_charged_residues = blob_properties_array.iloc[2]
+    fraction_of_negatively_charged_residues = blob_properties_array.iloc[3]
 
     # if we"re in region 1
-    if fcr < 0.25:
+    if fraction_of_charged_residues < 0.25:
         return "1"
 
         # if we"re in region 2
-    elif fcr >= 0.25 and fcr <= 0.35:
+    elif fraction_of_charged_residues >= 0.25 and fraction_of_charged_residues <= 0.35:
         return "2"
 
         # if we"re in region 3
-    elif fcr > 0.35 and abs(ncpr) < 0.35:
+    elif fraction_of_charged_residues > 0.35 and abs(ncpr) < 0.35:
         return "3"
 
         # if we"re in region 4 or 5
-    elif fp > 0.35:
-        if fn > 0.35:
+    elif fraction_of_positively_charged_residues > 0.35:
+        if fraction_of_negatively_charged_residues > 0.35:
             raise SequenceException(
                 "Algorithm bug when coping with phase plot regions"
             )
         return "5"
 
-    elif fn > 0.35:
+    elif fraction_of_negatively_charged_residues > 0.35:
         return "4"
 
     else:  # This case is impossible but here for completeness\
@@ -427,23 +427,23 @@ def count_var(blob_properties_array, v):
     """
     return blob_properties_array.values.tolist().count(v) / (blob_properties_array.shape[0] * 1.0)
 
-def get_hydrophobicity(residue, hydro_scale):
+def get_hydrophobicity(residue, hydropathy_scale):
     """
     A function that returns the hydrophobicity per residue based on which scale the user has selected
 
     Arguments:
         residue (str): A given residue"s amino acid type
-        hydro_scale (str): the hydrophobicity scale as selected by the user
+        hydropathy_scale (str): the hydrophobicity scale as selected by the user
 
     Returns:
         hydrophobicity (int): the hydrophobicity for a given residue in the selected scale
     """
 
-    if hydro_scale == "kyte_doolittle":
+    if hydropathy_scale == "kyte_doolittle":
         scale = properties_hydropathy
-    elif hydro_scale == "eisenberg_weiss":
+    elif hydropathy_scale == "eisenberg_weiss":
         scale = properties_hydropathy_eisenberg_weiss
-    elif hydro_scale == "moon_fleming":
+    elif hydropathy_scale == "moon_fleming":
         scale = properties_hydropathy_moon_fleming
     try: 
         return scale[residue]
@@ -478,7 +478,7 @@ def clean_df(df):
              "residue_name",
              "smoothing_window_length",
              "hydropathy_cutoff",
-             "length_minimum",
+             "blob_length_minimum",
              "blob_length",
              "blob_hydrophobicity",
              "blob_minimum_hydrophobicity",
@@ -498,7 +498,7 @@ def clean_df(df):
                             "blob_disorder": "Blob_Disorder", 
                             "smoothing_window_length": "Window", 
                             "hydropathy_cutoff": "Hydropathy_Cutoff", 
-                            "length_minimum": "Minimum_Blob_Length", 
+                            "blob_length_minimum": "Minimum_Blob_Length", 
                             "residue_blob_type":"Blob_Type", 
                             "blob_hydrophobicity": "Normalized_Mean_Blob_Hydropathy",
                             "blob_minimum_hydrophobicity": "Min_Blob_Hydropathy", 
@@ -517,15 +517,15 @@ def clean_df(df):
 
     return df
 
-def compute(seq, hydropathy_cutoff, length_minimum, hydro_scale="kyte_doolittle", smoothing_window_length=3, disorder_residues=[]):
+def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_doolittle", smoothing_window_length=3, disorder_residues=[]):
     """
     A function that runs the blobulation algorithm
 
     Arguments:
         seq (str): A sequence of amino acids
         cutoff (float): the user-selected cutoff
-        length_minimum (int): the minimum length cutoff
-        hydro_scale (str): the selected hydrophobicity scale
+        blob_length_minimum (int): the minimum length cutoff
+        hydropathy_scale (str): the selected hydrophobicity scale
         window (int): the smoothing window for calculating residue hydrophobicity
         disorder_residues (list): known disorder values for each residue
 
@@ -556,12 +556,12 @@ def compute(seq, hydropathy_cutoff, length_minimum, hydro_scale="kyte_doolittle"
 
     df = pd.DataFrame({"residue_name": residue_name, "residue_number": residue_number,})
     df["residue_disorder"] = df["residue_number"].apply(lambda x: 1 if x in disorder_residues else 0 )
-    df["residue_hydropathy"] = [get_hydrophobicity(x, hydro_scale) for x in df["residue_name"]]
+    df["residue_hydropathy"] = [get_hydrophobicity(x, hydropathy_scale) for x in df["residue_name"]]
     df["residue_charge"] = [properties_charge[x] for x in df["residue_name"]]           
     df["residue_charge"] = df["residue_charge"].astype("int")
     df["smoothing_window_length"] = smoothing_window_length
     df["hydropathy_cutoff"] = hydropathy_cutoff
-    df["length_minimum"] = length_minimum
+    df["blob_length_minimum"] = blob_length_minimum
 
     #........................calcutes three residue moving window mean............................#
     df["residue_smoothed_hydropathy"] = calculate_smoothed_hydropathy(df["residue_hydropathy"], smoothing_window_length)
@@ -571,9 +571,9 @@ def compute(seq, hydropathy_cutoff, length_minimum, hydro_scale="kyte_doolittle"
     df["hydropathy_digitized"] = [ 1 if x > hydropathy_cutoff else 0 if np.isnan(x)  else -1 for x in df["residue_smoothed_hydropathy"]]    
 
     # ..........................Define residue_blob_types.........................................................#
-    df["residue_blob_type"] = ["h" if (x >= length_minimum and y == 1) else "t" if y==0  else "p" for x, y in zip(df["residue_blob_type_pre"], df["hydropathy_digitized"].astype(int)) ]    
+    df["residue_blob_type"] = ["h" if (x >= blob_length_minimum and y == 1) else "t" if y==0  else "p" for x, y in zip(df["residue_blob_type_pre"], df["hydropathy_digitized"].astype(int)) ]    
     df["residue_blob_type_pre"] = (df["residue_blob_type"].groupby(df["residue_blob_type"].ne(df["residue_blob_type"].shift()).cumsum()).transform("count"))  
-    df["residue_blob_type"] = ["t" if y=="t" else y if (x >= length_minimum) else "s" for x, y in zip(df["residue_blob_type_pre"], df["residue_blob_type"]) ]
+    df["residue_blob_type"] = ["t" if y=="t" else y if (x >= blob_length_minimum) else "s" for x, y in zip(df["residue_blob_type_pre"], df["residue_blob_type"]) ]
 
     df["residue_blob_type_to_numbers"] = df[["residue_blob_type", "residue_hydropathy"]].apply(
         residue_blob_type_to_numbers, axis=1)
