@@ -82,7 +82,7 @@ def name_blobs(res_types):
     """
     A function that takes in residues individually and numbers each blob
     Args:
-        res_type(array): an array of residue blobtypes for a sequence
+        res_type(array): an array of residue blob_types for a sequence
     """
     h_counter = 0
     s_counter = 0
@@ -141,6 +141,7 @@ def blob_type_to_numbers(blob_properties_array):
 
     Arguments:
         blob_properties_array (array): An array containing the the type of blob that each residue falls into
+
 
     Returns:
         int: height for each residue
@@ -481,7 +482,7 @@ def clean_df(df):
              'N',
              'H',
              'min_h',
-             'blobtype',
+             'blob_type',
              'blob_type',
              'blob_charge_class',
              'NCPR',
@@ -499,7 +500,7 @@ def clean_df(df):
                             'smoothing_window_length': 'Window', 
                             'hydropathy_cutoff': 'Hydropathy_Cutoff', 
                             'length_minimum': 'Minimum_Blob_Length', 
-                            'blobtype':'Blob_Type', 
+                            'blob_type':'Blob_Type', 
                             'H': 'Normalized_Mean_Blob_Hydropathy',
                             'min_h': 'Min_Blob_Hydropathy', 
                             'blob_type': 'Blob_Index_Number', 
@@ -574,7 +575,6 @@ def compute(seq, hydropathy_cutoff, length_minimum, hydro_scale='kyte_doolittle'
     df["blob_type"] = ['h' if (x >= length_minimum and y == 1) else 't' if y==0  else 'p' for x, y in zip(df['blob_type_pre'], df["hydropathy_digitized"].astype(int)) ]    
     df["blob_type_pre"] = (df["blob_type"].groupby(df["blob_type"].ne(df["blob_type"].shift()).cumsum()).transform("count"))  
     df["blob_type"] = ['t' if y=='t' else y if (x >= length_minimum) else 's' for x, y in zip(df['blob_type_pre'], df["blob_type"]) ]
-    df['blobtype'] = df['blob_type']
 
     df["blob_type_to_numbers"] = df[["blob_type", "residue_hydropathy"]].apply(
         blob_type_to_numbers, axis=1)
@@ -597,8 +597,8 @@ def compute(seq, hydropathy_cutoff, length_minimum, hydro_scale='kyte_doolittle'
     df["f+"] = blob_type_group["residue_charge"].transform(lambda x: count_var(x, 1))
     df["f-"] = blob_type_group["residue_charge"].transform(lambda x: count_var(x, -1))
     df["fcr"] = df["f-"] + df["f+"]
-    df['h_blob_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lookup_color_predicted_dsnp_enrichment, axis=1)
-    df['h_numerical_enrichment'] = df[["N", "min_h", "blobtype"]].apply(lambda x: lookup_number_predicted_dsnp_enrichment(x), axis=1)
+    df['h_blob_enrichment'] = df[["N", "min_h", "blob_type"]].apply(lookup_color_predicted_dsnp_enrichment, axis=1)
+    df['h_numerical_enrichment'] = df[["N", "min_h", "blob_type"]].apply(lambda x: lookup_number_predicted_dsnp_enrichment(x), axis=1)
 
     df["blob_color"] = df[["blob_type", "residue_hydropathy"]].apply(
         lookup_color_blob, axis=1)
