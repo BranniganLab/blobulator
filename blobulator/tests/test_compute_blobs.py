@@ -4,7 +4,7 @@ import pandas as pd
 
 @pytest.fixture
 def current_blobulation():
-    sequence = "RRRRRRRRRIIIIIIIII"
+    sequence = "MALWMRLLPLLALLALWGPDPAAAFVNQHLCGSHLVEALYLVCGERGFFYTPKTRREAEDLQVGQVELGGGPGAGSLQPLALEGSLQKRGIVEQCCTSICSLYQLENYCN"
     cutoff = 0.4
     min_blob = 4
     hscale = "kyte_doolittle"
@@ -37,7 +37,7 @@ def test_blob_ncpr(current_blobulation, previous_blobulator_output):
     assert current_blobulation["Blob_NCPR"].equals(previous_blobulator_output["Blob_NCPR"])
 
 def test_blob_dsnp_enrichment(current_blobulation, previous_blobulator_output):
-    """ Tests that the dSNP_enrichment column is consistent between both the old and new blobulator outputs"""
+    """ Tests that the predicted dSNP enrichment column is consistent between both the old and new blobulator outputs"""
     assert current_blobulation["dSNP_enrichment"].equals(previous_blobulator_output["dSNP_enrichment"])
 
 def test_blob_daspappu(current_blobulation, previous_blobulator_output):
@@ -45,6 +45,6 @@ def test_blob_daspappu(current_blobulation, previous_blobulator_output):
     assert current_blobulation["Blob_Das-Pappu_Class"].astype(str).equals(previous_blobulator_output["Blob_Das-Pappu_Class"].astype(str))
 
 def test_blob_uversky(current_blobulation, previous_blobulator_output):
-    """ Tests that the uversky column is consistent between both the old and new blobulator outputs"""
+    """ Tests that the Uversky column is consistent between both the old and new blobulator outputs"""
     assert current_blobulation["Uversky_Diagram_Score"].equals(previous_blobulator_output["Uversky_Diagram_Score"])
 

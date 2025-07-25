@@ -1,7 +1,7 @@
 import blobulator
 
 # A very simple oligopeptide and standard settings
-sequence = "RRRRRRRRRIIIIIIIII"
+sequence = "MALWMRLLPLLALLALWGPDPAAAFVNQHLCGSHLVEALYLVCGERGFFYTPKTRREAEDLQVGQVELGGGPGAGSLQPLALEGSLQKRGIVEQCCTSICSLYQLENYCN"
 cutoff = 0.4
 min_blob = 4
 hscale = "kyte_doolittle"
