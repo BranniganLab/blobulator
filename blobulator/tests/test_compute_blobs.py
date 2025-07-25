@@ -1,7 +1,6 @@
 import pytest
 import blobulator
 import pandas as pd
-import os
 
 @pytest.fixture
 def current_blobulation():
