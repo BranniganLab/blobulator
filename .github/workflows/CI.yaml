@@ -27,7 +27,7 @@ jobs:
         pip install matplotlib
       
     - name: Run tests
+      env:
+        APPROVALTESTS_FORCE_CI_REPORTER: true # Example environment variable to indicate CI
       run: |
-        env:
-          APPROVALTESTS_FORCE_CI_REPORTER: true # Example environment variable to indicate CI
         pytest -v -cov-report=xml --color=yes blobulator/tests/
