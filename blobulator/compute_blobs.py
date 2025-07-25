@@ -510,7 +510,7 @@ def clean_df(df):
                             "blob_predicted_enrichment_of_dsnps": "dSNP_enrichment", 
                             "blob_daspappu_phase": "Blob_Das-Pappu_Class", 
                             "blob_distance_from_uversky_boundary_line": "Uversky_Diagram_Score", 
-                            "hydropathy": "Normalized_hydropathy",
+                            "residue_hydropathy": "Normalized_hydropathy",
                             "residue_smoothed_hydropathy": "Smoothed_Hydropathy",
                             "blob_length": "blob_length"})
     #df["Kyte-Doolittle_hydropathy"] = df["Normalized_Kyte-Doolittle_hydropathy"]*9-4.5
