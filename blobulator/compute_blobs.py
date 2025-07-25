@@ -14,7 +14,7 @@ from importlib.resources import files
 blobulator_path = files("blobulator").joinpath("data")
 
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
 from random import random
@@ -27,7 +27,7 @@ from matplotlib.lines import Line2D
 import pickle
 
 import os 
-pd.options.mode.chained_assignment = 'raise'
+pd.options.mode.chained_assignment = "raise"
 
 # accessing the properties of the given sequence
 
@@ -49,13 +49,13 @@ cmap = LinearSegmentedColormap.from_list(
 )
 
 vmax=2.5
-cmap_enrich = LinearSegmentedColormap.from_list('mycmap', [(0/ vmax, 'red'), (1./vmax, 'whitesmoke'), (vmax / vmax, 'blue')])
+cmap_enrich = LinearSegmentedColormap.from_list("mycmap", [(0/ vmax, "red"), (1./vmax, "whitesmoke"), (vmax / vmax, "blue")])
 
 c_norm_enrich = matplotlib.colors.Normalize(vmin=0, vmax=2) #re-wrapping normalization
 scalar_map_enrich = matplotlib.cm.ScalarMappable(norm=c_norm_enrich, cmap=cmap)
 
-cmap_uversky = plt.get_cmap('PuOr')
-cmap_disorder = plt.get_cmap('PuOr')
+cmap_uversky = plt.get_cmap("PuOr")
+cmap_disorder = plt.get_cmap("PuOr")
 
 #This is when you want to change the scale of colormap
 c_norm = matplotlib.colors.Normalize(vmin=-0.3, vmax=0.3) #re-wrapping normalization
@@ -76,7 +76,7 @@ def to_base26(num):
     while num > 0:                                                                                                                           
         num, d = divmod_base26(num)
         chars.append(ascii_lowercase[d - 1])
-    return ''.join(reversed(chars))
+    return "".join(reversed(chars))
 
 def name_blobs(res_types):
     """
@@ -92,16 +92,16 @@ def name_blobs(res_types):
     group_nums = []
     
     i = 0
-    previous_residue = ''
+    previous_residue = ""
     
     for residue in res_types:
-        if residue == 'h':
-            if previous_residue == '':
+        if residue == "h":
+            if previous_residue == "":
                 h_counter += 1
             preliminary_names.append(residue + str(h_counter))
     
-        elif residue == 'p':
-            if previous_residue == 'p':
+        elif residue == "p":
+            if previous_residue == "p":
                 pass
             else:
                 h_counter += 1
@@ -109,7 +109,7 @@ def name_blobs(res_types):
             preliminary_names.append(residue + str(p_counter))
             
         else:
-            if previous_residue == 's':
+            if previous_residue == "s":
                 pass
             else:
                 s_counter += 1
@@ -122,13 +122,13 @@ def name_blobs(res_types):
     grouped_names = []
     
     i = 1
-    previous_residue = ''
+    previous_residue = ""
     for item in preliminary_names:
-        if item[0] == 'h' and (int(item[1:]) in group_nums):
+        if item[0] == "h" and (int(item[1:]) in group_nums):
             item += to_base26(i)
-        elif item[0] == 's' and previous_residue != 's':
+        elif item[0] == "s" and previous_residue != "s":
             i += 1
-        if item[0] == 'p':
+        if item[0] == "p":
             i = 1
         previous_residue = item[0]
         grouped_names.append(item)
@@ -174,19 +174,19 @@ def lookup_color_das_pappu(blob_properties_array):
     fp = blob_properties_array.iloc[2]
     fn = blob_properties_array.iloc[3]
 
-    # if we're in region 1
+    # if we"re in region 1
     if fcr < 0.25:
         return "rgb(138.0,251.0,69.0)"
 
-        # if we're in region 2
+        # if we"re in region 2
     elif fcr >= 0.25 and fcr <= 0.35:
         return "rgb(254.0,230.0,90.0)"
 
-        # if we're in region 3
+        # if we"re in region 3
     elif fcr > 0.35 and abs(ncpr) < 0.35:
         return "mediumorchid"
 
-        # if we're in region 4 or 5
+        # if we"re in region 4 or 5
     elif fp > 0.35:
         if fn > 0.35:
             raise SequenceException(
@@ -219,19 +219,19 @@ def lookup_number_das_pappu(blob_properties_array):
     fp = blob_properties_array.iloc[2]
     fn = blob_properties_array.iloc[3]
 
-    # if we're in region 1
+    # if we"re in region 1
     if fcr < 0.25:
         return "1"
 
-        # if we're in region 2
+        # if we"re in region 2
     elif fcr >= 0.25 and fcr <= 0.35:
         return "2"
 
-        # if we're in region 3
+        # if we"re in region 3
     elif fcr > 0.35 and abs(ncpr) < 0.35:
         return "3"
 
-        # if we're in region 4 or 5
+        # if we"re in region 4 or 5
     elif fp > 0.35:
         if fn > 0.35:
             raise SequenceException(
@@ -301,7 +301,7 @@ def lookup_color_ncpr(blob_properties_array):
         blob_properties_array (array): An array containing the fraction of positive and negative residues per blob
 
     Returns:
-        color (str): a string containing the color value for each residue based on the ncpr of the blob that it's contained in
+        color (str): a string containing the color value for each residue based on the ncpr of the blob that it"s contained in
     """
     import matplotlib
     from matplotlib.colors import LinearSegmentedColormap
@@ -326,7 +326,7 @@ def lookup_color_uversky(blob_properties_array):
         blob_properties_array (array): An array containing the uversky distances for each residue by blob
 
     Returns:
-        color (str): a string containing the color value for each residue based on the distance from the uversky diagram's disorder/order boundary line of the blob that it's contained in
+        color (str): a string containing the color value for each residue based on the distance from the uversky diagram"s disorder/order boundary line of the blob that it"s contained in
     """
 
     val = blob_properties_array.iloc[0]
@@ -376,17 +376,17 @@ def lookup_color_predicted_dsnp_enrichment(blob_properties_array):
     blob_length = blob_properties_array.iloc[0]
     residue_blob_type = blob_properties_array.iloc[2]
     #check if blob type is h AND the cutoff/bloblength combination exists in the reference set
-    if residue_blob_type == 'h':
+    if residue_blob_type == "h":
         try:
             return enrich_df.color.loc[min_hydrophobicity, blob_length]
         except KeyError:
             return "grey"
-    elif residue_blob_type == 'p':
+    elif residue_blob_type == "p":
         try:
             return enrich_df_p.color.loc[min_hydrophobicity, blob_length]
         except KeyError:
             return "grey"
-    elif residue_blob_type == 's':
+    elif residue_blob_type == "s":
         try:
             return enrich_df_s.color.loc[min_hydrophobicity, blob_length]
         except KeyError:
@@ -402,10 +402,10 @@ def lookup_number_predicted_dsnp_enrichment(blob_properties_array):
         blob_properties_array (array): An array containing the predicted mutation sensitivity value for each residue for each h-blob
 
     Returns:
-        color (str): a string containing the color value for each residue based on sensitive to mutation the blob that contains it is estimated to be, if it's an h-blob
+        color (str): a string containing the color value for each residue based on sensitive to mutation the blob that contains it is estimated to be, if it"s an h-blob
     """
     cutoff = round(blob_properties_array.iloc[1], 2)
-    if blob_properties_array.iloc[2] == 'h':
+    if blob_properties_array.iloc[2] == "h":
         try:
             enrich_value = enrich_df.Enrichment.loc[cutoff, blob_properties_array.iloc[0]]
             return enrich_value
@@ -432,7 +432,7 @@ def get_hydrophobicity(residue, hydro_scale):
     A function that returns the hydrophobicity per residue based on which scale the user has selected
 
     Arguments:
-        residue (str): A given residue's amino acid type
+        residue (str): A given residue"s amino acid type
         hydro_scale (str): the hydrophobicity scale as selected by the user
 
     Returns:
@@ -448,7 +448,7 @@ def get_hydrophobicity(residue, hydro_scale):
     try: 
         return scale[residue]
     except:
-        print(f'\n!!!ERROR: Residue {residue} is not in my library of known amino acids!!!\n')
+        print(f"\n!!!ERROR: Residue {residue} is not in my library of known amino acids!!!\n")
         raise
 
 def clean_df(df):
@@ -473,51 +473,51 @@ def clean_df(df):
     del df["residue_charge"]
     del df["residue_blob_type_to_numbers"]
     del df["residue_disorder"]
-    df['residue_number'] = df['residue_number'].astype(int)
-    df = df[[ 'residue_number',
-             'residue_name',
-             'smoothing_window_length',
-             'hydropathy_cutoff',
-             'length_minimum',
-             'blob_length',
-             'blob_hydrophobicity',
-             'blob_minimum_hydrophobicity',
-             'residue_blob_type',
-             'blob_daspappu_phase',
-             'blob_net_charge_per_residue',
-             'blob_fraction_of_positively_charged_residues',
-             'blob_fraction_of_negatively_charged_residues',
-             'blob_fraction_of_charged_residues',
-             'blob_distance_from_uversky_boundary_line',
+    df["residue_number"] = df["residue_number"].astype(int)
+    df = df[[ "residue_number",
+             "residue_name",
+             "smoothing_window_length",
+             "hydropathy_cutoff",
+             "length_minimum",
+             "blob_length",
+             "blob_hydrophobicity",
+             "blob_minimum_hydrophobicity",
+             "residue_blob_type",
+             "blob_daspappu_phase",
+             "blob_net_charge_per_residue",
+             "blob_fraction_of_positively_charged_residues",
+             "blob_fraction_of_negatively_charged_residues",
+             "blob_fraction_of_charged_residues",
+             "blob_distance_from_uversky_boundary_line",
              "blob_predicted_enrichment_of_dsnps",
-             'blob_disorder',
-             'residue_hydropathy',
-             'residue_smoothed_hydropathy']]
-    df = df.rename(columns={'residue_name': 'Residue_Name', 
-                            'residue_number': 'Residue_Number', 
-                            'blob_disorder': 'Blob_Disorder', 
-                            'smoothing_window_length': 'Window', 
-                            'hydropathy_cutoff': 'Hydropathy_Cutoff', 
-                            'length_minimum': 'Minimum_Blob_Length', 
-                            'residue_blob_type':'Blob_Type', 
-                            'blob_hydrophobicity': 'Normalized_Mean_Blob_Hydropathy',
-                            'blob_minimum_hydrophobicity': 'Min_Blob_Hydropathy', 
-                            'blobs': 'Blob_Index_Number', 
-                            'blob_net_charge_per_residue': 'Blob_NCPR', 
-                            'blob_fraction_of_positively_charged_residues': "Fraction_of_Positively_Charged_Residues", 
-                            'blob_fraction_of_negatively_charged_residues': "Fraction_of_Negatively_Charged_Residues", 
-                            'blob_fraction_of_charged_residues': 'Fraction_of_Charged_Residues', 
-                            "blob_predicted_enrichment_of_dsnps": 'dSNP_enrichment', 
-                            'blob_daspappu_phase': 'Blob_Das-Pappu_Class', 
-                            'blob_distance_from_uversky_boundary_line': 'Uversky_Diagram_Score', 
-                            'hydropathy': 'Normalized_hydropathy',
-                            'residue_smoothed_hydropathy': 'Smoothed_Hydropathy',
-                            'blob_length': 'blob_length'})
-    #df['Kyte-Doolittle_hydropathy'] = df['Normalized_Kyte-Doolittle_hydropathy']*9-4.5
+             "blob_disorder",
+             "residue_hydropathy",
+             "residue_smoothed_hydropathy"]]
+    df = df.rename(columns={"residue_name": "Residue_Name", 
+                            "residue_number": "Residue_Number", 
+                            "blob_disorder": "Blob_Disorder", 
+                            "smoothing_window_length": "Window", 
+                            "hydropathy_cutoff": "Hydropathy_Cutoff", 
+                            "length_minimum": "Minimum_Blob_Length", 
+                            "residue_blob_type":"Blob_Type", 
+                            "blob_hydrophobicity": "Normalized_Mean_Blob_Hydropathy",
+                            "blob_minimum_hydrophobicity": "Min_Blob_Hydropathy", 
+                            "blobs": "Blob_Index_Number", 
+                            "blob_net_charge_per_residue": "Blob_NCPR", 
+                            "blob_fraction_of_positively_charged_residues": "Fraction_of_Positively_Charged_Residues", 
+                            "blob_fraction_of_negatively_charged_residues": "Fraction_of_Negatively_Charged_Residues", 
+                            "blob_fraction_of_charged_residues": "Fraction_of_Charged_Residues", 
+                            "blob_predicted_enrichment_of_dsnps": "dSNP_enrichment", 
+                            "blob_daspappu_phase": "Blob_Das-Pappu_Class", 
+                            "blob_distance_from_uversky_boundary_line": "Uversky_Diagram_Score", 
+                            "hydropathy": "Normalized_hydropathy",
+                            "residue_smoothed_hydropathy": "Smoothed_Hydropathy",
+                            "blob_length": "blob_length"})
+    #df["Kyte-Doolittle_hydropathy"] = df["Normalized_Kyte-Doolittle_hydropathy"]*9-4.5
 
     return df
 
-def compute(seq, hydropathy_cutoff, length_minimum, hydro_scale='kyte_doolittle', smoothing_window_length=3, disorder_residues=[]):
+def compute(seq, hydropathy_cutoff, length_minimum, hydro_scale="kyte_doolittle", smoothing_window_length=3, disorder_residues=[]):
     """
     A function that runs the blobulation algorithm
 
@@ -558,7 +558,7 @@ def compute(seq, hydropathy_cutoff, length_minimum, hydro_scale='kyte_doolittle'
     df["residue_disorder"] = df["residue_number"].apply(lambda x: 1 if x in disorder_residues else 0 )
     df["residue_hydropathy"] = [get_hydrophobicity(x, hydro_scale) for x in df["residue_name"]]
     df["residue_charge"] = [properties_charge[x] for x in df["residue_name"]]           
-    df["residue_charge"] = df["residue_charge"].astype('int')
+    df["residue_charge"] = df["residue_charge"].astype("int")
     df["smoothing_window_length"] = smoothing_window_length
     df["hydropathy_cutoff"] = hydropathy_cutoff
     df["length_minimum"] = length_minimum
@@ -571,17 +571,17 @@ def compute(seq, hydropathy_cutoff, length_minimum, hydro_scale='kyte_doolittle'
     df["hydropathy_digitized"] = [ 1 if x > hydropathy_cutoff else 0 if np.isnan(x)  else -1 for x in df["residue_smoothed_hydropathy"]]    
 
     # ..........................Define residue_blob_types.........................................................#
-    df["residue_blob_type"] = ['h' if (x >= length_minimum and y == 1) else 't' if y==0  else 'p' for x, y in zip(df['residue_blob_type_pre'], df["hydropathy_digitized"].astype(int)) ]    
+    df["residue_blob_type"] = ["h" if (x >= length_minimum and y == 1) else "t" if y==0  else "p" for x, y in zip(df["residue_blob_type_pre"], df["hydropathy_digitized"].astype(int)) ]    
     df["residue_blob_type_pre"] = (df["residue_blob_type"].groupby(df["residue_blob_type"].ne(df["residue_blob_type"].shift()).cumsum()).transform("count"))  
-    df["residue_blob_type"] = ['t' if y=='t' else y if (x >= length_minimum) else 's' for x, y in zip(df['residue_blob_type_pre'], df["residue_blob_type"]) ]
+    df["residue_blob_type"] = ["t" if y=="t" else y if (x >= length_minimum) else "s" for x, y in zip(df["residue_blob_type_pre"], df["residue_blob_type"]) ]
 
     df["residue_blob_type_to_numbers"] = df[["residue_blob_type", "residue_hydropathy"]].apply(
         residue_blob_type_to_numbers, axis=1)
 
     # ..........................Define residue_blob_type names.........................................................#
-    residue_blob_type_list = df['residue_blob_type'].to_list()
-    df['residue_blob_type'] = pd.Series(name_blobs(residue_blob_type_list))
-    df.fillna({'residue_blob_type': 's'}, inplace=True)
+    residue_blob_type_list = df["residue_blob_type"].to_list()
+    df["residue_blob_type"] = pd.Series(name_blobs(residue_blob_type_list))
+    df.fillna({"residue_blob_type": "s"}, inplace=True)
 
 
 
