@@ -532,7 +532,7 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
         df (dataframe): A dataframe containing the output from blobulation
     """
 
-    def calculate_smoothed_hydropathy(hydropath):
+    def calculate_smoothed_hydropathy(residue):
         """Calculates the smoothed hydropathy of a given residue with its two ajacent neighbors
             
             Arguments:
@@ -540,8 +540,8 @@ def compute(seq, cutoff, domain_threshold, hydro_scale='kyte_doolittle', window=
 
             NOTE: This function makes sue of the center=True pandas rolling argument to ensure the residue in question is at the center of smoothing calculation
             It is important to run the regression test to check that the smoothed hydropathy is expected (see github Wiki/Regression Checklist for instructions on how to perform this test."""
-        smoothed_hydropath = hydropath.rolling(window=3, min_periods=0, center=True).mean()
-        return smoothed_hydropath
+        residue_smoothed_hydropathy = residue.rolling(window=3, min_periods=0, center=True).mean()
+        return residue_smoothed_hydropathy
 
     window_factor = int((window - 1) / 2)
     seq_start = 1  # starting resid for the seq
