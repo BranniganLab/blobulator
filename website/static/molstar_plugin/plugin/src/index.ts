@@ -172,12 +172,14 @@ async function createPlugin(parent: HTMLElement) {
 
     let dropwindow = document.querySelector('#app')
     dropwindow?.addEventListener('drop', function(event){
+        event.preventDefault()
         setTimeout(() => {
             createBlobRepresentation(plugin)
         }, 1000)});
 
     let molstarWindow = document.querySelector('#app')
     molstarWindow?.addEventListener('drop', function(event){
+        event.preventDefault();
         var file = (event as DragEvent).dataTransfer?.files[0];
         var reader = new FileReader();
         reader.onload = function() {

@@ -219,6 +219,7 @@ function createPlugin(parent) {
                     });
                     dropwindow = document.querySelector('#app');
                     dropwindow === null || dropwindow === void 0 ? void 0 : dropwindow.addEventListener('drop', function (event) {
+                        event.preventDefault();
                         setTimeout(function () {
                             createBlobRepresentation(plugin);
                         }, 1000);
@@ -226,6 +227,7 @@ function createPlugin(parent) {
                     molstarWindow = document.querySelector('#app');
                     molstarWindow === null || molstarWindow === void 0 ? void 0 : molstarWindow.addEventListener('drop', function (event) {
                         var _a;
+                        event.preventDefault();
                         var file = (_a = event.dataTransfer) === null || _a === void 0 ? void 0 : _a.files[0];
                         var reader = new FileReader();
                         reader.onload = function () {
