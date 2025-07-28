@@ -174,19 +174,19 @@ def lookup_color_das_pappu(blob_properties_array):
     fraction_of_positively_charged_residues = blob_properties_array.iloc[2]
     fraction_of_negatively_charged_residues = blob_properties_array.iloc[3]
 
-    # if we"re in region 1
+    # if we're in region 1
     if fraction_of_charged_residues < 0.25:
         return "rgb(138.0,251.0,69.0)"
 
-        # if we"re in region 2
+        # if we're in region 2
     elif fraction_of_charged_residues >= 0.25 and fraction_of_charged_residues <= 0.35:
         return "rgb(254.0,230.0,90.0)"
 
-        # if we"re in region 3
+        # if we're in region 3
     elif fraction_of_charged_residues > 0.35 and abs(ncpr) < 0.35:
         return "mediumorchid"
 
-        # if we"re in region 4 or 5
+        # if we're in region 4 or 5
     elif fraction_of_positively_charged_residues > 0.35:
         if fraction_of_negatively_charged_residues > 0.35:
             raise SequenceException(
@@ -197,7 +197,7 @@ def lookup_color_das_pappu(blob_properties_array):
     elif fraction_of_negatively_charged_residues > 0.35:
         return "red"
 
-    else:  # This case is impossible but here for completeness\
+    else:  # This case is impossible but here for completeness
         raise SequenceException(
             "Found inaccessible region of phase diagram. Numerical error"
         )
@@ -219,19 +219,19 @@ def lookup_number_das_pappu(blob_properties_array):
     fraction_of_positively_charged_residues = blob_properties_array.iloc[2]
     fraction_of_negatively_charged_residues = blob_properties_array.iloc[3]
 
-    # if we"re in region 1
+    # if we're in region 1
     if fraction_of_charged_residues < 0.25:
         return "1"
 
-        # if we"re in region 2
+        # if we're in region 2
     elif fraction_of_charged_residues >= 0.25 and fraction_of_charged_residues <= 0.35:
         return "2"
 
-        # if we"re in region 3
+        # if we're in region 3
     elif fraction_of_charged_residues > 0.35 and abs(ncpr) < 0.35:
         return "3"
 
-        # if we"re in region 4 or 5
+        # if we're in region 4 or 5
     elif fraction_of_positively_charged_residues > 0.35:
         if fraction_of_negatively_charged_residues > 0.35:
             raise SequenceException(
@@ -242,7 +242,7 @@ def lookup_number_das_pappu(blob_properties_array):
     elif fraction_of_negatively_charged_residues > 0.35:
         return "4"
 
-    else:  # This case is impossible but here for completeness\
+    else:  # This case is impossible but here for completeness
         raise SequenceException(
             "Found inaccessible region of phase diagram. Numerical error"
         )
@@ -301,7 +301,7 @@ def lookup_color_ncpr(blob_properties_array):
         blob_properties_array (array): An array containing the fraction of positive and negative residues per blob
 
     Returns:
-        color (str): a string containing the color value for each residue based on the ncpr of the blob that it"s contained in
+        color (str): a string containing the color value for each residue based on the ncpr of the blob that it's contained in
     """
     import matplotlib
     from matplotlib.colors import LinearSegmentedColormap
@@ -326,7 +326,7 @@ def lookup_color_uversky(blob_properties_array):
         blob_properties_array (array): An array containing the uversky distances for each residue by blob
 
     Returns:
-        color (str): a string containing the color value for each residue based on the distance from the uversky diagram"s disorder/order boundary line of the blob that it"s contained in
+        color (str): a string containing the color value for each residue based on the distance from the uversky diagram"s disorder/order boundary line of the blob that it's contained in
     """
 
     val = blob_properties_array.iloc[0]
@@ -402,7 +402,7 @@ def lookup_number_predicted_dsnp_enrichment(blob_properties_array):
         blob_properties_array (array): An array containing the predicted mutation sensitivity value for each residue for each h-blob
 
     Returns:
-        color (str): a string containing the color value for each residue based on sensitive to mutation the blob that contains it is estimated to be, if it"s an h-blob
+        color (str): a string containing the color value for each residue based on sensitive to mutation the blob that contains it is estimated to be, if it's an h-blob
     """
     cutoff = round(blob_properties_array.iloc[1], 2)
     if blob_properties_array.iloc[2] == "h":
@@ -432,7 +432,7 @@ def get_hydrophobicity(residue, hydropathy_scale):
     A function that returns the hydrophobicity per residue based on which scale the user has selected
 
     Arguments:
-        residue (str): A given residue"s amino acid type
+        residue (str): A given residue's amino acid type
         hydropathy_scale (str): the hydrophobicity scale as selected by the user
 
     Returns:
