@@ -170,26 +170,26 @@ async function createPlugin(parent: HTMLElement) {
         }, 1000)});
     });
 
-    // let dropwindow = document.querySelector('#app')
-    // dropwindow?.addEventListener('drop', function(event){
-    //     event.preventDefault()
-    //     setTimeout(() => {
-    //         createBlobRepresentation(plugin)
-    //     }, 1000)});
+    let dropwindow = document.querySelector('#app')
+    dropwindow?.addEventListener('drop', function(event){
+        event.preventDefault()
+        setTimeout(() => {
+            createBlobRepresentation(plugin)
+        }, 1000)});
 
-    // let molstarWindow = document.querySelector('#app')
-    // molstarWindow?.addEventListener('drop', function(event){
-    //     event.preventDefault();
-    //     var file = (event as DragEvent).dataTransfer?.files[0];
-    //     var reader = new FileReader();
-    //     reader.onload = function() {
-    //         localStorage.setItem("pdb_file", reader.result as string);
-    //         createBlobRepresentation(plugin);
-    //         let molstar_warning_box = document.getElementById("molstar_warning_box");
-    //         molstar_warning_box.innerHTML = "";
-    //     }
-    //     reader.readAsText(file);
-    // });
+    let molstarWindow = document.querySelector('#app')
+    molstarWindow?.addEventListener('drop', function(event){
+        event.preventDefault();
+        var file = (event as DragEvent).dataTransfer?.files[0];
+        var reader = new FileReader();
+        reader.onload = function() {
+            localStorage.setItem("pdb_file", reader.result as string);
+            createBlobRepresentation(plugin);
+            let molstar_warning_box = document.getElementById("molstar_warning_box");
+            molstar_warning_box.innerHTML = "";
+        }
+        reader.readAsText(file);
+    });
 
 };
 
