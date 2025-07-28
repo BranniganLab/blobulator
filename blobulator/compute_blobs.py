@@ -483,6 +483,7 @@ def clean_df(df):
              "blob_hydrophobicity",
              "blob_minimum_hydrophobicity",
              "residue_blob_type",
+             "residue_blob_groups",
              "blob_daspappu_phase",
              "blob_net_charge_per_residue",
              "blob_fraction_of_positively_charged_residues",
@@ -502,7 +503,7 @@ def clean_df(df):
                             "residue_blob_type":"Blob_Type", 
                             "blob_hydrophobicity": "Normalized_Mean_Blob_Hydropathy",
                             "blob_minimum_hydrophobicity": "Min_Blob_Hydropathy", 
-                            "blobs": "Blob_Index_Number", 
+                            "residue_blob_groups": "Blob_Index_Number", 
                             "blob_net_charge_per_residue": "Blob_NCPR", 
                             "blob_fraction_of_positively_charged_residues": "Fraction_of_Positively_Charged_Residues", 
                             "blob_fraction_of_negatively_charged_residues": "Fraction_of_Negatively_Charged_Residues", 
@@ -580,13 +581,13 @@ def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_
 
     # ..........................Define residue_blob_type names.........................................................#
     residue_blob_type_list = df["residue_blob_type"].to_list()
-    df["residue_blob_type"] = pd.Series(name_blobs(residue_blob_type_list))
-    df.fillna({"residue_blob_type": "s"}, inplace=True)
+    df["residue_blob_groups"] = pd.Series(name_blobs(residue_blob_type_list))
+    df.fillna({"residue_blob_groups": "s"}, inplace=True)
 
 
 
     # ..........................Define the properties of each identified blob.........................................................#
-    blobs = df.groupby(["residue_blob_type"])
+    blobs = df.groupby(["residue_blob_groups"])
 
     df["blob_length"] = blobs["residue_number"].transform("count")
     df["blob_hydrophobicity"] = blobs["residue_hydropathy"].transform("mean")
