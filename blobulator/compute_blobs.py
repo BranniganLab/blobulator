@@ -494,7 +494,7 @@ def clean_df(df):
              "blob_disorder",
              "residue_hydropathy",
              "residue_smoothed_hydropathy"]]
-    df = df.rename(columns={"residue_name": "Residue_Name", 
+    df = df.rename(columns={"residue_name": "Residue_Name",
                             "residue_number": "Residue_Number", 
                             "blob_disorder": "Blob_Disorder", 
                             "smoothing_window_length": "Window", 
@@ -503,7 +503,7 @@ def clean_df(df):
                             "residue_blob_type":"Blob_Type", 
                             "blob_hydrophobicity": "Normalized_Mean_Blob_Hydropathy",
                             "blob_minimum_hydrophobicity": "Min_Blob_Hydropathy", 
-                            "residue_blob_groups": "Blob_Index_Number", 
+                            "residue_blob_groups": "FAKE KEY", 
                             "blob_net_charge_per_residue": "Blob_NCPR", 
                             "blob_fraction_of_positively_charged_residues": "Fraction_of_Positively_Charged_Residues", 
                             "blob_fraction_of_negatively_charged_residues": "Fraction_of_Negatively_Charged_Residues", 
