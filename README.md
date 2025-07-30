@@ -124,27 +124,56 @@ These CSVs are organized with each residue in its own row and columns as follows
 - Normalized_Kyte-Doolittle_hydropathy: K-D hydropathy normalized to be between 0 and 1. See Kyte-Doolittle_hydropathy.
 - Kyte-Doolittle_hydropathy: Traditional K-D hydropathy (on a scale from -4.5 to 4.5). This is a very common hydrophobicity scale dating to 1982: https://doi.org/10.1016%2F0022-2836%2882%2990515-0
 
+# Blobulating proteins in VMD
 
-### Visualizing in VMD
-There is a tcl script in the VMD_scripts directory that will read a csv from the website or the local tool.
+**A plugin to blobulate protein structures in VMD**
 
-To use it:
-1. Load your protein of choice into a vmd session and open the tkconsole
-2. Source this file using:
-3. source /path/to/bctool.tcl
-4. Get the protein sequence using:
-```
-set protSel [atomselect top "protein"]
-get_sequence $protSel
-```
-6. Copy and paste the sequence into the blobulator and blobulate according to your needs
-7. Download the data using the "Download Data" button on the website
-8. Copy the csv to your working directory
-9. Import the blobulation data using:
-```
-getBlobs my_blobulation.csv $protSel
-```
-11. Visualize according to your needs. 
-- User will contain 1=hydrophobic blob, 2=polar blob, 3=short blob
-- User2 will contain the blob id number
+This plugin allows users to blobulate and view blobs on a protein structure in Visual Molecular Dynamics (VMD). The functionality of this plugin is to provide users with an interface by which they can tune parameters and alter the representation of blobs on a given protein structure.
 
+**Software requirements:** 
+
+```VMD```
+
+## Installation guide:
+
+To obtain this plugin, download the following files from the VMD_scripts folder into a single directory:
+``` 
+blobulation.tcl
+Blob_GUI.tcl
+normalized_hydropathyscales.tcl
+```
+
+## Quickstart:
+1. Load a protein into VMD.
+2. Access the Tk console via the Extensions dropdown menu `Extensions > Tk Console`.
+3. In the Tk console, change directory to the directory where you downloaded the above scripts
+`cd /path/to/blobulator/scripts`.
+4. Source the plugin `source Blob_GUI.tcl`.
+5. Click the blobulate button to generate the corresponding graphical representation in VMD.
+
+## Optional Settings:
+* Select the residues you wish to blobulate (defaults to "all").
+* Select your desired scale (defaults to "Kyte-Doolittle").
+* Adjust the 'Length' and 'Hydrophobicity' thresholds to your chosen parameters (if applicable).
+* Select how you color your blobs; blob representations apply to every frame in a loaded trajectory. 
+    * Blob Color - Colors by blob type: h-blobs are blue, p-blobs are orange, and s-blobs are green.
+    * Blob ID - Colors h-blobs by blob ID, p-blobs are orange, s-blobs are green, and h-blobs are a color from green to blue.
+* To remove all representations, click the 'Clear representations' button.
+* Clicking the 'Default' buttons will return the threshold buttons to their default positions.
+    * For 'Length', the default will always be set to 4.
+    * For 'Hydrophobicity', this value updates depending on the Hydropathy Scale. 
+    * To automatically assign the default value when switching scales, click the 'Auto-Update Threshold' checkbox. 
+
+### How to access blob representations: 
+
+The blobulation algorithm will apply all blob types to the VMD user and user2 values.
+
+The 'user' value will store the type of blob: user 1 -> h-blobs, user 2 -> s-blobs, and user 3 -> p-blobs.
+
+The 'user2' value will store the blob group: user2 1 -> h-blob group 1, user2 2 -> s-blob group 1, user2 3 -> h-blob group 2, etc.
+
+When coloring by Blob ID, h-blobs will have different colors depending on the user2 value.    
+
+### Known Limitations:
+
+VMD blobulator can not run its blobulation algorithm on proteins that contain non-standard amino acids.

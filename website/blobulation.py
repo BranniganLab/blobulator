@@ -160,7 +160,6 @@ def index():
 
             if response.ok:
                 alphafold_pdb = response.text
-                # Optional: save to file
                 temporary_pdb_file = f"{user_uniprot_id}_alphafold.pdb"
                 with open(temporary_pdb_file, "w") as f:
                     f.write(alphafold_pdb)
