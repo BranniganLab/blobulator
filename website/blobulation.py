@@ -238,7 +238,7 @@ def index():
             window = 3 
             session['sequence'] = str(my_seq) #set the current sequence variable
             my_initial_df = compute(
-                str(my_seq), float(0.4), 4, window=window, disorder_residues=disorder_residues
+                str(my_seq), float(0.4), 4, smoothing_window_length=window, disorder_residues=disorder_residues
             )
             #define the data frame (df)
             df = my_initial_df
