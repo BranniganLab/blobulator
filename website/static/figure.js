@@ -506,7 +506,7 @@ class ZChart extends ZFigure{
 		let seq_name_by_resid = new Array();
 		// We have to create a map of resid to sequence because resid might not start at 1
 		for(let i = 0; i < this.data.length; i++) {
-			seq_name_by_resid[this.data[i].resid] = this.data[i].seq_name;
+			seq_name_by_resid[this.data[i].residue_number] = this.data[i].residue_name;
 		}
 		let tickLabels = tickValues.map((d, i) => {
 			return seq_name_by_resid[d] + d; // returns e.g. "A123"
