@@ -1,12 +1,9 @@
 {% extends 'common.html' %}
 
 {% block css %}
-<script>console.log("Up and running 0: Results.html is loaded")</script>
 <style> @import "static/style.css"; </style>
 <style> @import "static/zoomStyle.css"; </style>
-<script>console.log("Up and running 0.1: style.css is loaded")</script>
 <style> @import "static/molstar_plugin/node_modules/molstar/build/viewer/molstar.css"; </style>
-<script>console.log("Up and running 0.2: molstar.css is loaded")</script>
 {% endblock %}
 
 {% block scripts %}
@@ -184,7 +181,7 @@ $(document).ready( function() {
 		const my_seq = {{ my_seq | safe }};
 		var   my_cut = {{ my_cut | safe }};
 		const my_disorder = {{ my_disorder | tojson | safe }};
-		const domain_threshold_max = {{ domain_threshold_max | safe }};
+		const domain_threshold_max = {{ blob_length_minimum_max | safe }};
 		if (my_disorder == "0") {
 			var snps = false
 		} else {

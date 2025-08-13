@@ -329,6 +329,7 @@ class ZFigure {
 class ZChart extends ZFigure{
 	static allInstances = {};
 	constructor(figID, data, my_snps, seq, snp_tooltips) {
+		console.log("in chart constructor")
 
 		super(figID, data);
 
@@ -348,6 +349,7 @@ class ZChart extends ZFigure{
 		}else{
 			var snps = true
 		}
+		console.log('pre add_xAxis')
 		this.add_xAxis(snps, x)
 
 		// Add a clipPath: everything out of this area won't be drawn.
@@ -652,9 +654,9 @@ class ZChart extends ZFigure{
 		});
 	
 	return this;
-}
-
+	};
 };
+
 
 
 
@@ -684,6 +686,7 @@ class ZHydropathy extends ZChart{
 	}
 	
 	update_bars(data, x=this.x, y=this.y, timing=1000) {
+		console.log('made it to update_bars')
 		this.data = data;
 		this.bars.data(data);
 		//console.log(this.bars.data())
