@@ -804,8 +804,8 @@ class ZblobChart extends ZChart {
 
 		// Lookup table for color attribute of our data as a function of the plot name.
 		// E.g. The "globPlot" plot data stores colors in the "P_diagram" attribute of the data.
-		const figID_to_var = {'ZblobPlot': 'blob_color', 'blobPlot': 'blob_color', 'globPlot': 'P_diagram', 'ncprPlot': 'NCPR_color', 'richPlot': 'h_blob_enrichment',
-			'uverskyPlot': 'uversky_color', 'disorderPlot': 'disorder_color'};
+		const figID_to_var = {'ZblobPlot': 'color_for_blobtype_track', 'blobPlot': 'color_for_blobtype_track', 'globPlot': 'color_for_daspappu_track', 'ncprPlot': 'color_for_NCPR_track', 'richPlot': 'color_for_dsnp_enrichment_track',
+			'uverskyPlot': 'color_for_uversky_track', 'disorderPlot': 'color_for_disorder_predictor_track'};
 
 		this.update_xAxis(x); // because there migh have been a mutation
 		this.bars.transition()
@@ -838,13 +838,13 @@ class ZblobChart extends ZChart {
 		}
 
 		// Start the line in the correct spot
-		let points = [{resid: data[0].resid, height: data[0].residue_blob_type_to_numbers}];
+		let points = [{resid: data[0].residue_number, height: data[0].residue_blob_type_to_numbers}];
 
 		// Find the edges of each "skyscraper"
 		for(let i = 1; i < data.length; i++){
 			let last_res = data[i-1].residue_blob_type_to_numbers;
 			let this_res = data[i].residue_blob_type_to_numbers;
-			let resid = data[i].resid;
+			let resid = data[i].residue_number;
 			if (last_res != this_res) {
 				points.push({resid: resid, height: last_res});
 				points.push({resid: resid, height: this_res});
@@ -852,7 +852,7 @@ class ZblobChart extends ZChart {
 		}
 
 		// Last line segment - add an extraneous data point to signify this
-		const last_resid = data[data.length-1].resid;
+		const last_resid = data[data.length-1].residue_number;
 		points.push({resid: last_resid,
 			height: data[data.length-1].residue_blob_type_to_numbers});
 
