@@ -1,6 +1,5 @@
 class ZFigure {
 	constructor(figID, data){
-		console.log("in figure constructor")
 		// These constants set fixed values for height and width to be used in making all visualizations
 		this.MARGIN = { top: 30, right: 230, bottom: 30, left: 50 };
 		this.WIDTH = 1200 - this.MARGIN.left - this.MARGIN.right;
@@ -31,7 +30,6 @@ class ZFigure {
 
 	add_zoomout_button(figID, data) {
 
-		console.log("add zoomout button function")
 		this.figID = figID
 		this.data = data
 
@@ -329,7 +327,6 @@ class ZFigure {
 class ZChart extends ZFigure{
 	static allInstances = {};
 	constructor(figID, data, my_snps, seq, snp_tooltips) {
-		console.log("in chart constructor")
 
 		super(figID, data);
 
@@ -349,7 +346,6 @@ class ZChart extends ZFigure{
 		}else{
 			var snps = true
 		}
-		console.log('pre add_xAxis')
 		this.add_xAxis(snps, x)
 
 		// Add a clipPath: everything out of this area won't be drawn.
@@ -686,10 +682,8 @@ class ZHydropathy extends ZChart{
 	}
 	
 	update_bars(data, x=this.x, y=this.y, timing=1000) {
-		console.log('made it to update_bars')
 		this.data = data;
 		this.bars.data(data);
-		//console.log(this.bars.data())
 		this.update_xAxis(x); // because there might have been a mutation
 		this.bars.transition()
 			.duration(timing)

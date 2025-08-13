@@ -7,14 +7,10 @@
 {% endblock %}
 
 {% block scripts %}
-<script>console.log("Up and running 0.3: everything up until d3js is loaded")</script>
 <script src="https://d3js.org/d3.v6.js"></script>
-<script>console.log("Up and running 0.4: Everything up until figure.js is loaded")</script>
 <script src="static/figure.js"></script>
 <script>
-	console.log("Up and running 1: figure.js is loaded")
 $(document).ready( function() {
-	console.log("Up and running 2: $(document).ready is called")
 	//--------------Javascript for plotting in d3-------------
 	//tooltips
 	const hydropathy_tool_text = ("<p>Each residue is classified as hydrophobic or nonhydrophobic, depending on whether the Kyte–Dolittle hydropathy score is above or below the hydrophobicity threshold H<sup>*</sup>. H<sup>*</sup> is determined by the user, and the process of digitizatizing the residues based on whether their hydrophobicity falls above or below this cutoff is shown in the figure below:</p> <img src=\"/static/blobulation_digitization_figure.png\" width=\"225\" height=\"225\" align=\"center\">")
@@ -161,9 +157,7 @@ $(document).ready( function() {
 		$.post( "/postmethod", m_str , "json")
 			// When the parameters are changed, upate the PDB representation in molstar as well as the charts
 			.then(function(data) {
-				console.log('made it to postmethod')
 				var data_tmp = data.chart_data;
-				console.log(data_tmp)
 				var tt = JSON.stringify(eval("(" + data_tmp + ")"));
 				var data_obj = JSON.parse(tt);
 				update_Charts(figs, data_obj);
@@ -175,8 +169,6 @@ $(document).ready( function() {
 
 	// Drawing the plots to be displayed on the result page
 	function draw(data) {
-		console.log("draw function")
-		console.log(data)
 		const my_snp = {{ my_snp | safe }};
 		const my_seq = {{ my_seq | safe }};
 		var   my_cut = {{ my_cut | safe }};
@@ -443,11 +435,9 @@ $(document).ready( function() {
 							var btn = document.getElementById("add_mut");
 							var $table = $("#results_table");
 							var trLast = $table.find("tr:last");
-							console.log(trLast[0])
 							var trNew = trLast.clone();
 							trNew.attr("id", "mutations_container" + row_count);
 							trLast.before(trNew);
-							console.log(trNew[0]);
 							row_count += 1
 							return this
 						}
