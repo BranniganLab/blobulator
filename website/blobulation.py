@@ -473,7 +473,7 @@ def api_id():
         str(my_seq),
         float(cutoff),
         float(domain_threshold),
-        window=window,
+        smoothing_window_length=window,
         disorder_residues = list(my_disorder),
     )  # blobulation
     df = my_initial_df
@@ -498,7 +498,7 @@ def get_post():
         float(cutoff),
         float(domain_threshold),
         str(hydro_scale),
-        window=window,
+        smoothing_window_length=window,
         disorder_residues = list(my_disorder),
     )  # blobulation
     df = my_initial_df
