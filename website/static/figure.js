@@ -862,9 +862,9 @@ class ZblobChart extends ZChart {
 					// Extend the final line segment all the way to the right,
 					// if we are on that last extraneous data point
 					if(index == (points.length-1)) {
-						return x(d.residue_number) + x.bandwidth();
+						return x(d.resid) + x.bandwidth();
 					} else {
-						return x(d.residue_number);
+						return x(d.resid);
 					}
 				})
 				.y((d) => y(d.height)));
