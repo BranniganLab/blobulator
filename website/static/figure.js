@@ -1,5 +1,6 @@
 class ZFigure {
 	constructor(figID, data){
+		console.log("in figure constructor")
 		// These constants set fixed values for height and width to be used in making all visualizations
 		this.MARGIN = { top: 30, right: 230, bottom: 30, left: 50 };
 		this.WIDTH = 1200 - this.MARGIN.left - this.MARGIN.right;
@@ -30,6 +31,7 @@ class ZFigure {
 
 	add_zoomout_button(figID, data) {
 
+		console.log("add zoomout button function")
 		this.figID = figID
 		this.data = data
 
@@ -40,7 +42,7 @@ class ZFigure {
 		btn.space 
 		btn.onclick = function () {
 			let fig = ZChart.allInstances[figID];
-			let domainArray_zoom = fig.data.map(d => d.resid);
+			let domainArray_zoom = fig.data.map(d => d.residue_number);
 		  	let domainBounds_zoom = [Math.min(...domainArray_zoom), Math.max(...domainArray_zoom)];
 		  	Object.values(ZChart.allInstances).forEach(fig => fig.do_zoom(fig.data, null, domainBounds_zoom, domainArray_zoom, fig.xAxis, fig.WIDTH, 1000));
 		 };
@@ -337,7 +339,7 @@ class ZChart extends ZFigure{
 		// Add X axis
 		this.x = d3.scaleBand()
 			.range([0, this.WIDTH])
-			.domain(data.map(d => d.resid ))
+			.domain(data.map(d => d.residue_number ))
 			.padding(0.2);
 		var x = this.x;
 		
@@ -368,7 +370,7 @@ class ZChart extends ZFigure{
 			.join("rect")
 			.attr("id", "barChart"+this.figID)
 			.attr("width", x.bandwidth())
-			.attr("x", (d) => x(d.resid))
+			.attr("x", (d) => x(d.residue_number))
 			.attr("y", d => this.HEIGHT);
 
 		// Add the mutation indicators
@@ -423,7 +425,7 @@ class ZChart extends ZFigure{
 		// If no selection, back to initial coordinate. Otherwise, update X axis domain
 		if(extent == null) {
 		  // if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-		  	domainArray = fig.data.map(d => d.resid);
+		  	domainArray = fig.data.map(d => d.residue_number);
 		  	domainBounds = [Math.min(...domainArray), Math.max(...domainArray)];
 		} else {
 		  	domainBounds = [scaleBandInvert(fig.x)(extent[0]), scaleBandInvert(fig.x)(extent[1])];
@@ -525,14 +527,14 @@ class ZChart extends ZFigure{
 			.append("path")
 			.attr('d', triangle_symbol)
 			.attr("fill", 'black')
-			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 147)")
+			.attr("transform", (d) => "translate(" + (x(d.residue_number) + x.bandwidth()/2) + ", 147)")
 			.attr("id", "snp_triangles")
 			.on("click", function(event, d){
 				d3.select(this).attr("fill", "red")
 				if (mutatecheckbox.checked == true){
 					mutatecheckbox.click().duration(25);
 				};
-				document.getElementById("snp_id").value = d.resid;
+				document.getElementById("snp_id").value = d.residue_number;
 				document.getElementById("residue_type").value = d.alternativeSequence;
 				mutatecheckbox.click().duration(50);
 			})
@@ -544,7 +546,7 @@ class ZChart extends ZFigure{
 					.on("start", () => tooltip_snps.style("display", "block"))
 					.duration(100)
 					.style("opacity", 0.9);
-				tooltip_snps.html(`<a href="https://www.ncbi.nlm.nih.gov/snp/${d.xrefs.id}" target="_blank">${d.xrefs.id}</a>, ${my_seq[d.resid-1]}${d.resid}${d.alternativeSequence}`)
+				tooltip_snps.html(`<a href="https://www.ncbi.nlm.nih.gov/snp/${d.xrefs.id}" target="_blank">${d.xrefs.id}</a>, ${my_seq[d.residue_number-1]}${d.residue_number}${d.alternativeSequence}`)
 					.style("left", (event.pageX) + 10 + "px")
 					.style("top", (event.pageY - 28) + "px");
 			})
@@ -570,12 +572,12 @@ class ZChart extends ZFigure{
 		this.snps.transition()
 			.duration(timing)
 			.attr("transform", function(d){
-				if(extent && d.resid>domain[1]){
+				if(extent && d.residue_number>domain[1]){
 					var translation = ("translate("+ 2*width+", 147)")
-				}else if(extent && d.resid<domain[0]){
+				}else if(extent && d.residue_number<domain[0]){
 					var translation = ("translate(" + -width + ", 147)");
 				}else{
-					var translation = ("translate(" + (x(d.resid) + x.bandwidth()/2) + ", 147)");
+					var translation = ("translate(" + (x(d.residue_number) + x.bandwidth()/2) + ", 147)");
 				}
 				return translation
 			});
@@ -601,7 +603,7 @@ class ZChart extends ZFigure{
 			.attr("fill", "red")
 			.attr("opacity", "0.0")
 			.attr("class", "mutation_indicator")
-			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 150.5)")
+			.attr("transform", (d) => "translate(" + (x(d.residue_number) + x.bandwidth()/2) + ", 150.5)")
 
 		mutatecheckbox.addEventListener("change", function() {
 			if (mutatecheckbox.checked == true) {
@@ -639,12 +641,12 @@ class ZChart extends ZFigure{
 	this.mut_ind.transition()
 		.duration(timing)
 		.attr("transform", function(d){
-			if(extent && d.resid>domain[1]){
+			if(extent && d.residue_number>domain[1]){
 				var translation = ("translate("+ 2*width+", 148.5)")
-			}else if(extent && d.resid<domain[0]){
+			}else if(extent && d.residue_number<domain[0]){
 				var translation = ("translate(" + -width + ", 148.5)");
 			}else{
-				var translation = ("translate(" + (x(d.resid) + x.bandwidth()/2) + ", 148.5)");
+				var translation = ("translate(" + (x(d.residue_number) + x.bandwidth()/2) + ", 148.5)");
 			}
 			return translation
 		});
@@ -688,9 +690,9 @@ class ZHydropathy extends ZChart{
 		this.update_xAxis(x); // because there might have been a mutation
 		this.bars.transition()
 			.duration(timing)
-			.attr("y", d => y(d.hydropathy_3_window_mean))
+			.attr("y", d => y(d.residue_smoothed_hydropathy))
 			.attr("fill", "grey")
-			.attr("height", d => this.HEIGHT - y(d.hydropathy_3_window_mean));
+			.attr("height", d => this.HEIGHT - y(d.residue_smoothed_hydropathy));
 
 		return this;
 	}
@@ -725,15 +727,15 @@ class ZHydropathy extends ZChart{
 		this.bars
 		  .transition().duration(timing)
 		  .attr("x", function (d) { 
-			if(extent && d.resid>domain[1]){
+			if(extent && d.residue_number>domain[1]){
 				return 2*width
-			}else if(extent && d.resid<domain[0]){
+			}else if(extent && d.residue_number<domain[0]){
 				return -width;
 			}else{
-				return x(d.resid); 
+				return x(d.residue_number); 
 			}
 		  })
-		  .attr("y", function (d) { return y(d.hydropathy_3_window_mean); } )
+		  .attr("y", function (d) { return y(d.residue_smoothed_hydropathy); } )
 		  .attr("width", x.bandwidth());
 	}
 	
@@ -805,8 +807,8 @@ class ZblobChart extends ZChart {
 		this.update_xAxis(x); // because there migh have been a mutation
 		this.bars.transition()
 			.duration(timing)
-			.attr("y", (d) => y(d.domain_to_numbers))
-			.attr("height", (d) => this.HEIGHT - y(d.domain_to_numbers))
+			.attr("y", (d) => y(d.residue_blob_type_to_numbers))
+			.attr("height", (d) => this.HEIGHT - y(d.residue_blob_type_to_numbers))
 			.attr("fill", (d) => d[figID_to_var[this.figID]]);
 		
 		// Update/add the corresponding skyline, in a potentially ugly way
@@ -833,12 +835,12 @@ class ZblobChart extends ZChart {
 		}
 
 		// Start the line in the correct spot
-		let points = [{resid: data[0].resid, height: data[0].domain_to_numbers}];
+		let points = [{resid: data[0].resid, height: data[0].residue_blob_type_to_numbers}];
 
 		// Find the edges of each "skyscraper"
 		for(let i = 1; i < data.length; i++){
-			let last_res = data[i-1].domain_to_numbers;
-			let this_res = data[i].domain_to_numbers;
+			let last_res = data[i-1].residue_blob_type_to_numbers;
+			let this_res = data[i].residue_blob_type_to_numbers;
 			let resid = data[i].resid;
 			if (last_res != this_res) {
 				points.push({resid: resid, height: last_res});
@@ -849,7 +851,7 @@ class ZblobChart extends ZChart {
 		// Last line segment - add an extraneous data point to signify this
 		const last_resid = data[data.length-1].resid;
 		points.push({resid: last_resid,
-			height: data[data.length-1].domain_to_numbers});
+			height: data[data.length-1].residue_blob_type_to_numbers});
 
 		this.skyline = this.svg.append('g').classed('skyline', true).attr("id", "skyline");
 		this.skyline.append("path")
@@ -863,9 +865,9 @@ class ZblobChart extends ZChart {
 					// Extend the final line segment all the way to the right,
 					// if we are on that last extraneous data point
 					if(index == (points.length-1)) {
-						return x(d.resid) + x.bandwidth();
+						return x(d.residue_number) + x.bandwidth();
 					} else {
-						return x(d.resid);
+						return x(d.residue_number);
 					}
 				})
 				.y((d) => y(d.height)));
@@ -942,12 +944,12 @@ class ZblobChart extends ZChart {
 		this.bars
 		  .transition().duration(timing)
 		  .attr("x", function (d) { 
-			if(extent && d.resid>domain[1]){
+			if(extent && d.residue_number>domain[1]){
 				return 2*width
-			}else if(extent && d.resid<domain[0]){
+			}else if(extent && d.residue_number<domain[0]){
 				return -width;
 			}else{
-				return x(d.resid); 
+				return x(d.residue_number); 
 			}
 		  })
 		  .attr("width", x.bandwidth());

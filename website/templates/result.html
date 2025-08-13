@@ -1,16 +1,23 @@
 {% extends 'common.html' %}
 
 {% block css %}
+<script>console.log("Up and running 0: Results.html is loaded")</script>
 <style> @import "static/style.css"; </style>
 <style> @import "static/zoomStyle.css"; </style>
+<script>console.log("Up and running 0.1: style.css is loaded")</script>
 <style> @import "static/molstar_plugin/node_modules/molstar/build/viewer/molstar.css"; </style>
+<script>console.log("Up and running 0.2: molstar.css is loaded")</script>
 {% endblock %}
 
 {% block scripts %}
+<script>console.log("Up and running 0.3: everything up until d3js is loaded")</script>
 <script src="https://d3js.org/d3.v6.js"></script>
+<script>console.log("Up and running 0.4: Everything up until figure.js is loaded")</script>
 <script src="static/figure.js"></script>
 <script>
+	console.log("Up and running 1: figure.js is loaded")
 $(document).ready( function() {
+	console.log("Up and running 2: $(document).ready is called")
 	//--------------Javascript for plotting in d3-------------
 	//tooltips
 	const hydropathy_tool_text = ("<p>Each residue is classified as hydrophobic or nonhydrophobic, depending on whether the Kyte–Dolittle hydropathy score is above or below the hydrophobicity threshold H<sup>*</sup>. H<sup>*</sup> is determined by the user, and the process of digitizatizing the residues based on whether their hydrophobicity falls above or below this cutoff is shown in the figure below:</p> <img src=\"/static/blobulation_digitization_figure.png\" width=\"225\" height=\"225\" align=\"center\">")
@@ -30,7 +37,6 @@ $(document).ready( function() {
 		.append("div") // declare the tooltip div 
 		.attr("class", "tooltip")
 		.style("opacity", 0);
-
 
 
 	// Call the function
@@ -64,6 +70,7 @@ $(document).ready( function() {
 	var selected_chain = {{ chain | tojson | safe }};
 	var molstarwindow_pre_text = {{ molstarwindow_pre_text | tojson | safe }};
 
+
 	molstar_warning_box = document.getElementById("molstar_warning_box");
 	if (pdb_string != '') {
 		molstar_warning_box.innerHTML = "Displaying " + molstarwindow_pre_text + selected_chain
@@ -71,7 +78,7 @@ $(document).ready( function() {
 		molstar_warning_box.innerHTML = "Use ID or PDB Entry in New Query to see a blobulated structure"
 	}
 	
-	localStorage.setItem("blobSeq", my_data.map(row => row.blobtype))
+	localStorage.setItem("blobSeq", my_data.map(row => row.residue_blob_type))
 	localStorage.setItem("pdbShift", pdb_shift)
 
 	localStorage.removeItem("pdb_file");
@@ -157,18 +164,22 @@ $(document).ready( function() {
 		$.post( "/postmethod", m_str , "json")
 			// When the parameters are changed, upate the PDB representation in molstar as well as the charts
 			.then(function(data) {
+				console.log('made it to postmethod')
 				var data_tmp = data.chart_data;
+				console.log(data_tmp)
 				var tt = JSON.stringify(eval("(" + data_tmp + ")"));
 				var data_obj = JSON.parse(tt);
 				update_Charts(figs, data_obj);
 				localStorage.removeItem("blobSeq")
-				localStorage.setItem("blobSeq", data_obj.map(row => row.blobtype))
+				localStorage.setItem("blobSeq", data_obj.map(row => row.residue_blob_type))
 			});
 	};
 
 
 	// Drawing the plots to be displayed on the result page
 	function draw(data) {
+		console.log("draw function")
+		console.log(data)
 		const my_snp = {{ my_snp | safe }};
 		const my_seq = {{ my_seq | safe }};
 		var   my_cut = {{ my_cut | safe }};
