@@ -525,14 +525,14 @@ class ZChart extends ZFigure{
 			.append("path")
 			.attr('d', triangle_symbol)
 			.attr("fill", 'black')
-			.attr("transform", (d) => "translate(" + (x(d.residue_number) + x.bandwidth()/2) + ", 147)")
+			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 147)")
 			.attr("id", "snp_triangles")
 			.on("click", function(event, d){
 				d3.select(this).attr("fill", "red")
 				if (mutatecheckbox.checked == true){
 					mutatecheckbox.click().duration(25);
 				};
-				document.getElementById("snp_id").value = d.residue_number;
+				document.getElementById("snp_id").value = d.resid;
 				document.getElementById("residue_type").value = d.alternativeSequence;
 				mutatecheckbox.click().duration(50);
 			})
@@ -544,7 +544,7 @@ class ZChart extends ZFigure{
 					.on("start", () => tooltip_snps.style("display", "block"))
 					.duration(100)
 					.style("opacity", 0.9);
-				tooltip_snps.html(`<a href="https://www.ncbi.nlm.nih.gov/snp/${d.xrefs.id}" target="_blank">${d.xrefs.id}</a>, ${my_seq[d.residue_number-1]}${d.residue_number}${d.alternativeSequence}`)
+				tooltip_snps.html(`<a href="https://www.ncbi.nlm.nih.gov/snp/${d.xrefs.id}" target="_blank">${d.xrefs.id}</a>, ${my_seq[d.resid-1]}${d.resid}${d.alternativeSequence}`)
 					.style("left", (event.pageX) + 10 + "px")
 					.style("top", (event.pageY - 28) + "px");
 			})
@@ -570,12 +570,12 @@ class ZChart extends ZFigure{
 		this.snps.transition()
 			.duration(timing)
 			.attr("transform", function(d){
-				if(extent && d.residue_number>domain[1]){
+				if(extent && d.resid>domain[1]){
 					var translation = ("translate("+ 2*width+", 147)")
-				}else if(extent && d.residue_number<domain[0]){
+				}else if(extent && d.resid<domain[0]){
 					var translation = ("translate(" + -width + ", 147)");
 				}else{
-					var translation = ("translate(" + (x(d.residue_number) + x.bandwidth()/2) + ", 147)");
+					var translation = ("translate(" + (x(d.resid) + x.bandwidth()/2) + ", 147)");
 				}
 				return translation
 			});
@@ -601,7 +601,7 @@ class ZChart extends ZFigure{
 			.attr("fill", "red")
 			.attr("opacity", "0.0")
 			.attr("class", "mutation_indicator")
-			.attr("transform", (d) => "translate(" + (x(d.residue_number) + x.bandwidth()/2) + ", 150.5)")
+			.attr("transform", (d) => "translate(" + (x(d.resid) + x.bandwidth()/2) + ", 150.5)")
 
 		mutatecheckbox.addEventListener("change", function() {
 			if (mutatecheckbox.checked == true) {
@@ -639,12 +639,12 @@ class ZChart extends ZFigure{
 	this.mut_ind.transition()
 		.duration(timing)
 		.attr("transform", function(d){
-			if(extent && d.residue_number>domain[1]){
+			if(extent && d.resid>domain[1]){
 				var translation = ("translate("+ 2*width+", 148.5)")
-			}else if(extent && d.residue_number<domain[0]){
+			}else if(extent && d.resid<domain[0]){
 				var translation = ("translate(" + -width + ", 148.5)");
 			}else{
-				var translation = ("translate(" + (x(d.residue_number) + x.bandwidth()/2) + ", 148.5)");
+				var translation = ("translate(" + (x(d.resid) + x.bandwidth()/2) + ", 148.5)");
 			}
 			return translation
 		});
