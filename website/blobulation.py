@@ -146,7 +146,6 @@ def index():
                         tag, data = future.result()
                         fetched_data[tag] = data
                     except ValueError as e:
-                        # print(f"Task generated exception: {e}")
                         fetched_data[tag] = None
                 
             # At this point fetched data is full of either our data, or Nones for each thing we called
@@ -238,7 +237,7 @@ def index():
             window = 3 
             session['sequence'] = str(my_seq) #set the current sequence variable
             my_initial_df = compute(
-                str(my_seq), float(0.4), 4, window=window, disorder_residues=disorder_residues
+                str(my_seq), float(0.4), 4, smoothing_window_length=window, disorder_residues=disorder_residues
             )
             #define the data frame (df)
             df = my_initial_df
@@ -256,8 +255,8 @@ def index():
                     my_uni_id_linked= "ID: <a href=https://www.uniprot.org/uniprotkb/" + user_uniprot_id + ' target="_blank">' + user_uniprot_id + '</a>',
                     my_seq="'%s'" % my_seq,
                     my_seq_download="%s" % my_seq,
-                    domain_threshold=4,
-                    domain_threshold_max=len(str(my_seq)),
+                    blob_length_minimum=4,
+                    blob_length_minimum_max=len(str(my_seq)),
                     my_disorder = str(disorder_residues).strip('[]'),
                     activetab = '#result-tab',
                     my_name = user_uniprot_name,
@@ -272,7 +271,6 @@ def index():
 
         ## If we have a pdb upload
         elif "action_p" in request.form.to_dict():
-            print(request.form.to_dict)
             pdb_file = request.files["pdb_file"].read()
             chain = request.form['chain_select']
             current_datetime = str(datetime.datetime.now())
@@ -301,7 +299,7 @@ def index():
             # do the blobulation
             window = 3
             my_initial_df = compute(
-                str(my_seq), float(0.4), 4, window=window
+                str(my_seq), float(0.4), 4, smoothing_window_length=window
             )  # blobulation
             df = my_initial_df
             chart_data = df.round(3).to_dict(orient="records")
@@ -317,8 +315,8 @@ def index():
                 my_uni_id_stripped="ID: " + form.seq_name.data,
                 my_seq="'%s'" % my_seq,
                 my_seq_download="%s" % my_seq,
-                domain_threshold=4,
-                domain_threshold_max=len(str(my_seq)),
+                blob_length_minimum=4,
+                blob_length_minimum_max=len(str(my_seq)),
                 my_disorder = '0',
                 activetab = '#result-tab',
                 molstarwindow_pre_text = 'chain: ',
@@ -353,7 +351,7 @@ def index():
             # do the blobulation
             window = 3
             my_initial_df = compute(
-                str(my_seq), float(0.4), 4, window=window
+                str(my_seq), float(0.4), 4, smoothing_window_length=window
             )  # blobulation
             df = my_initial_df
             chart_data = df.round(3).to_dict(orient="records")
@@ -370,8 +368,8 @@ def index():
                 my_uni_id_stripped="ID: " + form.seq_name.data,
                 my_seq="'%s'" % my_seq,
                 my_seq_download="%s" % my_seq,
-                domain_threshold=4,
-                domain_threshold_max=len(str(my_seq)),
+                blob_length_minimum=4,
+                blob_length_minimum_max=len(str(my_seq)),
                 my_disorder = '0',
                 activetab = '#result-tab',
                 molstarwindow_pre_text = '',
@@ -459,11 +457,11 @@ def extract_chain(chain, temporary_pdb_file, io, structure):
 
 @app.route('/api/query', methods=['GET'])
 def api_id():
-    """This can be used for api calling {blobulator_link}/api/query?my_seq=AAAA&domain_threshold=24&cutoff=0.5&my_disorder=2,3"""
+    """This can be used for api calling {blobulator_link}/api/query?my_seq=AAAA&blob_length_minimum=24&hydropathy_cutoff=0.5&my_disorder=2,3"""
     my_seq  = str(request.args['my_seq'])
-    hydro_scale = str(request.args['hydro_scale'])
-    domain_threshold  = request.args['domain_threshold']
-    cutoff  = request.args['cutoff']
+    hydropathy_scale = str(request.args['hydropathy_scale'])
+    blob_length_minimum  = request.args['blob_length_minimum']
+    hydropathy_cutoff  = request.args['hydropathy_cutoff']
     my_disorder  = request.args['my_disorder']
     #print (my_disorder.split(","))
     my_disorder = list(map(int, my_disorder.split(",")))
@@ -471,9 +469,9 @@ def api_id():
     window = 3
     my_initial_df = compute(
         str(my_seq),
-        float(cutoff),
-        float(domain_threshold),
-        window=window,
+        float(hydropathy_cutoff),
+        float(blob_length_minimum),
+        smoothing_window_length=window,
         disorder_residues = list(my_disorder),
     )  # blobulation
     df = my_initial_df
@@ -487,25 +485,25 @@ def api_id():
 def get_post():
     """This method is used to update the data when the slider is moved in index.html"""
     my_seq  = request.form['my_seq']
-    domain_threshold  = request.form['domain_threshold']
-    cutoff  = request.form['cutoff']
-    hydro_scale = request.form['hydro_scale']
+    blob_length_minimum  = request.form['domain_threshold']
+    hydropathy_cutoff  = request.form['cutoff']
+    hydropathy_scale = request.form['hydro_scale']
     my_disorder  = request.form['my_disorder']
     my_disorder  = list(map(int, my_disorder.split(",")))
     window = 3
     my_initial_df = compute(
         str(my_seq),
-        float(cutoff),
-        float(domain_threshold),
-        str(hydro_scale),
-        window=window,
+        float(hydropathy_cutoff),
+        float(blob_length_minimum),
+        str(hydropathy_scale),
+        smoothing_window_length=window,
         disorder_residues = list(my_disorder),
     )  # blobulation
     df = my_initial_df
     #df = df.drop(range(0, 1))
     chart_data = df.round(3).to_dict(orient="records")
     chart_data = json.dumps(chart_data, indent=2)
-    #print (jsonify(chart_data))
+    # print (jsonify(chart_data))
     data = {"chart_data": chart_data}
     return (data)
 
@@ -515,19 +513,18 @@ def get_post():
 def calc_json():
     """This method is used to blobulate and adds the data to data download option"""
     form = InputForm(request.form) #reads the user input
-    #print(request.form)
     user_input = form.uniprot_id.data.splitlines()
     my_seq  = request.form['my_seq']
-    domain_threshold  = request.form['domain_threshold']
-    cutoff  = request.form['cutoff']
+    blob_length_minimum  = request.form['domain_threshold']
+    hydropathy_cutoff  = request.form['cutoff']
     my_disorder  = request.form['my_disorder']
     my_disorder  = list(map(int, my_disorder.split(",")))
     window = 3
     my_initial_df = compute(
         str(my_seq),
-        float(cutoff),
-        float(domain_threshold),
-        window=window,
+        float(hydropathy_cutoff),
+        float(blob_length_minimum),
+        smoothing_window_length=window,
         disorder_residues = list(my_disorder),
     )  # blobulation
     df = my_initial_df
@@ -548,16 +545,16 @@ def calc_plot():
     if request.method == "POST":
         #my_seq  = request.form['my_seq']
         my_seq = request.args['my_seq']
-        domain_threshold  = request.form['domain_threshold']
-        cutoff  = request.form['cutoff']
+        blob_length_minimum  = request.form['blob_length_minimum']
+        hydropathy_cutoff  = request.form['hydropathy_cutoff']
         my_disorder  = request.form['my_disorder']
         my_disorder  = list(map(int, my_disorder.split(",")))
         window = 3
         fig = compute(
             str(my_seq),
-            float(cutoff),
-            float(domain_threshold),
-            window=window, my_plot =True,disorder_residues = list(my_disorder)
+            float(hydropathy_cutoff),
+            float(blob_length_minimum),
+            smoothing_window_length=window, my_plot =True,disorder_residues = list(my_disorder)
         )  # blobulation
         output = io.BytesIO()
         FigureCanvasSVG(fig).print_svg(output)
@@ -566,17 +563,17 @@ def calc_plot():
     else:
         #my_seq  = request.form['my_seq']
         my_seq = session.get('sequence')
-        hydro_scale = request.args['hydro_scale']
-        domain_threshold  = request.args['domain_threshold']
-        cutoff  = request.args['cutoff']
+        hydropathy_scale = request.args['hydropathy_scale']
+        blob_length_minimum  = request.args['blob_length_minimum']
+        hydropathy_cutoff  = request.args['hydropathy_cutoff']
         my_disorder  = [0]
         window = 3
         fig = compute(
             str(my_seq),
-            float(cutoff),
-            hydro_scale,
-            float(domain_threshold),
-            window=window, my_plot =True,disorder_residues = list(my_disorder)
+            float(hydropathy_cutoff),
+            hydropathy_scale,
+            float(blob_length_minimum),
+            smoothing_window_length=window, my_plot =True,disorder_residues = list(my_disorder)
         )  # blobulation
         output_svg = io.BytesIO()
         FigureCanvasSVG(fig).print_svg(output_svg)
