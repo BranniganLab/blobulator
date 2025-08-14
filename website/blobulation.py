@@ -242,7 +242,6 @@ def index():
             #define the data frame (df)
             df = my_initial_df
             chart_data = df.round(3).to_dict(orient="records")
-            print(chart_data[0])
             chart_data = json.dumps(chart_data, indent=2)
             data = {"chart_data": chart_data}
             shift = 0
@@ -356,7 +355,6 @@ def index():
             )  # blobulation
             df = my_initial_df
             chart_data = df.round(3).to_dict(orient="records")
-            print(chart_data)
             chart_data = json.dumps(chart_data, indent=2)
             data = {"chart_data": chart_data}
             shift = 0
@@ -487,7 +485,6 @@ def api_id():
 def get_post():
     """This method is used to update the data when the slider is moved in index.html"""
     my_seq  = request.form['my_seq']
-    print(my_seq)
     blob_length_minimum  = request.form['blob_length_minimum']
     hydropathy_cutoff  = request.form['hydropathy_cutoff']
     hydropathy_scale = request.form['hydropathy_scale']
