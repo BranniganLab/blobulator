@@ -32,11 +32,8 @@ $(document).ready( function() {
 		.style("opacity", 0);
 
 
-
 	// Call the function
 	updateHydroscaleTicks(sel_hydro_scale)
-
-	// Add event listeners for each of the ticks, on click update the hydropathy input and slider
 
 
 	// updates the slider/box value entered by the user
@@ -68,10 +65,10 @@ $(document).ready( function() {
 	if (pdb_string != '') {
 		molstar_warning_box.innerHTML = "Displaying " + molstarwindow_pre_text + selected_chain
 	} else {
-		molstar_warning_box.innerHTML = "Drag and drop a pdb corresponding to this protein below to view blobs in a 3D structure!"
+		molstar_warning_box.innerHTML = "Use ID or PDB Entry in New Query to see a blobulated structure"
 	}
 	
-	localStorage.setItem("blobSeq", my_data.map(row => row.blobtype))
+	localStorage.setItem("blobSeq", my_data.map(row => row.residue_blob_type))
 	localStorage.setItem("pdbShift", pdb_shift)
 
 	localStorage.removeItem("pdb_file");
@@ -154,59 +151,17 @@ $(document).ready( function() {
 		var hydro_scale = document.getElementById("hydro_scales").value;
 		const m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, hydro_scale: hydro_scale, my_disorder: {{ my_disorder | tojson | safe }}};
 		$.post( "/postmethod", m_str , "json")
+			// When the parameters are changed, upate the PDB representation in molstar as well as the charts
 			.then(function(data) {
 				var data_tmp = data.chart_data;
 				var tt = JSON.stringify(eval("(" + data_tmp + ")"));
 				var data_obj = JSON.parse(tt)
 				update_Charts(figs, data_obj);
 				localStorage.removeItem("blobSeq")
-				localStorage.setItem("blobSeq", data_obj.map(row => row.blobtype))
-
+				localStorage.setItem("blobSeq", data_obj.map(row => row.residue_blob_type))
 			});
 	};
 
-	function doPDBUpdate(pdbFile, figs, data) {
-		const fileReader = new FileReader();
-		fileReader.onload = () => {
-			const fileContent = fileReader.result;
-			localStorage.setItem("pdb_file", fileContent);
-
-			// The replace() call is for \r\n from DOS/Windows files
-			const lines = fileContent.replace(/\r/g, '').split('\n');
-			let chains = new Set();
-			for(const line of lines) {
-				if(line.startsWith('ATOM')) {
-					// We use a magic number here because that is how Protein Data Bank defines it
-					var chainColumn = 21
-					chains.add(line[chainColumn].trim());
-				}
-			}
-			var pdbString = fileContent
-
-			let formData = new FormData();
-			formData.append("action_p", "upload_file")
-			formData.append("pdb_file", pdbFile);
-			formData.append("chain_select", "A");
-
-			$.ajax({
-				url: "/",
-				type: "POST",
-				data: formData,
-				processData: false,
-				contentType: false,
-				success: function(response) {
-					document.open();
-					document.write(response);
-					document.close();
-					
-				}
-			});b
-
-		};
-
-		fileReader.readAsText(pdbFile);
-
-	}
 
 	// Drawing the plots to be displayed on the result page
 	function draw(data) {
@@ -214,7 +169,7 @@ $(document).ready( function() {
 		const my_seq = {{ my_seq | safe }};
 		var   my_cut = {{ my_cut | safe }};
 		const my_disorder = {{ my_disorder | tojson | safe }};
-		const domain_threshold_max = {{ domain_threshold_max | safe }};
+		const domain_threshold_max = {{ blob_length_minimum_max | safe }};
 		if (my_disorder == "0") {
 			var snps = false
 		} else {
@@ -470,9 +425,9 @@ $(document).ready( function() {
 				<td>Minimum blob size:
 					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
 					</label> </td>
-					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> 
+					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ blob_length_minimum_max | safe }} value={{ blob_length_minimum | safe }}   step=1> 
 					</td>
-					<td style="width: 50%"><input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider1" step=1> </td>
+					<td style="width: 50%"><input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ blob_length_minimum_max | safe }} value={{ blob_length_minimum | safe }} class="myslider1" step=1> </td>
 				<td>&nbsp;</td></tr>
 				</div>
 
@@ -482,11 +437,9 @@ $(document).ready( function() {
 							var btn = document.getElementById("add_mut");
 							var $table = $("#results_table");
 							var trLast = $table.find("tr:last");
-							console.log(trLast[0])
 							var trNew = trLast.clone();
 							trNew.attr("id", "mutations_container" + row_count);
 							trLast.before(trNew);
-							console.log(trNew[0]);
 							row_count += 1
 							return this
 						}
