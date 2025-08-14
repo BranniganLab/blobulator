@@ -1,4 +1,5 @@
 source blobulation.tcl
+
 if [winfo exists .blob] {
 	wm deiconify $::blobulator::blobs
 	return
@@ -91,7 +92,7 @@ proc ::blobulator::GUI {} {
 
 	#Threhold grids
 	grid [label $::blobulator::blobs.thres -text "Thresholds" -height 1 ] -row 5 -column $::blobulator::thresholdColumn -sticky n -columnspan 1
-	set paraList [list Length: ::blobulator::Lmin 1 50 1 ::blobulator::sliderRow Hydrophobicity: ::blobulator::H .1 1 .01 ::blobulator::sliderRow]
+	set paraList [list Hydrophobicity: ::blobulator::H .1 1 .01 ::blobulator::sliderRow Length: ::blobulator::Lmin 1 50 1 ::blobulator::sliderRow ]
 	foreach { entry namedVariable min max interval SliderRow} $paraList {
 		set entryLabels [label $::blobulator::blobs.l_$entry -text $entry]
 		set entryVariable [entry $::blobulator::blobs.e_$entry -width $::blobulator::paraWidth -textvariable $namedVariable]
@@ -113,8 +114,8 @@ proc ::blobulator::GUI {} {
 	
 	#Button grids
 	grid [button $::blobulator::blobs.blobulate -text "Blobulate"  -width $::blobulator::buttonWidth -command {blobulation } ] -columnspan 3
-	grid [button $::blobulator::blobs.ldefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::lminDefault }] -padx 0 -pady 1 -row 7 -columnspan 1 -column $::blobulator::defaultButtonColumn -sticky w
-	grid [button $::blobulator::blobs.hdefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::hDefault }] -padx 0 -pady 1 -row 9 -columnspan 1 -column $::blobulator::defaultButtonColumn -sticky w
+	grid [button $::blobulator::blobs.hdefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::hDefault }] -padx 0 -pady 1 -row 7 -columnspan 1 -column $::blobulator::defaultButtonColumn -sticky w
+	grid [button $::blobulator::blobs.ldefault -text "Default" -width $::blobulator::defaultButtonWidth -command {::blobulator::lminDefault }] -padx 0 -pady 1 -row 9 -columnspan 1 -column $::blobulator::defaultButtonColumn -sticky w
 	grid [button $::blobulator::blobs.clear -text "Clear representations" -width $::blobulator::buttonWidth -command {::blobulator::blobClear $::blobulator::MolID}] -column 0 -columnspan 3
 	bind $::blobulator::blobs.dmnu2 <<ComboboxSelected>> {hydropathyScaleDropDownMenu }
 	

@@ -154,6 +154,7 @@ $(document).ready( function() {
 		var hydro_scale = document.getElementById("hydro_scales").value;
 		const m_str = {my_seq: my_seq, domain_threshold: d_value, cutoff: selectedValue, hydro_scale: hydro_scale, my_disorder: {{ my_disorder | tojson | safe }}};
 		$.post( "/postmethod", m_str , "json")
+			// When the parameters are changed, upate the PDB representation in molstar as well as the charts
 			.then(function(data) {
 				var data_tmp = data.chart_data;
 				var tt = JSON.stringify(eval("(" + data_tmp + ")"));
