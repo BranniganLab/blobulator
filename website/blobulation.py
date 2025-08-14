@@ -485,9 +485,9 @@ def api_id():
 def get_post():
     """This method is used to update the data when the slider is moved in index.html"""
     my_seq  = request.form['my_seq']
-    blob_length_minimum  = request.form['blob_length_minimum']
-    hydropathy_cutoff  = request.form['hydropathy_cutoff']
-    hydropathy_scale = request.form['hydropathy_scale']
+    blob_length_minimum  = request.form['domain_threshold']
+    hydropathy_cutoff  = request.form['cutoff']
+    hydropathy_scale = request.form['hydro_scale']
     my_disorder  = request.form['my_disorder']
     my_disorder  = list(map(int, my_disorder.split(",")))
     window = 3
@@ -515,8 +515,8 @@ def calc_json():
     form = InputForm(request.form) #reads the user input
     user_input = form.uniprot_id.data.splitlines()
     my_seq  = request.form['my_seq']
-    blob_length_minimum  = request.form['blob_length_minimum']
-    hydropathy_cutoff  = request.form['hydropathy_cutoff']
+    blob_length_minimum  = request.form['domain_threshold']
+    hydropathy_cutoff  = request.form['cutoff']
     my_disorder  = request.form['my_disorder']
     my_disorder  = list(map(int, my_disorder.split(",")))
     window = 3
