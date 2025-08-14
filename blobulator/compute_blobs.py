@@ -154,9 +154,6 @@ def residue_blob_type_to_numbers(blob_properties_array):
     else:
         return 0.4
 
-
-
-
 # ..........................Define phase diagram.........................................................#
 def lookup_color_das_pappu(blob_properties_array):
     """
@@ -202,7 +199,6 @@ def lookup_color_das_pappu(blob_properties_array):
             "Found inaccessible region of phase diagram. Numerical error"
         )
 
-
 def lookup_number_das_pappu(blob_properties_array):
     """
     A function to assign numerical values to blobs based on their Das-Pappu class
@@ -247,9 +243,7 @@ def lookup_number_das_pappu(blob_properties_array):
             "Found inaccessible region of phase diagram. Numerical error"
         )
 
-
 # ..........................Define colors for each blob type.........................................................#
-
 def lookup_color_blob(blob_properties_array):
     """
     A function that colors blobs based on their blob types
@@ -291,7 +285,6 @@ def lookup_number_uversky(blob_properties_array):
         return distance 
 
 # ..........................Define NCPR.........................................................#
-
 def lookup_color_ncpr(blob_properties_array):
 
     """
@@ -313,7 +306,6 @@ def lookup_color_ncpr(blob_properties_array):
     
     returned_rgb = matplotlib.colors.to_rgba(cmap(norm(fraction)))
     return "rgb(" + str(returned_rgb[0] * 255) + "," + str(returned_rgb[1] * 255) + "," + str(returned_rgb[2] * 255) + ")"
-
 
 fname = blobulator_path.joinpath("uverskyCMap.csv")
 uverskyDict = pd.read_csv(fname, index_col=0)
@@ -540,7 +532,7 @@ def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_
             Arguments:
                 hydropath(int): The hydropathy for a given residue
 
-            NOTE: This function makes sue of the center=True pandas rolling argument to ensure the residue in question is at the center of smoothing calculation
+            NOTE: This function makes sure of the center=True pandas rolling argument to ensure the residue in question is at the center of smoothing calculation
             It is important to run the regression test to check that the smoothed hydropathy is expected (see github Wiki/Regression Checklist for instructions on how to perform this test."""
         residue_smoothed_hydropathy = residue.rolling(smoothing_window_length, min_periods=0, center=True).mean()
         return residue_smoothed_hydropathy
@@ -564,7 +556,7 @@ def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_
     df["hydropathy_cutoff"] = hydropathy_cutoff
     df["blob_length_minimum"] = blob_length_minimum
 
-    #........................calcutes three residue moving window mean............................#
+    #........................calculates three residue moving window mean............................#
     df["residue_smoothed_hydropathy"] = calculate_smoothed_hydropathy(df["residue_hydropathy"], smoothing_window_length)
     df["hydropathy_digitized"] = [ 1 if x > hydropathy_cutoff else 0 if np.isnan(x)  else -1 for x in df["residue_smoothed_hydropathy"]]
     #define continous stretch of residues
@@ -575,7 +567,6 @@ def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_
     df["residue_blob_type"] = ["h" if (x >= blob_length_minimum and y == 1) else "t" if y==0  else "p" for x, y in zip(df["residue_blob_type_pre"], df["hydropathy_digitized"].astype(int)) ]    
     df["residue_blob_type_pre"] = (df["residue_blob_type"].groupby(df["residue_blob_type"].ne(df["residue_blob_type"].shift()).cumsum()).transform("count"))  
     df["residue_blob_type"] = ["t" if y=="t" else y if (x >= blob_length_minimum) else "s" for x, y in zip(df["residue_blob_type_pre"], df["residue_blob_type"]) ]
-
     df["residue_blob_type_to_numbers"] = df[["residue_blob_type", "residue_hydropathy"]].apply(
         residue_blob_type_to_numbers, axis=1)
 
@@ -583,8 +574,6 @@ def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_
     residue_blob_type_list = df["residue_blob_type"].to_list()
     df["residue_blob_groups"] = pd.Series(name_blobs(residue_blob_type_list))
     df.fillna({"residue_blob_groups": "s"}, inplace=True)
-
-
 
     # ..........................Define the properties of each identified blob.........................................................#
     blobs = df.groupby(["residue_blob_groups"])
@@ -597,33 +586,31 @@ def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_
     df["blob_fraction_of_positively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, 1))
     df["blob_fraction_of_negatively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, -1))
     df["blob_fraction_of_charged_residues"] = df["blob_fraction_of_negatively_charged_residues"] + df["blob_fraction_of_positively_charged_residues"]
-    df["blob_predicted_enrichment_of_dsnps"] = df[["blob_length", "blob_minimum_hydrophobicity", "residue_blob_type"]].apply(lambda x: lookup_number_predicted_dsnp_enrichment(x), axis=1)
+    df["blob_predicted_enrichment_of_dsnps"] = df[["blob_length", "blob_minimum_hydrophobicity", "residue_blob_type"]].apply(
+        lambda x: lookup_number_predicted_dsnp_enrichment(x), axis=1)
+    
     df["blob_daspappu_phase"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues", "blob_fraction_of_positively_charged_residues", "blob_fraction_of_negatively_charged_residues"]].apply(
-        lookup_number_das_pappu, axis=1
-    )
+        lookup_number_das_pappu, axis=1)
+    
     df["blob_distance_from_uversky_boundary_line"] = df[["blob_net_charge_per_residue", "blob_hydrophobicity"]].apply(
-        lookup_number_uversky, axis=1
-    )
-
+        lookup_number_uversky, axis=1)
 
     df["color_for_blobtype_track"] = df[["residue_blob_type", "residue_hydropathy"]].apply(
         lookup_color_blob, axis=1)
     
-    df["color_for_dsnp_enrichment_track"] = df[["blob_length", "blob_minimum_hydrophobicity", "residue_blob_type"]].apply(lookup_color_predicted_dsnp_enrichment, axis=1)
+    df["color_for_dsnp_enrichment_track"] = df[["blob_length", "blob_minimum_hydrophobicity", "residue_blob_type"]].apply(
+        lookup_color_predicted_dsnp_enrichment, axis=1)
     
     df["color_for_daspappu_track"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues", "blob_fraction_of_positively_charged_residues", "blob_fraction_of_negatively_charged_residues"]].apply(
-        lookup_color_das_pappu, axis=1
-    )
+        lookup_color_das_pappu, axis=1)
 
     df["color_for_NCPR_track"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues"]].apply(
-        lookup_color_ncpr, axis=1
-    )
+        lookup_color_ncpr, axis=1)
+    
     df["color_for_uversky_track"] = df[["blob_distance_from_uversky_boundary_line", "blob_fraction_of_charged_residues"]].apply(
-        lookup_color_uversky, axis=1
-    )
+        lookup_color_uversky, axis=1)
 
     df["color_for_disorder_predictor_track"] = df[["blob_disorder", "blob_fraction_of_charged_residues"]].apply(
-        lookup_color_disorder, axis=1
-    )
+        lookup_color_disorder, axis=1)
 
     return df
