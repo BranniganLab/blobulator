@@ -35,8 +35,6 @@ $(document).ready( function() {
 	// Call the function
 	updateHydroscaleTicks(sel_hydro_scale)
 
-	// Add event listeners for each of the ticks, on click update the hydropathy input and slider
-
 
 	// updates the slider/box value entered by the user
 	const cutoff_slider_value = document.getElementById("cutoff_user");
@@ -423,9 +421,9 @@ $(document).ready( function() {
 				<td>Minimum blob size:
 					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
 					</label> </td>
-					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }}   step=1> 
+					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ blob_length_minimum_max | safe }} value={{ blob_length_minimum | safe }}   step=1> 
 					</td>
-					<td style="width: 50%"><input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ domain_threshold_max | safe }} value={{ domain_threshold | safe }} class="myslider1" step=1> </td>
+					<td style="width: 50%"><input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ blob_length_minimum_max | safe }} value={{ blob_length_minimum | safe }} class="myslider1" step=1> </td>
 				<td>&nbsp;</td></tr>
 				</div>
 
