@@ -700,6 +700,9 @@ def assign_colors(df, color_types=None):
 def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_doolittle",
               smoothing_window_length=3, disorder_residues=[], include_colors=True, color_types=None):
     """Wrapper function that runs all steps. By default returns full dataframe identical to original compute()."""
+    df["smoothing_window_length"] = smoothing_window_length
+    df["hydropathy_cutoff"] = hydropathy_cutoff
+    df["blob_length_minimum"] = blob_length_minimum
     df = build_sequence_df(seq, disorder_residues, hydropathy_scale)
     df = smooth_and_digitize(df, hydropathy_cutoff, smoothing_window_length)
     df = assign_blob_types(df, blob_length_minimum)
