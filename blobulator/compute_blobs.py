@@ -510,6 +510,17 @@ def clean_df(df):
 
     return df
 
+def calculate_smoothed_hydropathy(residue, smoothing_window_length):
+    """Calculates the smoothed hydropathy of a given residue with its two ajacent neighbors
+        
+        Arguments:
+            hydropath(int): The hydropathy for a given residue
+
+        NOTE: This function makes sure of the center=True pandas rolling argument to ensure the residue in question is at the center of smoothing calculation
+        It is important to run the regression test to check that the smoothed hydropathy is expected (see github Wiki/Regression Checklist for instructions on how to perform this test."""
+    residue_smoothed_hydropathy = residue.rolling(smoothing_window_length, min_periods=0, center=True).mean()
+    return residue_smoothed_hydropathy
+
 def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_doolittle", smoothing_window_length=3, disorder_residues=[]):
     """
     A function that runs the blobulation algorithm
@@ -526,16 +537,7 @@ def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_
         df (dataframe): A dataframe containing the output from blobulation
     """
 
-    def calculate_smoothed_hydropathy(residue, smoothing_window_length):
-        """Calculates the smoothed hydropathy of a given residue with its two ajacent neighbors
-            
-            Arguments:
-                hydropath(int): The hydropathy for a given residue
 
-            NOTE: This function makes sure of the center=True pandas rolling argument to ensure the residue in question is at the center of smoothing calculation
-            It is important to run the regression test to check that the smoothed hydropathy is expected (see github Wiki/Regression Checklist for instructions on how to perform this test."""
-        residue_smoothed_hydropathy = residue.rolling(smoothing_window_length, min_periods=0, center=True).mean()
-        return residue_smoothed_hydropathy
 
     window_factor = int((smoothing_window_length - 1) / 2)
     seq_start = 1  # starting resid for the seq
