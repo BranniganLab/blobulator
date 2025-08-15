@@ -698,16 +698,32 @@ def assign_colors(df, color_types=None):
     return df
 
 def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_doolittle",
-              smoothing_window_length=3, disorder_residues=[], include_colors=True, color_types=None):
-    """Wrapper function that runs all steps. By default returns full dataframe identical to original compute()."""
+            smoothing_window_length=3, disorder_residues=None, include_colors=True, color_types=None):
+    """Wrapper function that runs all steps. Returns a full dataframe identical to original compute()."""
+    if disorder_residues is None:
+        disorder_residues = []
+
+    # Step 1: Build initial dataframe
+    df = build_sequence_df(seq, disorder_residues, hydropathy_scale)
+
+    # Step 2: Smooth and digitize hydropathy
+    df = smooth_and_digitize(df, hydropathy_cutoff, smoothing_window_length)
+
+    # Step 3: Assign blob types
+    df = assign_blob_types(df, blob_length_minimum)
+
+    # Step 4: Compute blob properties
+    df = compute_blob_properties(df)
+
+    # Step 5: Optionally assign colors
+    if include_colors:
+        df = assign_colors(df, color_types)
+
+    # Step 6: Add metadata columns
     df["smoothing_window_length"] = smoothing_window_length
     df["hydropathy_cutoff"] = hydropathy_cutoff
     df["blob_length_minimum"] = blob_length_minimum
-    df = build_sequence_df(seq, disorder_residues, hydropathy_scale)
-    df = smooth_and_digitize(df, hydropathy_cutoff, smoothing_window_length)
-    df = assign_blob_types(df, blob_length_minimum)
-    df = compute_blob_properties(df)
-    if include_colors:
-        df = assign_colors(df, color_types)
-    return df
+    df["hydropathy_scale"] = hydropathy_scale
+    df["disorder_residues"] = [disorder_residues] * len(df)
 
+    return df
