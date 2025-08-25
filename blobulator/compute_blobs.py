@@ -62,7 +62,6 @@ c_norm = matplotlib.colors.Normalize(vmin=-0.3, vmax=0.3) #re-wrapping normaliza
 scalarMap = matplotlib.cm.ScalarMappable(norm=c_norm, cmap=cmap_uversky)
 cval = scalarMap.to_rgba(0)
 
-
 from string import ascii_lowercase 
 
 def divmod_base26(n):
@@ -510,6 +509,7 @@ def clean_df(df):
 
     return df
 
+# Modularized functions below
 def calculate_smoothed_hydropathy(residue, smoothing_window_length):
     """Calculates the smoothed hydropathy of a given residue with its two ajacent neighbors
         
@@ -521,97 +521,24 @@ def calculate_smoothed_hydropathy(residue, smoothing_window_length):
     residue_smoothed_hydropathy = residue.rolling(smoothing_window_length, min_periods=0, center=True).mean()
     return residue_smoothed_hydropathy
 
-# def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_doolittle", smoothing_window_length=3, disorder_residues=[]):
-    """
-    A function that runs the blobulation algorithm
+def build_sequence_df(seq, disorder_residues=[], hydropathy_scale="kyte_doolittle"):
+    """Create the base dataframe with residue-level properties for a protein sequence.
 
     Arguments:
-        seq (str): A sequence of amino acids
-        cutoff (float): the user-selected cutoff
-        blob_length_minimum (int): the minimum length cutoff
-        hydropathy_scale (str): the selected hydrophobicity scale
-        window (int): the smoothing window for calculating residue hydrophobicity
-        disorder_residues (list): known disorder values for each residue
+        seq (str): The amino acid sequence of a protein.
+        disorder_residues (list of int, optional): List of residue numbers (1-indexed) 
+            that are considered disordered. Defaults to an empty list.
+        hydropathy_scale (str, optional): Name of the hydropathy scale to use 
+            (e.g., "kyte_doolittle"). Defaults to "kyte_doolittle".
 
     Returns:
-        df (dataframe): A dataframe containing the output from blobulation
+        pd.DataFrame: A dataframe with the following columns:
+            - residue_number: 1-indexed position of each residue
+            - residue_name: Single-letter amino acid code
+            - residue_disorder: 1 if the residue is disordered, else 0
+            - residue_hydropathy: Hydropathy value from the chosen scale
+            - residue_charge: Integer charge of the residue
     """
-
-    window_factor = int((smoothing_window_length - 1) / 2)
-    seq_start = 1  # starting resid for the seq
-    residue_range = range(seq_start, len(seq) + 1 + seq_start)
-
-    residue_name = []
-    residue_number = []
-    for i, j in zip(seq, residue_range):
-        residue_name.append(str(i))
-        residue_number.append(j)
-
-    #........................Make a dataframe for the sequence............................#
-    df = pd.DataFrame({"residue_name": residue_name, "residue_number": residue_number,})
-
-    #........................Define blob properties............................#
-    df["residue_disorder"] = df["residue_number"].apply(lambda x: 1 if x in disorder_residues else 0 )
-    df["residue_hydropathy"] = [get_hydrophobicity(x, hydropathy_scale) for x in df["residue_name"]]
-    df["residue_charge"] = [properties_charge[x] for x in df["residue_name"]]           
-    df["residue_charge"] = df["residue_charge"].astype("int")
-    df["smoothing_window_length"] = smoothing_window_length
-    df["hydropathy_cutoff"] = hydropathy_cutoff
-    df["blob_length_minimum"] = blob_length_minimum
-
-    #........................Calculates three residue moving window mean............................#
-    df["residue_smoothed_hydropathy"] = calculate_smoothed_hydropathy(df["residue_hydropathy"], smoothing_window_length)
-    df["hydropathy_digitized"] = [ 1 if x > hydropathy_cutoff else 0 if np.isnan(x)  else -1 for x in df["residue_smoothed_hydropathy"]]
-   
-   #........................Define continous stretch of residues............................#
-    df["residue_blob_type_pre"] = (df["hydropathy_digitized"].groupby(df["hydropathy_digitized"].ne(df["hydropathy_digitized"].shift()).cumsum()).transform("count"))
-    df["hydropathy_digitized"] = [ 1 if x > hydropathy_cutoff else 0 if np.isnan(x)  else -1 for x in df["residue_smoothed_hydropathy"]]    
-
-    # ..........................Define residue_blob_types.........................................................#
-    df["residue_blob_type"] = ["h" if (x >= blob_length_minimum and y == 1) else "t" if y==0  else "p" for x, y in zip(df["residue_blob_type_pre"], df["hydropathy_digitized"].astype(int)) ]    
-    df["residue_blob_type_pre"] = (df["residue_blob_type"].groupby(df["residue_blob_type"].ne(df["residue_blob_type"].shift()).cumsum()).transform("count"))  
-    df["residue_blob_type"] = ["t" if y=="t" else y if (x >= blob_length_minimum) else "s" for x, y in zip(df["residue_blob_type_pre"], df["residue_blob_type"]) ]
-    df["residue_blob_type_to_numbers"] = df[["residue_blob_type", "residue_hydropathy"]].apply(
-        residue_blob_type_to_numbers, axis=1)
-
-    # ..........................Define residue_blob_type names.........................................................#
-    residue_blob_type_list = df["residue_blob_type"].to_list()
-    df["residue_blob_groups"] = pd.Series(name_blobs(residue_blob_type_list))
-    df.fillna({"residue_blob_groups": "s"}, inplace=True)
-
-    # ..........................Define the properties of each identified blob.........................................................#
-    blobs = df.groupby(["residue_blob_groups"])
-    df["blob_length"] = blobs["residue_number"].transform("count")
-    df["blob_hydrophobicity"] = blobs["residue_hydropathy"].transform("mean")
-    df["blob_minimum_hydrophobicity"] = blobs["residue_smoothed_hydropathy"].transform("min")
-    df["blob_net_charge_per_residue"] = blobs["residue_charge"].transform("mean")
-    df["blob_disorder"] = blobs["residue_disorder"].transform("mean")
-    df["blob_fraction_of_positively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, 1))
-    df["blob_fraction_of_negatively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, -1))
-    df["blob_fraction_of_charged_residues"] = df["blob_fraction_of_negatively_charged_residues"] + df["blob_fraction_of_positively_charged_residues"]
-    df["blob_predicted_enrichment_of_dsnps"] = df[["blob_length", "blob_minimum_hydrophobicity", "residue_blob_type"]].apply(
-        lambda x: lookup_number_predicted_dsnp_enrichment(x), axis=1)
-    df["blob_daspappu_phase"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues", "blob_fraction_of_positively_charged_residues", "blob_fraction_of_negatively_charged_residues"]].apply(
-        lookup_number_das_pappu, axis=1)
-    df["blob_distance_from_uversky_boundary_line"] = df[["blob_net_charge_per_residue", "blob_hydrophobicity"]].apply(
-        lookup_number_uversky, axis=1)
-    df["color_for_blobtype_track"] = df[["residue_blob_type", "residue_hydropathy"]].apply(
-        lookup_color_blob, axis=1)
-    df["color_for_dsnp_enrichment_track"] = df[["blob_length", "blob_minimum_hydrophobicity", "residue_blob_type"]].apply(
-        lookup_color_predicted_dsnp_enrichment, axis=1)
-    df["color_for_daspappu_track"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues", "blob_fraction_of_positively_charged_residues", "blob_fraction_of_negatively_charged_residues"]].apply(
-        lookup_color_das_pappu, axis=1)
-    df["color_for_NCPR_track"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues"]].apply(
-        lookup_color_ncpr, axis=1)
-    df["color_for_uversky_track"] = df[["blob_distance_from_uversky_boundary_line", "blob_fraction_of_charged_residues"]].apply(
-        lookup_color_uversky, axis=1)
-    df["color_for_disorder_predictor_track"] = df[["blob_disorder", "blob_fraction_of_charged_residues"]].apply(
-        lookup_color_disorder, axis=1)
-
-    return df
-
-def build_sequence_df(seq, disorder_residues=[], hydropathy_scale="kyte_doolittle"):
-    """Create the base dataframe with residues, numbers, hydropathy, charge, disorder."""
     residue_number = list(range(1, len(seq)+1))
     residue_name = list(seq)
 
@@ -628,7 +555,18 @@ def build_sequence_df(seq, disorder_residues=[], hydropathy_scale="kyte_doolittl
     return df
 
 def smooth_and_digitize(df, hydropathy_cutoff, smoothing_window_length=3):
-    """Compute smoothed hydropathy and digitized hydropathy for blob assignment."""
+    """Compute smoothed hydropathy and digitized hydropathy for blob assignment.
+
+    Arguments:
+        df (pd.DataFrame): DataFrame containing at least a column 'residue_hydropathy'.
+        hydropathy_cutoff (float): Threshold for classifying residues as hydrophobic (>cutoff), neutral (NaN), or hydrophilic (<cutoff).
+        smoothing_window_length (int, optional): Window length for smoothing hydropathy values. Default is 3.
+
+    Returns:
+        pd.DataFrame: Original DataFrame with two new columns:
+            - 'residue_smoothed_hydropathy': hydropathy values smoothed over the window.
+            - 'hydropathy_digitized': residues coded as 1 (hydrophobic), 0 (neutral/NaN), or -1 (hydrophilic) based on smoothed hydropathy.
+    """
     df["residue_smoothed_hydropathy"] = calculate_smoothed_hydropathy(df["residue_hydropathy"], smoothing_window_length)
     df["hydropathy_digitized"] = [1 if x > hydropathy_cutoff else 0 if np.isnan(x) else -1 
                                   for x in df["residue_smoothed_hydropathy"]]
@@ -637,14 +575,10 @@ def smooth_and_digitize(df, hydropathy_cutoff, smoothing_window_length=3):
 def assign_blob_types(df, blob_length_minimum):
     """Assign preliminary blob types ('h','p','t','s') and name blobs."""
     # continuous stretch lengths
-    df["residue_blob_type_pre"] = (df["hydropathy_digitized"]
-                                   .groupby(df["hydropathy_digitized"].ne(df["hydropathy_digitized"].shift()).cumsum())
-                                   .transform("count"))
+    df["residue_blob_type_pre"] = (df["hydropathy_digitized"].groupby(df["hydropathy_digitized"].ne(df["hydropathy_digitized"].shift()).cumsum()).transform("count"))
     df["residue_blob_type"] = ["h" if (x >= blob_length_minimum and y == 1) else "t" if y==0 else "p"
                                for x, y in zip(df["residue_blob_type_pre"], df["hydropathy_digitized"].astype(int))]
-    df["residue_blob_type_pre"] = (df["residue_blob_type"]
-                                   .groupby(df["residue_blob_type"].ne(df["residue_blob_type"].shift()).cumsum())
-                                   .transform("count"))
+    df["residue_blob_type_pre"] = (df["residue_blob_type"].groupby(df["residue_blob_type"].ne(df["residue_blob_type"].shift()).cumsum()).transform("count"))
     df["residue_blob_type"] = ["t" if y=="t" else y if (x >= blob_length_minimum) else "s"
                                for x, y in zip(df["residue_blob_type_pre"], df["residue_blob_type"])]
     df["residue_blob_type_to_numbers"] = df[["residue_blob_type", "residue_hydropathy"]].apply(residue_blob_type_to_numbers, axis=1)
@@ -666,13 +600,9 @@ def compute_blob_properties(df):
     df["blob_fraction_of_positively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, 1))
     df["blob_fraction_of_negatively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, -1))
     df["blob_fraction_of_charged_residues"] = df["blob_fraction_of_positively_charged_residues"] + df["blob_fraction_of_negatively_charged_residues"]
-    df["blob_predicted_enrichment_of_dsnps"] = df[["blob_length", "blob_minimum_hydrophobicity", "residue_blob_type"]].apply(
-        lambda x: lookup_number_predicted_dsnp_enrichment(x), axis=1)
-    df["blob_daspappu_phase"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues",
-                                    "blob_fraction_of_positively_charged_residues", "blob_fraction_of_negatively_charged_residues"]].apply(
-                                        lookup_number_das_pappu, axis=1)
-    df["blob_distance_from_uversky_boundary_line"] = df[["blob_net_charge_per_residue", "blob_hydrophobicity"]].apply(
-        lookup_number_uversky, axis=1)
+    df["blob_predicted_enrichment_of_dsnps"] = df[["blob_length", "blob_minimum_hydrophobicity", "residue_blob_type"]].apply(lambda x: lookup_number_predicted_dsnp_enrichment(x), axis=1)
+    df["blob_daspappu_phase"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues","blob_fraction_of_positively_charged_residues", "blob_fraction_of_negatively_charged_residues"]].apply(lookup_number_das_pappu, axis=1)
+    df["blob_distance_from_uversky_boundary_line"] = df[["blob_net_charge_per_residue", "blob_hydrophobicity"]].apply(lookup_number_uversky, axis=1)
     return df
 
 def assign_colors(df, color_types=None):
@@ -697,29 +627,29 @@ def assign_colors(df, color_types=None):
 
     return df
 
-def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_doolittle",
-            smoothing_window_length=3, disorder_residues=None, include_colors=True, color_types=None):
+# Wrapper function to build entire data frame
+def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_doolittle", smoothing_window_length=3, disorder_residues=None, include_colors=True, color_types=None):
     """Wrapper function that runs all steps. Returns a full dataframe identical to original compute()."""
     if disorder_residues is None:
         disorder_residues = []
 
-    # Step 1: Build initial dataframe
+    # Build initial dataframe
     df = build_sequence_df(seq, disorder_residues, hydropathy_scale)
 
-    # Step 2: Smooth and digitize hydropathy
+    # Smooth and digitize hydropathy
     df = smooth_and_digitize(df, hydropathy_cutoff, smoothing_window_length)
 
-    # Step 3: Assign blob types
+    # Assign blob types
     df = assign_blob_types(df, blob_length_minimum)
 
-    # Step 4: Compute blob properties
+    # Compute blob properties
     df = compute_blob_properties(df)
 
-    # Step 5: Optionally assign colors
+    # Assign colors
     if include_colors:
         df = assign_colors(df, color_types)
 
-    # Step 6: Add metadata columns
+    # Add data to columns
     df["smoothing_window_length"] = smoothing_window_length
     df["hydropathy_cutoff"] = hydropathy_cutoff
     df["blob_length_minimum"] = blob_length_minimum
