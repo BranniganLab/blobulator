@@ -59,16 +59,17 @@ async function createBlobRepresentation(plugin) {
         for (let i = 0; i < blobArray.length; i++) {
             var blobIndex = i + 1
             var nextArrayIndex = i + 1
-            if (blobArray[i] == 'h' && blobArray[nextArrayIndex] != 'p' && blobArray[nextArrayIndex] != 's') {
+            if (blobArray[i] == 'h') {
                 tempHArray.push(blobIndex + Number(shift))
-            }
-            else if (blobArray[i] == 'h') {
-                h_arr.push(tempHArray)
+                if (blobArray[nextArrayIndex] != 'h') {
+                    h_arr.push(tempHArray)
+                    var tempHArray: number[] = []
+                };
             }
             else if (blobArray[i] == 'p') {
                 p_arr.push(blobIndex + Number(shift))
             }
-            else if (blobArray[i] == 's') {
+            else {
                 s_arr.push(blobIndex+ Number(shift))
             };
         };
