@@ -511,33 +511,45 @@ def clean_df(df):
 
 # Modularized functions below
 def calculate_smoothed_hydropathy(residue, smoothing_window_length):
-    """Calculates the smoothed hydropathy of a given residue with its two ajacent neighbors
+    """
+    Calculates the smoothed hydropathy of a given residue with its two ajacent neighbors.
+    
+    Arguments:
+        residue (pandas.Series): The series of hydropathy values
+        smoothing_window_length (int): The number of residues to consider when calculating the smoothed hydropathy (Lmin)
+     
+    Returns:
+        residue_smoothed_hydropathy (pandas.Series): The smoothed hydropathy of the given residue
         
-        Arguments:
-            hydropath(int): The hydropathy for a given residue
+    Notes:
+    This function makes sure of the center=True pandas rolling argument to ensure the 
+    residue in question is at the center of smoothing calculation
+    It is important to run the regression test to check that the smoothed hydropathy is 
+    expected (see github Wiki/Regression Checklist for instructions on how to perform 
+    this test.
+    """
 
-        NOTE: This function makes sure of the center=True pandas rolling argument to ensure the residue in question is at the center of smoothing calculation
-        It is important to run the regression test to check that the smoothed hydropathy is expected (see github Wiki/Regression Checklist for instructions on how to perform this test."""
     residue_smoothed_hydropathy = residue.rolling(smoothing_window_length, min_periods=0, center=True).mean()
+
     return residue_smoothed_hydropathy
 
 def build_sequence_df(seq, disorder_residues=[], hydropathy_scale="kyte_doolittle"):
-    """Create the base dataframe with residue-level properties for a protein sequence.
+    """
+    This function takes a protein sequence and creates a pandas DataFrame with the
+    following columns:
+        - residue_number: 1-indexed position of each residue
+        - residue_name: Single-letter amino acid code
+        - residue_disorder: 1 if the residue is disordered, else 0
+        - residue_hydropathy: Hydropathy value from the chosen scale
+        - residue_charge: Integer charge of the residue
 
     Arguments:
         seq (str): The amino acid sequence of a protein.
-        disorder_residues (list of int, optional): List of residue numbers (1-indexed) 
-            that are considered disordered. Defaults to an empty list.
-        hydropathy_scale (str, optional): Name of the hydropathy scale to use 
-            (e.g., "kyte_doolittle"). Defaults to "kyte_doolittle".
+        disorder_residues (list of int, optional): List of residue numbers (1-indexed) that are considered disordered. Defaults to an empty list.
+        hydropathy_scale (str, optional): Name of the hydropathy scale to use (e.g., "kyte_doolittle"). Defaults to "kyte_doolittle".
 
     Returns:
-        pd.DataFrame: A dataframe with the following columns:
-            - residue_number: 1-indexed position of each residue
-            - residue_name: Single-letter amino acid code
-            - residue_disorder: 1 if the residue is disordered, else 0
-            - residue_hydropathy: Hydropathy value from the chosen scale
-            - residue_charge: Integer charge of the residue
+        df (pd.DataFrame): A dataframe with the above columns.
     """
     residue_number = list(range(1, len(seq)+1))
     residue_name = list(seq)
@@ -547,15 +559,26 @@ def build_sequence_df(seq, disorder_residues=[], hydropathy_scale="kyte_doolittl
         "residue_name": residue_name
     })
 
+    # Mark disordered residues as 1, else 0
     df["residue_disorder"] = df["residue_number"].apply(lambda x: 1 if x in disorder_residues else 0)
+    # Get hydropathy value from chosen scale
     df["residue_hydropathy"] = [get_hydrophobicity(r, hydropathy_scale) for r in df["residue_name"]]
+    # Get integer charge of each residue
     df["residue_charge"] = [properties_charge[r] for r in df["residue_name"]]
     df["residue_charge"] = df["residue_charge"].astype(int)
 
     return df
 
 def smooth_and_digitize(df, hydropathy_cutoff, smoothing_window_length=3):
-    """Compute smoothed hydropathy and digitized hydropathy for blob assignment.
+    """
+    Compute smoothed hydropathy and digitized hydropathy for blob assignment.
+
+    Smoothed hydropathy is the average of the hydropathy values over a window of
+    length `smoothing_window_length`. The digitized hydropathy is then assigned as
+    follows:
+        - hydrophobic: 1 if smoothed hydropathy > `hydropathy_cutoff`
+        - neutral: 0 if smoothed hydropathy is NaN
+        - hydrophilic: -1 if smoothed hydropathy < `hydropathy_cutoff`
 
     Arguments:
         df (pd.DataFrame): DataFrame containing at least a column 'residue_hydropathy'.
@@ -563,9 +586,9 @@ def smooth_and_digitize(df, hydropathy_cutoff, smoothing_window_length=3):
         smoothing_window_length (int, optional): Window length for smoothing hydropathy values. Default is 3.
 
     Returns:
-        pd.DataFrame: Original DataFrame with two new columns:
-            - 'residue_smoothed_hydropathy': hydropathy values smoothed over the window.
-            - 'hydropathy_digitized': residues coded as 1 (hydrophobic), 0 (neutral/NaN), or -1 (hydrophilic) based on smoothed hydropathy.
+        pd.DataFrame: The original DataFrame with two new columns:
+                        - 'residue_smoothed_hydropathy': hydropathy values smoothed over the window.
+                        - 'hydropathy_digitized': residues coded as 1 (hydrophobic), 0 (neutral/NaN), or -1 (hydrophilic) based on smoothed hydropathy.
     """
     df["residue_smoothed_hydropathy"] = calculate_smoothed_hydropathy(df["residue_hydropathy"], smoothing_window_length)
     df["hydropathy_digitized"] = [1 if x > hydropathy_cutoff else 0 if np.isnan(x) else -1 
@@ -573,11 +596,39 @@ def smooth_and_digitize(df, hydropathy_cutoff, smoothing_window_length=3):
     return df
 
 def assign_blob_types(df, blob_length_minimum):
-    """Assign preliminary blob types ('h','p','t','s') and name blobs."""
+    """
+    Assign preliminary blob types ('h','p','t','s') and name blobs.
+
+    We use three rules to assign blob types to each residue in the sequence:
+
+    1. If the residue is hydrophobic and part of a stretch of hydrophobic residues
+       of length >= blob_length_minimum, the blob type is 'h'.
+    2. If the residue is neutral, the blob type is 't'.
+    3. If the residue is hydrophilic and part of a stretch of hydrophilic residues
+       of length >= blob_length_minimum, the blob type is 'p'.
+    4. If the residue is hydrophilic and part of a stretch of hydrophilic residues
+       of length < blob_length_minimum, the blob type is 's'.
+
+    After assigning the blob types, we name each blob with a number. The number
+    is determined by the order of the blobs in the sequence.
+
+    Arguments:
+        df (pd.DataFrame): DataFrame containing a column 'hydropathy_digitized' with the digitized hydropathy values.
+        blob_length_minimum (int): Minimum length of a blob to be considered a blob.
+
+    Returns:
+        df (pd.DataFrame): The original DataFrame with the following new columns:
+                            - 'residue_blob_type': blob type ('h', 'p', 't', 's')
+                            - 'residue_blob_groups': blob number (1, 2, 3, etc.)
+    """
     # continuous stretch lengths
     df["residue_blob_type_pre"] = (df["hydropathy_digitized"].groupby(df["hydropathy_digitized"].ne(df["hydropathy_digitized"].shift()).cumsum()).transform("count"))
+
+    # assign blob types
     df["residue_blob_type"] = ["h" if (x >= blob_length_minimum and y == 1) else "t" if y==0 else "p"
                                for x, y in zip(df["residue_blob_type_pre"], df["hydropathy_digitized"].astype(int))]
+
+    # assign blob types again, but this time for small hydrophilic stretches
     df["residue_blob_type_pre"] = (df["residue_blob_type"].groupby(df["residue_blob_type"].ne(df["residue_blob_type"].shift()).cumsum()).transform("count"))
     df["residue_blob_type"] = ["t" if y=="t" else y if (x >= blob_length_minimum) else "s"
                                for x, y in zip(df["residue_blob_type_pre"], df["residue_blob_type"])]
@@ -590,7 +641,33 @@ def assign_blob_types(df, blob_length_minimum):
     return df
 
 def compute_blob_properties(df):
-    """Compute blob-level properties like length, hydropathy, NCPR, fraction charged, enrichment, etc."""
+    """
+    Compute blob-level properties like length, hydropathy, NCPR, fraction charged, enrichment, etc.
+
+    This function takes a DataFrame with a column 'residue_blob_groups' and computes
+    the following blob-level properties:
+
+    - blob_length: the length of the blob
+    - blob_hydrophobicity: the mean hydropathy of the blob
+    - blob_minimum_hydrophobicity: the minimum smoothed hydropathy of the blob
+    - blob_net_charge_per_residue: the mean net charge per residue of the blob
+    - blob_disorder: the mean disorder probability of the blob
+    - blob_fraction_of_positively_charged_residues: the fraction of positively charged residues in the blob
+    - blob_fraction_of_negatively_charged_residues: the fraction of negatively charged residues in the blob
+    - blob_fraction_of_charged_residues: the fraction of charged residues in the blob
+    - blob_predicted_enrichment_of_dsnps: the predicted enrichment of dsnp in the blob
+    - blob_daspappu_phase: the Das-Pappu phase of the blob
+    - blob_distance_from_uversky_boundary_line: the distance of the blob from the Uversky boundary line
+
+    The blob-level properties are computed by grouping the DataFrame by 'residue_blob_groups'
+    and applying the corresponding functions to the groups.
+
+    Arguments:
+        df (pd.DataFrame): DataFrame containing a column 'residue_blob_groups'
+
+    Returns:
+        df (pd.DataFrame): The original DataFrame with the additional columns
+    """
     blobs = df.groupby(["residue_blob_groups"])
     df["blob_length"] = blobs["residue_number"].transform("count")
     df["blob_hydrophobicity"] = blobs["residue_hydropathy"].transform("mean")
@@ -606,7 +683,35 @@ def compute_blob_properties(df):
     return df
 
 def assign_colors(df, color_types=None):
-    """Assign colors for each track. color_types is a list of which color tracks to compute."""
+    """
+    Assign colors for each track. color_types is a list of which color tracks to compute.
+
+    This function assigns colors for each track based on the blob properties. The
+    colors are assigned in the following order:
+
+    - blobtype track: color based on the blob type
+    - dsnp_enrichment track: color based on the predicted enrichment of dsnp
+    - daspappu track: color based on the daspappu phase
+    - NCPR track: color based on the net charge per residue
+    - uversky track: color based on the distance from the uversky boundary line
+    - disorder track: color based on the disorder probability
+
+    The colors are stored in the following columns:
+
+    - color_for_blobtype_track
+    - color_for_dsnp_enrichment_track
+    - color_for_daspappu_track
+    - color_for_NCPR_track
+    - color_for_uversky_track
+    - color_for_disorder_predictor_track
+
+    Arguments:
+        df (pandas.DataFrame): The dataframe to assign colors to.
+        color_types (list of str, optional): A list of which color tracks to compute. Defaults to all tracks.
+
+    Returns:
+        df (pandas.DataFrame): The dataframe with the assigned colors.
+    """
     if color_types is None:
         color_types = ["blobtype", "dsnp_enrichment", "daspappu", "NCPR", "uversky", "disorder"]
 
@@ -629,7 +734,41 @@ def assign_colors(df, color_types=None):
 
 # Wrapper function to build entire data frame
 def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_doolittle", smoothing_window_length=3, disorder_residues=None, include_colors=True, color_types=None):
-    """Wrapper function that runs all steps. Returns a full dataframe identical to original compute()."""
+    """
+    Wrapper function that runs all steps. Returns a full dataframe identical to original compute().
+
+    This function takes a protein sequence and returns a pandas DataFrame with the following columns:
+        - residue_number: 1-indexed position of each residue
+        - residue_name: Single-letter amino acid code
+        - residue_disorder: 1 if the residue is disordered, else 0
+        - residue_hydropathy: Hydropathy value from the chosen scale
+        - residue_charge: Integer charge of the residue
+        - residue_blob_type: The type of blob the residue is in
+        - blob_length: Length of the blob the residue is in
+        - blob_hydrophobicity: Average hydropathy of the blob the residue is in
+        - blob_net_charge_per_residue: Net charge of the blob the residue is in
+        - blob_fraction_of_charged_residues: Fraction of charged residues in the blob the residue is in
+        - blob_fraction_of_positively_charged_residues: Fraction of positively charged residues in the blob the residue is in
+        - blob_fraction_of_negatively_charged_residues: Fraction of negatively charged residues in the blob the residue is in
+        - blob_distance_from_uversky_boundary_line: Distance from the Uversky boundary line for the blob the residue is in
+        - blob_minimum_hydrophobicity: Minimum hydropathy of the blob the residue is in
+        - blob_predicted_enrichment_of_dsnps: Predicted enrichment of dsnp in the blob the residue is in
+        - blob_daspappu_phase: Das-Pappu phase of the blob the residue is in
+        - blob_disorder: Disorder probability of the blob the residue is in
+
+    Arguments:
+        seq (str): The amino acid sequence of a protein.
+        hydropathy_cutoff (float): The cutoff below which a residue is considered hydrophobic.
+        blob_length_minimum (int): The minimum length of a blob.
+        hydropathy_scale (str, optional): The name of the hydropathy scale to use (e.g., "kyte_doolittle"). Defaults to "kyte_doolittle".
+        smoothing_window_length (int, optional): The number of residues to consider when calculating the smoothed hydropathy (Lmin). Defaults to 3.
+        disorder_residues (list of int, optional): List of residue numbers (1-indexed) that are considered disordered. Defaults to an empty list.
+        include_colors (bool, optional): Whether to include color information in the output. Defaults to True.
+        color_types (list of str, optional): A list of which color tracks to compute. Defaults to all tracks.
+
+    Returns:
+        df (pandas.DataFrame): A dataframe with the above columns.
+    """
     if disorder_residues is None:
         disorder_residues = []
 
