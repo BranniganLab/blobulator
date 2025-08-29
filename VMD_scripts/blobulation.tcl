@@ -267,7 +267,7 @@ proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
 		
 		}
 		
-		return 
+		return $blobulated
 }
 
 #
