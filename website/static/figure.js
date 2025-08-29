@@ -40,7 +40,7 @@ class ZFigure {
 		btn.space 
 		btn.onclick = function () {
 			let fig = ZChart.allInstances[figID];
-			let domainArray_zoom = fig.data.map(d => d.resid);
+			let domainArray_zoom = fig.data.map(d => d.residue_number);
 		  	let domainBounds_zoom = [Math.min(...domainArray_zoom), Math.max(...domainArray_zoom)];
 		  	Object.values(ZChart.allInstances).forEach(fig => fig.do_zoom(fig.data, null, domainBounds_zoom, domainArray_zoom, fig.xAxis, fig.WIDTH, 1000));
 		 };
@@ -337,7 +337,7 @@ class ZChart extends ZFigure{
 		// Add X axis
 		this.x = d3.scaleBand()
 			.range([0, this.WIDTH])
-			.domain(data.map(d => d.resid ))
+			.domain(data.map(d => d.residue_number ))
 			.padding(0.2);
 		var x = this.x;
 		
@@ -368,7 +368,7 @@ class ZChart extends ZFigure{
 			.join("rect")
 			.attr("id", "barChart"+this.figID)
 			.attr("width", x.bandwidth())
-			.attr("x", (d) => x(d.resid))
+			.attr("x", (d) => x(d.residue_number))
 			.attr("y", d => this.HEIGHT);
 
 		// Add the mutation indicators
@@ -424,7 +424,7 @@ class ZChart extends ZFigure{
 		// If no selection, back to initial coordinate. Otherwise, update X axis domain
 		if(extent == null) {
 		  // if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-		  	domainArray = fig.data.map(d => d.resid);
+		  	domainArray = fig.data.map(d => d.residue_number);
 		  	domainBounds = [Math.min(...domainArray), Math.max(...domainArray)];
 		} else {
 		  	domainBounds = [scaleBandInvert(fig.x)(extent[0]), scaleBandInvert(fig.x)(extent[1])];
@@ -503,7 +503,7 @@ class ZChart extends ZFigure{
 		let seq_name_by_resid = new Array();
 		// We have to create a map of resid to sequence because resid might not start at 1
 		for(let i = 0; i < this.data.length; i++) {
-			seq_name_by_resid[this.data[i].resid] = this.data[i].seq_name;
+			seq_name_by_resid[this.data[i].residue_number] = this.data[i].residue_name;
 		}
 		let tickLabels = tickValues.map((d, i) => {
 			return seq_name_by_resid[d] + d; // returns e.g. "A123"
@@ -651,9 +651,9 @@ class ZChart extends ZFigure{
 		});
 	
 	return this;
-}
-
+	};
 };
+
 
 
 
@@ -688,9 +688,9 @@ class ZHydropathy extends ZChart{
 		this.update_xAxis(x); // because there might have been a mutation
 		this.bars.transition()
 			.duration(timing)
-			.attr("y", d => y(d.hydropathy_3_window_mean))
+			.attr("y", d => y(d.residue_smoothed_hydropathy))
 			.attr("fill", "grey")
-			.attr("height", d => this.HEIGHT - y(d.hydropathy_3_window_mean));
+			.attr("height", d => this.HEIGHT - y(d.residue_smoothed_hydropathy));
 
 		return this;
 	}
@@ -725,15 +725,15 @@ class ZHydropathy extends ZChart{
 		this.bars
 		  .transition().duration(timing)
 		  .attr("x", function (d) { 
-			if(extent && d.resid>domain[1]){
+			if(extent && d.residue_number>domain[1]){
 				return 2*width
-			}else if(extent && d.resid<domain[0]){
+			}else if(extent && d.residue_number<domain[0]){
 				return -width;
 			}else{
-				return x(d.resid); 
+				return x(d.residue_number); 
 			}
 		  })
-		  .attr("y", function (d) { return y(d.hydropathy_3_window_mean); } )
+		  .attr("y", function (d) { return y(d.residue_smoothed_hydropathy); } )
 		  .attr("width", x.bandwidth());
 	}
 	
@@ -799,14 +799,14 @@ class ZblobChart extends ZChart {
 
 		// Lookup table for color attribute of our data as a function of the plot name.
 		// E.g. The "globPlot" plot data stores colors in the "P_diagram" attribute of the data.
-		const figID_to_var = {'ZblobPlot': 'blob_color', 'blobPlot': 'blob_color', 'globPlot': 'P_diagram', 'ncprPlot': 'NCPR_color', 'richPlot': 'h_blob_enrichment',
-			'uverskyPlot': 'uversky_color', 'disorderPlot': 'disorder_color'};
+		const figID_to_var = {'ZblobPlot': 'color_for_blobtype_track', 'blobPlot': 'color_for_blobtype_track', 'globPlot': 'color_for_daspappu_track', 'ncprPlot': 'color_for_NCPR_track', 'richPlot': 'color_for_dsnp_enrichment_track',
+			'uverskyPlot': 'color_for_uversky_track', 'disorderPlot': 'color_for_disorder_predictor_track'};
 
 		this.update_xAxis(x); // because there migh have been a mutation
 		this.bars.transition()
 			.duration(timing)
-			.attr("y", (d) => y(d.domain_to_numbers))
-			.attr("height", (d) => this.HEIGHT - y(d.domain_to_numbers))
+			.attr("y", (d) => y(d.residue_blob_type_to_numbers))
+			.attr("height", (d) => this.HEIGHT - y(d.residue_blob_type_to_numbers))
 			.attr("fill", (d) => d[figID_to_var[this.figID]]);
 		
 		// Update/add the corresponding skyline, in a potentially ugly way
@@ -833,13 +833,13 @@ class ZblobChart extends ZChart {
 		}
 
 		// Start the line in the correct spot
-		let points = [{resid: data[0].resid, height: data[0].domain_to_numbers}];
+		let points = [{resid: data[0].residue_number, height: data[0].residue_blob_type_to_numbers}];
 
 		// Find the edges of each "skyscraper"
 		for(let i = 1; i < data.length; i++){
-			let last_res = data[i-1].domain_to_numbers;
-			let this_res = data[i].domain_to_numbers;
-			let resid = data[i].resid;
+			let last_res = data[i-1].residue_blob_type_to_numbers;
+			let this_res = data[i].residue_blob_type_to_numbers;
+			let resid = data[i].residue_number;
 			if (last_res != this_res) {
 				points.push({resid: resid, height: last_res});
 				points.push({resid: resid, height: this_res});
@@ -847,9 +847,9 @@ class ZblobChart extends ZChart {
 		}
 
 		// Last line segment - add an extraneous data point to signify this
-		const last_resid = data[data.length-1].resid;
+		const last_resid = data[data.length-1].residue_number;
 		points.push({resid: last_resid,
-			height: data[data.length-1].domain_to_numbers});
+			height: data[data.length-1].residue_blob_type_to_numbers});
 
 		this.skyline = this.svg.append('g').classed('skyline', true).attr("id", "skyline");
 		this.skyline.append("path")
@@ -942,12 +942,12 @@ class ZblobChart extends ZChart {
 		this.bars
 		  .transition().duration(timing)
 		  .attr("x", function (d) { 
-			if(extent && d.resid>domain[1]){
+			if(extent && d.residue_number>domain[1]){
 				return 2*width
-			}else if(extent && d.resid<domain[0]){
+			}else if(extent && d.residue_number<domain[0]){
 				return -width;
 			}else{
-				return x(d.resid); 
+				return x(d.residue_number); 
 			}
 		  })
 		  .attr("width", x.bandwidth());
