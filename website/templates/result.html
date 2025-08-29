@@ -164,6 +164,7 @@ $(document).ready( function() {
 	};
 
 	function doPDBUpdate(pdbFile, figs, data) {
+		// Read an uploaded pdb file and trigger blobulation to rerun with sequence from file
 		const fileReader = new FileReader();
 		fileReader.onload = () => {
 			const fileContent = fileReader.result;
