@@ -54,7 +54,6 @@ proc ::blobulator::blobulate {MolID lMin H select dictInput} {
 	set start [clock microseconds]
 	set ::blobulator::sortedChains [::blobulator::getSelect $MolID $select]
 	foreach chain $::blobulator::sortedChains {
-		puts "$chain"
 		set check [atomselect $nocaseMolID "alpha and protein and canonAA and chain $chain"]
 		set minimum_residue_length 3
 		if {[llength [$check get resname]] < $minimum_residue_length} {
@@ -102,14 +101,14 @@ proc ::blobulator::blobulate {MolID lMin H select dictInput} {
 		
 	}
 	set end [clock microseconds]
-	puts "Blobulation Time: [expr {($end - $start)}] microseconds per iteration"
+	
 
 	if {$chainBlobs != -1} {
 	set start [clock microseconds]
 	::blobulator::blobUserAssign $chainBlobs $MolID $::blobulator::sortedChains
 	::blobulator::blobUser2Assign $chainBlobIndex $MolID $::blobulator::sortedChains
 	set end [clock microseconds]
-	puts "Assign Blob Time: [expr {($end - $start)}] microseconds per iteration"
+	
 
 
 	}
@@ -538,11 +537,11 @@ proc ::blobulator::blobUserAssign {blob1 MolID chainList} {
 	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
 		for {set j 1} { $j <= $blobGroupNumber } {incr j} {
 			set sel [atomselect $molid "user $j"]
-			set residues [$sel get resid]
+			set residues [$sel get residue]
 			$sel delete
 			if {[llength $residues] > 1} {
 				foreach rs $residues {
-					set sel2 [atomselect $molid "resid $rs and protein"]
+					set sel2 [atomselect $molid "residue $rs and protein"]
 					$sel2 frame $i
 					$sel2 set user $j
 					$sel2 delete
@@ -580,13 +579,13 @@ proc ::blobulator::blobUser2Assign { blob2 MolID chainList} {
 	set blobLength [llength [lsort -unique $blob2]]
 	for {set i 1} { $i <= $blobLength } { incr i } {
 		set sel [atomselect $molid "user2 $i"]
-		set residues [$sel get resid]
+		set residues [$sel get residue]
 		$sel delete
 	
 		foreach rs $residues {
 			
 
-			set sel2 [atomselect $molid "resid $rs and protein"]
+			set sel2 [atomselect $molid "residue $rs and protein"]
 			$sel2 set user2 $i
 			$sel2 delete
 		}
