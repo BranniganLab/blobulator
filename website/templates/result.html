@@ -100,7 +100,7 @@ $(document).ready( function() {
 
 	//FUNCTION DECLARATIONS
 
-	// A function that updates the charts
+	// Update all tracks on the result page
 	function update_Charts(figs, data) {
 		figs.pathyFig.update_cutoff_line(d3.select("#cutoff_user").text());
 
@@ -163,8 +163,8 @@ $(document).ready( function() {
 			});
 	};
 
+	// Read an uploaded pdb file and trigger blobulation to rerun with sequence from file
 	function doPDBUpdate(pdbFile, figs, data) {
-		// Read an uploaded pdb file and trigger blobulation to rerun with sequence from file
 		const fileReader = new FileReader();
 		fileReader.onload = () => {
 			const fileContent = fileReader.result;
@@ -333,7 +333,7 @@ $(document).ready( function() {
 		updateHydroscaleTicks(sel_hydro_scale.toString())
 	});
 
-	// Function to update the ticks
+	// Update the amino acid letters shown above the hydropathy slider
 	function updateHydroscaleTicks(selected_hydro_scale) {
         // Hydropathy scales (unnormalized) if a hydropathy scale is added in the future note that these dictionaries need to be ordered from highest to lowest value
         // Parameter: selected_hydro_scale: (str) what hydropathy scale is currently selected?
