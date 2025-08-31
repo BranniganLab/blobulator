@@ -411,6 +411,7 @@ class ZChart extends ZFigure{
 	
 		// A quick and dirty function to generate a sequence of integers, because of course JavaScript doesn't have that
 		const range = ([min, max]) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
+		
 
 		// Recover the figID of the plot object related to this brush event
 		// (we saved it as an attribute to its svg element)

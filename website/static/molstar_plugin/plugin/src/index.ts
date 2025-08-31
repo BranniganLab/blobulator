@@ -112,7 +112,7 @@ async function createBlobRepresentation(plugin) {
             type: 'gaussian-surface',
             color: 'uniform',
             colorParams: { value: Color(0x0096FF) },
-            typeParams: { alpha: 1.0}
+            typeParams: { alpha: 1.0 }
         }));
     };
 
@@ -167,10 +167,34 @@ async function createPlugin(parent: HTMLElement) {
     let elementsArray = document.querySelectorAll('.mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales')
     elementsArray.forEach(function(elem) {
         elem.addEventListener('change', function() {
-        setTimeout(() => {
-        createBlobRepresentation(plugin)
+            setTimeout(() => {
+            createBlobRepresentation(plugin)
         }, 1000)});
     });
+
+    let dropwindow = document.querySelector('#app')
+    dropwindow?.addEventListener('drop', function(event){
+        event.preventDefault()
+        setTimeout(() => {
+            createBlobRepresentation(plugin)
+        }, 1000)});
+
+    let molstarWindow = document.querySelector('#app')
+    molstarWindow?.addEventListener('drop', function(event){
+        event.preventDefault();
+        var file = (event as DragEvent).dataTransfer?.files[0];
+        var reader = new FileReader();
+        reader.onload = function() {
+            localStorage.setItem("pdb_file", reader.result as string);
+            createBlobRepresentation(plugin);
+            let molstar_warning_box = document.getElementById("molstar_warning_box");
+            molstar_warning_box.innerHTML = "";
+        }
+        reader.readAsText(file);
+    });
+
 };
+
+
 
 createPlugin(document.getElementById('app')!); // app is a <div> element with position: relativeE
