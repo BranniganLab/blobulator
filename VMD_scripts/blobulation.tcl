@@ -531,9 +531,9 @@ proc ::blobulator::blobUserAssign {blob1 MolID chainList} {
 		$sel set user $blob1
 		$sel delete
 	}
-	set end [clock microseconds]
+	
 	puts "Assign user 1 for loop 1 Blob Time: [expr {($end - $start)}] microseconds per iteration"
-	set start [clock microseconds]
+	
 	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
 		for {set j 1} { $j <= $blobGroupNumber } {incr j} {
 			set sel [atomselect $molid "user $j"]
@@ -553,8 +553,7 @@ proc ::blobulator::blobUserAssign {blob1 MolID chainList} {
 	}
 		
   }
-	  set end [clock microseconds]
-	  puts "Assign user 1 for loop 2 Blob Time: [expr {($end - $start)}] microseconds per iteration"
+	  
 }
 
 
