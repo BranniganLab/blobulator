@@ -16,7 +16,7 @@
                 <form class="navbar-form navbar-top" method=post target="_blank" action="" id="id_entry_block">
                     <p>Enter an ID for your protein.</p>
                     <p>Note: only human proteins will display disease-associated mutations, and will take longer to load. </p>
-                    <label for="input-types">Choose an input type:</label>
+                    <label for="input-types">Choose an ID type:</label>
                     <select name="input_type" id="input_type">
                         <option value="uniprot_id">UniProt ID</option>
                         <option value="ensembl_id">Ensembl ID</option></select>
@@ -198,16 +198,15 @@
     </div>
 </div>
 
-<script>
+<script>   
     function deletePDB() {
         if (localStorage.getItem("pdb_file") !== null) {
             localStorage.clear()
         }
     }
-    document.getElementById("pdb_file").onchange = function() {
-        deletePDB();
-        const form = document.getElementById("pdb_entry_block");
-        var formData = new FormData(form);
+
+    function acceptPDB(pdbAcceptingElement) {
+        var formData = new FormData(pdbAcceptingElement);
         const file = formData.get('pdb_file');
         if (file) {
             const fileReader = new FileReader();
@@ -239,6 +238,11 @@
 			}
             fileReader.readAsText(file);
         }
+    }
+    document.getElementById("pdb_file").onchange = function() {
+        deletePDB();
+        const form = document.getElementById("pdb_entry_block");
+        acceptPDB(form);
     }
 </script>
 
