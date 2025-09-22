@@ -51,7 +51,6 @@ proc ::blobulator::blobulate {MolID lMin H select dictInput} {
 	set chainBlobs {}
 	set chainBlobIndex {}
 	set chainBlobGroup {}
-	set start [clock microseconds]
 	set ::blobulator::sortedChains [::blobulator::getSelect $MolID $select]
 	foreach chain $::blobulator::sortedChains {
 		set check [atomselect $nocaseMolID "alpha and protein and canonAA and chain $chain"]
@@ -100,14 +99,11 @@ proc ::blobulator::blobulate {MolID lMin H select dictInput} {
 		
 		
 	}
-	set end [clock microseconds]
 	
-
 	if {$chainBlobs != -1} {
-	set start [clock microseconds]
 	::blobulator::blobUserAssign $chainBlobs $MolID $::blobulator::sortedChains
 	::blobulator::blobUser2Assign $chainBlobIndex $MolID $::blobulator::sortedChains
-	set end [clock microseconds]
+
 	
 
 
@@ -524,7 +520,7 @@ proc ::blobulator::blobUserAssign {blob1 MolID chainList} {
 	$clean set user 0
 	$clean delete
 	set blobGroupNumber 3
-	set start [clock microseconds]
+	
 	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
 		set sel [atomselect $molid "protein and canonAA and alpha and chain $chainList"]
 		$sel frame $i
@@ -569,7 +565,7 @@ proc ::blobulator::blobUser2Assign { blob2 MolID chainList} {
 	set clean [atomselect $molid all]
 	$clean set user2 0
 	$clean delete
-	set start [clock microseconds]
+	
 	set sel [atomselect $molid "protein and canonAA and alpha and chain $::blobulator::sortedChains"]
 
 	$sel set user2 $blob2
@@ -590,12 +586,12 @@ proc ::blobulator::blobUser2Assign { blob2 MolID chainList} {
 		}
 	
 	}
-	set end [clock microseconds]
+	
 	puts "Assign user 2 Blob Time: [expr {($end - $start)}] microseconds per iteration"
-	set start [clock microseconds]
+	
 	set numOfFrames [molinfo $molid get numframes]
 	::blobulator::blobTrajUser2 $numOfFrames $blob2 $MolID
-	set end [clock microseconds]
+	
 	puts "Trajectory Assign Time: [expr {($end - $start)}] microseconds per iteration"
 }
 
