@@ -78,12 +78,32 @@ class Blobulator:
         return len(self.__sequence)
 
 def read_csv (file):
+    """
+    Takes a csv file and converts it to a pandas dataframe
+    
+    Args:
+    file(str): String representing the file to convert
+    
+    Returns:
+    numbers(list): A list of numbers containing 1, 2, or 3's 
+    
+    """
     df = pd.read_csv(file)
     numbers = df.iloc[:,1].tolist()
     print (len(numbers))
     return numbers
 
 def convert_to_blob_type(num_list):
+    """
+    Takes a list of numbers 1-3 and converts them to a corresponding character
+    
+    Args:
+    num_list(list): A list of numbers containing 1, 2, or 3's
+    
+    Returns:
+    blob_list(list): A list of h's p's and s's
+    
+    """
     blob_list = []
     for number in num_list:
         if number == 1:
@@ -95,10 +115,22 @@ def convert_to_blob_type(num_list):
     return blob_list
 
 def compare_lists (list1, list2):
+    """
+    Compares two lists of h's p's and s's to see if they match 100%
+    
+    Args:
+    list1(list): A list of h's p's and s's
+    list2(list): A list of h's p's and s's
+    """
     count = 0
+    if len(list1) != len(list2):
+            print ("List are not the same lengths")
+            return
     for entry1, entry2 in zip(list1 , list2):
+        print (entry1)
+        print (entry2)
         if entry1 != entry2:
-            print ("mismatch at"+str(count) + entry1+ "/" + entry2)
+            print ("mismatch at "+str(count) + " " + entry1 + " to " + entry2)
             return
         count += 1
     print("Match!")
