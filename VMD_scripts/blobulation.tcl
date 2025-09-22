@@ -528,7 +528,6 @@ proc ::blobulator::blobUserAssign {blob1 MolID chainList} {
 		$sel delete
 	}
 	
-	puts "Assign user 1 for loop 1 Blob Time: [expr {($end - $start)}] microseconds per iteration"
 	
 	for {set i 0} {$i <= $::blobulator::framesTotal} {incr i} {
 		for {set j 1} { $j <= $blobGroupNumber } {incr j} {
@@ -587,12 +586,12 @@ proc ::blobulator::blobUser2Assign { blob2 MolID chainList} {
 	
 	}
 	
-	puts "Assign user 2 Blob Time: [expr {($end - $start)}] microseconds per iteration"
+	
 	
 	set numOfFrames [molinfo $molid get numframes]
 	::blobulator::blobTrajUser2 $numOfFrames $blob2 $MolID
 	
-	puts "Trajectory Assign Time: [expr {($end - $start)}] microseconds per iteration"
+	
 }
 
 
@@ -620,8 +619,6 @@ proc ::blobulator::blobTrajUser2 {totalFrames blob2 MolID} {
 	}
 	
 	
-
-	puts $::blobulator::sortedChains
 	set sel2 [atomselect $MolID "protein and canonAA and chain $::blobulator::sortedChains"]
 	for {set frame 0} { $frame <= $totalFrames} {incr frame} {
 		
