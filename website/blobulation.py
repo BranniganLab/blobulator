@@ -174,6 +174,11 @@ def index():
             # Cleanup
             os.remove(f"{user_uniprot_id}_alphafold.pdb")
 
+            if seq_file is None:
+                return render_template("error.html",
+                    title="API Error",
+                    message=f"""It looks like the API used for ID Entry is down. In the meantime, please use a different input method. We apologize for the inconvenience.""")
+            
             if 'errorMessage' in seq_file:
                 return render_template("error.html",
                     title="UniProt server returned an error",
