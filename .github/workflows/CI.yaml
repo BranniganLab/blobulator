@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip setuptools
-          pip install pycairo
+          sudo apt install libcairo2-dev pkg-config python3-dev
           pip install .
           pip install pytest
           pip install pytest-approvaltests
