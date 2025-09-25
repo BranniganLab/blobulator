@@ -40,7 +40,7 @@ class ZFigure {
 		btn.space 
 		btn.onclick = function () {
 			let fig = ZChart.allInstances[figID];
-			let domainArray_zoom = fig.data.map(d => d.resid);
+			let domainArray_zoom = fig.data.map(d => d.residue_number);
 		  	let domainBounds_zoom = [Math.min(...domainArray_zoom), Math.max(...domainArray_zoom)];
 		  	Object.values(ZChart.allInstances).forEach(fig => fig.do_zoom(fig.data, null, domainBounds_zoom, domainArray_zoom, fig.xAxis, fig.WIDTH, 1000));
 		 };
@@ -107,6 +107,34 @@ class ZFigure {
 				document.getElementById("result_main_container").style.position = "sticky";
 				btn.innerHTML = "Lock Control Panel";
 		}
+		}
+		var top_container = document.getElementById("result_main_container");
+		top_container.appendChild(btn);
+
+		return this;
+	}
+
+	add_reset_default_settings_button() {
+
+		var btn = document.createElement("button");
+		btn.innerHTML = "Reset To Default Settings";
+		btn.id = "reset_def"
+		btn.type = "button";
+		btn.style.margin = "4px";
+		btn.onclick = function () {
+			var current_cutoff_box = document.getElementById("cutoff_user_box");
+			var current_slider = document.getElementById("cutoff_user_slider");
+			var current_cutoff = document.getElementById("cutoff_user")
+			current_cutoff_box.value = 0.4;
+			current_cutoff.innerHTML = 0.4;
+			current_slider.value = 0.4
+
+			var domain_threshold_box = document.getElementById("domain_threshold_user_box");
+			var domain_threshold_value = document.getElementById("domain_threshold_user");
+			var domain_threshold_slider = document.getElementById("domain_threshold_user_slider");
+			domain_threshold_box.value = 4;
+			domain_threshold_value.innerHTML = 4;
+			domain_threshold_slider.value = 4;
 		}
 		var top_container = document.getElementById("result_main_container");
 		top_container.appendChild(btn);
@@ -309,7 +337,7 @@ class ZChart extends ZFigure{
 		// Add X axis
 		this.x = d3.scaleBand()
 			.range([0, this.WIDTH])
-			.domain(data.map(d => d.resid ))
+			.domain(data.map(d => d.residue_number ))
 			.padding(0.2);
 		var x = this.x;
 		
@@ -340,7 +368,7 @@ class ZChart extends ZFigure{
 			.join("rect")
 			.attr("id", "barChart"+this.figID)
 			.attr("width", x.bandwidth())
-			.attr("x", (d) => x(d.resid))
+			.attr("x", (d) => x(d.residue_number))
 			.attr("y", d => this.HEIGHT);
 
 		// Add the mutation indicators
@@ -383,6 +411,7 @@ class ZChart extends ZFigure{
 	
 		// A quick and dirty function to generate a sequence of integers, because of course JavaScript doesn't have that
 		const range = ([min, max]) => Array.from({ length: max - min + 1 }, (_, i) => min + i);
+		
 
 		// Recover the figID of the plot object related to this brush event
 		// (we saved it as an attribute to its svg element)
@@ -395,7 +424,7 @@ class ZChart extends ZFigure{
 		// If no selection, back to initial coordinate. Otherwise, update X axis domain
 		if(extent == null) {
 		  // if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
-		  	domainArray = fig.data.map(d => d.resid);
+		  	domainArray = fig.data.map(d => d.residue_number);
 		  	domainBounds = [Math.min(...domainArray), Math.max(...domainArray)];
 		} else {
 		  	domainBounds = [scaleBandInvert(fig.x)(extent[0]), scaleBandInvert(fig.x)(extent[1])];
@@ -474,7 +503,7 @@ class ZChart extends ZFigure{
 		let seq_name_by_resid = new Array();
 		// We have to create a map of resid to sequence because resid might not start at 1
 		for(let i = 0; i < this.data.length; i++) {
-			seq_name_by_resid[this.data[i].resid] = this.data[i].seq_name;
+			seq_name_by_resid[this.data[i].residue_number] = this.data[i].residue_name;
 		}
 		let tickLabels = tickValues.map((d, i) => {
 			return seq_name_by_resid[d] + d; // returns e.g. "A123"
@@ -622,9 +651,9 @@ class ZChart extends ZFigure{
 		});
 	
 	return this;
-}
-
+	};
 };
+
 
 
 
@@ -656,13 +685,12 @@ class ZHydropathy extends ZChart{
 	update_bars(data, x=this.x, y=this.y, timing=1000) {
 		this.data = data;
 		this.bars.data(data);
-		//console.log(this.bars.data())
 		this.update_xAxis(x); // because there might have been a mutation
 		this.bars.transition()
 			.duration(timing)
-			.attr("y", d => y(d.hydropathy_3_window_mean))
+			.attr("y", d => y(d.residue_smoothed_hydropathy))
 			.attr("fill", "grey")
-			.attr("height", d => this.HEIGHT - y(d.hydropathy_3_window_mean));
+			.attr("height", d => this.HEIGHT - y(d.residue_smoothed_hydropathy));
 
 		return this;
 	}
@@ -697,15 +725,15 @@ class ZHydropathy extends ZChart{
 		this.bars
 		  .transition().duration(timing)
 		  .attr("x", function (d) { 
-			if(extent && d.resid>domain[1]){
+			if(extent && d.residue_number>domain[1]){
 				return 2*width
-			}else if(extent && d.resid<domain[0]){
+			}else if(extent && d.residue_number<domain[0]){
 				return -width;
 			}else{
-				return x(d.resid); 
+				return x(d.residue_number); 
 			}
 		  })
-		  .attr("y", function (d) { return y(d.hydropathy_3_window_mean); } )
+		  .attr("y", function (d) { return y(d.residue_smoothed_hydropathy); } )
 		  .attr("width", x.bandwidth());
 	}
 	
@@ -771,14 +799,14 @@ class ZblobChart extends ZChart {
 
 		// Lookup table for color attribute of our data as a function of the plot name.
 		// E.g. The "globPlot" plot data stores colors in the "P_diagram" attribute of the data.
-		const figID_to_var = {'ZblobPlot': 'blob_color', 'blobPlot': 'blob_color', 'globPlot': 'P_diagram', 'ncprPlot': 'NCPR_color', 'richPlot': 'h_blob_enrichment',
-			'uverskyPlot': 'uversky_color', 'disorderPlot': 'disorder_color'};
+		const figID_to_var = {'ZblobPlot': 'color_for_blobtype_track', 'blobPlot': 'color_for_blobtype_track', 'globPlot': 'color_for_daspappu_track', 'ncprPlot': 'color_for_NCPR_track', 'richPlot': 'color_for_dsnp_enrichment_track',
+			'uverskyPlot': 'color_for_uversky_track', 'disorderPlot': 'color_for_disorder_predictor_track'};
 
 		this.update_xAxis(x); // because there migh have been a mutation
 		this.bars.transition()
 			.duration(timing)
-			.attr("y", (d) => y(d.domain_to_numbers))
-			.attr("height", (d) => this.HEIGHT - y(d.domain_to_numbers))
+			.attr("y", (d) => y(d.residue_blob_type_to_numbers))
+			.attr("height", (d) => this.HEIGHT - y(d.residue_blob_type_to_numbers))
 			.attr("fill", (d) => d[figID_to_var[this.figID]]);
 		
 		// Update/add the corresponding skyline, in a potentially ugly way
@@ -805,13 +833,13 @@ class ZblobChart extends ZChart {
 		}
 
 		// Start the line in the correct spot
-		let points = [{resid: data[0].resid, height: data[0].domain_to_numbers}];
+		let points = [{resid: data[0].residue_number, height: data[0].residue_blob_type_to_numbers}];
 
 		// Find the edges of each "skyscraper"
 		for(let i = 1; i < data.length; i++){
-			let last_res = data[i-1].domain_to_numbers;
-			let this_res = data[i].domain_to_numbers;
-			let resid = data[i].resid;
+			let last_res = data[i-1].residue_blob_type_to_numbers;
+			let this_res = data[i].residue_blob_type_to_numbers;
+			let resid = data[i].residue_number;
 			if (last_res != this_res) {
 				points.push({resid: resid, height: last_res});
 				points.push({resid: resid, height: this_res});
@@ -819,9 +847,9 @@ class ZblobChart extends ZChart {
 		}
 
 		// Last line segment - add an extraneous data point to signify this
-		const last_resid = data[data.length-1].resid;
+		const last_resid = data[data.length-1].residue_number;
 		points.push({resid: last_resid,
-			height: data[data.length-1].domain_to_numbers});
+			height: data[data.length-1].residue_blob_type_to_numbers});
 
 		this.skyline = this.svg.append('g').classed('skyline', true).attr("id", "skyline");
 		this.skyline.append("path")
@@ -914,12 +942,12 @@ class ZblobChart extends ZChart {
 		this.bars
 		  .transition().duration(timing)
 		  .attr("x", function (d) { 
-			if(extent && d.resid>domain[1]){
+			if(extent && d.residue_number>domain[1]){
 				return 2*width
-			}else if(extent && d.resid<domain[0]){
+			}else if(extent && d.residue_number<domain[0]){
 				return -width;
 			}else{
-				return x(d.resid); 
+				return x(d.residue_number); 
 			}
 		  })
 		  .attr("width", x.bandwidth());

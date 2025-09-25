@@ -1,18 +1,29 @@
 import json
 
 import os
+import datetime
 from user_input_form import InputForm
 from blobulator.amino_acids import properties_hydropathy
 from blobulator.compute_blobs import (compute, clean_df)
 from blobulator.compute_snps import pathogenic_snps
 
+from Bio.PDB import PDBParser
+from Bio.PDB import PPBuilder
+from Bio.PDB.PDBIO import PDBIO
+from Bio import SeqIO
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+
 import pandas as pd
 import numpy as np
 import time
 import io
+from io import StringIO
 from matplotlib.backends.backend_svg import FigureCanvasSVG
 import urllib.parse
 import urllib.request
+import tempfile
+import pathlib
 
 from flask import Flask, render_template, request, Response, session, jsonify, send_file
 from flask_restful import Resource, Api
@@ -135,7 +146,6 @@ def index():
                         tag, data = future.result()
                         fetched_data[tag] = data
                     except ValueError as e:
-                        # print(f"Task generated exception: {e}")
                         fetched_data[tag] = None
                 
             # At this point fetched data is full of either our data, or Nones for each thing we called
@@ -148,6 +158,7 @@ def index():
                 return render_template("error.html",
                     title="API Error",
                     message=f"""It looks like the API used for ID Entry is down. In the meantime, please use a different input method. We apologize for the inconvenience.""")
+
 
             if 'errorMessage' in seq_file:
                 return render_template("error.html",
@@ -212,13 +223,14 @@ def index():
             window = 3 
             session['sequence'] = str(my_seq) #set the current sequence variable
             my_initial_df = compute(
-                str(my_seq), float(0.4), 4, window=window, disorder_residues=disorder_residues
+                str(my_seq), float(0.4), 4, smoothing_window_length=window, disorder_residues=disorder_residues
             )
             #define the data frame (df)
             df = my_initial_df
             chart_data = df.round(3).to_dict(orient="records")
             chart_data = json.dumps(chart_data, indent=2)
             data = {"chart_data": chart_data}
+            shift = 0
             return render_template(
                     "result.html",
                     data=data,
@@ -229,15 +241,65 @@ def index():
                     my_uni_id_linked= "ID: <a href=https://www.uniprot.org/uniprotkb/" + user_uniprot_id + ' target="_blank">' + user_uniprot_id + '</a>',
                     my_seq="'%s'" % my_seq,
                     my_seq_download="%s" % my_seq,
-                    domain_threshold=4,
-                    domain_threshold_max=len(str(my_seq)),
+                    blob_length_minimum=4,
+                    blob_length_minimum_max=len(str(my_seq)),
                     my_disorder = str(disorder_residues).strip('[]'),
                     activetab = '#result-tab',
                     my_name = user_uniprot_name,
                     my_entry_name = user_uniprot_entry,
                     my_original_id = original_accession,
-                    my_hg_value = hg_identifier
+                    my_hg_value = hg_identifier,
+                    molstarwindow_pre_text = '',
+                    chain = 'AlphaFold structure',
+                    pdb_string = pdb_string,
+                    shift=shift
                 )
+
+        ## If we have a pdb upload
+        elif "action_p" in request.form.to_dict():
+            pdb_file = request.files["pdb_file"].read()
+            chain = request.form['chain_select']
+
+            my_seq, shift, saved_chain, pdb_string = read_pdb_file(pdb_file, chain)
+            session['sequence'] = str(my_seq)
+
+
+            # Ensure that all characters in sequence actually represent amino acids
+            if any(x not in properties_hydropathy for x in my_seq):
+                return render_template("error.html",
+                    title='Invalid characters in sequence',
+                    message="""The protein sequence you supplied contains non-amino-acid characters.
+                    It should consist only of single-letter amino acid sequence codes.""")
+            # do the blobulation
+            window = 3
+            my_initial_df = compute(
+                str(my_seq), float(0.4), 4, smoothing_window_length=window
+            )  # blobulation
+            df = my_initial_df
+            chart_data = df.round(3).to_dict(orient="records")
+            chart_data = json.dumps(chart_data, indent=2)
+            data = {"chart_data": chart_data}
+            return render_template(
+                "result.html",
+                data=data,
+                form=form,
+                my_cut=0.4,
+                my_snp="[]",
+                my_uni_id="'%s'" % form.seq_name.data,
+                my_uni_id_stripped="ID: " + form.seq_name.data,
+                my_seq="'%s'" % my_seq,
+                my_seq_download="%s" % my_seq,
+                blob_length_minimum=4,
+                blob_length_minimum_max=len(str(my_seq)),
+                my_disorder = '0',
+                activetab = '#result-tab',
+                molstarwindow_pre_text = 'chain: ',
+                chain = saved_chain,
+                pdb_string = pdb_string,
+                shift=shift
+            )
+
+            
 
         else: # if the user inputs amino acid sequence
             aa_sequence_list = form.aa_sequence.data.splitlines()
@@ -263,12 +325,13 @@ def index():
             # do the blobulation
             window = 3
             my_initial_df = compute(
-                str(my_seq), float(0.4), 4, window=window
+                str(my_seq), float(0.4), 4, smoothing_window_length=window
             )  # blobulation
             df = my_initial_df
             chart_data = df.round(3).to_dict(orient="records")
             chart_data = json.dumps(chart_data, indent=2)
             data = {"chart_data": chart_data}
+            shift = 0
             return render_template(
                 "result.html",
                 data=data,
@@ -279,24 +342,143 @@ def index():
                 my_uni_id_stripped="ID: " + form.seq_name.data,
                 my_seq="'%s'" % my_seq,
                 my_seq_download="%s" % my_seq,
-                domain_threshold=4,
-                domain_threshold_max=len(str(my_seq)),
+                blob_length_minimum=4,
+                blob_length_minimum_max=len(str(my_seq)),
                 my_disorder = '0',
-                activetab = '#result-tab'
+                activetab = '#result-tab',
+                molstarwindow_pre_text = '',
+                chain = '',
+                pdb_string = '',
+                shift=shift
             )
     else:
          #creates the HTML layout of the home page along with user input fields
         return render_template("index.html", form=form, activetab='#home-tab')
 
 
+def extract_chain(chain, temporary_pdb_file, io, structure):
+    """
+    Extract a single chain from a PDB file and save it as a temporary PDB file
+
+    Parameters
+    ----------
+    chain : str
+        The name of the chain to extract
+    temporary_pdb_file : str
+        The temporary PDB file to save the chain to
+    io : PDBIO
+        The PDBIO object to use for saving the temporary PDB file
+    structure : PDBStructure
+        The PDBStructure object containing the chains
+
+    Returns
+    -------
+    my_seq : str
+        The sequence of the extracted chain
+    shift : int
+        The shift in residue numbering required to match the PDB file
+    saved_chain : str
+        The chain id of the saved chain
+    pdb_string : str
+        The contents of the temporary PDB file as a string
+    """
+    chain_count = 0
+            ## Use biopython's pdb get chains function to iterate through their structures, and pdb I/O to load only the structure of one into molstar
+    for current_chain in structure.get_chains():
+                ## Save the first chain
+        if chain_count == 0:
+            io.set_structure(current_chain)
+            saved_chain = current_chain.id
+            
+                ## If the user selected chain matches the current chain, save it instead
+                ## Save the temporary pdb file because biopython requires a file to exist
+        elif current_chain.id == chain:
+            io.set_structure(current_chain)
+            saved_chain = current_chain.id
+            break
+
+        chain_count += 1
+    os.remove(temporary_pdb_file)
+    io.save(temporary_pdb_file)
+            
+            ## Save the contents of the output file as a string
+    with open(temporary_pdb_file, 'r') as saved_pdb:
+        pdb_string = saved_pdb.read()
+        saved_pdb.close()
+
+    chains = structure.get_chains()
+    chain_list = list(chains)
+    num_chains = len(chain_list)
+
+    first_residue_number = list(structure.get_residues())[0].id[1]
+    if isinstance(first_residue_number, int):
+        shift = int(first_residue_number) - 1
+    else:
+        shift = 0
+            
+    record_num = 0
+
+            # Iterate through chain and select the appropriate sequence
+    for record in SeqIO.parse(temporary_pdb_file, 'pdb-atom'):
+        if record_num == 0:
+            my_seq = record.seq
+        if record.annotations['chain'] == chain:
+            my_seq = record.seq
+
+        record_num += 1
+    return my_seq,shift,saved_chain,pdb_string
+
+def read_pdb_file(pdb_file, chain):
+    """
+    Reads a PDB file and returns a PDBStructure object.
+
+    Parameters
+    ----------
+    pdb_file : str
+        The contents of the PDB file as a string.
+    
+    chain : str
+        The name of the chain to extract
+
+    Returns
+    -------
+    my_seq : str
+        The sequence of the extracted chain.
+    shift : int
+        The shift in residue numbering required to match the PDB file.
+    saved_chain : str
+        The chain id of the saved chain.
+    pdb_string : str
+        The contents of the temporary PDB file as a string.
+
+    Notes
+    -----
+    This function assumes that the PDB file contains a single chain. If the file contains multiple chains, the function will extract the first chain.
+    """
+    current_datetime = str(datetime.datetime.now())
+    temporary_pdb_file = './static/molstar_plugin/plugin/dist/pdb_files/' + current_datetime + ".pdb"
+    with open(temporary_pdb_file, 'w') as saved_pdb:
+        saved_pdb.write(str(pdb_file).replace("\\n", "\n"))
+        saved_pdb.close()
+
+    io = PDBIO()
+    structure = PDBParser().get_structure('structure', temporary_pdb_file)
+
+    my_seq, shift, saved_chain, pdb_string = extract_chain(chain, temporary_pdb_file, io, structure)
+    
+    # Cleanup
+    os.remove(temporary_pdb_file)
+
+    return my_seq, shift, saved_chain, pdb_string
+
 
 @app.route('/api/query', methods=['GET'])
 def api_id():
-    """This can be used for api calling {blobulator_link}/api/query?my_seq=AAAA&domain_threshold=24&cutoff=0.5&my_disorder=2,3"""
+    """This can be used for api calling {blobulator_link}/api/query?my_seq=AAAA&blob_length_minimum=24&hydropathy_cutoff=0.5&my_disorder=2,3"""
     my_seq  = str(request.args['my_seq'])
-    hydro_scale = str(request.args['hydro_scale'])
-    domain_threshold  = request.args['domain_threshold']
-    cutoff  = request.args['cutoff']
+    hydropathy_scale = str(request.args['hydropathy_scale'])
+    blob_length_minimum  = request.args['blob_length_minimum']
+    hydropathy_cutoff  = request.args['hydropathy_cutoff']
     my_disorder  = request.args['my_disorder']
     #print (my_disorder.split(","))
     my_disorder = list(map(int, my_disorder.split(",")))
@@ -304,9 +486,9 @@ def api_id():
     window = 3
     my_initial_df = compute(
         str(my_seq),
-        float(cutoff),
-        float(domain_threshold),
-        window=window,
+        float(hydropathy_cutoff),
+        float(blob_length_minimum),
+        smoothing_window_length=window,
         disorder_residues = list(my_disorder),
     )  # blobulation
     df = my_initial_df
@@ -320,25 +502,25 @@ def api_id():
 def get_post():
     """This method is used to update the data when the slider is moved in index.html"""
     my_seq  = request.form['my_seq']
-    domain_threshold  = request.form['domain_threshold']
-    cutoff  = request.form['cutoff']
-    hydro_scale = request.form['hydro_scale']
+    blob_length_minimum  = request.form['domain_threshold']
+    hydropathy_cutoff  = request.form['cutoff']
+    hydropathy_scale = request.form['hydro_scale']
     my_disorder  = request.form['my_disorder']
     my_disorder  = list(map(int, my_disorder.split(",")))
     window = 3
     my_initial_df = compute(
         str(my_seq),
-        float(cutoff),
-        float(domain_threshold),
-        str(hydro_scale),
-        window=window,
+        float(hydropathy_cutoff),
+        float(blob_length_minimum),
+        str(hydropathy_scale),
+        smoothing_window_length=window,
         disorder_residues = list(my_disorder),
     )  # blobulation
     df = my_initial_df
     #df = df.drop(range(0, 1))
     chart_data = df.round(3).to_dict(orient="records")
     chart_data = json.dumps(chart_data, indent=2)
-    #print (jsonify(chart_data))
+    # print (jsonify(chart_data))
     data = {"chart_data": chart_data}
     return (data)
 
@@ -348,19 +530,18 @@ def get_post():
 def calc_json():
     """This method is used to blobulate and adds the data to data download option"""
     form = InputForm(request.form) #reads the user input
-    #print(request.form)
     user_input = form.uniprot_id.data.splitlines()
     my_seq  = request.form['my_seq']
-    domain_threshold  = request.form['domain_threshold']
-    cutoff  = request.form['cutoff']
+    blob_length_minimum  = request.form['domain_threshold']
+    hydropathy_cutoff  = request.form['cutoff']
     my_disorder  = request.form['my_disorder']
     my_disorder  = list(map(int, my_disorder.split(",")))
     window = 3
     my_initial_df = compute(
         str(my_seq),
-        float(cutoff),
-        float(domain_threshold),
-        window=window,
+        float(hydropathy_cutoff),
+        float(blob_length_minimum),
+        smoothing_window_length=window,
         disorder_residues = list(my_disorder),
     )  # blobulation
     df = my_initial_df
@@ -381,16 +562,16 @@ def calc_plot():
     if request.method == "POST":
         #my_seq  = request.form['my_seq']
         my_seq = request.args['my_seq']
-        domain_threshold  = request.form['domain_threshold']
-        cutoff  = request.form['cutoff']
+        blob_length_minimum  = request.form['blob_length_minimum']
+        hydropathy_cutoff  = request.form['hydropathy_cutoff']
         my_disorder  = request.form['my_disorder']
         my_disorder  = list(map(int, my_disorder.split(",")))
         window = 3
         fig = compute(
             str(my_seq),
-            float(cutoff),
-            float(domain_threshold),
-            window=window, my_plot =True,disorder_residues = list(my_disorder)
+            float(hydropathy_cutoff),
+            float(blob_length_minimum),
+            smoothing_window_length=window, my_plot =True,disorder_residues = list(my_disorder)
         )  # blobulation
         output = io.BytesIO()
         FigureCanvasSVG(fig).print_svg(output)
@@ -399,17 +580,17 @@ def calc_plot():
     else:
         #my_seq  = request.form['my_seq']
         my_seq = session.get('sequence')
-        hydro_scale = request.args['hydro_scale']
-        domain_threshold  = request.args['domain_threshold']
-        cutoff  = request.args['cutoff']
+        hydropathy_scale = request.args['hydropathy_scale']
+        blob_length_minimum  = request.args['blob_length_minimum']
+        hydropathy_cutoff  = request.args['hydropathy_cutoff']
         my_disorder  = [0]
         window = 3
         fig = compute(
             str(my_seq),
-            float(cutoff),
-            hydro_scale,
-            float(domain_threshold),
-            window=window, my_plot =True,disorder_residues = list(my_disorder)
+            float(hydropathy_cutoff),
+            hydropathy_scale,
+            float(blob_length_minimum),
+            smoothing_window_length=window, my_plot =True,disorder_residues = list(my_disorder)
         )  # blobulation
         output_svg = io.BytesIO()
         FigureCanvasSVG(fig).print_svg(output_svg)
@@ -421,6 +602,14 @@ def calc_plot():
 
         return Response(output_pdf.getvalue(), mimetype="image/pdf", headers={"Content-disposition":
                    "attachment; filename=plot.pdf", "Cache-Control": "no-store"})
+    
+@app.route("/PDB", methods=["GET", "POST"])
+def analyze_pdb():
+    pdb_string = request.form['pdb']
+    chain = 'A'
+    my_seq, shift, saved_chain, pdb_string = read_pdb_file(pdb_string, chain)
+    session["my_seq"] = my_seq
+    return str(my_seq)
 
 if __name__ == "__main__":
     app.run(debug=True)
