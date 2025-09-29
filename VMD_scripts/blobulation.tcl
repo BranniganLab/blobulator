@@ -519,7 +519,7 @@ proc ::blobulator::blobUserAssign {blob1 MolID chainList} {
 	$clean delete
 	set blobGroupNumber 3
 	
-	for {set frame 0} {$i <= $::blobulator::framesTotal} {incr frame} {
+	for {set frame 0} {$frame <= $::blobulator::framesTotal} {incr frame} {
 		set sel [atomselect $molid "protein and canonAA and alpha and chain $chainList"]
 		$sel frame $frame
 		$sel set user $blob1
@@ -528,7 +528,7 @@ proc ::blobulator::blobUserAssign {blob1 MolID chainList} {
 
 	
 	
-	for {set frame 0} {$i <= $::blobulator::framesTotal} {incr frame} {
+	for {set frame 0} {$frame <= $::blobulator::framesTotal} {incr frame} {
 		for {set blobType 1} { $blobType <= $blobGroupNumber } {incr blobType} {
 			set sel [atomselect $molid "user $blobType"]
 			set residues [$sel get residue]
@@ -572,7 +572,7 @@ proc ::blobulator::blobUser2Assign { blob2 MolID chainList} {
 
 	set blobLength [llength [lsort -unique $blob2]]
 	for {set blobNum 1} { $blobNum<= $blobLength } { incr blobNum} {
-		set sel [atomselect $molid "user2 $i"]
+		set sel [atomselect $molid "user2 $blobNum"]
 		set residues [$sel get residue]
 		$sel delete
 	
@@ -580,7 +580,7 @@ proc ::blobulator::blobUser2Assign { blob2 MolID chainList} {
 			
 
 			set sel2 [atomselect $molid "residue $rs and protein"]
-			$sel2 set user2 $i
+			$sel2 set user2 $blobNum
 			$sel2 delete
 		}
 	
@@ -615,9 +615,9 @@ proc ::blobulator::blobTrajUser {frames blob1 MolID} {
 
 	
 	set sel2 [atomselect $MolID "protein and canonAA and chain $::blobulator::sorted"]
-	for {set i 0} { $i <= $frames} {incr i} {
+	for {set frame 0} { $frame <= $frames} {incr i} {
 		
-		$sel2 frame $i
+		$sel2 frame $frame
 		$sel2 set user $userList
 	
 		
