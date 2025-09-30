@@ -161,6 +161,101 @@ proc ::blobulator::blobulateChain {MolID lMin H Chain usedDictionary} {
 	}	
 
 #
+#	Proc that blobulates by a sequence range
+#
+#	Arguments:
+#	MolID (Integer): An integer that assigns what protein the algorithm looks for 
+#	lMin (Integer): An integers greater than 1 and less then the legnth of the sequence that determines the minimum length of hblobs
+# 	H (Float): A float that determines the hydropathy threshold, this determines how hydrophobic something needs to be to be counted
+#	for an h blob
+#	resStart (Integer): An integer that indexes the starting point of the blobulation sequence
+#	resEnd {Integer): An integer that indexes the ending point of the blobulation sequence
+#
+#	Returns:
+#	blobulated (List): A blobulated sequence that is in 1's 2's and 3's
+proc ::blobulator::blobulateSelection {MolID lMin H select dictInput} {
+	set nocaseMolID [string tolower $MolID]
+	source normalized_hydropathyscales.tcl
+	if {$dictInput == "Kyte-Doolittle"} {
+		set usedDictionary $KD_Normalized
+	}
+
+	if {$dictInput == "Moon-Fleming"} {
+		set usedDictionary $MF_Normalized
+	}
+
+	if {$dictInput == "Eisenberg-Weiss"} {
+		set usedDictionary $EW_Normalized
+	}
+	
+	set argumentsOK [::blobulator::checker $MolID $lMin $H]
+	if {$argumentsOK == -1} {
+		puts "Variables are incorrect ending program"
+		return  
+		}
+
+		set chainBlobs {}
+		set chainBlobIndex {}
+		set chainBlobGroup {}
+
+		set ::blobulator::sorted [::blobulator::getSelect $MolID $select]
+		foreach s $::blobulator::sorted {
+
+			set check [atomselect $nocaseMolID "alpha and protein and canonAA and chain $s"]
+			if {[llength [$check get resname]] < 3} {
+				set idx [lsearch $::blobulator::sorted $s]
+				set ::blobulator::sorted [lreplace $::blobulator::sorted $idx $idx]
+				
+			}
+			$check delete
+		}
+		
+		
+		for {set i 0} {$i < [llength $::blobulator::sorted] } { incr i} {
+			set singleChain [lindex $::blobulator::sorted $i] 
+
+			set chainReturn [::blobulator::blobulateChain $MolID $lMin $H $singleChain $usedDictionary]
+				if { $chainReturn == -1} {
+				break
+				return -1
+			}	
+			set blobulated [lindex $chainReturn 0]
+			
+			set index [lindex $chainReturn 1]
+
+			foreach bb $blobulated {
+				lappend chainBlobs $bb
+				
+			} 
+
+			set chainIndex [::blobulator::blobIndex $blobulated ]
+			foreach ci $chainIndex { 
+				lappend chainBlobIndex $ci
+			}
+			
+			
+			
+			set completeIndex [::blobulator::blobIndex $blobulated ]
+			
+
+			
+			
+			
+		
+			
+		}
+
+		if {$chainBlobs != -1} {
+			::blobulator::blobUserAssignSelector $chainBlobs $MolID $::blobulator::sorted
+			::blobulator::blobUser2AssignSelector $chainBlobIndex $MolID $::blobulator::sorted
+		
+		
+		}
+		
+		return $blobulated
+}
+
+#
 #	Checks the inputs to make sure they're with parameters for future procedures
 #
 #	Arguments:
