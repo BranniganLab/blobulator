@@ -65,12 +65,32 @@ cval = scalarMap.to_rgba(0)
 from string import ascii_lowercase 
 
 def divmod_base26(n):
+    """
+    A modified version of the divmod() function that returns the quotient and remainder of an integer divided by 26, but with the special case where the remainder is 0 returning the quotient minus 1 and the remainder plus 26.
+
+    This is used to convert a number into base 26 using the lowercase English alphabet.
+
+    Arguments:
+    n (int): The number to convert into base 26
+
+    Returns:
+    tuple: A tuple containing the quotient and remainder of the given number divided by 26, with the special case handling.
+    """
     a, b = divmod(n, 26)                                                        
     if b == 0:
         return a - 1, b + 26
     return a, b
 
 def to_base26(num):
+    """
+    Converts a given number into base 26 using the lowercase English alphabet.
+
+    Arguments:
+    num (int): The number to convert into base 26
+
+    Returns
+    str: The base 26 representation of the given number
+    """
     chars = []
     while num > 0:                                                                                                                           
         num, d = divmod_base26(num)
@@ -79,9 +99,13 @@ def to_base26(num):
 
 def name_blobs(res_types):
     """
-    A function that takes in residues individually and numbers each blob
-    Args:
-        res_type(array): an array of residue blob_types for a sequence
+    Reads the type of blob a residue classifies in (h, p, or s) and names the blob (e.g. h1a, h1b, p1, h2a, h2b etc...)
+    
+    Arguments:
+        res_type (array): The blob type (h, p, or s) that each residue is classified in
+    
+    Returns:
+        grouped_names (array): The names of all blobs in the sequence
     """
     h_counter = 0
     s_counter = 0
@@ -134,17 +158,15 @@ def name_blobs(res_types):
     
     return grouped_names
         
-def residue_blob_type_to_numbers(blob_properties_array):
+def assign_track_bar_heights_to_residue(blob_properties_array):
     """
-    A function that assigns heights to each residue for output tracks based on what type of blob they fall into
+    Assigns bar heights to each residue for output tracks based on what type of blob they fall into
 
     Arguments:
         blob_properties_array (array): An array containing the the type of blob that each residue falls into
 
-
     Returns:
-        int: height for each residue
-
+        int: bar height for each residue
     """
     if blob_properties_array.iloc[0][0] == "p":
         return 0.2
@@ -153,43 +175,43 @@ def residue_blob_type_to_numbers(blob_properties_array):
     else:
         return 0.4
 
-# ..........................Define phase diagram.........................................................#
-def lookup_color_das_pappu(blob_properties_array):
+# ..........................Define phase diagram................................................#
+def assign_blob_das_pappu_color(blob_properties_array):
     """
-    A function that assigns colors to blobs based on their Das-Pappu class
+    Assigns colors to blobs based on where they lie in the Das-Pappu phase diagram: (Fig 7) https://www.pnas.org/doi/10.1073/pnas.1304749110
 
     Arguments:
         blob_properties_array (array): An array containing the fraction of positive and negative residues per blob
 
     Returns:
-        color (str): the rgb value for each residue bar based on its Das-Pappu class
+        color (str): The rgb value for each residue bar based on its Das-Pappu class
     """
-
     fraction_of_charged_residues = blob_properties_array.iloc[1]
     ncpr = blob_properties_array.iloc[0]
     fraction_of_positively_charged_residues = blob_properties_array.iloc[2]
     fraction_of_negatively_charged_residues = blob_properties_array.iloc[3]
 
-    # if we're in region 1
+    # If blob is in region 1 of das pappu diagram
     if fraction_of_charged_residues < 0.25:
         return "rgb(138.0,251.0,69.0)"
 
-        # if we're in region 2
+    # If blob is in region 2 of das pappu diagram
     elif fraction_of_charged_residues >= 0.25 and fraction_of_charged_residues <= 0.35:
         return "rgb(254.0,230.0,90.0)"
 
-        # if we're in region 3
+    # If blob is in region 3 of das pappu diagram
     elif fraction_of_charged_residues > 0.35 and abs(ncpr) < 0.35:
         return "mediumorchid"
 
-        # if we're in region 4 or 5
+    # If blob is in region 5 of das pappu diagram
     elif fraction_of_positively_charged_residues > 0.35:
         if fraction_of_negatively_charged_residues > 0.35:
             raise SequenceException(
                 "Algorithm bug when coping with phase plot regions"
             )
         return "blue"
-
+    
+    # If blob is in region 4 of das pappu diagram    
     elif fraction_of_negatively_charged_residues > 0.35:
         return "red"
 
@@ -200,7 +222,7 @@ def lookup_color_das_pappu(blob_properties_array):
 
 def lookup_number_das_pappu(blob_properties_array):
     """
-    A function to assign numerical values to blobs based on their Das-Pappu class
+    Assigns numerical values to blobs based on where they lie in the Das-Pappu phase diagram: (Fig 7) https://www.pnas.org/doi/10.1073/pnas.1304749110
 
     Arguments:
         blob_properties_array (array): An array containing the fraction of positive and negative residues per blob
@@ -208,25 +230,24 @@ def lookup_number_das_pappu(blob_properties_array):
     Returns:
         region (str): returns the number associated to the Das-Pappu class for each residue
     """
-
     fraction_of_charged_residues = blob_properties_array.iloc[1]
     ncpr = blob_properties_array.iloc[0]
     fraction_of_positively_charged_residues = blob_properties_array.iloc[2]
     fraction_of_negatively_charged_residues = blob_properties_array.iloc[3]
 
-    # if we're in region 1
+    # If blob is in region 1 of das pappu diagram
     if fraction_of_charged_residues < 0.25:
         return "1"
 
-        # if we're in region 2
+    # If blob is in region 2 of das pappu diagram
     elif fraction_of_charged_residues >= 0.25 and fraction_of_charged_residues <= 0.35:
         return "2"
 
-        # if we're in region 3
+    # If blob is in region 3 of das pappu diagram
     elif fraction_of_charged_residues > 0.35 and abs(ncpr) < 0.35:
         return "3"
 
-        # if we're in region 4 or 5
+    # If blob is in region 5 of das pappu diagram
     elif fraction_of_positively_charged_residues > 0.35:
         if fraction_of_negatively_charged_residues > 0.35:
             raise SequenceException(
@@ -234,6 +255,7 @@ def lookup_number_das_pappu(blob_properties_array):
             )
         return "5"
 
+    # If blob is in region 4 of das pappu diagram
     elif fraction_of_negatively_charged_residues > 0.35:
         return "4"
 
@@ -242,16 +264,16 @@ def lookup_number_das_pappu(blob_properties_array):
             "Found inaccessible region of phase diagram. Numerical error"
         )
 
-# ..........................Define colors for each blob type.........................................................#
+# ..........................Define colors for each blob type....................................#
 def lookup_color_blob(blob_properties_array):
     """
-    A function that colors blobs based on their blob types
+    Determines the color for blobs based on their blob types
 
     Arguments:
         blob_properties_array (array): An array containing the the type of blob that each residue falls into
 
     Returns:
-        color (str): color for each residue based on its blob type
+        color (str): Color for each residue based on its blob type
     """
     if blob_properties_array.iloc[0][0] == "p":
         return "#F7931E"
@@ -260,16 +282,16 @@ def lookup_color_blob(blob_properties_array):
     else:
         return "#2DB11A"
 
-# ..........................Define phase diagram.........................................................#
+# ..........................Define phase diagram................................................#
 def lookup_number_uversky(blob_properties_array):
     """
-    A function that calculates the distance from the disorder/order boundary for each blob on the uversky diagram
+    Calculates the distance from the disorder/order boundary for each blob on the uversky diagram
 
     Arguments:
         blob_properties_array (array): An array containing the fraction of positive and negative residues per blob
 
     Returns:
-        distance (int): the distance of each blob from the from the disorder/order boundary on the uversky diagram
+        distance (int): The distance of each blob from the from the disorder/order boundary on the uversky diagram
     """
     h = blob_properties_array.iloc[1]*1.0
     ncpr = abs(blob_properties_array.iloc[0])
@@ -285,15 +307,14 @@ def lookup_number_uversky(blob_properties_array):
 
 # ..........................Define NCPR.........................................................#
 def lookup_color_ncpr(blob_properties_array):
-
     """
-    A function that returns the color for each blob based on its NCPR
+    Determines the color for each blob based on its NCPR
 
     Arguments:
         blob_properties_array (array): An array containing the fraction of positive and negative residues per blob
 
     Returns:
-        color (str): a string containing the color value for each residue based on the ncpr of the blob that it's contained in
+        color (str): String containing the color value for each residue based on the NCPR of the blob that it's contained in
     """
     import matplotlib
     from matplotlib.colors import LinearSegmentedColormap
@@ -311,7 +332,7 @@ uverskyDict = pd.read_csv(fname, index_col=0)
 
 def lookup_color_uversky(blob_properties_array):
     """
-    A function that returns the color for each blob based on its distance from the disorder/order boundary for on the uversky diagram
+    Determines the color for each blob based on its distance from the disorder/order boundary on the Uversky diagram
 
     Arguments:
         blob_properties_array (array): An array containing the uversky distances for each residue by blob
@@ -319,7 +340,6 @@ def lookup_color_uversky(blob_properties_array):
     Returns:
         color (str): a string containing the color value for each residue based on the distance from the uversky diagram"s disorder/order boundary line of the blob that it's contained in
     """
-
     val = blob_properties_array.iloc[0]
     return uverskyDict.loc[np.round(val, 2)]
 
@@ -328,13 +348,13 @@ disorderDict = pd.read_csv(fname, index_col=0)
 
 def lookup_color_disorder(blob_properties_array):
     """
-    A function that returns the color for each blob based on how disordered it is, determined by the Uniprot accession
+    Determines the color value for each blob based on how disordered it is which is determined by the Uniprot accession
 
     Arguments:
         blob_properties_array (array): An array containing the disorder value for each residue by blob
 
     Returns:
-        color (str): a string containing the color value for each residue based on how disordered the blob that contains it is predicted to be
+        color (str): String containing the color value for each residue based on how disordered the blob that contains it is predicted to be
     """
     val = blob_properties_array.iloc[0]
     return disorderDict.loc[np.round(val, 2)]
@@ -353,20 +373,22 @@ enrich_df_s = pd.read_csv(fname, index_col=[0, 1])
 
 def lookup_color_predicted_dsnp_enrichment(blob_properties_array):
     """
-    A function that returns the color for each blob based on how sensitive to mutation it is predicted to be.
-    Note: this function requires the minimum smoothed hydropathy for each blob. The analysis from Lohia et al. 2022 that produced the data by which blobs are colored involved increasing the H* threshold, and the minimum smoothed hydropathy is what determines that any given h-blob of a given length is still considered an h-blob as this threshold is increased.
+    Determines the color for each blob based on how sensitive to mutation it is predicted to be.
+    Note: This function requires the minimum smoothed hydropathy for each blob. The analysis from 
+        Lohia et al. 2022 that produced the data by which blobs are colored involved increasing the H* 
+        threshold, and the minimum smoothed hydropathy is what determines that any given h-blob of a 
+        given length is still considered an h-blob as this threshold is increased.
     
     Arguments:
         blob_properties_array (array): An array containing the number of residues in the blob, the minimum smoothed hydropathy, and the type of blob it is
 
     Returns:
-        color (str): a string containing the color value for each residue based on sensitive to mutation the blob that contains it is estimated to be
+        color (str): String containing the color value for each residue based on sensitive to mutation the blob that contains it is predicted to be
     """
-    
     min_hydrophobicity = round(blob_properties_array.iloc[1], 2)
     blob_length = blob_properties_array.iloc[0]
     residue_blob_type = blob_properties_array.iloc[2]
-    #check if blob type is h AND the cutoff/bloblength combination exists in the reference set
+
     if residue_blob_type == "h":
         try:
             return enrich_df.color.loc[min_hydrophobicity, blob_length]
@@ -387,13 +409,13 @@ def lookup_color_predicted_dsnp_enrichment(blob_properties_array):
 
 def lookup_number_predicted_dsnp_enrichment(blob_properties_array):
     """
-    A function that returns the color for each h-blob based on how sensitive to mutation it is predicted to be
+    Determines the color for each h-blob in a given sequence based on how sensitive to a mutation it is predicted to be
 
     Arguments:
         blob_properties_array (array): An array containing the predicted mutation sensitivity value for each residue for each h-blob
 
     Returns:
-        color (str): a string containing the color value for each residue based on sensitive to mutation the blob that contains it is estimated to be, if it's an h-blob
+        color (str): String containing the color value for each residue based on how sensitive to a mutation the blob that contains it is predicted to be
     """
     cutoff = round(blob_properties_array.iloc[1], 2)
     if blob_properties_array.iloc[2] == "h":
@@ -407,29 +429,28 @@ def lookup_number_predicted_dsnp_enrichment(blob_properties_array):
 
 def count_var(blob_properties_array, v):
     """
-    A counting function
+    Counts the number of times v appears in an array
 
     Arguments:
         blob_properties_array (array): An array containing various properties organized by blob
-        v (int): how many to count
+        v (int): How many to count
 
     Returns:
-        int: the total count for each value
+        int: The total count for each value
     """
     return blob_properties_array.values.tolist().count(v) / (blob_properties_array.shape[0] * 1.0)
 
 def get_hydrophobicity(residue, hydropathy_scale):
     """
-    A function that returns the hydrophobicity per residue based on which scale the user has selected
+    Reads the string of the user-defined hydropathy scale and retrieves the scale's properties
 
     Arguments:
         residue (str): A given residue's amino acid type
-        hydropathy_scale (str): the hydrophobicity scale as selected by the user
+        hydropathy_scale (str): The hydrophobicity scale as selected by the user
 
     Returns:
-        hydrophobicity (int): the hydrophobicity for a given residue in the selected scale
+        hydrophobicity (int): The hydrophobicity for a given residue in the selected scale
     """
-
     if hydropathy_scale == "kyte_doolittle":
         scale = properties_hydropathy
     elif hydropathy_scale == "eisenberg_weiss":
@@ -444,7 +465,7 @@ def get_hydrophobicity(residue, hydropathy_scale):
 
 def clean_df(df):
     """
-    A function removes unnecessary columns from a given dataframe
+    Removes unnecessary columns from a given dataframe
 
     Arguments:
         df (dataframe): A pandas dataframe
@@ -462,7 +483,7 @@ def clean_df(df):
     del df["color_for_disorder_predictor_track"]
     del df["hydropathy_digitized"]
     del df["residue_charge"]
-    del df["residue_blob_type_to_numbers"]
+    del df["assign_track_bar_heights_to_residue"]
     del df["residue_disorder"]
     df["residue_number"] = df["residue_number"].astype(int)
     df = df[[ "residue_number",
@@ -528,7 +549,6 @@ def calculate_smoothed_hydropathy(residue, smoothing_window_length):
     expected (see github Wiki/Regression Checklist for instructions on how to perform 
     this test.
     """
-
     residue_smoothed_hydropathy = residue.rolling(smoothing_window_length, min_periods=0, center=True).mean()
 
     return residue_smoothed_hydropathy
@@ -559,11 +579,8 @@ def build_sequence_df(seq, disorder_residues=[], hydropathy_scale="kyte_doolittl
         "residue_name": residue_name
     })
 
-    # Mark disordered residues as 1, else 0
     df["residue_disorder"] = df["residue_number"].apply(lambda x: 1 if x in disorder_residues else 0)
-    # Get hydropathy value from chosen scale
     df["residue_hydropathy"] = [get_hydrophobicity(r, hydropathy_scale) for r in df["residue_name"]]
-    # Get integer charge of each residue
     df["residue_charge"] = [properties_charge[r] for r in df["residue_name"]]
     df["residue_charge"] = df["residue_charge"].astype(int)
 
@@ -621,20 +638,13 @@ def assign_blob_types(df, blob_length_minimum):
                             - 'residue_blob_type': blob type ('h', 'p', 't', 's')
                             - 'residue_blob_groups': blob number (1, 2, 3, etc.)
     """
-    # continuous stretch lengths
     df["residue_blob_type_pre"] = (df["hydropathy_digitized"].groupby(df["hydropathy_digitized"].ne(df["hydropathy_digitized"].shift()).cumsum()).transform("count"))
-
-    # assign blob types
     df["residue_blob_type"] = ["h" if (x >= blob_length_minimum and y == 1) else "t" if y==0 else "p"
                                for x, y in zip(df["residue_blob_type_pre"], df["hydropathy_digitized"].astype(int))]
-
-    # assign blob types again, but this time for small hydrophilic stretches
     df["residue_blob_type_pre"] = (df["residue_blob_type"].groupby(df["residue_blob_type"].ne(df["residue_blob_type"].shift()).cumsum()).transform("count"))
     df["residue_blob_type"] = ["t" if y=="t" else y if (x >= blob_length_minimum) else "s"
                                for x, y in zip(df["residue_blob_type_pre"], df["residue_blob_type"])]
-    df["residue_blob_type_to_numbers"] = df[["residue_blob_type", "residue_hydropathy"]].apply(residue_blob_type_to_numbers, axis=1)
-
-    # name blobs
+    df["assign_track_bar_heights_to_residue"] = df[["residue_blob_type", "residue_hydropathy"]].apply(assign_track_bar_heights_to_residue, axis=1)
     df["residue_blob_groups"] = pd.Series(name_blobs(df["residue_blob_type"].to_list()))
     df.fillna({"residue_blob_groups": "s"}, inplace=True)
 
@@ -722,7 +732,7 @@ def assign_colors(df, color_types=None):
     if "daspappu" in color_types:
         df["color_for_daspappu_track"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues",
                                             "blob_fraction_of_positively_charged_residues", "blob_fraction_of_negatively_charged_residues"]].apply(
-                                                lookup_color_das_pappu, axis=1)
+                                                assign_blob_das_pappu_color, axis=1)
     if "NCPR" in color_types:
         df["color_for_NCPR_track"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues"]].apply(lookup_color_ncpr, axis=1)
     if "uversky" in color_types:
