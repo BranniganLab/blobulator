@@ -29,21 +29,16 @@ import pickle
 import os 
 pd.options.mode.chained_assignment = "raise"
 
-# accessing the properties of the given sequence
-
-counter_s = 0  # this is global variable used for annotating blob_types in number_blobs
+counter_s = 0  
 counter_p = 0  
 counter_h = 0
+s_counter = 0
 
-s_counter = 0 # this is global variable used for annotating blob_types in group_blobs
-
-
-# character naming of blob_type names
+# Character naming of blob_type names
 ch = "a"
 counter_blob_type_naming = ord(ch)
 
-
-## COLOR MAPS
+# Color map properties
 cmap = LinearSegmentedColormap.from_list(
     "mycmap", [(0.0 / 1, "red"), ((0.5) / 1, "whitesmoke"), (1.0, "blue")]
 )
@@ -51,14 +46,13 @@ cmap = LinearSegmentedColormap.from_list(
 vmax=2.5
 cmap_enrich = LinearSegmentedColormap.from_list("mycmap", [(0/ vmax, "red"), (1./vmax, "whitesmoke"), (vmax / vmax, "blue")])
 
-c_norm_enrich = matplotlib.colors.Normalize(vmin=0, vmax=2) #re-wrapping normalization
+c_norm_enrich = matplotlib.colors.Normalize(vmin=0, vmax=2)
 scalar_map_enrich = matplotlib.cm.ScalarMappable(norm=c_norm_enrich, cmap=cmap)
 
 cmap_uversky = plt.get_cmap("PuOr")
 cmap_disorder = plt.get_cmap("PuOr")
 
-#This is when you want to change the scale of colormap
-c_norm = matplotlib.colors.Normalize(vmin=-0.3, vmax=0.3) #re-wrapping normalization
+c_norm = matplotlib.colors.Normalize(vmin=-0.3, vmax=0.3) 
 scalarMap = matplotlib.cm.ScalarMappable(norm=c_norm, cmap=cmap_uversky)
 cval = scalarMap.to_rgba(0)
 
@@ -158,7 +152,7 @@ def name_blobs(res_types):
     
     return grouped_names
         
-def assign_track_bar_heights_to_residue(blob_properties_array):
+def assign_residue_track_bar_height(blob_properties_array):
     """
     Assigns bar heights to each residue for output tracks based on what type of blob they fall into
 
@@ -220,7 +214,7 @@ def assign_blob_das_pappu_color(blob_properties_array):
             "Found inaccessible region of phase diagram. Numerical error"
         )
 
-def lookup_number_das_pappu(blob_properties_array):
+def assign_blob_das_pappu_value(blob_properties_array):
     """
     Assigns numerical values to blobs based on where they lie in the Das-Pappu phase diagram: (Fig 7) https://www.pnas.org/doi/10.1073/pnas.1304749110
 
@@ -265,7 +259,7 @@ def lookup_number_das_pappu(blob_properties_array):
         )
 
 # ..........................Define colors for each blob type....................................#
-def lookup_color_blob(blob_properties_array):
+def assign_blob_color_by_type(blob_properties_array):
     """
     Determines the color for blobs based on their blob types
 
@@ -283,9 +277,9 @@ def lookup_color_blob(blob_properties_array):
         return "#2DB11A"
 
 # ..........................Define phase diagram................................................#
-def lookup_number_uversky(blob_properties_array):
+def assign_blob_uversky_value(blob_properties_array):
     """
-    Calculates the distance from the disorder/order boundary for each blob on the uversky diagram
+    Calculates the distance (uversky value)from the disorder/order boundary for each blob on the uversky diagram
 
     Arguments:
         blob_properties_array (array): An array containing the fraction of positive and negative residues per blob
@@ -306,9 +300,9 @@ def lookup_number_uversky(blob_properties_array):
         return distance 
 
 # ..........................Define NCPR.........................................................#
-def lookup_color_ncpr(blob_properties_array):
+def assign_blob_ncpr_color(blob_properties_array):
     """
-    Determines the color for each blob based on its NCPR
+    Assigns the color for each blob based on its NCPR
 
     Arguments:
         blob_properties_array (array): An array containing the fraction of positive and negative residues per blob
@@ -330,9 +324,9 @@ def lookup_color_ncpr(blob_properties_array):
 fname = blobulator_path.joinpath("uverskyCMap.csv")
 uverskyDict = pd.read_csv(fname, index_col=0)
 
-def lookup_color_uversky(blob_properties_array):
+def assign_blob_uversky_color(blob_properties_array):
     """
-    Determines the color for each blob based on its distance from the disorder/order boundary on the Uversky diagram
+    Assigns the color for each blob based on its distance from the disorder/order boundary on the Uversky diagram
 
     Arguments:
         blob_properties_array (array): An array containing the uversky distances for each residue by blob
@@ -346,9 +340,9 @@ def lookup_color_uversky(blob_properties_array):
 fname = blobulator_path.joinpath("disorderCMap.csv")
 disorderDict = pd.read_csv(fname, index_col=0)
 
-def lookup_color_disorder(blob_properties_array):
+def assign_blob_disorder_color(blob_properties_array):
     """
-    Determines the color value for each blob based on how disordered it is which is determined by the Uniprot accession
+    Assigns the color value for each blob based on how disordered it is which is determined by the Uniprot accession
 
     Arguments:
         blob_properties_array (array): An array containing the disorder value for each residue by blob
@@ -371,9 +365,9 @@ fname = blobulator_path.joinpath("enrichCMap_s.csv")
 enrich_df_s = pd.read_csv(fname, index_col=[0, 1])
 #enrich_df_s.to_csv("../data/enrichment_s.txt")
 
-def lookup_color_predicted_dsnp_enrichment(blob_properties_array):
+def assign_blob_predicted_dsnp_enrichment_color(blob_properties_array):
     """
-    Determines the color for each blob based on how sensitive to mutation it is predicted to be.
+    Assigns the color for each blob based on how sensitive to mutation it is predicted to be.
     Note: This function requires the minimum smoothed hydropathy for each blob. The analysis from 
         Lohia et al. 2022 that produced the data by which blobs are colored involved increasing the H* 
         threshold, and the minimum smoothed hydropathy is what determines that any given h-blob of a 
@@ -407,9 +401,9 @@ def lookup_color_predicted_dsnp_enrichment(blob_properties_array):
     else:
         return "grey"
 
-def lookup_number_predicted_dsnp_enrichment(blob_properties_array):
+def assign_blob_predicted_dsnp_enrichment_value(blob_properties_array):
     """
-    Determines the color for each h-blob in a given sequence based on how sensitive to a mutation it is predicted to be
+    Assigns the color for each h-blob in a given sequence based on how sensitive to a mutation it is predicted to be
 
     Arguments:
         blob_properties_array (array): An array containing the predicted mutation sensitivity value for each residue for each h-blob
@@ -483,7 +477,7 @@ def clean_df(df):
     del df["color_for_disorder_predictor_track"]
     del df["hydropathy_digitized"]
     del df["residue_charge"]
-    del df["assign_track_bar_heights_to_residue"]
+    del df["assign_residue_track_bar_height"]
     del df["residue_disorder"]
     df["residue_number"] = df["residue_number"].astype(int)
     df = df[[ "residue_number",
@@ -530,7 +524,6 @@ def clean_df(df):
 
     return df
 
-# Modularized functions below
 def calculate_smoothed_hydropathy(residue, smoothing_window_length):
     """
     Calculates the smoothed hydropathy of a given residue with its two ajacent neighbors.
@@ -644,7 +637,7 @@ def assign_blob_types(df, blob_length_minimum):
     df["residue_blob_type_pre"] = (df["residue_blob_type"].groupby(df["residue_blob_type"].ne(df["residue_blob_type"].shift()).cumsum()).transform("count"))
     df["residue_blob_type"] = ["t" if y=="t" else y if (x >= blob_length_minimum) else "s"
                                for x, y in zip(df["residue_blob_type_pre"], df["residue_blob_type"])]
-    df["assign_track_bar_heights_to_residue"] = df[["residue_blob_type", "residue_hydropathy"]].apply(assign_track_bar_heights_to_residue, axis=1)
+    df["assign_residue_track_bar_height"] = df[["residue_blob_type", "residue_hydropathy"]].apply(assign_residue_track_bar_height, axis=1)
     df["residue_blob_groups"] = pd.Series(name_blobs(df["residue_blob_type"].to_list()))
     df.fillna({"residue_blob_groups": "s"}, inplace=True)
 
@@ -687,9 +680,9 @@ def compute_blob_properties(df):
     df["blob_fraction_of_positively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, 1))
     df["blob_fraction_of_negatively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, -1))
     df["blob_fraction_of_charged_residues"] = df["blob_fraction_of_positively_charged_residues"] + df["blob_fraction_of_negatively_charged_residues"]
-    df["blob_predicted_enrichment_of_dsnps"] = df[["blob_length", "blob_minimum_hydrophobicity", "residue_blob_type"]].apply(lambda x: lookup_number_predicted_dsnp_enrichment(x), axis=1)
-    df["blob_daspappu_phase"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues","blob_fraction_of_positively_charged_residues", "blob_fraction_of_negatively_charged_residues"]].apply(lookup_number_das_pappu, axis=1)
-    df["blob_distance_from_uversky_boundary_line"] = df[["blob_net_charge_per_residue", "blob_hydrophobicity"]].apply(lookup_number_uversky, axis=1)
+    df["blob_predicted_enrichment_of_dsnps"] = df[["blob_length", "blob_minimum_hydrophobicity", "residue_blob_type"]].apply(lambda x: assign_blob_predicted_dsnp_enrichment_value(x), axis=1)
+    df["blob_daspappu_phase"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues","blob_fraction_of_positively_charged_residues", "blob_fraction_of_negatively_charged_residues"]].apply(assign_blob_das_pappu_value, axis=1)
+    df["blob_distance_from_uversky_boundary_line"] = df[["blob_net_charge_per_residue", "blob_hydrophobicity"]].apply(assign_blob_uversky_value, axis=1)
     return df
 
 def assign_colors(df, color_types=None):
@@ -726,19 +719,19 @@ def assign_colors(df, color_types=None):
         color_types = ["blobtype", "dsnp_enrichment", "daspappu", "NCPR", "uversky", "disorder"]
 
     if "blobtype" in color_types:
-        df["color_for_blobtype_track"] = df[["residue_blob_type", "residue_hydropathy"]].apply(lookup_color_blob, axis=1)
+        df["color_for_blobtype_track"] = df[["residue_blob_type", "residue_hydropathy"]].apply(assign_blob_color_by_type, axis=1)
     if "dsnp_enrichment" in color_types:
-        df["color_for_dsnp_enrichment_track"] = df[["blob_length", "blob_minimum_hydrophobicity", "residue_blob_type"]].apply(lookup_color_predicted_dsnp_enrichment, axis=1)
+        df["color_for_dsnp_enrichment_track"] = df[["blob_length", "blob_minimum_hydrophobicity", "residue_blob_type"]].apply(assign_blob_predicted_dsnp_enrichment_color, axis=1)
     if "daspappu" in color_types:
         df["color_for_daspappu_track"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues",
                                             "blob_fraction_of_positively_charged_residues", "blob_fraction_of_negatively_charged_residues"]].apply(
                                                 assign_blob_das_pappu_color, axis=1)
     if "NCPR" in color_types:
-        df["color_for_NCPR_track"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues"]].apply(lookup_color_ncpr, axis=1)
+        df["color_for_NCPR_track"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues"]].apply(assign_blob_ncpr_color, axis=1)
     if "uversky" in color_types:
-        df["color_for_uversky_track"] = df[["blob_distance_from_uversky_boundary_line", "blob_fraction_of_charged_residues"]].apply(lookup_color_uversky, axis=1)
+        df["color_for_uversky_track"] = df[["blob_distance_from_uversky_boundary_line", "blob_fraction_of_charged_residues"]].apply(assign_blob_uversky_color, axis=1)
     if "disorder" in color_types:
-        df["color_for_disorder_predictor_track"] = df[["blob_disorder", "blob_fraction_of_charged_residues"]].apply(lookup_color_disorder, axis=1)
+        df["color_for_disorder_predictor_track"] = df[["blob_disorder", "blob_fraction_of_charged_residues"]].apply(assign_blob_disorder_color, axis=1)
 
     return df
 
