@@ -204,10 +204,9 @@
             localStorage.clear()
         }
     }
-    document.getElementById("pdb_file").onchange = function() {
-        deletePDB();
-        const form = document.getElementById("pdb_entry_block");
-        var formData = new FormData(form);
+
+    function acceptPDB(pdbAcceptingElement) {
+        var formData = new FormData(pdbAcceptingElement);
         const file = formData.get('pdb_file');
         if (file) {
             const fileReader = new FileReader();
@@ -239,6 +238,11 @@
 			}
             fileReader.readAsText(file);
         }
+    }
+    document.getElementById("pdb_file").onchange = function() {
+        deletePDB();
+        const form = document.getElementById("pdb_entry_block");
+        acceptPDB(form);
     }
 </script>
 
