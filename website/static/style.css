@@ -27,6 +27,7 @@
 .white-box { 
 	background: rgba(255,255,255,0.3);
 	position: sticky;
+	align-items: center	;
 	width: 70vw;
 }
 
@@ -43,7 +44,6 @@
 	.result-controls {
 		position: sticky;
 		top: 0;
-		width: fit-content;
 	}
 }
 

@@ -66,7 +66,7 @@ $(document).ready( function() {
 	if (pdb_string != '') {
 		molstar_warning_box.innerHTML = "Displaying " + molstarwindow_pre_text + selected_chain
 	} else {
-		molstar_warning_box.innerHTML = "Drag and drop a pdb corresponding to this protein below to view blobs in a 3D structure!"
+		molstar_warning_box.innerHTML = "Drag and drop a pdb corresponding to this protein below to view blobs in a 3D structure"
 	}
 	
 	localStorage.setItem("blobSeq", my_data.map(row => row.residue_blob_type))
@@ -497,14 +497,14 @@ $(document).ready( function() {
 				</script>
 
 				<div>
-					<tr id="mutations_container"> <td> <input type="checkbox" id="mutatebox" class="mutatebox" value="True"> <label for="mutatebox">Mutate residue:</label> </td>
+					<tr id="mutations_container"> <td> <label for="mutatebox">Mutate residue:</label></td>
 					<!-- my_seq includes single quotes in the string so we have to do this subscripting here -->
 					<td> <select id="snp_id" class="snp_id">
 					{% for residue in my_seq[1:-1] %}
 					<option value="{{ loop.index0 + 1 }}"> {{ loop.index0 + 1 }} ({{ residue }})</option>
 					{% endfor %}
-					 </select> </td>
-					<td> to
+					 </select> 
+					to
 					<select id="residue_type" class="residue_type">
 						<option disabled>&mdash; Positive &mdash;</option>
 						<option selected="selected" value="R">R - Arg</option>
@@ -532,6 +532,7 @@ $(document).ready( function() {
 						<option value="G">G - Gly</option>
 						<option value="P">P - Pro</option>
 					</select> </td>
+					<td><input type="checkbox" id="mutatebox" class="mutatebox" value="True">  Mutate!</td>
 				</tr>
 				</div>						
 			</div>
