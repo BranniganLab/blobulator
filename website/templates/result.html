@@ -199,7 +199,7 @@ $(document).ready( function() {
 					document.close();
 					
 				}
-			});b
+			});
 
 		};
 
@@ -503,8 +503,8 @@ $(document).ready( function() {
 					{% for residue in my_seq[1:-1] %}
 					<option value="{{ loop.index0 + 1 }}"> {{ loop.index0 + 1 }} ({{ residue }})</option>
 					{% endfor %}
-					 </select> 
-					to
+					 </select><br>
+					to <br>
 					<select id="residue_type" class="residue_type">
 						<option disabled>&mdash; Positive &mdash;</option>
 						<option selected="selected" value="R">R - Arg</option>
