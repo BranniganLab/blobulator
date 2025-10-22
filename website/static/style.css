@@ -114,3 +114,9 @@ td > div {
 				margin: 0mm 40mm 0mm 0mm;
 	}
 }
+
+.blank_row
+{
+    height: 10px !important; /* overwrites any other rules */
+    background-color: #FFFFFF;
+}

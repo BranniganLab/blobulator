@@ -199,7 +199,7 @@ $(document).ready( function() {
 					document.close();
 					
 				}
-			});b
+			});
 
 		};
 
@@ -490,8 +490,8 @@ $(document).ready( function() {
 					{% for residue in my_seq[1:-1] %}
 					<option value="{{ loop.index0 + 1 }}"> {{ loop.index0 + 1 }} ({{ residue }})</option>
 					{% endfor %}
-					 </select> 
-					to
+					 </select><br>
+					to <br>
 					<select id="residue_type" class="residue_type">
 						<option disabled>&mdash; Positive &mdash;</option>
 						<option selected="selected" value="R">R - Arg</option>
@@ -524,9 +524,20 @@ $(document).ready( function() {
 				</div>						
 			</div>
 			</table>
+			<table cellpadding="5">
+				<tr class="blank_row">
+					<td colspan="6"></td>
+				</tr>
+				<tr>
 				<label style = "opacity: 0.0; display: none; position: relative;"> </label>
-				<button type="button" onclick="window.print();return false;">Print Screen</button>
-				<button type="button" id="download_data_link">Download data!</button>
+				<td><button type="button" onclick="window.print();return false;">Print Screen</button></td>
+				<td><button type="button" id="download_data_link">Download data!</button></td>
+				<td id="reset_zoom_button"></td>
+				<td id="clear_mutation_button"></td>
+				<td id="lock_controls_button"></td>
+				<td id="reset_settings_button"></td>
+				</tr>
+			</table>
 	</div>
 
 		<!--The div id my_dataviz is the div container for ALL D3 visualization plots, color keys-->

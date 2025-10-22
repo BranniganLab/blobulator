@@ -44,7 +44,7 @@ class ZFigure {
 		  	let domainBounds_zoom = [Math.min(...domainArray_zoom), Math.max(...domainArray_zoom)];
 		  	Object.values(ZChart.allInstances).forEach(fig => fig.do_zoom(fig.data, null, domainBounds_zoom, domainArray_zoom, fig.xAxis, fig.WIDTH, 1000));
 		 };
-		var top_container = document.getElementById("result_main_container");
+		var top_container = document.getElementById("reset_zoom_button");
 		top_container.appendChild(btn);
 
 		return this;
@@ -75,7 +75,6 @@ class ZFigure {
 		btn.innerHTML = "Clear Mutation";
 		btn.id = "reset_mut"
 		btn.type = "button";
-		btn.style.margin = "4px";
 		btn.onclick = function () {
 			if (document.getElementById("mutatebox").checked == true){
 				document.getElementById("mutatebox").click();	
@@ -83,7 +82,7 @@ class ZFigure {
 			document.getElementById("snp_id").value = 1;
 			document.getElementById("residue_type").value = "R";
 		}
-		var top_container = document.getElementById("result_main_container");
+		var top_container = document.getElementById("clear_mutation_button");
 		top_container.appendChild(btn);
 
 		return this;
@@ -95,7 +94,6 @@ class ZFigure {
 		btn.innerHTML = "Lock Control Panel";
 		btn.id = "lock_ctrl"
 		btn.type = "button";
-		btn.style.margin = "4px";
 		let locked = false
 		btn.onclick = function () {
 			locked = !locked;
@@ -108,7 +106,7 @@ class ZFigure {
 				btn.innerHTML = "Lock Control Panel";
 		}
 		}
-		var top_container = document.getElementById("result_main_container");
+		var top_container = document.getElementById("lock_controls_button");
 		top_container.appendChild(btn);
 
 		return this;
@@ -120,7 +118,6 @@ class ZFigure {
 		btn.innerHTML = "Reset To Default Settings";
 		btn.id = "reset_def"
 		btn.type = "button";
-		btn.style.margin = "4px";
 		btn.onclick = function () {
 			var current_cutoff_box = document.getElementById("cutoff_user_box");
 			var current_slider = document.getElementById("cutoff_user_slider");
@@ -136,7 +133,7 @@ class ZFigure {
 			domain_threshold_value.innerHTML = 4;
 			domain_threshold_slider.value = 4;
 		}
-		var top_container = document.getElementById("result_main_container");
+		var top_container = document.getElementById("reset_settings_button");
 		top_container.appendChild(btn);
 
 		return this;
