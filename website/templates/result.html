@@ -444,27 +444,14 @@ $(document).ready( function() {
 						<option value="eisenberg_weiss">Eisenberg and Weiss</option>
 						<option value="moon_fleming">Moon and Fleming</option></select></td>
 						<td id="hydro-labels" class="hydro_labels" style="width: 50%"></td>
-						<td><p id="molstar_warning_box" style="position: relative; left:80px;"></p></td></tr>
+						<td></td></tr>
 					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
 					</label></td>
 					<td><input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
 					<td style="width: 50%"><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td>
 					
-					<td rowspan="5">
-						<style>
-					    #app {
-					        position: relative;
-					        left: 80px;
-					        top: 5px;
-					        width: 425px;
-					        height: 250px;
-					    }
-					</style>
-					<script type="text/javascript" src="static/molstar_plugin/node_modules/molstar/build/viewer/molstar.js"></script>
-					<div id="app"></div>
-					<script type="text/javascript" src="static/molstar_plugin/plugin/dist/main.js"></script>
-					</td></tr>
+					<td></td></tr>
 				<tr>
 				<td>Minimum blob size:
 					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
@@ -546,6 +533,24 @@ $(document).ready( function() {
 		<div id="my_dataviz" class="viz_track">
 
 		</div>
+
+	<div>
+		<p id="molstar_warning_box" style="position: relative;"></p>
+		<style>
+			#app {
+				position: relative;
+				margin-top: 200; 
+				margin-right: 230;
+				margin-left: 50;
+				margin-bottom: 30;
+				width: 100%;
+				height: 800px; 
+			}
+		</style>
+		<script type="text/javascript" src="static/molstar_plugin/node_modules/molstar/build/viewer/molstar.js"></script>
+		<div id="app"></div>
+		<script type="text/javascript" src="static/molstar_plugin/plugin/dist/main.js"></script>
+	</div>
 
 	</div>
 </div>
