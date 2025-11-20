@@ -27,6 +27,7 @@
 .white-box { 
 	background: rgba(255,255,255,0.3);
 	position: sticky;
+	align-items: center	;
 	width: 70vw;
 }
 
@@ -43,7 +44,6 @@
 	.result-controls {
 		position: sticky;
 		top: 0;
-		width: fit-content;
 	}
 }
 
@@ -113,4 +113,10 @@ td > div {
 	body {-webkit-print-color-adjust: exact;
 				margin: 0mm 40mm 0mm 0mm;
 	}
+}
+
+.blank_row
+{
+    height: 10px !important; /* overwrites any other rules */
+    background-color: #FFFFFF;
 }
