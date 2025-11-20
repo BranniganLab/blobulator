@@ -66,7 +66,7 @@ $(document).ready( function() {
 	if (pdb_string != '') {
 		molstar_warning_box.innerHTML = "Displaying " + molstarwindow_pre_text + selected_chain
 	} else {
-		molstar_warning_box.innerHTML = "Drag and drop a pdb corresponding to this protein below to view blobs in a 3D structure!"
+		molstar_warning_box.innerHTML = "Drag and drop a pdb corresponding to this protein below to view blobs in a 3D structure"
 	}
 	
 	localStorage.setItem("blobSeq", my_data.map(row => row.residue_blob_type))
@@ -199,7 +199,7 @@ $(document).ready( function() {
 					document.close();
 					
 				}
-			});b
+			});
 
 		};
 
@@ -444,27 +444,14 @@ $(document).ready( function() {
 						<option value="eisenberg_weiss">Eisenberg and Weiss</option>
 						<option value="moon_fleming">Moon and Fleming</option></select></td>
 						<td id="hydro-labels" class="hydro_labels" style="width: 50%"></td>
-						<td><p id="molstar_warning_box" style="position: relative; left:80px;"></p></td></tr>
+						<td></td></tr>
 					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
 					</label></td>
 					<td><input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
 					<td style="width: 50%"><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td>
 					
-					<td rowspan="5">
-						<style>
-					    #app {
-					        position: relative;
-					        left: 80px;
-					        top: 5px;
-					        width: 425px;
-					        height: 250px;
-					    }
-					</style>
-					<script type="text/javascript" src="static/molstar_plugin/node_modules/molstar/build/viewer/molstar.js"></script>
-					<div id="app"></div>
-					<script type="text/javascript" src="static/molstar_plugin/plugin/dist/main.js"></script>
-					</td></tr>
+					<td></td></tr>
 				<tr>
 				<td>Minimum blob size:
 					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
@@ -494,17 +481,30 @@ $(document).ready( function() {
 	    					$trLast.remove();
 	    				}
 
+						function updateMutateCheckboxLabel() {
+							var checkbox = document.getElementById("mutatebox");
+							var label = document.getElementById("mutatebox_label");
+							if (checkbox.checked) {
+								label.innerHTML = "Mutation Active";
+							} else {
+								label.innerHTML = "Mutate";
+							}
+						}
+
+
+
 				</script>
 
 				<div>
-					<tr id="mutations_container"> <td> <input type="checkbox" id="mutatebox" class="mutatebox" value="True"> <label for="mutatebox">Mutate residue:</label> </td>
+					<tr id="mutations_container"> <td> <label  for="mutatebox"> Mutate Residue:</label></td>
+					<td><input type="checkbox" id="mutatebox" class="mutatebox" value="True" onchange="updateMutateCheckboxLabel()"><label style="margin-left: 5px;" id="mutatebox_label"> Mutate </label></td>
 					<!-- my_seq includes single quotes in the string so we have to do this subscripting here -->
 					<td> <select id="snp_id" class="snp_id">
 					{% for residue in my_seq[1:-1] %}
 					<option value="{{ loop.index0 + 1 }}"> {{ loop.index0 + 1 }} ({{ residue }})</option>
 					{% endfor %}
-					 </select> </td>
-					<td> to
+					 </select>
+					to
 					<select id="residue_type" class="residue_type">
 						<option disabled>&mdash; Positive &mdash;</option>
 						<option selected="selected" value="R">R - Arg</option>
@@ -536,15 +536,44 @@ $(document).ready( function() {
 				</div>						
 			</div>
 			</table>
+			<table cellpadding="5">
+				<tr class="blank_row">
+					<td colspan="6"></td>
+				</tr>
+				<tr>
 				<label style = "opacity: 0.0; display: none; position: relative;"> </label>
-				<button type="button" onclick="window.print();return false;">Print Screen</button>
-				<button type="button" id="download_data_link">Download data!</button>
+				<td><button type="button" onclick="window.print();return false;">Print Screen</button></td>
+				<td><button type="button" id="download_data_link">Download data!</button></td>
+				<td id="reset_zoom_button"></td>
+				<td id="clear_mutation_button"></td>
+				<td id="lock_controls_button"></td>
+				<td id="reset_settings_button"></td>
+				</tr>
+			</table>
 	</div>
 
 		<!--The div id my_dataviz is the div container for ALL D3 visualization plots, color keys-->
 		<div id="my_dataviz" class="viz_track">
 
 		</div>
+
+	<div>
+		<p id="molstar_warning_box" style="position: relative;"></p>
+		<style>
+			#app {
+				position: relative;
+				margin-top: 200; 
+				margin-right: 230;
+				margin-left: 50;
+				margin-bottom: 30;
+				width: 100%;
+				height: 750px; 
+			}
+		</style>
+		<script type="text/javascript" src="static/molstar_plugin/node_modules/molstar/build/viewer/molstar.js"></script>
+		<div id="app"></div>
+		<script type="text/javascript" src="static/molstar_plugin/plugin/dist/main.js"></script>
+	</div>
 
 	</div>
 </div>

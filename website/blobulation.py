@@ -181,14 +181,6 @@ def index():
                 else:
                     print(f"\nAlphaFold structure not found for {user_uniprot_id}")
 
-            io = PDBIO()
-            structure = PDBParser().get_structure('structure', temporary_pdb_file)
-            chain = "A"
-
-            my_seq, shift, saved_chain, pdb_string = extract_chain(chain, temporary_pdb_file, io, structure)
-            
-            # Cleanup
-            os.remove(f"{user_uniprot_id}_alphafold.pdb")
 
             if seq_file is None:
                 return render_template("error.html",
