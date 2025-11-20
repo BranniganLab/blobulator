@@ -154,16 +154,32 @@ def index():
             seq_file_snp = fetched_data['SNP']
             seq_file_coords = fetched_data['Coordinates']
 
-            alphafold_url = f"https://alphafold.ebi.ac.uk/files/AF-{user_uniprot_id}-F1-model_v4.pdb"
-            response = requests.get(alphafold_url)
+            alphafold_url = f"https://alphafold.ebi.ac.uk/api/prediction/{user_uniprot_id}"
+            meta = requests.get(alphafold_url)
+            if meta.ok:
+                entries = meta.json()
 
-            if response.ok:
-                alphafold_pdb = response.text
-                temporary_pdb_file = f"{user_uniprot_id}_alphafold.pdb"
-                with open(temporary_pdb_file, "w") as f:
-                    f.write(alphafold_pdb)
-            else:
-                print(f"\nAlphaFold structure not found for {user_uniprot_id}")
+            if entries:
+                # Prefer the canonical entry (accession exactly == user_uniprot_id)
+                canonical = None
+                for e in entries:
+                    if e.get("uniprotAccession") == user_uniprot_id:
+                        canonical = e
+                        break
+        
+            # fallback: just pick the first entry
+            entry = canonical if canonical else entries[0]
+
+            pdb_url = entry.get("pdbUrl")
+            if pdb_url:
+                pdb_res = requests.get(pdb_url)
+                if pdb_res.ok:
+                    alphafold_pdb = pdb_res.text
+                    temporary_pdb_file = f"{user_uniprot_id}_alphafold.pdb"
+                    with open(temporary_pdb_file, "w") as f:
+                        f.write(alphafold_pdb)
+                else:
+                    print(f"\nAlphaFold structure not found for {user_uniprot_id}")
 
             io = PDBIO()
             structure = PDBParser().get_structure('structure', temporary_pdb_file)
