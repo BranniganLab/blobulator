@@ -13,7 +13,8 @@ Arguments:
   --DNA DNA            Flag that says whether the inputs are DNA or protein. Defaults to false (protein)
 """
 
-    # Copy and uncomment into main
+if __name__ == "__main__":
+
     #For diagnostics/development benchmarking
     #import cProfile
 
@@ -24,13 +25,12 @@ Arguments:
 
     #df = compute("MSPQTETKASVGFKAGVKDYKLTYYTPEYETKDTDILAAFRVTPQPGVPPEEAGAAVAAESSTGTWTTVWTDGLTSLDRYKGRCYHIEPVAGEENQYICYVAYPLDLFEEGSVTNMFTSIVGNVFGFKALRALRLEDLRIPTAYVKTFQGPPHGIQVERDKLNKYGRPLLGCTIKPKLGLSAKNYGRAVYECLRGGLDFTKDDENVNSQPFMRWRDRFLFCAEAIYKSQAETGEIKGHYLNATAGTCEEMMKRAIFARELGVPIVMHDYLTGGFTANTSLAHYCRDNGLLLHIHRAMHAVIDRQKNHGIHFRVLAKALRMSGGDHIHSGTVVGKLEGERDITLGFVDLLRDDFIEKDRSRGIYFTQDWVSLPGVLPVASGGIHVWHMPALTEIFGDDSVLQFGGGTLGHPWGNAPGAVANRVALEACVQARNEGRDLAREGNEIIREACKWSPELAAACEVWKEIKFEFQAMDTL", 0.4, 1)
     
-
-if __name__ == "__main__":
-
     import argparse
     from Bio import SeqIO
     from Bio.Seq import Seq
     import blobulator
+    import time
+    start = time.time()
 
     parser = argparse.ArgumentParser(description='')
 
@@ -44,7 +44,7 @@ if __name__ == "__main__":
     # New argument to allow selection of specific computations
     parser.add_argument('--compute', type=str, nargs='+', default=['all'],
                         choices=["all", "length", "hydrophobicity", "min_hydro", "ncpr",
-                                 "disorder", "charge_prop", "order", "pred_enrichment"],
+                                 "disorder", "charges", "order", "pred_enrichment"],
                         help="Specify which blob properties to compute. Use 'all' to run everything.")
 
     args = parser.parse_args()
@@ -69,18 +69,16 @@ if __name__ == "__main__":
             if "all" in args.compute:
                 df = blobulator.compute(sequence, args.cutoff, args.minBlob, 'kyte_doolittle')
             else:
-                # Build minimal dataframe
                 df = blobulator.build_sequence_df(sequence)
                 df = blobulator.smooth_and_digitize(df, args.cutoff)
                 df = blobulator.assign_blob_types(df, args.minBlob)
 
-                # Run only requested computations
                 if "length" in args.compute: df = blobulator.compute_blob_length(df)
                 if "hydrophobicity" in args.compute: df = blobulator.compute_blob_hydrophobicity(df)
-                if "min_hydro" in args.compute: df = blobulator.compute_blob_min_hydrophobicty(df)
+                if "min_hydro" in args.compute: df = blobulator.compute_blob_min_hydrophobicity(df)
                 if "ncpr" in args.compute: df = blobulator.compute_blob_ncpr(df)
                 if "disorder" in args.compute: df = blobulator.compute_blob_disorder(df)
-                if "charge_prop" in args.compute: df = blobulator.compute_blob_charge_property(df)
+                if "charges" in args.compute: df = blobulator.compute_blob_charge_property(df)
                 if "order" in args.compute: df = blobulator.compute_blob_order(df)
                 if "pred_enrichment" in args.compute: df = blobulator.compute_blob_predicted_enrichment(df)
 
@@ -100,19 +98,17 @@ if __name__ == "__main__":
         if "all" in args.compute:
             df = blobulator.compute(sequence, args.cutoff, args.minBlob, 'kyte_doolittle')
         else:
-            # Build minimal dataframe
             df = blobulator.build_sequence_df(sequence)
             df = blobulator.smooth_and_digitize(df, args.cutoff)
             df = blobulator.assign_blob_types(df, args.minBlob)
-            print("hiiiiiiiiiiiiiiiiiiii")
 
             # Run only requested computations
             if "length" in args.compute: df = blobulator.compute_blob_length(df)
             if "hydrophobicity" in args.compute: df = blobulator.compute_blob_hydrophobicity(df)
-            if "min_hydro" in args.compute: df = blobulator.compute_blob_min_hydrophobicty(df)
+            if "min_hydro" in args.compute: df = blobulator.compute_blob_min_hydrophobicity(df)
             if "ncpr" in args.compute: df = blobulator.compute_blob_ncpr(df)
             if "disorder" in args.compute: df = blobulator.compute_blob_disorder(df)
-            if "charge_prop" in args.compute: df = blobulator.compute_blob_charge_property(df)
+            if "charges" in args.compute: df = blobulator.compute_blob_charge_property(df)
             if "order" in args.compute: df = blobulator.compute_blob_order(df)
             if "pred_enrichment" in args.compute: df = blobulator.compute_blob_predicted_enrichment(df)
 
@@ -123,3 +119,5 @@ if __name__ == "__main__":
         print("done")
     else:
         print("No sequence provided")
+    end = time.time()
+    print(f"compute_blob_order took {end - start:.4f} seconds")
