@@ -287,8 +287,8 @@ def assign_blob_uversky_value(blob_properties_array):
     Returns:
         distance (int): The distance of each blob from the from the disorder/order boundary on the uversky diagram
     """
-    h = blob_properties_array.iloc[1]*1.0
-    ncpr = abs(blob_properties_array.iloc[0])
+    h = blob_properties_array["blob_hydrophobicity"]
+    ncpr = abs(blob_properties_array["blob_net_charge_per_residue"])
     c = 0.413 # intercept of diagram
     a = (1/2.785)
     b=-1
@@ -660,59 +660,94 @@ def assign_blob_types(df, blob_length_minimum):
 
     return df
 
+
+
+
+
 def compute_blob_length(df):
-    build_sequence_df(df)
-    blobs = df.groupby(["residue_blob_groups"])
+
+    blobs = df.groupby("residue_blob_groups")
     df["blob_length"] = blobs["residue_number"].transform("count")
     return df
 
 def compute_blob_hydrophobicity(df):
-    build_sequence_df(df)
-    blobs = df.groupby(["residue_blob_groups"])
+
+    blobs = df.groupby("residue_blob_groups")
     df["blob_hydrophobicity"] = blobs["residue_hydropathy"].transform("mean")
     return df
 
-def compute_blob_min_hydrophobicty(df):
-    build_sequence_df(df)
-    smooth_and_digitize(df)
-    blobs = df.groupby(["residue_blob_groups"])
-    df["blob_minimum_hydrophobicity"] = blobs["residue_smoothed_hydropathy"].transform("min")    
+def compute_blob_min_hydrophobicity(df):
+
+    blobs = df.groupby("residue_blob_groups")
+    df["blob_minimum_hydrophobicity"] = blobs["residue_smoothed_hydropathy"].transform("min")
     return df
 
 def compute_blob_ncpr(df):
-    build_sequence_df(df)
-    blobs = df.groupby(["residue_blob_groups"])
+
+    blobs = df.groupby("residue_blob_groups")
     df["blob_net_charge_per_residue"] = blobs["residue_charge"].transform("mean")
     return df
 
 def compute_blob_disorder(df):
-    build_sequence_df(df)
-    blobs = df.groupby(["residue_blob_groups"])
+
+    blobs = df.groupby("residue_blob_groups")
     df["blob_disorder"] = blobs["residue_disorder"].transform("mean")
     return df
 
+def compute_blob_predicted_enrichment(df):
+
+    if "blob_length" not in df.columns:
+        df = compute_blob_length(df)
+    
+    if "blob_minimum_hydrophobicity" not in df.columns:
+        df = compute_blob_min_hydrophobicity(df)
+
+    df["blob_predicted_enrichment_of_dsnps"] = df[["blob_length", "blob_minimum_hydrophobicity", "residue_blob_type"]].apply(lambda x: assign_blob_predicted_dsnp_enrichment_value(x), axis=1)
+
+    return df
+
 def compute_blob_charge_property(df):
-    compute_blob_ncpr()
-    blobs = df.groupby(["residue_blob_groups"])
-    df["blob_fraction_of_positively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, 1))
-    df["blob_fraction_of_negatively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, -1))
-    df["blob_fraction_of_charged_residues"] = df["blob_fraction_of_positively_charged_residues"] + df["blob_fraction_of_negatively_charged_residues"]
-    df["blob_daspappu_phase"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues","blob_fraction_of_positively_charged_residues", "blob_fraction_of_negatively_charged_residues"]].apply(assign_blob_das_pappu_value, axis=1)
+    
+    if "blob_net_charge_per_residue" not in df.columns:
+        compute_blob_ncpr(df)
+
+    blobs = df.groupby("residue_blob_groups")
+
+    if "blob_fraction_of_positively_charged_residues" not in df.columns:
+        df["blob_fraction_of_positively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, 1))
+    if "blob_fraction_of_negatively_charged_residues" not in df.columns:
+        df["blob_fraction_of_negatively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, -1))
+    if "blob_fraction_of_charged_residues" not in df.columns:
+        df["blob_fraction_of_charged_residues"] = df["blob_fraction_of_positively_charged_residues"] + df["blob_fraction_of_negatively_charged_residues"]
+
+    if "blob_daspappu_phase" not in df.columns:
+        blob_vals = df.groupby("residue_blob_groups")[[
+            "blob_net_charge_per_residue",
+            "blob_fraction_of_charged_residues",
+            "blob_fraction_of_positively_charged_residues",
+            "blob_fraction_of_negatively_charged_residues"]].first()
+        blob_vals["blob_daspappu_phase"] = assign_blob_das_pappu_value(blob_vals)
+        df = df.merge(blob_vals[["blob_daspappu_phase"]], left_on="residue_blob_groups", right_index=True)
     return df
 
 def compute_blob_order(df):
-    compute_blob_ncpr(df)
-    compute_blob_hydrophobicity(df)
+
+    if "blob_net_charge_per_residue" not in df.columns:
+        df = compute_blob_ncpr(df)
+
+    if "blob_minimum_hydrophobicity" not in df.columns:
+        df = compute_blob_hydrophobicity(df)
+
     df["blob_distance_from_uversky_boundary_line"] = df[["blob_net_charge_per_residue", "blob_hydrophobicity"]].apply(assign_blob_uversky_value, axis=1)
+
     return df
 
 
-def compute_blob_predicted_enrichment(df):
-    assign_blob_types(df)
-    compute_blob_length(df)
-    compute_blob_min_hydrophobicty(df)
-    df["blob_predicted_enrichment_of_dsnps"] = df[["blob_length", "blob_minimum_hydrophobicity", "residue_blob_type"]].apply(lambda x: assign_blob_predicted_dsnp_enrichment_value(x), axis=1)
-    return df
+
+
+
+
+
    
 
 def compute_blob_properties(df):
