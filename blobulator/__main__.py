@@ -12,14 +12,8 @@ Arguments:
   --fasta FASTA        FASTA file with 1 or more sequences
   --DNA DNA            Flag that says whether the inputs are DNA or protein. Defaults to false (protein)
 """
-if __name__ == "__main__":
 
-    import argparse
-    from Bio import SeqIO
-    from Bio.Seq import Seq
-
-    import blobulator
-
+    # Copy and uncomment into main
     #For diagnostics/development benchmarking
     #import cProfile
 
@@ -30,6 +24,14 @@ if __name__ == "__main__":
 
     #df = compute("MSPQTETKASVGFKAGVKDYKLTYYTPEYETKDTDILAAFRVTPQPGVPPEEAGAAVAAESSTGTWTTVWTDGLTSLDRYKGRCYHIEPVAGEENQYICYVAYPLDLFEEGSVTNMFTSIVGNVFGFKALRALRLEDLRIPTAYVKTFQGPPHGIQVERDKLNKYGRPLLGCTIKPKLGLSAKNYGRAVYECLRGGLDFTKDDENVNSQPFMRWRDRFLFCAEAIYKSQAETGEIKGHYLNATAGTCEEMMKRAIFARELGVPIVMHDYLTGGFTANTSLAHYCRDNGLLLHIHRAMHAVIDRQKNHGIHFRVLAKALRMSGGDHIHSGTVVGKLEGERDITLGFVDLLRDDFIEKDRSRGIYFTQDWVSLPGVLPVASGGIHVWHMPALTEIFGDDSVLQFGGGTLGHPWGNAPGAVANRVALEACVQARNEGRDLAREGNEIIREACKWSPELAAACEVWKEIKFEFQAMDTL", 0.4, 1)
     
+
+if __name__ == "__main__":
+
+    import argparse
+    from Bio import SeqIO
+    from Bio.Seq import Seq
+    import blobulator
+
     parser = argparse.ArgumentParser(description='')
 
     parser.add_argument('--sequence', type=str, help='Takes a single string of EITHER DNA or protein one-letter codes (no spaces).', default=None)
@@ -38,13 +40,19 @@ if __name__ == "__main__":
     parser.add_argument('--oname', type=str, help='Name of output file or path to output directory. Defaults to blobulated_.csv', default="blobulated_")
     parser.add_argument('--fasta', type=str, help='FASTA file with 1 or more sequences', default=None)
     parser.add_argument('--DNA', type=bool, help='Flag that says whether the inputs are DNA or protein. Defaults to false (protein)', default=False)
+    
+    # New argument to allow selection of specific computations
+    parser.add_argument('--compute', type=str, nargs='+', default=['all'],
+                        choices=["all", "length", "hydrophobicity", "min_hydro", "ncpr",
+                                 "disorder", "charge_prop", "order", "pred_enrichment"],
+                        help="Specify which blob properties to compute. Use 'all' to run everything.")
 
     args = parser.parse_args()
 
     if args.DNA:
         print("REMINDER: The blobulator assumes all DNA inputs to be coding sequences and only translates up to the first stop codon.")
         print("CAUTION: Do not mix DNA and protein sequences")
-    if (args.sequence!=None) & (args.fasta!=None):
+    if (args.sequence is not None) & (args.fasta is not None):
         print("ERROR: Input EITHER --sequence OR --fasta. NOT both.")
 
     elif args.fasta:
@@ -57,9 +65,27 @@ if __name__ == "__main__":
                 sequence = mrna.translate(to_stop=True)
             else:
                 sequence = seq_record.seq
-            df = blobulator.compute(sequence, args.cutoff, args.minBlob, 'kyte_doolittle')
-            print(f"Writing output file to: {args.oname}{seq_record.id}.csv")
+
+            if "all" in args.compute:
+                df = blobulator.compute(sequence, args.cutoff, args.minBlob, 'kyte_doolittle')
+            else:
+                # Build minimal dataframe
+                df = blobulator.build_sequence_df(sequence)
+                df = blobulator.smooth_and_digitize(df, args.cutoff)
+                df = blobulator.assign_blob_types(df, args.minBlob)
+
+                # Run only requested computations
+                if "length" in args.compute: df = blobulator.compute_blob_length(df)
+                if "hydrophobicity" in args.compute: df = blobulator.compute_blob_hydrophobicity(df)
+                if "min_hydro" in args.compute: df = blobulator.compute_blob_min_hydrophobicty(df)
+                if "ncpr" in args.compute: df = blobulator.compute_blob_ncpr(df)
+                if "disorder" in args.compute: df = blobulator.compute_blob_disorder(df)
+                if "charge_prop" in args.compute: df = blobulator.compute_blob_charge_property(df)
+                if "order" in args.compute: df = blobulator.compute_blob_order(df)
+                if "pred_enrichment" in args.compute: df = blobulator.compute_blob_predicted_enrichment(df)
+
             df = blobulator.clean_df(df)
+            print(f"Writing output file to: {args.oname}{seq_record.id}.csv")
             df.to_csv(f'{args.oname}{seq_record.id}.csv', index=False)
 
     elif args.sequence:
@@ -70,10 +96,28 @@ if __name__ == "__main__":
             sequence = mrna.translate(to_stop=True)
         else:
             sequence = args.sequence
-        
-        df = blobulator.compute(sequence, args.cutoff, args.minBlob, 'kyte_doolittle')
-        print ("Writing output file")
+
+        if "all" in args.compute:
+            df = blobulator.compute(sequence, args.cutoff, args.minBlob, 'kyte_doolittle')
+        else:
+            # Build minimal dataframe
+            df = blobulator.build_sequence_df(sequence)
+            df = blobulator.smooth_and_digitize(df, args.cutoff)
+            df = blobulator.assign_blob_types(df, args.minBlob)
+            print("hiiiiiiiiiiiiiiiiiiii")
+
+            # Run only requested computations
+            if "length" in args.compute: df = blobulator.compute_blob_length(df)
+            if "hydrophobicity" in args.compute: df = blobulator.compute_blob_hydrophobicity(df)
+            if "min_hydro" in args.compute: df = blobulator.compute_blob_min_hydrophobicty(df)
+            if "ncpr" in args.compute: df = blobulator.compute_blob_ncpr(df)
+            if "disorder" in args.compute: df = blobulator.compute_blob_disorder(df)
+            if "charge_prop" in args.compute: df = blobulator.compute_blob_charge_property(df)
+            if "order" in args.compute: df = blobulator.compute_blob_order(df)
+            if "pred_enrichment" in args.compute: df = blobulator.compute_blob_predicted_enrichment(df)
+
         df = blobulator.clean_df(df)
+        print ("Writing output file")
         df.to_csv(args.oname, index=False)
 
         print("done")
