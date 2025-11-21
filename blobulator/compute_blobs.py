@@ -459,7 +459,7 @@ def get_hydrophobicity(residue, hydropathy_scale):
 
 def clean_df(df):
     """
-    Removes unnecessary columns from a given dataframe
+    Removes unnecessary columns from a given dataframe if they exist.
 
     Arguments:
         df (dataframe): A pandas dataframe
@@ -467,62 +467,80 @@ def clean_df(df):
     Returns:
         df (dataframe): A cleaned pandas dataframe
     """
-    #print (df.head)
-    #df = df.drop(range(0, 1))
-    del df["residue_blob_type_pre"]
-    del df["color_for_NCPR_track"]
-    del df["color_for_blobtype_track"]
-    del df["color_for_daspappu_track"]
-    del df["color_for_uversky_track"]
-    del df["color_for_disorder_predictor_track"]
-    del df["hydropathy_digitized"]
-    del df["residue_charge"]
-    del df["assign_residue_track_bar_height"]
-    del df["residue_disorder"]
-    df["residue_number"] = df["residue_number"].astype(int)
-    df = df[[ "residue_number",
-             "residue_name",
-             "smoothing_window_length",
-             "hydropathy_cutoff",
-             "blob_length_minimum",
-             "blob_length",
-             "blob_hydrophobicity",
-             "blob_minimum_hydrophobicity",
-             "residue_blob_type",
-             "residue_blob_groups",
-             "blob_daspappu_phase",
-             "blob_net_charge_per_residue",
-             "blob_fraction_of_positively_charged_residues",
-             "blob_fraction_of_negatively_charged_residues",
-             "blob_fraction_of_charged_residues",
-             "blob_distance_from_uversky_boundary_line",
-             "blob_predicted_enrichment_of_dsnps",
-             "blob_disorder",
-             "residue_hydropathy",
-             "residue_smoothed_hydropathy"]]
-    df = df.rename(columns={"residue_name": "Residue_Name",
-                            "residue_number": "Residue_Number", 
-                            "blob_disorder": "Blob_Disorder", 
-                            "smoothing_window_length": "Window", 
-                            "hydropathy_cutoff": "Hydropathy_Cutoff", 
-                            "blob_length_minimum": "Minimum_Blob_Length", 
-                            "residue_blob_type":"Blob_Type", 
-                            "blob_hydrophobicity": "Normalized_Mean_Blob_Hydropathy",
-                            "blob_minimum_hydrophobicity": "Min_Blob_Hydropathy", 
-                            "residue_blob_groups": "Blob_Index_Number", 
-                            "blob_net_charge_per_residue": "Blob_NCPR", 
-                            "blob_fraction_of_positively_charged_residues": "Fraction_of_Positively_Charged_Residues", 
-                            "blob_fraction_of_negatively_charged_residues": "Fraction_of_Negatively_Charged_Residues", 
-                            "blob_fraction_of_charged_residues": "Fraction_of_Charged_Residues", 
-                            "blob_predicted_enrichment_of_dsnps": "dSNP_enrichment", 
-                            "blob_daspappu_phase": "Blob_Das-Pappu_Class", 
-                            "blob_distance_from_uversky_boundary_line": "Uversky_Diagram_Score", 
-                            "residue_hydropathy": "Normalized_hydropathy",
-                            "residue_smoothed_hydropathy": "Smoothed_Hydropathy",
-                            "blob_length": "blob_length"})
-    #df["Kyte-Doolittle_hydropathy"] = df["Normalized_Kyte-Doolittle_hydropathy"]*9-4.5
+    # Columns to remove if present
+    columns_to_remove = [
+        "residue_blob_type_pre",
+        "color_for_NCPR_track",
+        "color_for_blobtype_track",
+        "color_for_daspappu_track",
+        "color_for_uversky_track",
+        "color_for_disorder_predictor_track",
+        "hydropathy_digitized",
+        "residue_charge",
+        "assign_residue_track_bar_height",
+        "residue_disorder"
+    ]
+    
+    for col in columns_to_remove:
+        if col in df.columns:
+            del df[col]
+
+    # Ensure residue_number is int
+    if "residue_number" in df.columns:
+        df["residue_number"] = df["residue_number"].astype(int)
+
+    # Keep only the desired columns if they exist
+    desired_columns = [
+        "residue_number",
+        "residue_name",
+        "smoothing_window_length",
+        "hydropathy_cutoff",
+        "blob_length_minimum",
+        "blob_length",
+        "blob_hydrophobicity",
+        "blob_minimum_hydrophobicity",
+        "residue_blob_type",
+        "residue_blob_groups",
+        "blob_daspappu_phase",
+        "blob_net_charge_per_residue",
+        "blob_fraction_of_positively_charged_residues",
+        "blob_fraction_of_negatively_charged_residues",
+        "blob_fraction_of_charged_residues",
+        "blob_distance_from_uversky_boundary_line",
+        "blob_predicted_enrichment_of_dsnps",
+        "blob_disorder",
+        "residue_hydropathy",
+        "residue_smoothed_hydropathy"
+    ]
+    df = df[[c for c in desired_columns if c in df.columns]]
+
+    # Rename columns if they exist
+    rename_dict = {
+        "residue_name": "Residue_Name",
+        "residue_number": "Residue_Number", 
+        "blob_disorder": "Blob_Disorder", 
+        "smoothing_window_length": "Window", 
+        "hydropathy_cutoff": "Hydropathy_Cutoff", 
+        "blob_length_minimum": "Minimum_Blob_Length", 
+        "residue_blob_type":"Blob_Type", 
+        "blob_hydrophobicity": "Normalized_Mean_Blob_Hydropathy",
+        "blob_minimum_hydrophobicity": "Min_Blob_Hydropathy", 
+        "residue_blob_groups": "Blob_Index_Number", 
+        "blob_net_charge_per_residue": "Blob_NCPR", 
+        "blob_fraction_of_positively_charged_residues": "Fraction_of_Positively_Charged_Residues", 
+        "blob_fraction_of_negatively_charged_residues": "Fraction_of_Negatively_Charged_Residues", 
+        "blob_fraction_of_charged_residues": "Fraction_of_Charged_Residues", 
+        "blob_predicted_enrichment_of_dsnps": "dSNP_enrichment", 
+        "blob_daspappu_phase": "Blob_Das-Pappu_Class", 
+        "blob_distance_from_uversky_boundary_line": "Uversky_Diagram_Score", 
+        "residue_hydropathy": "Normalized_hydropathy",
+        "residue_smoothed_hydropathy": "Smoothed_Hydropathy",
+        "blob_length": "blob_length"
+    }
+    df = df.rename(columns={k: v for k, v in rename_dict.items() if k in df.columns})
 
     return df
+
 
 def calculate_smoothed_hydropathy(residue, smoothing_window_length):
     """
