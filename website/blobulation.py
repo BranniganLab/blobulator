@@ -178,8 +178,14 @@ def index():
                     temporary_pdb_file = f"{user_uniprot_id}_alphafold.pdb"
                     with open(temporary_pdb_file, "w") as f:
                         f.write(alphafold_pdb)
+                    io = PDBIO()
+                    structure = PDBParser().get_structure('structure', temporary_pdb_file)
+                    chain = "A"
+                    my_seq, shift, saved_chain, pdb_string = extract_chain(chain, temporary_pdb_file, io, structure)
+                    os.remove(f"{user_uniprot_id}_alphafold.pdb")
                 else:
                     print(f"\nAlphaFold structure not found for {user_uniprot_id}")
+                    pdb_string = ''
 
 
             if seq_file is None:
