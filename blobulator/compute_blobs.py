@@ -720,14 +720,8 @@ def compute_blob_charge_property(df):
     if "blob_fraction_of_charged_residues" not in df.columns:
         df["blob_fraction_of_charged_residues"] = df["blob_fraction_of_positively_charged_residues"] + df["blob_fraction_of_negatively_charged_residues"]
 
-    if "blob_daspappu_phase" not in df.columns:
-        blob_vals = df.groupby("residue_blob_groups")[[
-            "blob_net_charge_per_residue",
-            "blob_fraction_of_charged_residues",
-            "blob_fraction_of_positively_charged_residues",
-            "blob_fraction_of_negatively_charged_residues"]].first()
-        blob_vals["blob_daspappu_phase"] = assign_blob_das_pappu_value(blob_vals)
-        df = df.merge(blob_vals[["blob_daspappu_phase"]], left_on="residue_blob_groups", right_index=True)
+    df["blob_daspappu_phase"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues","blob_fraction_of_positively_charged_residues", "blob_fraction_of_negatively_charged_residues"]].apply(assign_blob_das_pappu_value, axis=1)
+
     return df
 
 def compute_blob_order(df):
