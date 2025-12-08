@@ -164,12 +164,19 @@ async function createPlugin(parent: HTMLElement) {
         createBlobRepresentation(plugin)
         }, 1000);
 
-    let elementsArray = document.querySelectorAll('.mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales,#reset_def')
+    let elementsArray = document.querySelectorAll('.mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales')
     elementsArray.forEach(function(elem) {
         elem.addEventListener('change', function() {
             setTimeout(() => {
             createBlobRepresentation(plugin)
         }, 1000)});
+    });
+
+    let reset_button = document.querySelector('#reset_def')
+    reset_button.addEventListener('click', function(){
+        setTimeout(() => {
+            createBlobRepresentation(plugin)
+        }, 1000)
     });
 
     let dropwindow = document.querySelector('#app')
