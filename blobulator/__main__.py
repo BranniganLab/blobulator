@@ -39,12 +39,9 @@ if __name__ == "__main__":
     parser.add_argument('--minBlob', type=int, help='Mininmum blob length (integer greater than 1). Defaults to 4', default=4)
     parser.add_argument('--oname', type=str, help='Name of output file or path to output directory. Defaults to blobulated_.csv', default="blobulated_")
     parser.add_argument('--fasta', type=str, help='FASTA file with 1 or more sequences', default=None)
-    parser.add_argument('--DNA', type=bool, help='Flag that says whether the inputs are DNA or protein. Defaults to false (protein)', default=False)
-    
-    # New argument to allow selection of specific computations
+    parser.add_argument('--DNA', type=bool, help='Flag that says whether the inputs are DNA or protein. Defaults to false (protein)', default=False)   
     parser.add_argument('--compute', type=str, nargs='+', default=['all'],
-                        choices=["all", "length", "hydrophobicity", "min_hydro", "ncpr",
-                                 "disorder", "charges", "order", "pred_enrichment"],
+                        choices=["all", "length", "hydrophobicity", "min_hydro", "ncpr", "disorder", "charges", "order", "pred_enrichment"],
                         help="Specify which blob properties to compute. Use 'all' to run everything.")
 
     args = parser.parse_args()
@@ -102,7 +99,6 @@ if __name__ == "__main__":
             df = blobulator.smooth_and_digitize(df, args.cutoff)
             df = blobulator.assign_blob_types(df, args.minBlob)
 
-            # Run only requested computations
             if "length" in args.compute: df = blobulator.compute_blob_length(df)
             if "hydrophobicity" in args.compute: df = blobulator.compute_blob_hydrophobicity(df)
             if "min_hydro" in args.compute: df = blobulator.compute_blob_min_hydrophobicity(df)
@@ -120,4 +116,4 @@ if __name__ == "__main__":
     else:
         print("No sequence provided")
     end = time.time()
-    print(f"compute_blob_order took {end - start:.4f} seconds")
+    print(f"\nTook {end - start:.4f} seconds")
