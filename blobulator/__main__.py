@@ -41,7 +41,7 @@ if __name__ == "__main__":
     parser.add_argument('--fasta', type=str, help='FASTA file with 1 or more sequences', default=None)
     parser.add_argument('--DNA', type=bool, help='Flag that says whether the inputs are DNA or protein. Defaults to false (protein)', default=False)   
     parser.add_argument('--compute', type=str, nargs='+', default=['all'],
-                        choices=["all", "length", "hydrophobicity", "min_hydro", "ncpr", "disorder", "charges", "order", "pred_enrichment"],
+                        choices=["all", "none", "length", "blob_hydropathy", "min_blob_hydropathy", "ncpr", "disorder", "charges", "order", "pred_enrichment"],
                         help="Specify which blob properties to compute. Use 'all' to run everything.")
 
     args = parser.parse_args()
@@ -65,14 +65,20 @@ if __name__ == "__main__":
 
             if "all" in args.compute:
                 df = blobulator.compute(sequence, args.cutoff, args.minBlob, 'kyte_doolittle')
+            
+            elif "none" in args.compute:
+                df = blobulator.build_sequence_df(sequence)
+                df = blobulator.smooth_and_digitize(df, args.cutoff)
+                df = blobulator.assign_blob_types(df, args.minBlob)
+            
             else:
                 df = blobulator.build_sequence_df(sequence)
                 df = blobulator.smooth_and_digitize(df, args.cutoff)
                 df = blobulator.assign_blob_types(df, args.minBlob)
 
                 if "length" in args.compute: df = blobulator.compute_blob_length(df)
-                if "hydrophobicity" in args.compute: df = blobulator.compute_blob_hydrophobicity(df)
-                if "min_hydro" in args.compute: df = blobulator.compute_blob_min_hydrophobicity(df)
+                if "blob_hydropathy" in args.compute: df = blobulator.compute_blob_hydrophobicity(df)
+                if "min_blob_hydropathy" in args.compute: df = blobulator.compute_blob_min_hydrophobicity(df)
                 if "ncpr" in args.compute: df = blobulator.compute_blob_ncpr(df)
                 if "disorder" in args.compute: df = blobulator.compute_blob_disorder(df)
                 if "charges" in args.compute: df = blobulator.compute_blob_charge_property(df)
@@ -94,14 +100,20 @@ if __name__ == "__main__":
 
         if "all" in args.compute:
             df = blobulator.compute(sequence, args.cutoff, args.minBlob, 'kyte_doolittle')
+        
+        elif "none" in args.compute:
+            df = blobulator.build_sequence_df(sequence)
+            df = blobulator.smooth_and_digitize(df, args.cutoff)
+            df = blobulator.assign_blob_types(df, args.minBlob)
+        
         else:
             df = blobulator.build_sequence_df(sequence)
             df = blobulator.smooth_and_digitize(df, args.cutoff)
             df = blobulator.assign_blob_types(df, args.minBlob)
 
             if "length" in args.compute: df = blobulator.compute_blob_length(df)
-            if "hydrophobicity" in args.compute: df = blobulator.compute_blob_hydrophobicity(df)
-            if "min_hydro" in args.compute: df = blobulator.compute_blob_min_hydrophobicity(df)
+            if "blob_hydropathy" in args.compute: df = blobulator.compute_blob_hydrophobicity(df)
+            if "min_blob_hydropathy" in args.compute: df = blobulator.compute_blob_min_hydrophobicity(df)
             if "ncpr" in args.compute: df = blobulator.compute_blob_ncpr(df)
             if "disorder" in args.compute: df = blobulator.compute_blob_disorder(df)
             if "charges" in args.compute: df = blobulator.compute_blob_charge_property(df)
