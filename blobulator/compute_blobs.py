@@ -477,7 +477,7 @@ def clean_df(df):
     del df["color_for_disorder_predictor_track"]
     del df["hydropathy_digitized"]
     del df["residue_charge"]
-    del df["assign_residue_track_bar_height"]
+    # del df["assign_residue_track_bar_height"]
     del df["residue_disorder"]
     df["residue_number"] = df["residue_number"].astype(int)
     df = df[[ "residue_number",
@@ -797,5 +797,4 @@ def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_
     df["blob_length_minimum"] = blob_length_minimum
     df["hydropathy_scale"] = hydropathy_scale
     df["disorder_residues"] = [disorder_residues] * len(df)
-
     return df
