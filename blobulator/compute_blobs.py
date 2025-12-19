@@ -660,42 +660,109 @@ def assign_blob_types(df, blob_length_minimum):
 
     return df
 
-
-
-
-
 def compute_blob_length(df):
-
+    """
+    Computes the number of residues in a blob.
+    
+    Arguments:
+         df (pd.DataFrame): DataFrame containing columns:
+           'residue_charge', 'residue_name', 'residue_disorder', 'residue_hydropathy', 'residue_charge'
+           'residue_smoothed_hydropathy', 'hydropathy_digitized', 
+           'residue_blob_type', and 'residue_blob_groups'
+     
+    Returns:
+        df: the Data frame with the column 'blob_length'
+        
+    """
     blobs = df.groupby("residue_blob_groups")
     df["blob_length"] = blobs["residue_number"].transform("count")
     return df
 
 def compute_blob_hydrophobicity(df):
-
+    """
+    Computes the hydropathy of a blob
+    
+    Arguments:
+         df (pd.DataFrame): DataFrame containing columns:
+           'residue_charge', 'residue_name', 'residue_disorder', 'residue_hydropathy', 'residue_charge'
+           'residue_smoothed_hydropathy', 'hydropathy_digitized', 
+           'residue_blob_type', and 'residue_blob_groups'
+     
+    Returns:
+        df: the Data frame with the column 'blob_hydrophobicity'
+        
+    """
     blobs = df.groupby("residue_blob_groups")
     df["blob_hydrophobicity"] = blobs["residue_hydropathy"].transform("mean")
     return df
 
 def compute_blob_min_hydrophobicity(df):
-
+    """
+    Computes the minimum hydropathy of a blob
+    
+    Arguments:
+         df (pd.DataFrame): DataFrame containing columns:
+           'residue_charge', 'residue_name', 'residue_disorder', 'residue_hydropathy', 'residue_charge'
+           'residue_smoothed_hydropathy', 'hydropathy_digitized', 
+           'residue_blob_type', and 'residue_blob_groups'
+     
+    Returns:
+        df: the Data frame with the column 'blob_minimum_hydrophobicity'
+        
+    """
     blobs = df.groupby("residue_blob_groups")
     df["blob_minimum_hydrophobicity"] = blobs["residue_smoothed_hydropathy"].transform("min")
     return df
 
 def compute_blob_ncpr(df):
-
+    """
+    Computes the net charge per residue for all blobs
+    
+    Arguments:
+         df (pd.DataFrame): DataFrame containing columns:
+           'residue_charge', 'residue_name', 'residue_disorder', 'residue_hydropathy', 'residue_charge'
+           'residue_smoothed_hydropathy', 'hydropathy_digitized', 
+           'residue_blob_type', and 'residue_blob_groups'
+     
+    Returns:
+        df: the Data frame with the column 'blob_net_charge_per_residue'
+    """
     blobs = df.groupby("residue_blob_groups")
     df["blob_net_charge_per_residue"] = blobs["residue_charge"].transform("mean")
     return df
 
 def compute_blob_disorder(df):
-
+    """
+    Computes the disorder for all blobs.
+    
+    Arguments:
+         df (pd.DataFrame): DataFrame containing columns:
+           'residue_charge', 'residue_name', 'residue_disorder', 'residue_hydropathy', 'residue_charge'
+           'residue_smoothed_hydropathy', 'hydropathy_digitized', 
+           'residue_blob_type', and 'residue_blob_groups'
+     
+    Returns:
+        df: the Data frame with the column 'blob_disorder'
+    """
     blobs = df.groupby("residue_blob_groups")
     df["blob_disorder"] = blobs["residue_disorder"].transform("mean")
     return df
 
 def compute_blob_predicted_enrichment(df):
-
+    """
+    Computes the 'blob_length' and 'blob_minimum_hydrophobicity' if not found in the data frame 'df'. 
+    Computes the predicted enrichment of dSNPS in all blobs
+    
+    Arguments:
+         df (pd.DataFrame): DataFrame containing columns:
+           'residue_charge', 'residue_name', 'residue_disorder', 'residue_hydropathy', 'residue_charge'
+           'residue_smoothed_hydropathy', 'hydropathy_digitized', 
+           'residue_blob_type', and 'residue_blob_groups'
+     
+    Returns:
+        df: the Data frame with the columns:
+        'blob_length', 'blob_minimum_hydrophobicity', and 'blob_predicted_enrichment_of_dsnps'
+    """
     if "blob_length" not in df.columns:
         df = compute_blob_length(df)
     
@@ -707,7 +774,24 @@ def compute_blob_predicted_enrichment(df):
     return df
 
 def compute_blob_charge_property(df):
+    """
+    Computes the 'blob_net_charge_per_residue', 'blob_fraction_of_positively_charged_residues',
+    'blob_fraction_of_negatively_charged_residues' and 'blob_fraction_of_charged_residues'
+    if not found in the data frame 'df'. 
+    Computes the Das-Pappu phase of all blobs
     
+    Arguments:
+         df (pd.DataFrame): DataFrame containing columns:
+           'residue_charge', 'residue_name', 'residue_disorder', 'residue_hydropathy', 'residue_charge'
+           'residue_smoothed_hydropathy', 'hydropathy_digitized', 
+           'residue_blob_type', and 'residue_blob_groups'
+     
+    Returns:
+        df: the Data frame with the columns:
+        'blob_net_charge_per_residue', 'blob_fraction_of_positively_charged_residues' 
+        'blob_fraction_of_negatively_charged_residues', 'blob_fraction_of_charged_residues', and 
+        'blob_daspappu_phase'
+    """   
     if "blob_net_charge_per_residue" not in df.columns:
         compute_blob_ncpr(df)
 
@@ -725,7 +809,22 @@ def compute_blob_charge_property(df):
     return df
 
 def compute_blob_order(df):
-
+    """
+    Computes the 'blob_net_charge_per_residue', 'blob_minimum_hydrophobicity',
+    if not found in the data frame 'df'. 
+    Computes the distance from the Uversky boundary line for all blobs
+    
+    Arguments:
+         df (pd.DataFrame): DataFrame containing columns:
+           'residue_charge', 'residue_name', 'residue_disorder', 'residue_hydropathy', 'residue_charge'
+           'residue_smoothed_hydropathy', 'hydropathy_digitized', 
+           'residue_blob_type', and 'residue_blob_groups'
+     
+    Returns:
+        df: the Data frame with the columns:
+        'blob_net_charge_per_residue', 'blob_minimum_hydrophobicity' and 
+        'blob_distance_from_uversky_boundary_line'
+    """   
     if "blob_net_charge_per_residue" not in df.columns:
         df = compute_blob_ncpr(df)
 
@@ -735,14 +834,6 @@ def compute_blob_order(df):
     df["blob_distance_from_uversky_boundary_line"] = df[["blob_net_charge_per_residue", "blob_hydrophobicity"]].apply(assign_blob_uversky_value, axis=1)
 
     return df
-
-
-
-
-
-
-
-   
 
 def compute_blob_properties(df):
     """
