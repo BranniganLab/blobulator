@@ -295,7 +295,7 @@ def assign_blob_uversky_value(blob_properties_array):
     distance = abs(a*ncpr + b*h +c)/math.sqrt(a**2+b**2)
     rel_line = h-(ncpr*a) - c
     if rel_line >= 0:
-        return distance * -1.0
+        return distance * -1.0 ## multiplied by -1 for colorscale assignment
     else:
         return distance 
 
