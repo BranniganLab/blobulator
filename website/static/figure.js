@@ -833,12 +833,12 @@ class ZblobChart extends ZChart {
 		}
 
 		// Start the line in the correct spot
-		let points = [{resid: data[0].residue_number, height: data[0].residue_blob_type_to_numbers}];
+		let points = [{resid: data[0].residue_number, height: data[0].assign_residue_track_bar_height}];
 
 		// Find the edges of each "skyscraper"
 		for(let i = 1; i < data.length; i++){
-			let last_res = data[i-1].residue_blob_type_to_numbers;
-			let this_res = data[i].residue_blob_type_to_numbers;
+			let last_res = data[i-1].assign_residue_track_bar_height;
+			let this_res = data[i].assign_residue_track_bar_height;
 			let resid = data[i].residue_number;
 			if (last_res != this_res) {
 				points.push({resid: resid, height: last_res});
@@ -849,7 +849,7 @@ class ZblobChart extends ZChart {
 		// Last line segment - add an extraneous data point to signify this
 		const last_resid = data[data.length-1].residue_number;
 		points.push({resid: last_resid,
-			height: data[data.length-1].residue_blob_type_to_numbers});
+			height: data[data.length-1].assign_residue_track_bar_height});
 
 		this.skyline = this.svg.append('g').classed('skyline', true).attr("id", "skyline");
 		this.skyline.append("path")
