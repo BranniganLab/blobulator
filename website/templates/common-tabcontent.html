@@ -83,6 +83,10 @@
     <div class="panel">
     <p>This option is used to change a residue within the sequence, and see what potential effects it would have on the blobulation output. To mutate a residue, select which residue you would like to mutate, choose the amino acid you would like to mutate the residue into, and click the checkbox. Alternatively, the user can select one of the known disease associated single nucleotide polymorphism by clicking on a black triangle found at the bottom of each track. These will only appear if a UniProt ID is used.</p>
     </div>
+    <button class="accordion"> &#10133 Viewing blobs on a protein structure</button>
+    <div class="panel">
+    <p>To view blobs in 3D on the blobulator webtool, use either ID entry (for the alpha fold structure) or upload a PDB using PDB entry when selecting an input method. Additionally, a VMD plugin  is available to download via <a href="https://github.com/BranniganLab/blobulator/tree/main" target="_blank"> the bloblator github repository </a> to blobulate and view blobs on a structure in VMD.</p>
+    </div>
     <br> <br>
 
     <h4 class="mt-2">SNPs and Mutations</h4>
@@ -150,9 +154,13 @@
     <div class="panel">
     <p>The blobulator outputs 6 tracks showing blobs overlaid with additional information. Each graph shows the sequence of the protein displayed in one of the following ways: smoothed hydropathy per residue, colored according to globular tendency, colored according to net charge per residue, colored according to the Uversky diagram, colored according to dSNP enrichment, colored according to fraction of disordered residue.</p>
     </div>
-    <button class="accordion">&#10133 Do you recommend using the manual sequence entry option, or the UniProt ID option for input?</button>
+    <button class="accordion">&#10133 Is there any way to view blobs on a protein structure?</button>
     <div class="panel">
-    <p>We strongly recommend using the UniProt ID option when available. There will be more graphs outputted, as well as SNP data available if you blobulate the protein using its UniProt ID. If you are interested in a specific variant of the protein, such as one containing a SNP, there is a mutate residue option at the top of the output page. </p>
+    <p>Yes! We have two ways: either via the ID entry (alphafold) or PDB entry (provided PDB file), or using the VMD plugin (source code found in <a href="https://github.com/BranniganLab/blobulator/tree/main" target="_blank"> the blobulator github repository</a>).</p>
+    </div>
+    <button class="accordion">&#10133 Do you recommend using the manual sequence entry option, the ID entry option, or the PDB entry option for input?</button>
+    <div class="panel">
+    <p>We strongly recommend using the ID entry option when available. There will be more graphs outputted, as well as SNP data available if you blobulate the protein using its UniProt ID. If you are interested in a specific variant of the protein, such as one containing a SNP, there is a mutate residue option at the top of the output page. If there's a specific structure you'd like to view in the molecular viewer, use the PDB entry option.</p>
     </div>
     <button class="accordion">&#10133 The blobulator buffers for a long time after I press compute - is this normal?</button>
     <div class="panel">
