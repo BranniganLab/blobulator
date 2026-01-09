@@ -406,7 +406,6 @@ $(document).ready( function() {
 </script>
 
 {% endblock %}
-
 {% block tablist %}
 {% include 'common-tablist.html' %}
 <li class="nav-item">
@@ -421,6 +420,7 @@ $(document).ready( function() {
 <div class="tab-pane container" id="result">
     <div class="container">
 		<div class="text-center">
+			<p style="color: #020281">Want to see blobs in 3D? Check out our new structure viewer located under the tracks below.</p>
 			<h6>{{ my_name | safe }}</h6>
 			<h6>{{ my_length | safe }}</h6>
 			<h6>{{ my_original_id | safe }}</h6>
