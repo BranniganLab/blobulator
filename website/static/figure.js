@@ -1,6 +1,8 @@
 class ZFigure {
 	constructor(figID, data){
 		// These constants set fixed values for height and width to be used in making all visualizations
+		console.log("ZFigure")
+		console.log(data)
 		this.MARGIN = { top: 30, right: 230, bottom: 30, left: 50 };
 		this.WIDTH = 1200 - this.MARGIN.left - this.MARGIN.right;
 		this.HEIGHT = 200 - this.MARGIN.top - this.MARGIN.bottom;
@@ -324,6 +326,7 @@ class ZFigure {
 class ZChart extends ZFigure{
 	static allInstances = {};
 	constructor(figID, data, my_snps, seq, snp_tooltips) {
+		console.log("In ZChart")
 
 		super(figID, data);
 
@@ -791,9 +794,9 @@ class ZblobChart extends ZChart {
 	}
 	
 	update_bars(data, timing=1000, x=this.x, y=this.y) {
+		
 		this.data = data;
 		this.bars.data(data);
-
 		// Lookup table for color attribute of our data as a function of the plot name.
 		// E.g. The "globPlot" plot data stores colors in the "P_diagram" attribute of the data.
 		const figID_to_var = {'ZblobPlot': 'color_for_blobtype_track', 'blobPlot': 'color_for_blobtype_track', 'globPlot': 'color_for_daspappu_track', 'ncprPlot': 'color_for_NCPR_track', 'richPlot': 'color_for_dsnp_enrichment_track',
@@ -802,8 +805,8 @@ class ZblobChart extends ZChart {
 		this.update_xAxis(x); // because there migh have been a mutation
 		this.bars.transition()
 			.duration(timing)
-			.attr("y", (d) => y(d.residue_blob_type_to_numbers))
-			.attr("height", (d) => this.HEIGHT - y(d.residue_blob_type_to_numbers))
+			.attr("y", (d) => y(d.assign_residue_track_bar_height))
+			.attr("height", (d) => this.HEIGHT - y(d.assign_residue_track_bar_height))
 			.attr("fill", (d) => d[figID_to_var[this.figID]]);
 		
 		// Update/add the corresponding skyline, in a potentially ugly way
@@ -830,12 +833,12 @@ class ZblobChart extends ZChart {
 		}
 
 		// Start the line in the correct spot
-		let points = [{resid: data[0].residue_number, height: data[0].residue_blob_type_to_numbers}];
+		let points = [{resid: data[0].residue_number, height: data[0].assign_residue_track_bar_height}];
 
 		// Find the edges of each "skyscraper"
 		for(let i = 1; i < data.length; i++){
-			let last_res = data[i-1].residue_blob_type_to_numbers;
-			let this_res = data[i].residue_blob_type_to_numbers;
+			let last_res = data[i-1].assign_residue_track_bar_height;
+			let this_res = data[i].assign_residue_track_bar_height;
 			let resid = data[i].residue_number;
 			if (last_res != this_res) {
 				points.push({resid: resid, height: last_res});
@@ -846,7 +849,7 @@ class ZblobChart extends ZChart {
 		// Last line segment - add an extraneous data point to signify this
 		const last_resid = data[data.length-1].residue_number;
 		points.push({resid: last_resid,
-			height: data[data.length-1].residue_blob_type_to_numbers});
+			height: data[data.length-1].assign_residue_track_bar_height});
 
 		this.skyline = this.svg.append('g').classed('skyline', true).attr("id", "skyline");
 		this.skyline.append("path")
