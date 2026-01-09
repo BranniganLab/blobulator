@@ -172,12 +172,20 @@ async function createPlugin(parent: HTMLElement) {
         }, 1000)});
     });
 
+    let reset_button = document.querySelector('#reset_settings_button');
+    reset_button?.addEventListener('click', function() {
+        setTimeout(() => {
+            createBlobRepresentation(plugin)
+        }, 1000)
+    });
+
     let dropwindow = document.querySelector('#app')
     dropwindow?.addEventListener('drop', function(event){
         event.preventDefault()
         setTimeout(() => {
             createBlobRepresentation(plugin)
-        }, 1000)});
+        }, 1000)
+    });
 
     let molstarWindow = document.querySelector('#app')
     molstarWindow?.addEventListener('drop', function(event){

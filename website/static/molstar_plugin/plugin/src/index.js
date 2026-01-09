@@ -180,7 +180,7 @@ function createBlobRepresentation(plugin) {
 ;
 function createPlugin(parent) {
     return __awaiter(this, void 0, void 0, function () {
-        var defaultSpec, plugin, elementsArray;
+        var defaultSpec, plugin, elementsArray, reset_button, dropwindow, molstarWindow;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -219,6 +219,34 @@ function createPlugin(parent) {
                                 createBlobRepresentation(plugin);
                             }, 1000);
                         });
+                    });
+                    reset_button = document.querySelector('#reset_settings_button');
+                    reset_button === null || reset_button === void 0 ? void 0 : reset_button.addEventListener('click', function () {
+                        console.log('reset button clicked!');
+                        setTimeout(function () {
+                            createBlobRepresentation(plugin);
+                        }, 1000);
+                    });
+                    dropwindow = document.querySelector('#app');
+                    dropwindow === null || dropwindow === void 0 ? void 0 : dropwindow.addEventListener('drop', function (event) {
+                        event.preventDefault();
+                        setTimeout(function () {
+                            createBlobRepresentation(plugin);
+                        }, 1000);
+                    });
+                    molstarWindow = document.querySelector('#app');
+                    molstarWindow === null || molstarWindow === void 0 ? void 0 : molstarWindow.addEventListener('drop', function (event) {
+                        var _a;
+                        event.preventDefault();
+                        var file = (_a = event.dataTransfer) === null || _a === void 0 ? void 0 : _a.files[0];
+                        var reader = new FileReader();
+                        reader.onload = function () {
+                            localStorage.setItem("pdb_file", reader.result);
+                            createBlobRepresentation(plugin);
+                            var molstar_warning_box = document.getElementById("molstar_warning_box");
+                            molstar_warning_box.innerHTML = "";
+                        };
+                        reader.readAsText(file);
                     });
                     return [2 /*return*/];
             }
