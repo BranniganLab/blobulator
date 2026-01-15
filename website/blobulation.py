@@ -158,34 +158,34 @@ def index():
             meta = requests.get(alphafold_url)
             if meta.ok:
                 entries = meta.json()
-
-            if entries:
                 # Prefer the canonical entry (accession exactly == user_uniprot_id)
                 canonical = None
                 for e in entries:
                     if e.get("uniprotAccession") == user_uniprot_id:
                         canonical = e
                         break
-        
-            # fallback: just pick the first entry
-            entry = canonical if canonical else entries[0]
+                # fallback: just pick the first entry
+                entry = canonical if canonical else entries[0]
 
-            pdb_url = entry.get("pdbUrl")
-            if pdb_url:
-                pdb_res = requests.get(pdb_url)
-                if pdb_res.ok:
-                    alphafold_pdb = pdb_res.text
-                    temporary_pdb_file = f"{user_uniprot_id}_alphafold.pdb"
-                    with open(temporary_pdb_file, "w") as f:
-                        f.write(alphafold_pdb)
-                    io = PDBIO()
-                    structure = PDBParser().get_structure('structure', temporary_pdb_file)
-                    chain = "A"
-                    my_seq, shift, saved_chain, pdb_string = extract_chain(chain, temporary_pdb_file, io, structure)
-                    os.remove(f"{user_uniprot_id}_alphafold.pdb")
-                else:
-                    print(f"\nAlphaFold structure not found for {user_uniprot_id}")
-                    pdb_string = ''
+                pdb_url = entry.get("pdbUrl")
+                if pdb_url:
+                    pdb_res = requests.get(pdb_url)
+                    if pdb_res.ok:
+                        alphafold_pdb = pdb_res.text
+                        temporary_pdb_file = f"{user_uniprot_id}_alphafold.pdb"
+                        with open(temporary_pdb_file, "w") as f:
+                            f.write(alphafold_pdb)
+                        io = PDBIO()
+                        structure = PDBParser().get_structure('structure', temporary_pdb_file)
+                        chain = "A"
+                        my_seq, shift, saved_chain, pdb_string = extract_chain(chain, temporary_pdb_file, io, structure)
+                        os.remove(f"{user_uniprot_id}_alphafold.pdb")
+                    else:
+                        print(f"\nAlphaFold structure not found for {user_uniprot_id}")
+                        pdb_string = ''
+            else:
+                print(f"\nAlphaFold structure not found for {user_uniprot_id}")
+                pdb_string = ''
 
 
             if seq_file is None:
