@@ -128,6 +128,8 @@ $(document).ready( function() {
 		}
 	}
 
+	
+
 	// Update the output when parameters are changed
 	function do_update(figs, data) {
         let my_seq = {{ my_seq | safe }};
@@ -278,7 +280,6 @@ $(document).ready( function() {
 				.add_ContinuousLegend("PuOr", {min: "0.0", med: "0.5", max: "1.0"});
 		}
 
-
 		// Set up UI element change handler
 		d3.selectAll(".mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales").on("change", function(){do_update(figs, data)});
 		d3.selectAll("#reset_def").on("click", function(){do_update(figs, data)});
@@ -289,7 +290,7 @@ $(document).ready( function() {
 				const file = files[0];
 				doPDBUpdate(file, figs, data);}
 		});
-		
+
 		// Mutate residue function
 		d3.select('#download_data_link').on('click', function() {
 			// If the box is check, I mutate the amino acid
@@ -557,22 +558,72 @@ $(document).ready( function() {
 
 		</div>
 
-	<div>
-		<p id="molstar_warning_box" style="position: relative;"></p>
+		<div id="molstar_container">
+			<div id="molstar_header">
+				<p id="molstar_warning_box"></p>
+				<span id="molstar_info_icon">ⓘ</span>
+			</div>
+
+			<div id="app"></div>
+		</div>
+
 		<style>
+			#molstar_container {
+				width: 100%;
+			}
+
+			#molstar_header {
+				position: relative;
+				display: flex;
+				align-items: center;
+				justify-content: space-between; /* ← key line */
+				height: 32px;
+				padding: 0 10px;
+			}
+			#molstar_info_icon {
+				cursor: pointer;
+				font-family: arial;
+				font-size: 22px;
+				background: white;
+				padding: 2px 6px;
+				border-radius: 4px;
+			}
+			#molstar_warning_box {
+				max-width: calc(100% - 40px);
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+
 			#app {
 				position: relative;
-				margin-top: 200; 
-				margin-right: 230;
-				margin-left: 50;
-				margin-bottom: 30;
 				width: 100%;
-				height: 750px; 
+				height: 750px;
 			}
 		</style>
+
 		<script type="text/javascript" src="static/molstar_plugin/node_modules/molstar/build/viewer/molstar.js"></script>
-		<div id="app"></div>
 		<script type="text/javascript" src="static/molstar_plugin/plugin/dist/main.js"></script>
+		<script>
+		$(function () {
+			$('#molstar_info_icon').popover({
+				content: `
+					<a onclick="$(this).closest('div.popover').popover('hide');"
+					type="button"
+					class="close"
+					aria-hidden="true">&times;</a><br>
+					This is a structure viewer, made using Mol* (<a href="https://molstar.org/" target="_blank">molstar.org</a>).<br>
+					H-blobs are shown in blue in a space-filling representation. P-blobs  and s-blobs are orange and green, respectively, in secondary structure representation.<br>
+					To rotate, click and drag  in the window; to zoom, scroll using the mouse wheel; and more information about each residue, hover and click.<br>
+					The default structure shown here if the ID entry is used is the AlphaFold structure as retrieved from UniProt. To view a different structure, use the PDB entry option.
+				`,
+				placement: "top",
+				html: true,
+				sanitize: false,
+				container: 'body'
+			});
+		});
+		</script>
 	</div>
 
 	</div>
