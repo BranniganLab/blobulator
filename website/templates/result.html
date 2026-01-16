@@ -35,6 +35,47 @@ $(document).ready( function() {
 	// Call the function
 	updateHydroscaleTicks(sel_hydro_scale)
 
+	// initialize Hydropathy info icon popover
+	$('#infoIconHP').popover({
+		html: true,
+		placement: 'top',
+		trigger: 'click',
+		sanitize: false,
+		container: 'body', // ensures close button works
+		content: `
+			<a onclick="$(this).closest('div.popover').popover('hide');"
+			type="button"
+			class="close"
+			aria-hidden="true">&times;</a><br>
+			The hydropathy cutoff number, denoted as H<sup>*</sup>, represents the threshold
+			at which a residue is considered hydrophobic or non-hydrophobic based on its
+			hydropathy score. For example, if a residue has a hydropathy score above the
+			threshold, it will be considered hydrophobic.
+		`
+	});
+
+	$('#infoIconMB').popover({
+		html: true,
+		placement: 'top',
+		trigger: 'click',
+		sanitize: false,
+		container: 'body', // ensures close button works
+		content: `
+			<a onclick="$(this).closest('div.popover').popover('hide');"
+			type="button"
+			class="close"
+			aria-hidden="true">&times;</a><br>
+			The minimum blob size, L<sub>min</sub>, refers to the smallest number of 
+			contiguous residues that can create an h-blob or p-blob. Blobs below the 
+			minimum blob size are considered s-blobs. More information regarding the 
+			minimum blob size can be found 
+			<a href="https://pubmed.ncbi.nlm.nih.gov/41528931/" target="_blank">
+				here.
+			</a>
+		`
+	});
+
+
 
 	// updates the slider/box value entered by the user
 	const cutoff_slider_value = document.getElementById("cutoff_user");
@@ -446,7 +487,11 @@ $(document).ready( function() {
 						<option value="moon_fleming">Moon and Fleming</option></select></td>
 						<td id="hydro-labels" class="hydro_labels" style="width: 50%"></td>
 						<td></td></tr>
-					<tr><td>Hydropathy cutoff:<label style = "opacity: 0.0; display: none;">
+					
+						<tr><td>Hydropathy cutoff:
+						<span id="infoIconHP" style="cursor: pointer;">ⓘ</span>
+						<label style = "opacity: 0.0; display: none;">
+						<label style = "opacity: 0.0; display: none;">
 						<span id="cutoff_user"></span>
 					</label></td>
 					<td><input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
@@ -455,6 +500,7 @@ $(document).ready( function() {
 					<td></td></tr>
 				<tr>
 				<td>Minimum blob size:
+					<span id="infoIconMB" style="cursor: pointer;">ⓘ</span>
 					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
 					</label> </td>
 					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ blob_length_minimum_max | safe }} value={{ blob_length_minimum | safe }}   step=1> 
