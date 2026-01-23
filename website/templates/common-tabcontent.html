@@ -69,8 +69,12 @@
 <div class="tab-pane fade" id="documentation">
     <h4 class="mt-2">Sequence Input</h4>
     <p> The first thing needed to use the blobulator is either a UniProt ID for a protein of interest, or a manual sequence entry. UniProt IDs are our recommended format for retrieving the sequence required for blobulation. Above each “compute button” there is a manual text entry box, in which the you insert either your sequence or ID. Then press the “Compute” button. </p>
-    <h4 class="mt-2">Visualization</h4>
-    <p> On the blobulation output page, there are three adjustable parameters: </p>
+    
+    <h4 class="mt-2">Tunable Items on the Results Page</h4>
+    <button class="accordion"> &#10133 Choosing a Hydropathy Scale</button>
+    <div class="panel">
+    <p>The defult scale used for the initial blobulation is the Kyte Doolittle hydropathy scale, but other scales can be selected from the dropdown menu. Changing the scale will update the clickable amino acid letters above the hydropathy cutoff slider.</p>
+    </div>
     <button class="accordion"> &#10133 Adjusting Hydropathy Cutoff</button>
     <div class="panel">
     <p>The first step of blobulation is digitization. The algorithm first calculates each residue's hydrophobicity on the selected scale and then smooths this over the hydrophobicity of the adjacent residues. Residues are then digitized to hydrophobic or non-hydrophobic based on their smoothed hydropathy's relation to the hydropathy cutoff (shown as grey bars in the first track). This cutoff (shown as a blue line in the first track) can be adjusted by manual entry into the text box to the left, by adjusting the slider to the desired value, or by clicking a residue letter (found above the slider) to set the cutoff to a given amino acid's hydrophobicity on the selected scale.</p>
@@ -81,18 +85,13 @@
     </div>
     <button class="accordion"> &#10133 Mutating Residues</button>
     <div class="panel">
-    <p>This option is used to change a residue within the sequence, and see what potential effects it would have on the blobulation output. To mutate a residue, select which residue you would like to mutate, choose the amino acid you would like to mutate the residue into, and click the checkbox. Alternatively, the user can select one of the known disease associated single nucleotide polymorphism by clicking on a black triangle found at the bottom of each track. These will only appear if a UniProt ID is used.</p>
+    <p>This option is used to change a residue within the sequence, and see what potential effects it would have on the blobulation output. To mutate a residue, select which residue you would like to mutate, choose the amino acid you would like to mutate the residue into, and click the checkbox. Additionally, known disease-associated mutations are shown by black triangles below all tracks if ID Entry is used. Hovering over these mutations will display the amino acid change caused by them, as well as a clickable reference SNP cluster ID. </p>
     </div>
+
+    <h4 class="mt-2">Parameters</h4>
     <button class="accordion"> &#10133 Viewing blobs on a protein structure</button>
     <div class="panel">
     <p>To view blobs in 3D on the blobulator webtool, use either ID entry (for the alpha fold structure) or upload a PDB using PDB entry when selecting an input method. Additionally, a VMD plugin  is available to download via <a href="https://github.com/BranniganLab/blobulator/tree/main" target="_blank"> the bloblator github repository </a> to blobulate and view blobs on a structure in VMD.</p>
-    </div>
-    <br> <br>
-
-    <h4 class="mt-2">SNPs and Mutations</h4>
-    <button class="accordion"> &#10133 Visualizing SNPs</button>
-    <div class="panel">
-    <p>Known disease-associated mutations are shown by the black triangles. Hovering over these mutations will display the amino acid change caused by them, as well as a clickable reference SNP cluster ID.</p>
     </div>
     <br> <br>
 
