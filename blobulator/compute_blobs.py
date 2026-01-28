@@ -504,7 +504,7 @@ def clean_df(df):
     
     df = df.rename(columns={"residue_name": "Residue",
                             "residue_number": "Residue_Position", 
-                            "blob_disorder": "Blob_Disorder", 
+                            "blob_disorder": "Blob_Disorder_Score", 
                             "smoothing_window_length": "Window_Length", 
                             "hydropathy_cutoff": "Hydropathy_Cutoff", 
                             "blob_length_minimum": "Minimum_Blob_Length", 
