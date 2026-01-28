@@ -480,6 +480,7 @@ def clean_df(df):
     # del df["assign_residue_track_bar_height"]
     del df["residue_disorder"]
     df["residue_number"] = df["residue_number"].astype(int)
+    
     df = df[[ "residue_number",
              "residue_name",
              "smoothing_window_length",
@@ -500,26 +501,27 @@ def clean_df(df):
              "blob_disorder",
              "residue_hydropathy",
              "residue_smoothed_hydropathy"]]
-    df = df.rename(columns={"residue_name": "Residue_Name",
-                            "residue_number": "Residue_Number", 
-                            "blob_disorder": "Blob_Disorder", 
-                            "smoothing_window_length": "Window", 
+    
+    df = df.rename(columns={"residue_name": "Residue",
+                            "residue_number": "Residue_Position", 
+                            "blob_disorder": "Blob_Disorder_Score", 
+                            "smoothing_window_length": "Window_Length", 
                             "hydropathy_cutoff": "Hydropathy_Cutoff", 
                             "blob_length_minimum": "Minimum_Blob_Length", 
                             "residue_blob_type":"Blob_Type", 
                             "blob_hydrophobicity": "Normalized_Mean_Blob_Hydropathy",
-                            "blob_minimum_hydrophobicity": "Min_Blob_Hydropathy", 
+                            "blob_minimum_hydrophobicity": "Minimum_Blob_Hydropathy", 
                             "residue_blob_groups": "Blob_Index_Number", 
                             "blob_net_charge_per_residue": "Blob_NCPR", 
                             "blob_fraction_of_positively_charged_residues": "Fraction_of_Positively_Charged_Residues", 
                             "blob_fraction_of_negatively_charged_residues": "Fraction_of_Negatively_Charged_Residues", 
                             "blob_fraction_of_charged_residues": "Fraction_of_Charged_Residues", 
-                            "blob_predicted_enrichment_of_dsnps": "dSNP_enrichment", 
+                            "blob_predicted_enrichment_of_dsnps": "dSNP_Enrichment", 
                             "blob_daspappu_phase": "Blob_Das-Pappu_Class", 
                             "blob_distance_from_uversky_boundary_line": "Uversky_Diagram_Score", 
-                            "residue_hydropathy": "Normalized_hydropathy",
+                            "residue_hydropathy": "Normalized_Hydropathy",
                             "residue_smoothed_hydropathy": "Smoothed_Hydropathy",
-                            "blob_length": "blob_length"})
+                            "blob_length": "Blob_Length"})
     #df["Kyte-Doolittle_hydropathy"] = df["Normalized_Kyte-Doolittle_hydropathy"]*9-4.5
 
     return df
