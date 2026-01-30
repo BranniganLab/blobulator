@@ -4,7 +4,7 @@ from glob import glob
 
 setup(
     name='blobulator',
-    version='0.9.8',
+    version='1.1.0',
     description='Edge Detection in Protein Sequences',
     url='https://github.com/BranniganLab/blobulator',
     author='Brannigan Lab',
