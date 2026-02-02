@@ -1,8 +1,6 @@
 class ZFigure {
 	constructor(figID, data){
 		// These constants set fixed values for height and width to be used in making all visualizations
-		console.log("ZFigure")
-		console.log(data)
 		this.MARGIN = { top: 30, right: 230, bottom: 30, left: 50 };
 		this.WIDTH = 1200 - this.MARGIN.left - this.MARGIN.right;
 		this.HEIGHT = 200 - this.MARGIN.top - this.MARGIN.bottom;
@@ -326,7 +324,6 @@ class ZFigure {
 class ZChart extends ZFigure{
 	static allInstances = {};
 	constructor(figID, data, my_snps, seq, snp_tooltips) {
-		console.log("In ZChart")
 
 		super(figID, data);
 
