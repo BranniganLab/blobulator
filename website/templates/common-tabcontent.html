@@ -5,19 +5,22 @@
         <div class="row">
             <!--form-->
             <br>
-            <p><b>Select input method: </b>
+            <p style="padding: 15px 0px 15px 0px; color:gray; font-style: italic;">New here? Welcome! For more information about the blobulator, visit the <a href="#about" onclick="$('#about-tab').tab('show');">About</a> and <a href="#FAQ" onclick="$('#faq-tab').tab('show');">FAQ</a> tabs above. When you're ready to blobulate a protein, select an input method below.</p>
+            <p><b>Select an input method: </b>
             <select name="sequence_type" id="sequence_type" onchange="hideDiv(this)">
                 <option value="id_entry">ID Entry</option>
-                <option value="sequence_entry">Manual Entry</option></select></p>
+                <option value="sequence_entry">Manual Entry</option>
+                <option value="pdb_entry">PDB Entry</option></select></p></centering>
+
             <div class="form-group" align="center">
                 <br>
                 <form class="navbar-form navbar-top" method=post target="_blank" action="" id="id_entry_block">
                     <p>Enter an ID for your protein.</p>
                     <p>Note: only human proteins will display disease-associated mutations, and will take longer to load. </p>
-                    <label for="input-types">Choose an input type:</label>
+                    <label for="input-types">Choose an ID type:</label>
                     <select name="input_type" id="input_type">
                         <option value="uniprot_id">UniProt ID</option>
-                        <option value="ensembl_id">Ensembl ID</option> </select>
+                        <option value="ensembl_id">Ensembl ID</option></select>
                     <!--form.uniprot_id calls the UniProt ID field in model_2.py -->
                     <p> {{ form.uniprot_id(class_="form-control", rows="1")}}</p>
                     <p><input type=submit name="action_u" class="btn btn-primary" value="Blobulate!"></p>
@@ -34,10 +37,22 @@
                     <p><input type=submit name="action_s" class="btn btn-primary" value="Blobulate!"></p>
                 </form>
             </div>
+             <div class="form-group" align="center">
+                <form class="navbar-form navbar-top" method="post" target="_blank" enctype="multipart/form-data" action="" id="pdb_entry_block" style="display: none">
+                    <h5 class="text-center"> <b>Option 3: PDB Entry</b> </h5>
+                    <br>
+                    <!--Creating box for protein sequence input, and placing explanation text above-->
+                    <p> Upload a PDB File. </p>
+                    <p>Warning: Blobulation of PDB files containing multiple chains with disparate sequences is not currently supported.</p>
+                    <p> Note: Disease-associated SNPs and disorder prediction are based on UniProt annotation and will not be displayed with this option. </p>
+                    <p> <input id="pdb_file" name="pdb_file" type="file" accept=".pdb"> </p>
+                    <p id="chain_name"></p>
+                    <p><input type=submit name="action_p" class="btn btn-primary" value="Blobulate!"></p></br>
+                </form>
+            </div>
         </div>
     </div>
 </div>
-
 
 <!--About Page Contents-->
 <div class="tab-pane fade" id="about">
@@ -54,8 +69,12 @@
 <div class="tab-pane fade" id="documentation">
     <h4 class="mt-2">Sequence Input</h4>
     <p> The first thing needed to use the blobulator is either a UniProt ID for a protein of interest, or a manual sequence entry. UniProt IDs are our recommended format for retrieving the sequence required for blobulation. Above each “compute button” there is a manual text entry box, in which the you insert either your sequence or ID. Then press the “Compute” button. </p>
-    <h4 class="mt-2">Visualization</h4>
-    <p> On the blobulation output page, there are three adjustable parameters: </p>
+    
+    <h4 class="mt-2">Tunable Items on the Results Page</h4>
+    <button class="accordion"> &#10133 Choosing a Hydropathy Scale</button>
+    <div class="panel">
+    <p>The default scale used for the initial blobulation is the Kyte Doolittle hydropathy scale, but other scales can be selected from the dropdown menu. Changing the scale will update the clickable amino acid letters above the hydropathy cutoff slider.</p>
+    </div>
     <button class="accordion"> &#10133 Adjusting Hydropathy Cutoff</button>
     <div class="panel">
     <p>The first step of blobulation is digitization. The algorithm first calculates each residue's hydrophobicity on the selected scale and then smooths this over the hydrophobicity of the adjacent residues. Residues are then digitized to hydrophobic or non-hydrophobic based on their smoothed hydropathy's relation to the hydropathy cutoff (shown as grey bars in the first track). This cutoff (shown as a blue line in the first track) can be adjusted by manual entry into the text box to the left, by adjusting the slider to the desired value, or by clicking a residue letter (found above the slider) to set the cutoff to a given amino acid's hydrophobicity on the selected scale.</p>
@@ -66,14 +85,13 @@
     </div>
     <button class="accordion"> &#10133 Mutating Residues</button>
     <div class="panel">
-    <p>This option is used to change a residue within the sequence, and see what potential effects it would have on the blobulation output. To mutate a residue, select which residue you would like to mutate, choose the amino acid you would like to mutate the residue into, and click the checkbox. Alternatively, the user can select one of the known disease associated single nucleotide polymorphism by clicking on a black triangle found at the bottom of each track. These will only appear if a UniProt ID is used.</p>
+    <p>This option is used to change a residue within the sequence, and see what potential effects it would have on the blobulation output. To mutate a residue, select which residue you would like to mutate, choose the amino acid you would like to mutate the residue into, and click the checkbox. Additionally, known disease-associated mutations are shown by black triangles below all tracks if ID Entry is used. Hovering over these mutations will display the amino acid change caused by them, as well as a clickable reference SNP cluster ID. </p>
     </div>
-    <br> <br>
 
-    <h4 class="mt-2">SNPs and Mutations</h4>
-    <button class="accordion"> &#10133 Visualizing SNPs</button>
+    <h4 class="mt-2">Parameters</h4>
+    <button class="accordion"> &#10133 Viewing blobs on a protein structure</button>
     <div class="panel">
-    <p>Known disease-associated mutations are shown by the black triangles. Hovering over these mutations will display the amino acid change caused by them, as well as a clickable reference SNP cluster ID.</p>
+    <p>To view blobs in 3D on the blobulator webtool, use either ID entry (for the alpha fold structure) or upload a PDB using PDB entry when selecting an input method. Additionally, a VMD plugin  is available to download via <a href="https://github.com/BranniganLab/blobulator/tree/main" target="_blank"> the bloblator github repository </a> to blobulate and view blobs on a structure in VMD.</p>
     </div>
     <br> <br>
 
@@ -85,36 +103,59 @@
     <div class="panel">
     <p>This plot shows the smoothed hydropathy per residue. The core of blobulation consists of two parameters - the first being a hydropathy threshold. This threshold is shown by the blue line on the “mean hydropathy” axis. This line shows the hydropathy threshold (shown by a blue line), which determines the boundaries of the h and p blobs. Note that this graph is the only one that shows the residues individually, and can be used as a reference to how the residues are grouped together based upon their position above or below the blue line. If a group of contiguous residues over the minimum blob size individually have smoothed hydrophobicities above the value for hydrophobicity cutoff, the cluster will be considered a ‘h’ (hydrophobic) blob. If not, a group will be considered a ‘p’ (non-hydrophobic) blob if the length is above the minimum blob size, or an 's' (short) blob if the length is below the minimum blob size.</p>
     </div>
-    <button class="accordion">&#10133 Blobs according to globular tendency</button>
-    <div class="panel">
-    <p>This second outputted visualization shows the blobs colored according to their globular tendency based on their <a href="https://www.pnas.org/content/early/2013/07/29/1304749110" target="_blank"> Das-Pappu </a> classification. The Das-Pappu phase diagram was originally used to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. Specifically, these are: globular, Janus/boundary, strong polyelectrolyte, strong polyanion, and strong polycation. The height of each bar corresponds to their identity of either a "p" "h" or "s" blob. </p>
-    </div>
     <button class="accordion">&#10133 Blobs according to net charge per residue</button>
     <div class="panel">
     <p>This third outputted visualization shows the blobs according to their residues’ collective average charge. Each blob is evaluated based on its fraction of both positively and negatively charged residues. The darker blue a blob is shown here, the higher the fraction of positively charged residues are present within the blob. Alternatively, the darker red a blob is shown here, the higher the fraction of negatively charged residues are present within the blob. An even fraction of positive or negatively charged residues, or a low fraction of any charged residues results in a grey color.</p>
     </div>
-    <button class="accordion">&#10133 Blobs colored according to Uversky diagram</button>
+    <button class="accordion">&#10133 Blobs according to globular tendency</button>
     <div class="panel">
-    <p>This fourth outputted visualization shows the blobs according to their positions on the <a href="https://pubmed.ncbi.nlm.nih.gov/11025552/" target="_blank"> Uversky diagram </a>, where the line between ordered and disordered is plotted. Calculated negative values (represented in orange) are more ordered and positive values (shown in blue) are more disordered.</p>
+    <p>This fourth outputted visualization shows the blobs colored according to their globular tendency based on their <a href="https://www.pnas.org/content/early/2013/07/29/1304749110" target="_blank"> Das-Pappu </a> classification. The Das-Pappu phase diagram was originally used to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. Specifically, these are: globular, Janus/boundary, strong polyelectrolyte, strong polyanion, and strong polycation. The height of each bar corresponds to their identity of either a "p" "h" or "s" blob. </p>
     </div>
     <button class="accordion">&#10133 Blobs colored according to dSNP enrichment</button>
     <div class="panel">
     <p>This fifth outputted visualization shows the blobs according to their enrichment in documented disease associated SNPs (dSNP). This idea was investigated in the context of aggregating and non-aggregating proteins at various blob lengths and hydrophobicity cutoffs in our <a href="https://www.pnas.org/doi/10.1073/pnas.2116267119" target="blank">recent publication</a>, from which the figure below is presented (Lohia, et al 2022).</p>
     </div>
+    <button class="accordion">&#10133 Blobs colored according to Uversky diagram</button>
+    <div class="panel">
+    <p>This sixth outputted visualization shows the blobs according to their positions on the <a href="https://pubmed.ncbi.nlm.nih.gov/11025552/" target="_blank"> Uversky diagram</a>, where the line between ordered and disordered is plotted. Calculated negative values (represented in orange) are more ordered and positive values (shown in blue) are more disordered.</p>
+    </div>
     <button class="accordion">&#10133 Blobs colored according to fraction of disordered residues</button>
     <div class="panel">
-    <p>This sixth and final outputted visualization shows the blobs according to their predicted fraction of disordered residues, which utilizes the <a href="https://academic.oup.com/nar/article/41/D1/D508/1069637" target="_blank">Database of Disordered protein prediction </a>. This disorder calculation is only available if the user uses the UniProt ID.</p>
+    <p>This seventh and final outputted visualization shows the blobs according to their predicted fraction of disordered residues, which utilizes the <a href="https://academic.oup.com/nar/article/41/D1/D508/1069637" target="_blank">Database of Disordered protein prediction </a>. This disorder calculation is only available if the user uses the UniProt ID.</p>
     </div>
 
     <h4 class="mt-2">Saving Data</h4>
     <button class="accordion">&#10133 Downloading Data</button>
     <div class="panel">
-    <p>After the “Download data!” button (located just below the three adjustable parameters) is pressed, the raw data used to generate the tracks will be downloaded in the form of a csv file. Each column corresponds to one of the following: residue name, residue number, window, hydropathy cutoff, minimum blob size, average hydrophobicity, blob type, blob index number, blob Das-Pappu classification, blob net charge per residue, fraction of positively charged residues, fraction of negatively charged residues, fraction of charged residues, Uversky diagram score, blob dSNP enrichment, and blob disorder score.</p>
+    <p>After the “Download data!” button (located just below the three adjustable parameters) is pressed, the raw data used to generate the tracks will be downloaded in the form of a csv file. The columns correspond to:</p>
+    <ul>
+    <li><strong>Residue_Position</strong>: Position of the residue in the protein sequence (1-based indexing).</li>
+    <li><strong>Residue</strong>: One-letter amino acid code for the residue.</li>
+    <li><strong>Window_Length</strong>: Length of the rolling window used to smooth hydropathy values (currently fixed at 3).</li>
+    <li><strong>Hydropathy_Cutoff</strong>: Normalized hydropathy threshold (0–1) used to categorize residues as hydrophobic or non-hydrophobic.</li>
+    <li><strong>Minimum_Blob_Length</strong>: Minimum number of residues required to be classified as an h- or p-blob.</li>
+    <li><strong>Blob_Length</strong>: Length (in residues) of the blob to which this residue belongs.</li>
+    <li><strong>Normalized_Mean_Blob_Hydropathy</strong>: Mean hydropathy of the blob, normalized to the selected hydropathy scale.</li>
+    <li><strong>Minimum_Blob_Hydropathy</strong>: The lowest smoothed hydropathy value observed within a given blob.</li>
+    <li><strong>Blob_Type</strong>: The type of blob containing this residue (h = hydrophobic, p = polar/hydrophilic, s = short hydrophilic).</li>
+    <li><strong>Blob_Name</strong>: Name of the blob containing this residue. Consists of the blob type (h, s, or p), the group number (1, 2, 3, etc.), and a letter showing the order of the blob in that group (a, b, c, etc.).</li>
+    <li><strong>Blob_Das-Pappu_Class</strong>: Das–Pappu Phase for the containing blob. 1 = Globular, 2 = Janus/boundary, 3 = Polar, 4 = Polycation, 5 = Polyanion. See https://www.pnas.org/doi/10.1073/pnas.1304749110.</li>
+    <li><strong>Blob_NCPR</strong>: Net charge per residue of the blob. Equal to the total number of positively charged residues minus the total number of negatively charged residues, divided by the length of the blob.</li>
+    <li><strong>Fraction_of_Positively_Charged_Residues</strong>: The ratio of the number of positively charged residues to the length of the blob.</li>
+    <li><strong>Fraction_of_Negatively_Charged_Residues</strong>: The ratio of the number of negatively charged residues to the length of the blob.</li>
+    <li><strong>Fraction_of_Charged_Residues</strong>: Equal to the total number of positively charged residues plus the total number of negatively charged residues, divided by the length of the blob.</li>
+    <li><strong>Uversky_Diagram_Score</strong>: Distance from the Uversky–Gillespie–Fink order/disorder boundary line. See https://pubmed.ncbi.nlm.nih.gov/11025552/.</li>
+    <li><strong>dSNP_Enrichment</strong>: Predicted enrichment of disease-causing SNPs. See https://www.pnas.org/doi/10.1073/pnas.2116267119.</li>
+    <li><strong>Blob_Disorder_Score</strong>: Mean expected disorder score as provided by D2P2. See https://doi.org/10.1093/nar/gks1226.</li>
+    <li><strong>Normalized_Hydropathy</strong>: Hydropathy value of the residue on the selected scale.</li>
+    <li><strong>Smoothed_Hydropathy</strong>: Normalized hydropathy smoothed over the window length.</li>
+    </ul>
     </div>
 
 </div>
 
 <!--Frequently asked questions tabs, also styled as accordion panels-->
+
 <div class="tab-pane fade" id="FAQ">
     <h4 class="mt-2">Frequently Asked Questions:</h4>
 
@@ -134,9 +175,13 @@
     <div class="panel">
     <p>The blobulator outputs 6 tracks showing blobs overlaid with additional information. Each graph shows the sequence of the protein displayed in one of the following ways: smoothed hydropathy per residue, colored according to globular tendency, colored according to net charge per residue, colored according to the Uversky diagram, colored according to dSNP enrichment, colored according to fraction of disordered residue.</p>
     </div>
-    <button class="accordion">&#10133 Do you recommend using the manual sequence entry option, or the UniProt ID option for input?</button>
+    <button class="accordion">&#10133 Is there any way to view blobs on a protein structure?</button>
     <div class="panel">
-    <p>We strongly recommend using the UniProt ID option when available. There will be more graphs outputted, as well as SNP data available if you blobulate the protein using its UniProt ID. If you are interested in a specific variant of the protein, such as one containing a SNP, there is a mutate residue option at the top of the output page. </p>
+    <p>Yes! We have two ways: either via the ID entry (alphafold) or PDB entry (provided PDB file), or using the VMD plugin (source code found in <a href="https://github.com/BranniganLab/blobulator/tree/main" target="_blank"> the blobulator github repository</a>).</p>
+    </div>
+    <button class="accordion">&#10133 Do you recommend using the manual sequence entry option, the ID entry option, or the PDB entry option for input?</button>
+    <div class="panel">
+    <p>We strongly recommend using the ID entry option when available. There will be more graphs outputted, as well as SNP data available if you blobulate the protein using its UniProt ID. If you are interested in a specific variant of the protein, such as one containing a SNP, there is a mutate residue option at the top of the output page. If there's a specific structure you'd like to view in the molecular viewer, use the PDB entry option.</p>
     </div>
     <button class="accordion">&#10133 The blobulator buffers for a long time after I press compute - is this normal?</button>
     <div class="panel">
@@ -183,6 +228,54 @@
     <p> We recommend using our back end code found on our <a href="https://github.com/BranniganLab/blobulator" target="_blank"> GitHub</a>. If you think a specific feature would be generally useful, please email us at connor.pitman@rutgers.edu or grace.brannigan@rutgers.edu.</p>
     </div>
 </div>
+
+<script>   
+    function deletePDB() {
+        if (localStorage.getItem("pdb_file") !== null) {
+            localStorage.clear()
+        }
+    }
+
+    function acceptPDB(pdbAcceptingElement) {
+        var formData = new FormData(pdbAcceptingElement);
+        const file = formData.get('pdb_file');
+        if (file) {
+            const fileReader = new FileReader();
+            fileReader.onload = () => {
+                const fileContent = fileReader.result;
+                localStorage.setItem("pdb_file", fileContent);
+
+                // The replace() call is for \r\n from DOS/Windows files
+				const lines = fileContent.replace(/\r/g, '').split('\n');
+				let chains = new Set();
+				for(const line of lines) {
+					if(line.startsWith('ATOM')) {
+						// We use a magic number here because that is how Protein Data Bank defines it
+						chains.add(line[21].trim());
+					}
+				}
+                let s = '<label for="chain_select">Select chain:</label> <select name="chain_select" id="chain_select">';
+                // s += '<option value="">All chains</option>';
+                for(const chain of chains) {
+                    s += `<option value="${chain}">${chain}</option>`;
+                }
+                s += '</select>';
+                document.getElementById('chain_name').innerHTML = s;
+
+            };
+			fileReader.onerror = (e) => {
+				console.log('TOM: error reading file', file);
+                document.getElementById('chain_name').innerHTML = '';
+			}
+            fileReader.readAsText(file);
+        }
+    }
+    document.getElementById("pdb_file").onchange = function() {
+        deletePDB();
+        const form = document.getElementById("pdb_entry_block");
+        acceptPDB(form);
+    }
+</script>
 
 <style>
     .row {

@@ -1,4 +1,4 @@
-from wtforms import Form, FloatField, validators, StringField, FieldList
+from wtforms import Form, FloatField, validators, StringField, FieldList, SelectField
 from math import pi
 from wtforms.widgets import TextArea
 
