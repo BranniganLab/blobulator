@@ -129,26 +129,26 @@
     <div class="panel">
     <p>After the “Download data!” button (located just below the three adjustable parameters) is pressed, the raw data used to generate the tracks will be downloaded in the form of a csv file. The columns correspond to:</p>
     <ul>
-    <li><strong>Residue_Number:</strong> The position of the residue in the sequence starting at 1</li>
-    <li><strong>Residue_Name:</strong> The one-letter amino acid code</li>
-    <li><strong>Window:</strong> The size of the rolling average window (currently 3 by default; the ability to change this has not yet been added)</li>
-    <li><strong>Hydropathy_Cutoff:</strong> The normalized cutoff used during blobulation (float between 0 and 1)</li>
-    <li><strong>Minimum_Blob_Length:</strong> The minimum blob length used during blobulation (integer greater than 0)</li>
-    <li><strong>Blob_Length:</strong> The length of the residue's blob</li>
-    <li><strong>Normalized_Mean_Blob_Hydropathy:</strong> The normalized mean hydropathy of the residue's blob</li>
-    <li><strong>Minimum_Blob_Hydropathy:</strong>The minimum hydropathy cutoff at which all residues in this blob remain classified as in the same blob</li>
-    <li><strong>Blob_Type:</strong> The one-letter blob code (h = hydropathic, p = polar/hydrophilic, s = short hydrophilic)</li>
-    <li><strong>Blob_Index_Number:</strong> Indices which distinguish blobs (for example - h1 is the first hydrophobic blob, h1a and h1b refer to two halves of a blob separated by a short hydrophilic blob)</li>
-    <li><strong>Blob_Das-Pappu_Class:</strong> Blob scored by Das–Pappu globularity (1 = globular, 2 = Janus/boundary, 3 = polar, 4 = polycation, 5 = polyanion)</li>
-    <li><strong>Blob_NCPR:</strong> Net charge per residue of the blob</li>
-    <li><strong>Fraction_of_Positively_Charged_Residues:</strong> FPC = N(positively charged residues) / N(residues)</li>
-    <li><strong>Fraction_of_Negatively_Charged_Residues:</strong> FNC = N(negatively charged residues) / N(residues)</li>
-    <li><strong>Fraction_of_Charged_Residues:</strong> FCR = FPC + FNC</li>
-    <li><strong>Uversky_Diagram_Score:</strong> Distance from the Uversky–Gillespie–Fink globular/disordered cutoff (see <a href="https://pubmed.ncbi.nlm.nih.gov/11025552/">PMID: 11025552)</a></li>
-    <li><strong>dSNP_Enrichment:</strong> Predicted enrichment of disease-causing SNPs (see <a href="https://doi.org/10.1073/pnas.2116267119>"> DOI 10.1073/pnas.2116267119)</a></li>
-    <li><strong>Blob_Disorder:</strong> Mean expected disorder score as provided by D2P2 (see <a href="https://doi.org/10.1093/nar/gks1226">DOI: 10.1093/nar/gks1226)</a></li>
-    <li><strong>Normalized_Hydropathy:</strong> Each individual residue's hydropathy normalized to the range 0–1</li>
-    <li><strong>Smoothed_Hydropathy:</strong> Each residue's hydropathy smoothed using the residues immediately adjacent to it (displayed on the "Smoothed hydropathy per residue track")</li>
+    <li><strong>Residue_Position</strong>: Position of the residue in the protein sequence (1-based indexing).</li>
+    <li><strong>Residue</strong>: One-letter amino acid code for the residue.</li>
+    <li><strong>Window_Length</strong>: Length of the rolling window used to smooth hydropathy values (currently fixed at 3).</li>
+    <li><strong>Hydropathy_Cutoff</strong>: Normalized hydropathy threshold (0–1) used to categorize residues as hydrophobic or non-hydrophobic.</li>
+    <li><strong>Minimum_Blob_Length</strong>: Minimum number of residues required to be classified as an h- or p-blob.</li>
+    <li><strong>Blob_Length</strong>: Length (in residues) of the blob to which this residue belongs.</li>
+    <li><strong>Normalized_Mean_Blob_Hydropathy</strong>: Mean hydropathy of the blob, normalized to the selected hydropathy scale.</li>
+    <li><strong>Minimum_Blob_Hydropathy</strong>: The lowest smoothed hydropathy value observed within a given blob.</li>
+    <li><strong>Blob_Type</strong>: The type of blob containing this residue (h = hydrophobic, p = polar/hydrophilic, s = short hydrophilic).</li>
+    <li><strong>Blob_Name</strong>: Name of the blob containing this residue. Consists of the blob type (h, s, or p), the group number (1, 2, 3, etc.), and a letter showing the order of the blob in that group (a, b, c, etc.).</li>
+    <li><strong>Blob_Das-Pappu_Class</strong>: Das–Pappu Phase for the containing blob. 1 = Globular, 2 = Janus/boundary, 3 = Polar, 4 = Polycation, 5 = Polyanion. See https://www.pnas.org/doi/10.1073/pnas.1304749110.</li>
+    <li><strong>Blob_NCPR</strong>: Net charge per residue of the blob. Equal to the total number of positively charged residues minus the total number of negatively charged residues, divided by the length of the blob.</li>
+    <li><strong>Fraction_of_Positively_Charged_Residues</strong>: The ratio of the number of positively charged residues to the length of the blob.</li>
+    <li><strong>Fraction_of_Negatively_Charged_Residues</strong>: The ratio of the number of negatively charged residues to the length of the blob.</li>
+    <li><strong>Fraction_of_Charged_Residues</strong>: Equal to the total number of positively charged residues plus the total number of negatively charged residues, divided by the length of the blob.</li>
+    <li><strong>Uversky_Diagram_Score</strong>: Distance from the Uversky–Gillespie–Fink order/disorder boundary line. See https://pubmed.ncbi.nlm.nih.gov/11025552/.</li>
+    <li><strong>dSNP_Enrichment</strong>: Predicted enrichment of disease-causing SNPs. See https://www.pnas.org/doi/10.1073/pnas.2116267119.</li>
+    <li><strong>Blob_Disorder_Score</strong>: Mean expected disorder score as provided by D2P2. See https://doi.org/10.1093/nar/gks1226.</li>
+    <li><strong>Normalized_Hydropathy</strong>: Hydropathy value of the residue on the selected scale.</li>
+    <li><strong>Smoothed_Hydropathy</strong>: Normalized hydropathy smoothed over the window length.</li>
     </ul>
     </div>
 
