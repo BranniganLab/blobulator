@@ -30,7 +30,7 @@ def test_min_blob_hydropathy(current_blobulation, previous_blobulator_output):
 
 def test_blob_index_number(current_blobulation, previous_blobulator_output):
     """ Tests that the index column is consistent between both the old and new blobulator outputs"""
-    assert current_blobulation["Blob_Name"].astype(str).equals(previous_blobulator_output["Blob_Name"].astype(str))
+    assert current_blobulation["Blob_Name"].astype(str).equals(previous_blobulator_output["Blob_Index_Number"].astype(str))
 
 def test_blob_ncpr(current_blobulation, previous_blobulator_output):
     """ Tests that the NCPR column is consistent between both the old and new blobulator outputs"""
