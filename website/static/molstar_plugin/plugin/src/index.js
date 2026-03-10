@@ -191,7 +191,7 @@ function createPlugin(parent) {
                             spec: __assign(__assign({}, defaultSpec), { layout: {
                                     initial: {
                                         isExpanded: false,
-                                        showControls: true
+                                        showControls: false
                                     },
                                 }, components: {
                                     controls: { left: 'none', right: 'none', top: 'none', bottom: 'none' },

@@ -139,7 +139,7 @@ async function createPlugin(parent: HTMLElement) {
                 layout: {
                     initial: {
                         isExpanded: false,
-                        showControls: true
+                        showControls: false
                     },
                 },
                 components: {
