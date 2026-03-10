@@ -191,7 +191,7 @@ function createPlugin(parent) {
                             spec: __assign(__assign({}, defaultSpec), { layout: {
                                     initial: {
                                         isExpanded: false,
-                                        showControls: false
+                                        showControls: true
                                     },
                                 }, components: {
                                     controls: { left: 'none', right: 'none', top: 'none', bottom: 'none' },
@@ -202,7 +202,7 @@ function createPlugin(parent) {
                                     }
                                 }, config: [
                                     [config_1.PluginConfig.Viewport.ShowExpand, false],
-                                    [config_1.PluginConfig.Viewport.ShowControls, false],
+                                    [config_1.PluginConfig.Viewport.ShowControls, true],
                                     [config_1.PluginConfig.Viewport.ShowSelectionMode, false],
                                     [config_1.PluginConfig.Viewport.ShowAnimation, false],
                                 ] })
@@ -222,7 +222,6 @@ function createPlugin(parent) {
                     });
                     reset_button = document.querySelector('#reset_settings_button');
                     reset_button === null || reset_button === void 0 ? void 0 : reset_button.addEventListener('click', function () {
-                        console.log('reset button clicked!');
                         setTimeout(function () {
                             createBlobRepresentation(plugin);
                         }, 1000);

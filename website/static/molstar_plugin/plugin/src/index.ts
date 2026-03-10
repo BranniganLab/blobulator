@@ -139,7 +139,7 @@ async function createPlugin(parent: HTMLElement) {
                 layout: {
                     initial: {
                         isExpanded: false,
-                        showControls: false
+                        showControls: true
                     },
                 },
                 components: {
@@ -153,7 +153,7 @@ async function createPlugin(parent: HTMLElement) {
                 },
                 config: [
                     [PluginConfig.Viewport.ShowExpand, false],
-                    [PluginConfig.Viewport.ShowControls, false],
+                    [PluginConfig.Viewport.ShowControls, true],
                     [PluginConfig.Viewport.ShowSelectionMode, false],
                     [PluginConfig.Viewport.ShowAnimation, false],
                 ]
