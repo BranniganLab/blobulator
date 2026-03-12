@@ -21,7 +21,7 @@
 }
 
 /* Info icons styling */
-#infoIconHP, #infoIconMB {
+#infoIconHP, #infoIconMB, #infoIconHS {
 	cursor: pointer;
 	font-family: arial;
 	font-size: 18px;
