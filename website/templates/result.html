@@ -35,7 +35,7 @@ $(document).ready( function() {
 	// Call the function
 	updateHydroscaleTicks(sel_hydro_scale)
 
-	// initialize Hydropathy info icon popover
+	// initialize icon popovers
 	$('#infoIconHP').popover({
 		html: true,
 		placement: 'top',
@@ -73,6 +73,31 @@ $(document).ready( function() {
 				here.
 			</a>
 		`
+		});
+
+	$('#infoIconHS').popover({
+		html: true,
+		placement: 'top',
+		trigger: 'click',
+		sanitize: false,
+		container: 'body', // ensures close button works
+		content: `
+			<a onclick="$(this).closest('div.popover').popover('hide');"
+			type="button"
+			class="close"
+			aria-hidden="true">&times;</a><br>
+			The hydrophobicity scale used in blobulation dictates the hydropathy of an amino acid. Hydropathy scales include:
+			<a href="https://pubmed.ncbi.nlm.nih.gov/7108955/" target="_blank">
+				Kyte and Doolittle,
+			</a>
+			<a href="https://pubmed.ncbi.nlm.nih.gov/6582470/" target="_blank">
+				Eisenberg and Weiss,
+			</a>
+			 and
+			<a href="https://pubmed.ncbi.nlm.nih.gov/21606332/" target="_blank">
+				Moon and Fleming.
+			</a>
+		`		
 	});
 
 
@@ -480,31 +505,32 @@ $(document).ready( function() {
 				<col style= "width: 30%">
 				<col style= "width: 50%">
 				<div text="left">
-				<tr><td>Hydrophobicity Scale:</td>
-					<td><select id="hydro_scales" class="hydro_scales">
-						<option selected="selected" value="kyte_doolittle">Kyte and Doolittle</option>
-						<option value="eisenberg_weiss">Eisenberg and Weiss</option>
-						<option value="moon_fleming">Moon and Fleming</option></select></td>
-						<td id="hydro-labels" class="hydro_labels" style="width: 50%"></td>
-						<td></td></tr>
+				<tr><td>Hydrophobicity Scale:
+					<span id="infoIconHS" style="cursor: pointer;">ⓘ</span>
+					<label style = "opacity: 0.0; display: none;">
+					</label></td>
+				<td><select id="hydro_scales" class="hydro_scales">
+					<option selected="selected" value="kyte_doolittle">Kyte and Doolittle</option>
+					<option value="eisenberg_weiss">Eisenberg and Weiss</option>
+					<option value="moon_fleming">Moon and Fleming</option></select></td>
+					<td id="hydro-labels" class="hydro_labels" style="width: 50%"></td>
+					<td></td></tr>
 					
-						<tr><td>Hydropathy cutoff:
-						<span id="infoIconHP" style="cursor: pointer;">ⓘ</span>
-						<label style = "opacity: 0.0; display: none;">
-						<label style = "opacity: 0.0; display: none;">
-						<span id="cutoff_user"></span>
+				<tr><td>Hydropathy cutoff:
+					<span id="infoIconHP" style="cursor: pointer;">ⓘ</span>
+					<label style = "opacity: 0.0; display: none;">
+					<span id="cutoff_user"></span>
 					</label></td>
 					<td><input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
 					<td style="width: 50%"><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td>
-					
 					<td></td></tr>
-				<tr>
-				<td>Minimum blob size:
+
+				<tr><td>Minimum blob size:
 					<span id="infoIconMB" style="cursor: pointer;">ⓘ</span>
-					<label style = "opacity: 0.0; display: none;"> <span id="domain_threshold_user"></span>
+					<label style = "opacity: 0.0; display: none;"> 
+					<span id="domain_threshold_user"></span>
 					</label> </td>
-					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ blob_length_minimum_max | safe }} value={{ blob_length_minimum | safe }}   step=1> 
-					</td>
+					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ blob_length_minimum_max | safe }} value={{ blob_length_minimum | safe }}   step=1></td>
 					<td style="width: 50%"><input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ blob_length_minimum_max | safe }} value={{ blob_length_minimum | safe }} class="myslider1" step=1> </td>
 				<td>&nbsp;</td></tr>
 				</div>
