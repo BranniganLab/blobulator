@@ -848,28 +848,34 @@ class ZblobChart extends ZChart {
 		points.push({resid: last_resid,
 			height: data[data.length-1].assign_residue_track_bar_height});
 
-		this.skyline = this.svg.append('g').classed('skyline', true).attr("id", "skyline");
-		this.skyline.append("path")
-			.attr("class", "mypath")
-			.datum(points)
-			.attr("fill", "none")
-			.attr("stroke", "grey")
-			.attr("stroke-width", 1.0)
-			.attr("d", d3.line()
-				.x(function (d, index) {
-					// Extend the final line segment all the way to the right,
-					// if we are on that last extraneous data point
-					if(index == (points.length-1)) {
-						return x(d.resid) + x.bandwidth();
-					} else {
-						return x(d.resid);
-					}
-				})
-				.y((d) => y(d.height)));
+		var num_residues = this.data.length
 
-		if (!(this.svg.select("#overlay").empty())) {
-			this.svg.selectAll('.skyline').style("opacity", 0);
-		}
+		if (num_residues < 1000) {
+			this.skyline = this.svg.append('g').classed('skyline', true).attr("id", "skyline");
+			this.skyline.append("path")
+				.attr("class", "mypath")
+				.datum(points)
+				.attr("fill", "none")
+				.attr("stroke", "grey")
+				.attr("stroke-width", 1.0)
+				.attr("d", d3.line()
+					.x(function (d, index) {
+						// Extend the final line segment all the way to the right,
+						// if we are on that last extraneous data point
+						if (index == (points.length-1)) {
+							return x(d.resid) + x.bandwidth();
+						} else {
+							return x(d.resid);
+						}
+					})
+					.y((d) => y(d.height)));
+
+			if (!(this.svg.select("#overlay").empty())) {
+				this.svg.selectAll('.skyline').style("opacity", 0);
+			}		
+	}
+		
+
 
 		return this;
 	}
