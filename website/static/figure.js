@@ -874,9 +874,7 @@ class ZblobChart extends ZChart {
 				this.svg.selectAll('.skyline').style("opacity", 0);
 			}		
 	}
-		
-
-
+	
 		return this;
 	}
 	
