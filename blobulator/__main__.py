@@ -14,11 +14,15 @@ Arguments:
 """
 if __name__ == "__main__":
 
+    import time
+    start = time.time()
+
     import argparse
     from Bio import SeqIO
     from Bio.Seq import Seq
 
     import blobulator
+
 
     #For diagnostics/development benchmarking
     #import cProfile
@@ -79,3 +83,6 @@ if __name__ == "__main__":
         print("done")
     else:
         print("No sequence provided")
+
+    end = time.time()
+    print(f"\nTook {end - start:.3f} seconds")
