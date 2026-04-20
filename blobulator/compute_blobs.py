@@ -152,7 +152,7 @@ def name_blobs(res_types):
     
     return grouped_names
         
-def assign_residue_track_bar_height(blob_properties_array):
+# def assign_residue_track_bar_height(blob_properties_array):
     """
     Assigns bar heights to each residue for output tracks based on what type of blob they fall into
 
@@ -168,6 +168,25 @@ def assign_residue_track_bar_height(blob_properties_array):
         return 0.6
     else:
         return 0.4
+
+def assign_residue_track_bar_height(blob_properties_array):
+    """
+    Assigns bar heights to each residue for output tracks based on what the blob type (p, h, or s)
+
+    Arguments:
+        blob_properties_array (array): An array containing the the type of blob that each residue falls into
+
+    Returns:
+        int: bar height for each residue
+    """
+    blob_types = blob_properties_array["residue_blob_type"].values.astype(str)
+    
+    first_character = np.char.add(blob_types, "")
+    first_character = np.array([s[0] for s in blob_types]) 
+
+    # If p-blob, return 0.2, if h-blob return 0.6, else return 0.4
+    return np.select([first_character == "p", first_character == "h"], [0.2, 0.6], default=0.4)
+
 
 # ..........................Define phase diagram................................................#
 def assign_blob_das_pappu_color(blob_properties_array):
@@ -574,7 +593,6 @@ def build_sequence_df(seq, disorder_residues=[], hydropathy_scale="kyte_doolittl
         "residue_name": residue_name
     })
 
-    # df["residue_disorder"] = df["residue_number"].apply(lambda x: 1 if x in disorder_residues else 0)
     df["residue_disorder"] = df["residue_number"].isin(disorder_residues).astype(int)
     df["residue_hydropathy"] = [get_hydrophobicity(r, hydropathy_scale) for r in df["residue_name"]]
     df["residue_charge"] = [properties_charge[r] for r in df["residue_name"]]
@@ -640,7 +658,7 @@ def assign_blob_types(df, blob_length_minimum):
     df["residue_blob_type_pre"] = (df["residue_blob_type"].groupby(df["residue_blob_type"].ne(df["residue_blob_type"].shift()).cumsum()).transform("count"))
     df["residue_blob_type"] = ["t" if y=="t" else y if (x >= blob_length_minimum) else "s"
                                for x, y in zip(df["residue_blob_type_pre"], df["residue_blob_type"])]
-    df["assign_residue_track_bar_height"] = df[["residue_blob_type", "residue_hydropathy"]].apply(assign_residue_track_bar_height, axis=1)
+    df["assign_residue_track_bar_height"] = assign_residue_track_bar_height(df)
     df["residue_blob_groups"] = pd.Series(name_blobs(df["residue_blob_type"].to_list()))
     df.fillna({"residue_blob_groups": "s"}, inplace=True)
 
