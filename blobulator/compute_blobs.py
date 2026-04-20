@@ -276,20 +276,23 @@ def assign_blob_uversky_value(blob_properties_array):
         blob_properties_array (array): An array containing the fraction of positive and negative residues per blob
 
     Returns:
-        distance (int): The distance of each blob from the from the disorder/order boundary on the uversky diagram
+        blob_properties_array (df): A dataframe containing a column called "blob_distance_from_uversky_boundary_line" containing the distance of each blob from the from the disorder/order boundary on the uversky diagram
     """
-    h = blob_properties_array.iloc[1]*1.0
-    ncpr = abs(blob_properties_array.iloc[0])
+    hydrophobicity = blob_properties_array["blob_hydrophobicity"]
+    ncpr = blob_properties_array["blob_net_charge_per_residue"].abs()
+    
+    # CONSTANTS
     c = 0.413 # intercept of diagram
     a = (1/2.785)
     b=-1
-    distance = abs(a*ncpr + b*h +c)/math.sqrt(a**2+b**2)
-    rel_line = h-(ncpr*a) - c
-    if rel_line >= 0:
-        return distance * -1.0 ## multiplied by -1 for colorscale assignment
-    else:
-        return distance 
+    
+    distance = abs(a * ncpr + b * hydrophobicity + c) / math.sqrt(a**2 + b**2)
+    rel_line = hydrophobicity - (ncpr * a) - c
 
+    blob_properties_array["blob_distance_from_uversky_boundary_line"] = np.where(rel_line >= 0, distance * -1.0, distance)
+    
+    return blob_properties_array
+    
 # ..........................Define NCPR.........................................................#
 def assign_blob_ncpr_color(blob_properties_array):
     """
@@ -671,7 +674,8 @@ def compute_blob_properties(df):
     df["blob_fraction_of_charged_residues"] = df["blob_fraction_of_positively_charged_residues"] + df["blob_fraction_of_negatively_charged_residues"]
     df = assign_blob_predicted_dsnp_enrichment_value(df)
     df = assign_blob_das_pappu_value(df)
-    df["blob_distance_from_uversky_boundary_line"] = df[["blob_net_charge_per_residue", "blob_hydrophobicity"]].apply(assign_blob_uversky_value, axis=1)
+    # df["blob_distance_from_uversky_boundary_line"] = df[["blob_net_charge_per_residue", "blob_hydrophobicity"]].apply(assign_blob_uversky_value, axis=1)
+    df = assign_blob_uversky_value(df)
     return df
 
 def assign_colors(df, color_types=None):
