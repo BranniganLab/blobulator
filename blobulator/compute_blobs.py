@@ -151,23 +151,6 @@ def name_blobs(res_types):
         grouped_names.append(item)
     
     return grouped_names
-        
-# def assign_residue_track_bar_height(blob_properties_array):
-    """
-    Assigns bar heights to each residue for output tracks based on what type of blob they fall into
-
-    Arguments:
-        blob_properties_array (array): An array containing the the type of blob that each residue falls into
-
-    Returns:
-        int: bar height for each residue
-    """
-    if blob_properties_array.iloc[0][0] == "p":
-        return 0.2
-    elif blob_properties_array.iloc[0][0] == "h":
-        return 0.6
-    else:
-        return 0.4
 
 def assign_residue_track_bar_height(blob_properties_array):
     """
