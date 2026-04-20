@@ -405,23 +405,19 @@ def assign_blob_predicted_dsnp_enrichment_color(blob_properties_array):
 
 def assign_blob_predicted_dsnp_enrichment_value(blob_properties_array):
     """
-    Assigns the color for each h-blob in a given sequence based on how sensitive to a mutation it is predicted to be
+    Assigns the enrichment value (color) for each h-blob in a given sequence based on how sensitive the sequence is predicted to be to a mutation.
 
     Arguments:
         blob_properties_array (array): An array containing the predicted mutation sensitivity value for each residue for each h-blob
 
     Returns:
-        color (str): String containing the color value for each residue based on how sensitive to a mutation the blob that contains it is predicted to be
+        blob_properties_array (df): A dataframe containing the predicted mutation sensitivity value for each residue for each h-blob in a column called "blob_predicted_enrichment_of_dsnps"
     """
-    cutoff = round(blob_properties_array.iloc[1], 2)
-    if blob_properties_array.iloc[2] == "h":
-        try:
-            enrich_value = enrich_df.Enrichment.loc[cutoff, blob_properties_array.iloc[0]]
-            return enrich_value
-        except KeyError:
-            return 0
-    else:
-        return 0
+    lookup_keys = list(zip(blob_properties_array["blob_minimum_hydrophobicity"].round(2), blob_properties_array["blob_length"]))
+    blob_properties_array["blob_predicted_enrichment_of_dsnps"] = (enrich_df["Enrichment"].reindex(lookup_keys).fillna(0).values)
+    blob_properties_array.loc[blob_properties_array["residue_blob_type"] != "h", "blob_predicted_enrichment_of_dsnps"] = 0
+    
+    return blob_properties_array
 
 def count_var(blob_properties_array, v):
     """
@@ -684,7 +680,8 @@ def compute_blob_properties(df):
     df["blob_fraction_of_positively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, 1))
     df["blob_fraction_of_negatively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, -1))
     df["blob_fraction_of_charged_residues"] = df["blob_fraction_of_positively_charged_residues"] + df["blob_fraction_of_negatively_charged_residues"]
-    df["blob_predicted_enrichment_of_dsnps"] = df[["blob_length", "blob_minimum_hydrophobicity", "residue_blob_type"]].apply(lambda x: assign_blob_predicted_dsnp_enrichment_value(x), axis=1)
+    df = assign_blob_predicted_dsnp_enrichment_value(df)
+
     df["blob_daspappu_phase"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues","blob_fraction_of_positively_charged_residues", "blob_fraction_of_negatively_charged_residues"]].apply(assign_blob_das_pappu_value, axis=1)
     df["blob_distance_from_uversky_boundary_line"] = df[["blob_net_charge_per_residue", "blob_hydrophobicity"]].apply(assign_blob_uversky_value, axis=1)
     return df
