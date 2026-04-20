@@ -17,7 +17,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
-from random import random
+from random import choices, random
 import matplotlib.gridspec as gridspec
 import math
 
@@ -224,41 +224,30 @@ def assign_blob_das_pappu_value(blob_properties_array):
         blob_properties_array (array): An array containing the fraction of positive and negative residues per blob
 
     Returns:
-        region (str): returns the number associated to the Das-Pappu class for each residue
+        blob_properties_array (df): Returns a dataframe containing a column called "blob_daspappu_phase" containing the number associated to the Das-Pappu class/region for each residue
     """
-    fraction_of_charged_residues = blob_properties_array.iloc[1]
-    ncpr = blob_properties_array.iloc[0]
-    fraction_of_positively_charged_residues = blob_properties_array.iloc[2]
-    fraction_of_negatively_charged_residues = blob_properties_array.iloc[3]
+    f_charged = blob_properties_array["blob_fraction_of_charged_residues"]
+    ncpr = blob_properties_array["blob_net_charge_per_residue"].abs()
+    f_pos = blob_properties_array["blob_fraction_of_positively_charged_residues"]
+    f_neg = blob_properties_array["blob_fraction_of_negatively_charged_residues"]
 
-    # If blob is in region 1 of das pappu diagram
-    if fraction_of_charged_residues < 0.25:
-        return "1"
+    conditions = [
+        (f_charged < 0.25),                                # Region 1
+        (f_charged >= 0.25) & (f_charged <= 0.35),         # Region 2
+        (f_charged > 0.35) & (ncpr < 0.35),                # Region 3
+        (f_pos > 0.35),                                    # Region 5
+        (f_neg > 0.35)                                     # Region 4
+    ]
 
-    # If blob is in region 2 of das pappu diagram
-    elif fraction_of_charged_residues >= 0.25 and fraction_of_charged_residues <= 0.35:
-        return "2"
+    regions = ["1", "2", "3", "5", "4"]
 
-    # If blob is in region 3 of das pappu diagram
-    elif fraction_of_charged_residues > 0.35 and abs(ncpr) < 0.35:
-        return "3"
+    blob_properties_array["blob_daspappu_phase"] = np.select(conditions, regions, default="Error")
 
-    # If blob is in region 5 of das pappu diagram
-    elif fraction_of_positively_charged_residues > 0.35:
-        if fraction_of_negatively_charged_residues > 0.35:
-            raise SequenceException(
-                "Algorithm bug when coping with phase plot regions"
-            )
-        return "5"
+    # This case is impossible but here for completeness
+    if (blob_properties_array["blob_daspappu_phase"] == "Error").any():
+         raise Exception("Found inaccessible region of phase diagram. Numerical error")
 
-    # If blob is in region 4 of das pappu diagram
-    elif fraction_of_negatively_charged_residues > 0.35:
-        return "4"
-
-    else:  # This case is impossible but here for completeness
-        raise SequenceException(
-            "Found inaccessible region of phase diagram. Numerical error"
-        )
+    return blob_properties_array
 
 # ..........................Define colors for each blob type....................................#
 def assign_blob_color_by_type(blob_properties_array):
@@ -681,8 +670,7 @@ def compute_blob_properties(df):
     df["blob_fraction_of_negatively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, -1))
     df["blob_fraction_of_charged_residues"] = df["blob_fraction_of_positively_charged_residues"] + df["blob_fraction_of_negatively_charged_residues"]
     df = assign_blob_predicted_dsnp_enrichment_value(df)
-
-    df["blob_daspappu_phase"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues","blob_fraction_of_positively_charged_residues", "blob_fraction_of_negatively_charged_residues"]].apply(assign_blob_das_pappu_value, axis=1)
+    df = assign_blob_das_pappu_value(df)
     df["blob_distance_from_uversky_boundary_line"] = df[["blob_net_charge_per_residue", "blob_hydrophobicity"]].apply(assign_blob_uversky_value, axis=1)
     return df
 
