@@ -574,7 +574,8 @@ def build_sequence_df(seq, disorder_residues=[], hydropathy_scale="kyte_doolittl
         "residue_name": residue_name
     })
 
-    df["residue_disorder"] = df["residue_number"].apply(lambda x: 1 if x in disorder_residues else 0)
+    # df["residue_disorder"] = df["residue_number"].apply(lambda x: 1 if x in disorder_residues else 0)
+    df["residue_disorder"] = df["residue_number"].isin(disorder_residues).astype(int)
     df["residue_hydropathy"] = [get_hydrophobicity(r, hydropathy_scale) for r in df["residue_name"]]
     df["residue_charge"] = [properties_charge[r] for r in df["residue_name"]]
     df["residue_charge"] = df["residue_charge"].astype(int)
