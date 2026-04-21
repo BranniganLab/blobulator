@@ -336,7 +336,7 @@ def assign_blob_uversky_color(blob_properties_array):
     return blob_properties_array
 
 fname = blobulator_path.joinpath("disorderCMap.csv")
-disorderDict = pd.read_csv(fname, index_col=0)
+disorderDict = pd.read_csv(fname, index_col=0).squeeze("columns")
 
 def assign_blob_disorder_color(blob_properties_array):
     """
@@ -346,10 +346,13 @@ def assign_blob_disorder_color(blob_properties_array):
         blob_properties_array (array): An array containing the disorder value for each residue by blob
 
     Returns:
-        color (str): String containing the color value for each residue based on how disordered the blob that contains it is predicted to be
+        blob_properties_array (df): A dataframe containing a column called "color_for_disorder_predictor_track" containing the color associated to the disorder value for each residue based on the blob that it is contained in.
     """
-    val = blob_properties_array.iloc[0]
-    return disorderDict.loc[np.round(val, 2)]
+    blob_disorder = blob_properties_array["blob_disorder"].round(2)
+
+    blob_properties_array["color_for_disorder_predictor_track"] = blob_disorder.map(disorderDict).fillna("grey")
+
+    return blob_properties_array
 
 fname = blobulator_path.joinpath("enrichCMap.csv")
 enrich_df = pd.read_csv(fname, index_col=[0, 1])
@@ -722,7 +725,7 @@ def assign_colors(df, color_types=None):
     if "uversky" in color_types:
         df = assign_blob_uversky_color(df)
     if "disorder" in color_types:
-        df["color_for_disorder_predictor_track"] = df[["blob_disorder", "blob_fraction_of_charged_residues"]].apply(assign_blob_disorder_color, axis=1)
+        df = assign_blob_disorder_color(df)
 
     return df
 
