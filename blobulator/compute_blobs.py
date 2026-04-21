@@ -249,7 +249,6 @@ def assign_blob_das_pappu_value(blob_properties_array):
 
     return blob_properties_array
 
-# ..........................Define colors for each blob type....................................#
 def assign_blob_color_by_type(blob_properties_array):
     """
     Determines the color for blobs based on their blob types
@@ -258,14 +257,20 @@ def assign_blob_color_by_type(blob_properties_array):
         blob_properties_array (array): An array containing the the type of blob that each residue falls into
 
     Returns:
-        color (str): Color for each residue based on its blob type
+        blob_properties_array (array): Returns a dataframe containing a column called "color_for_blobtype_track" containing the blob color that a residue is assigned.
     """
-    if blob_properties_array.iloc[0][0] == "p":
-        return "#F7931E"
-    elif blob_properties_array.iloc[0][0] == "h":
-        return "#0071BC"
-    else:
-        return "#2DB11A"
+    residue_blob_type = blob_properties_array["residue_blob_type"]
+
+    conditions = [
+        (residue_blob_type == "p"),
+        (residue_blob_type == "h"),
+    ]
+
+    color_choices = ["#F7931E", "#0071BC"]
+
+    blob_properties_array["color_for_blobtype_track"] = np.select(conditions, color_choices, default="#2DB11A")
+
+    return blob_properties_array
 
 # ..........................Define phase diagram................................................#
 def assign_blob_uversky_value(blob_properties_array):
@@ -371,29 +376,26 @@ def assign_blob_predicted_dsnp_enrichment_color(blob_properties_array):
         blob_properties_array (array): An array containing the number of residues in the blob, the minimum smoothed hydropathy, and the type of blob it is
 
     Returns:
-        color (str): String containing the color value for each residue based on sensitive to mutation the blob that contains it is predicted to be
+        blob_properties_array (array): An array containing the color value for each residue based on how sensitive to a mutation the blob that contains the residue is predicted to be
     """
-    min_hydrophobicity = round(blob_properties_array.iloc[1], 2)
-    blob_length = blob_properties_array.iloc[0]
-    residue_blob_type = blob_properties_array.iloc[2]
 
-    if residue_blob_type == "h":
-        try:
-            return enrich_df.color.loc[min_hydrophobicity, blob_length]
-        except KeyError:
-            return "grey"
-    elif residue_blob_type == "p":
-        try:
-            return enrich_df_p.color.loc[min_hydrophobicity, blob_length]
-        except KeyError:
-            return "grey"
-    elif residue_blob_type == "s":
-        try:
-            return enrich_df_s.color.loc[min_hydrophobicity, blob_length]
-        except KeyError:
-            return "grey"
-    else:
-        return "grey"
+    lookup_keys = list(zip(blob_properties_array["blob_minimum_hydrophobicity"].round(2), blob_properties_array["blob_length"]))
+
+    h_colors = enrich_df["color"].reindex(lookup_keys).fillna("grey").values
+    p_colors = enrich_df_p["color"].reindex(lookup_keys).fillna("grey").values
+    s_colors = enrich_df_s["color"].reindex(lookup_keys).fillna("grey").values
+
+    conditions = [
+        (blob_properties_array["residue_blob_type"] == "h"),
+        (blob_properties_array["residue_blob_type"] == "p"),
+        (blob_properties_array["residue_blob_type"] == "s")
+    ]
+    
+    choices = [h_colors, p_colors, s_colors]
+
+    blob_properties_array["color_for_dsnp_enrichment_track"] = np.select(conditions, choices, default="grey")
+
+    return blob_properties_array
 
 def assign_blob_predicted_dsnp_enrichment_value(blob_properties_array):
     """
@@ -674,7 +676,6 @@ def compute_blob_properties(df):
     df["blob_fraction_of_charged_residues"] = df["blob_fraction_of_positively_charged_residues"] + df["blob_fraction_of_negatively_charged_residues"]
     df = assign_blob_predicted_dsnp_enrichment_value(df)
     df = assign_blob_das_pappu_value(df)
-    # df["blob_distance_from_uversky_boundary_line"] = df[["blob_net_charge_per_residue", "blob_hydrophobicity"]].apply(assign_blob_uversky_value, axis=1)
     df = assign_blob_uversky_value(df)
     return df
 
@@ -712,9 +713,9 @@ def assign_colors(df, color_types=None):
         color_types = ["blobtype", "dsnp_enrichment", "daspappu", "NCPR", "uversky", "disorder"]
 
     if "blobtype" in color_types:
-        df["color_for_blobtype_track"] = df[["residue_blob_type", "residue_hydropathy"]].apply(assign_blob_color_by_type, axis=1)
+        df = assign_blob_color_by_type(df)
     if "dsnp_enrichment" in color_types:
-        df["color_for_dsnp_enrichment_track"] = df[["blob_length", "blob_minimum_hydrophobicity", "residue_blob_type"]].apply(assign_blob_predicted_dsnp_enrichment_color, axis=1)
+        df = assign_blob_predicted_dsnp_enrichment_color(df)
     if "daspappu" in color_types:
         df["color_for_daspappu_track"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues",
                                             "blob_fraction_of_positively_charged_residues", "blob_fraction_of_negatively_charged_residues"]].apply(
