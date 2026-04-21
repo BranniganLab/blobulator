@@ -19,8 +19,6 @@ import matplotlib.gridspec as gridspec
 import math
 import matplotlib as mpl
 from matplotlib.lines import Line2D
-import pickle
-import os 
 
 pd.options.mode.chained_assignment = "raise"
 blobulator_path = files("blobulator").joinpath("data")
