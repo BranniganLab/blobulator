@@ -291,6 +291,8 @@ def assign_blob_uversky_value(blob_properties_array):
     return blob_properties_array
     
 # ..........................Define NCPR.........................................................#
+cmap = LinearSegmentedColormap.from_list("mycmap", ["red", "whitesmoke", "blue"])
+norm = matplotlib.colors.Normalize(vmin=-0.2, vmax=0.2)
 def assign_blob_ncpr_color(blob_properties_array):
     """
     Assigns the color for each blob based on its NCPR
@@ -299,18 +301,20 @@ def assign_blob_ncpr_color(blob_properties_array):
         blob_properties_array (array): An array containing the fraction of positive and negative residues per blob
 
     Returns:
-        color (str): String containing the color value for each residue based on the NCPR of the blob that it's contained in
+        blob_properties_array (df): A dataframe containing a column called "color_for_NCPR_track" containing the color associated to the NCPR value for each residue based on the blob that it is contained in
     """
-    import matplotlib
-    from matplotlib.colors import LinearSegmentedColormap
-    cmap = LinearSegmentedColormap.from_list("mycmap", [(0.0 / 1, "red"), ((0.5) / 1, "whitesmoke"), (1.0, "blue")])
+    ncpr = blob_properties_array["blob_net_charge_per_residue"].values
+    ncpr = np.round(ncpr, 2)
+    
+    rgba_array = cmap(norm(ncpr))
 
-    norm = matplotlib.colors.Normalize(vmin=-0.2, vmax=0.2)
+    r = (rgba_array[:, 0] * 255).astype(int).astype(str)
+    g = (rgba_array[:, 1] * 255).astype(int).astype(str)
+    b = (rgba_array[:, 2] * 255).astype(int).astype(str)
     
-    fraction = np.round(blob_properties_array.iloc[0], 2)
-    
-    returned_rgb = matplotlib.colors.to_rgba(cmap(norm(fraction)))
-    return "rgb(" + str(returned_rgb[0] * 255) + "," + str(returned_rgb[1] * 255) + "," + str(returned_rgb[2] * 255) + ")"
+    blob_properties_array["color_for_NCPR_track"] = "rgb(" + r + "," + g + "," + b + ")"
+
+    return blob_properties_array
 
 fname = blobulator_path.joinpath("uverskyCMap.csv")
 uverskyDict = pd.read_csv(fname, index_col=0)
@@ -711,7 +715,7 @@ def assign_colors(df, color_types=None):
     if "daspappu" in color_types:
         df = assign_blob_das_pappu_color(df)
     if "NCPR" in color_types:
-        df["color_for_NCPR_track"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues"]].apply(assign_blob_ncpr_color, axis=1)
+        df = assign_blob_ncpr_color(df)
     if "uversky" in color_types:
         df["color_for_uversky_track"] = df[["blob_distance_from_uversky_boundary_line", "blob_fraction_of_charged_residues"]].apply(assign_blob_uversky_color, axis=1)
     if "disorder" in color_types:
