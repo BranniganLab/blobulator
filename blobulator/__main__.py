@@ -23,7 +23,6 @@ if __name__ == "__main__":
 
     import blobulator
 
-
     #For diagnostics/development benchmarking
     #import cProfile
 
