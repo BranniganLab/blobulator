@@ -8,11 +8,8 @@ from .amino_acids import (
     properties_hydropathy_eisenberg_weiss,
     properties_hydropathy_moon_fleming,
 )
-
 from importlib.resources import files
-
-blobulator_path = files("blobulator").joinpath("data")
-
+from string import ascii_lowercase 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -20,14 +17,13 @@ from matplotlib.colors import LinearSegmentedColormap
 from random import choices, random
 import matplotlib.gridspec as gridspec
 import math
-
 import matplotlib as mpl
 from matplotlib.lines import Line2D
-
 import pickle
-
 import os 
+
 pd.options.mode.chained_assignment = "raise"
+blobulator_path = files("blobulator").joinpath("data")
 
 counter_s = 0  
 counter_p = 0  
@@ -39,9 +35,7 @@ ch = "a"
 counter_blob_type_naming = ord(ch)
 
 # Color map properties
-cmap = LinearSegmentedColormap.from_list(
-    "mycmap", [(0.0 / 1, "red"), ((0.5) / 1, "whitesmoke"), (1.0, "blue")]
-)
+cmap = LinearSegmentedColormap.from_list("mycmap", [(0.0 / 1, "red"), ((0.5) / 1, "whitesmoke"), (1.0, "blue")])
 
 vmax=2.5
 cmap_enrich = LinearSegmentedColormap.from_list("mycmap", [(0/ vmax, "red"), (1./vmax, "whitesmoke"), (vmax / vmax, "blue")])
@@ -56,7 +50,28 @@ c_norm = matplotlib.colors.Normalize(vmin=-0.3, vmax=0.3)
 scalarMap = matplotlib.cm.ScalarMappable(norm=c_norm, cmap=cmap_uversky)
 cval = scalarMap.to_rgba(0)
 
-from string import ascii_lowercase 
+cmap_ncpr = LinearSegmentedColormap.from_list("mycmap", ["red", "whitesmoke", "blue"])
+norm = matplotlib.colors.Normalize(vmin=-0.2, vmax=0.2)
+
+# Load dataframes for coloring blobs
+fname_enrich_map = blobulator_path.joinpath("enrichCMap.csv")
+enrich_df = pd.read_csv(fname_enrich_map, index_col=[0, 1])
+#enrich_df.to_csv("../data/enrichment.txt")
+
+fname_enrich_map_p = blobulator_path.joinpath("enrichCMap_p.csv")
+enrich_df_p = pd.read_csv(fname_enrich_map_p, index_col=[0, 1])
+#enrich_df_p.to_csv("../data/enrichment_p.txt")
+
+fname_enrich_map_s = blobulator_path.joinpath("enrichCMap_s.csv")
+enrich_df_s = pd.read_csv(fname_enrich_map_s, index_col=[0, 1])
+#enrich_df_s.to_csv("../data/enrichment_s.txt")
+
+fname_disorder_map = blobulator_path.joinpath("disorderCMap.csv")
+disorderDict = pd.read_csv(fname_disorder_map, index_col=0).squeeze("columns")
+
+fname_uversky_map = blobulator_path.joinpath("uverskyCMap.csv")
+uverskyDict = pd.read_csv(fname_uversky_map, index_col=0).squeeze("columns")
+
 
 def divmod_base26(n):
     """
@@ -170,7 +185,6 @@ def assign_residue_track_bar_height(blob_properties_array):
     # If p-blob, return 0.2, if h-blob return 0.6, else return 0.4
     return np.select([first_character == "p", first_character == "h"], [0.2, 0.6], default=0.4)
 
-# ..........................Define phase diagram................................................#
 def assign_blob_das_pappu_color(blob_properties_array):
     """
     Assigns colors to blobs based on where they lie in the Das-Pappu phase diagram: (Fig 7) https://www.pnas.org/doi/10.1073/pnas.1304749110
@@ -264,7 +278,6 @@ def assign_blob_color_by_type(blob_properties_array):
 
     return blob_properties_array
 
-# ..........................Define phase diagram................................................#
 def assign_blob_uversky_value(blob_properties_array):
     """
     Calculates the distance (uversky value)from the disorder/order boundary for each blob on the uversky diagram
@@ -290,9 +303,6 @@ def assign_blob_uversky_value(blob_properties_array):
     
     return blob_properties_array
     
-# ..........................Define NCPR.........................................................#
-cmap = LinearSegmentedColormap.from_list("mycmap", ["red", "whitesmoke", "blue"])
-norm = matplotlib.colors.Normalize(vmin=-0.2, vmax=0.2)
 def assign_blob_ncpr_color(blob_properties_array):
     """
     Assigns the color for each blob based on its NCPR
@@ -306,7 +316,7 @@ def assign_blob_ncpr_color(blob_properties_array):
     ncpr = blob_properties_array["blob_net_charge_per_residue"].values
     ncpr = np.round(ncpr, 2)
     
-    rgba_array = cmap(norm(ncpr))
+    rgba_array = cmap_ncpr(norm(ncpr))
 
     r = (rgba_array[:, 0] * 255).astype(int).astype(str)
     g = (rgba_array[:, 1] * 255).astype(int).astype(str)
@@ -315,9 +325,6 @@ def assign_blob_ncpr_color(blob_properties_array):
     blob_properties_array["color_for_NCPR_track"] = "rgb(" + r + "," + g + "," + b + ")"
 
     return blob_properties_array
-
-fname = blobulator_path.joinpath("uverskyCMap.csv")
-uverskyDict = pd.read_csv(fname, index_col=0).squeeze("columns")
 
 def assign_blob_uversky_color(blob_properties_array):
     """
@@ -335,9 +342,6 @@ def assign_blob_uversky_color(blob_properties_array):
     
     return blob_properties_array
 
-fname = blobulator_path.joinpath("disorderCMap.csv")
-disorderDict = pd.read_csv(fname, index_col=0).squeeze("columns")
-
 def assign_blob_disorder_color(blob_properties_array):
     """
     Assigns the color value for each blob based on how disordered it is which is determined by the Uniprot accession
@@ -353,18 +357,6 @@ def assign_blob_disorder_color(blob_properties_array):
     blob_properties_array["color_for_disorder_predictor_track"] = blob_disorder.map(disorderDict).fillna("grey")
 
     return blob_properties_array
-
-fname = blobulator_path.joinpath("enrichCMap.csv")
-enrich_df = pd.read_csv(fname, index_col=[0, 1])
-#enrich_df.to_csv("../data/enrichment.txt")
-
-fname = blobulator_path.joinpath("enrichCMap_p.csv")
-enrich_df_p = pd.read_csv(fname, index_col=[0, 1])
-#enrich_df_p.to_csv("../data/enrichment_p.txt")
-
-fname = blobulator_path.joinpath("enrichCMap_s.csv")
-enrich_df_s = pd.read_csv(fname, index_col=[0, 1])
-#enrich_df_s.to_csv("../data/enrichment_s.txt")
 
 def assign_blob_predicted_dsnp_enrichment_color(blob_properties_array):
     """
