@@ -317,7 +317,7 @@ def assign_blob_ncpr_color(blob_properties_array):
     return blob_properties_array
 
 fname = blobulator_path.joinpath("uverskyCMap.csv")
-uverskyDict = pd.read_csv(fname, index_col=0)
+uverskyDict = pd.read_csv(fname, index_col=0).squeeze("columns")
 
 def assign_blob_uversky_color(blob_properties_array):
     """
@@ -327,10 +327,13 @@ def assign_blob_uversky_color(blob_properties_array):
         blob_properties_array (array): An array containing the uversky distances for each residue by blob
 
     Returns:
-        color (str): a string containing the color value for each residue based on the distance from the uversky diagram"s disorder/order boundary line of the blob that it's contained in
+        blob_properties_array (df): A dataframe containing a column called "color_for_uversky_track" containing the color associated to the distance from the disorder/order boundary on the Uversky diagram for each residue based on the blob that it is contained in
     """
-    val = blob_properties_array.iloc[0]
-    return uverskyDict.loc[np.round(val, 2)]
+    distances = blob_properties_array["blob_distance_from_uversky_boundary_line"].round(2)
+
+    blob_properties_array["color_for_uversky_track"] = distances.map(uverskyDict).fillna("grey")
+    
+    return blob_properties_array
 
 fname = blobulator_path.joinpath("disorderCMap.csv")
 disorderDict = pd.read_csv(fname, index_col=0)
@@ -717,7 +720,7 @@ def assign_colors(df, color_types=None):
     if "NCPR" in color_types:
         df = assign_blob_ncpr_color(df)
     if "uversky" in color_types:
-        df["color_for_uversky_track"] = df[["blob_distance_from_uversky_boundary_line", "blob_fraction_of_charged_residues"]].apply(assign_blob_uversky_color, axis=1)
+        df = assign_blob_uversky_color(df)
     if "disorder" in color_types:
         df["color_for_disorder_predictor_track"] = df[["blob_disorder", "blob_fraction_of_charged_residues"]].apply(assign_blob_disorder_color, axis=1)
 
