@@ -170,7 +170,6 @@ def assign_residue_track_bar_height(blob_properties_array):
     # If p-blob, return 0.2, if h-blob return 0.6, else return 0.4
     return np.select([first_character == "p", first_character == "h"], [0.2, 0.6], default=0.4)
 
-
 # ..........................Define phase diagram................................................#
 def assign_blob_das_pappu_color(blob_properties_array):
     """
@@ -180,41 +179,34 @@ def assign_blob_das_pappu_color(blob_properties_array):
         blob_properties_array (array): An array containing the fraction of positive and negative residues per blob
 
     Returns:
-        color (str): The rgb value for each residue bar based on its Das-Pappu class
+        blob_properties_array (df): Returns a dataframe containing a column called "color_for_daspappu_track" containing the color associated to the Das-Pappu class/region for each residue.
     """
-    fraction_of_charged_residues = blob_properties_array.iloc[1]
-    ncpr = blob_properties_array.iloc[0]
-    fraction_of_positively_charged_residues = blob_properties_array.iloc[2]
-    fraction_of_negatively_charged_residues = blob_properties_array.iloc[3]
+    fraction_of_charged_residues = blob_properties_array["blob_fraction_of_charged_residues"]
+    ncpr = blob_properties_array["blob_net_charge_per_residue"].abs()
+    fraction_of_positively_charged_residues = blob_properties_array["blob_fraction_of_positively_charged_residues"]
+    fraction_of_negatively_charged_residues = blob_properties_array["blob_fraction_of_negatively_charged_residues"]
 
-    # If blob is in region 1 of das pappu diagram
-    if fraction_of_charged_residues < 0.25:
-        return "rgb(138.0,251.0,69.0)"
+    conditions = [
+        (fraction_of_charged_residues < 0.25),                                # Region 1
+        (fraction_of_charged_residues >= 0.25) & (fraction_of_charged_residues <= 0.35),         # Region 2
+        (fraction_of_charged_residues > 0.35) & (ncpr < 0.35),                # Region 3
+        (fraction_of_positively_charged_residues > 0.35),                     # Region 4
+        (fraction_of_negatively_charged_residues > 0.35)                      # Region 5
+    ]
 
-    # If blob is in region 2 of das pappu diagram
-    elif fraction_of_charged_residues >= 0.25 and fraction_of_charged_residues <= 0.35:
-        return "rgb(254.0,230.0,90.0)"
+    color_choices = ["rgb(138.0,251.0,69.0)", 
+                     "rgb(254.0,230.0,90.0)", 
+                     "mediumorchid", 
+                     "blue", 
+                     "red"]
 
-    # If blob is in region 3 of das pappu diagram
-    elif fraction_of_charged_residues > 0.35 and abs(ncpr) < 0.35:
-        return "mediumorchid"
+    blob_properties_array["color_for_daspappu_track"] = np.select(conditions, color_choices, default="Error")
 
-    # If blob is in region 5 of das pappu diagram
-    elif fraction_of_positively_charged_residues > 0.35:
-        if fraction_of_negatively_charged_residues > 0.35:
-            raise SequenceException(
-                "Algorithm bug when coping with phase plot regions"
-            )
-        return "blue"
-    
-    # If blob is in region 4 of das pappu diagram    
-    elif fraction_of_negatively_charged_residues > 0.35:
-        return "red"
+    # This case is impossible but here for completeness
+    if (blob_properties_array["color_for_daspappu_track"] == "Error").any():
+         raise Exception("Found inaccessible region of Das-Pappu phase diagram.")
 
-    else:  # This case is impossible but here for completeness
-        raise SequenceException(
-            "Found inaccessible region of phase diagram. Numerical error"
-        )
+    return blob_properties_array
 
 def assign_blob_das_pappu_value(blob_properties_array):
     """
@@ -717,9 +709,7 @@ def assign_colors(df, color_types=None):
     if "dsnp_enrichment" in color_types:
         df = assign_blob_predicted_dsnp_enrichment_color(df)
     if "daspappu" in color_types:
-        df["color_for_daspappu_track"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues",
-                                            "blob_fraction_of_positively_charged_residues", "blob_fraction_of_negatively_charged_residues"]].apply(
-                                                assign_blob_das_pappu_color, axis=1)
+        df = assign_blob_das_pappu_color(df)
     if "NCPR" in color_types:
         df["color_for_NCPR_track"] = df[["blob_net_charge_per_residue", "blob_fraction_of_charged_residues"]].apply(assign_blob_ncpr_color, axis=1)
     if "uversky" in color_types:
