@@ -477,8 +477,6 @@ $(document).ready( function() {
 				<col style="width: 200px">
 				<col style="width: 100px">
 				<col style="width: 100px">
-				<col style= "width: 250px">
-				<col style= "width: 600px">
 				<div text="left">
 				<tr><td>Hydrophobicity Scale:</td>
 					<td><select id="hydro_scales" class="hydro_scales">
@@ -486,7 +484,7 @@ $(document).ready( function() {
 						<option value="eisenberg_weiss">Eisenberg and Weiss</option>
 						<option value="moon_fleming">Moon and Fleming</option></select></td>
 						<td id="hydro-labels" class="hydro_labels" style="width: 600px"></td>
-						<td></td></tr>
+				</tr>
 					
 						<tr><td>Hydropathy cutoff:
 						<span id="infoIconHP" style="cursor: pointer;">ⓘ</span>
@@ -497,7 +495,7 @@ $(document).ready( function() {
 					<td><input type="number" id="cutoff_user_box" min="0" max="1.0" value={{ my_cut | safe }} step=0.001></td>
 					<td style="width: 600px"><input type="range" name="mySlider" id="cutoff_user_slider" min="0" max="1.0" value={{ my_cut | safe }} class="myslider1" step=0.001 list="aa_list"></td>
 					
-					<td></td></tr>
+				</tr>
 				<tr>
 				<td>Minimum blob size:
 					<span id="infoIconMB" style="cursor: pointer;">ⓘ</span>
@@ -506,7 +504,7 @@ $(document).ready( function() {
 					<td> <input type="number" id="domain_threshold_user_box" min="1" max={{ blob_length_minimum_max | safe }} value={{ blob_length_minimum | safe }}   step=1> 
 					</td>
 					<td style="width: 600px"><input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ blob_length_minimum_max | safe }} value={{ blob_length_minimum | safe }} class="myslider1" step=1> </td>
-				<td>&nbsp;</td></tr>
+				</tr>
 				</div>
 
 				<script type="text/javascript">
