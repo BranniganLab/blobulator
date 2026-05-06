@@ -39,7 +39,7 @@
 	background: rgba(255,255,255,0.3);
 	position: sticky;
 	align-items: center	;
-	width: 100vw;
+	width: 70vw;
 }
 
 /* Sliders and controls for result graphs ("Hydropathy cutoff" and the like) */
@@ -48,7 +48,7 @@
 	z-index: 100;
 	display: inline-block;
 	empty-cells: show;
-	width: 100vw
+	min-width: fit-content;
 }
 
 @media not print {
