@@ -131,3 +131,10 @@ td > div {
     height: 10px !important; /* overwrites any other rules */
     background-color: #FFFFFF;
 }
+
+@media (max-width: 767px) {
+    .container {
+        transform: scale(0.7);
+        transform-origin: top left;
+    }
+}
