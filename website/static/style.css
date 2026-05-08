@@ -134,7 +134,7 @@ td > div {
 
 @media (max-width: 767px) {
     .container {
-        transform: scale(0.7);
+        transform: scale(0.4ßß);
         transform-origin: top left;
     }
 }
