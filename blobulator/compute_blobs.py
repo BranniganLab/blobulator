@@ -225,17 +225,18 @@ def assign_residue_track_bar_height(blob_properties_array):
     Assigns bar heights to each residue for output tracks based on what the blob type (p, h, or s)
 
     Arguments:
-        blob_properties_array (array): An array containing the the type of blob that each residue falls into
+        blob_properties_array (pd.DataFrame): A dataframe containing the type of blob (h, p, or s) that each residue falls into
 
     Returns:
         int: bar height for each residue
     """
     blob_types = blob_properties_array["residue_blob_type"].values.astype(str)
     
+    # Get the first character of the blob type (e.g. 'p' for 'p1', 'h' for 'h1a', 's' for 's1'
     first_character = np.char.add(blob_types, "")
     first_character = np.array([s[0] for s in blob_types]) 
 
-    # If p-blob, return 0.2, if h-blob return 0.6, else return 0.4
+    # If p-blob return 0.2, if h-blob return 0.6, else (s-blob)return 0.4
     return np.select([first_character == "p", first_character == "h"], [0.2, 0.6], default=0.4)
 
 def name_blobs(res_types):
@@ -342,10 +343,10 @@ def assign_blob_das_pappu_value(blob_properties_array):
     Assigns numerical values to blobs based on where they lie in the Das-Pappu phase diagram: (Fig 7) https://www.pnas.org/doi/10.1073/pnas.1304749110
 
     Arguments:
-        blob_properties_array (array): An array containing the fraction of positive and negative residues per blob
+        blob_properties_array (pd.DataFrame): A dataframe containing the fraction of positive and negative residues per blob
 
     Returns:
-        blob_properties_array (df): Returns a dataframe containing a column called "blob_daspappu_phase" containing the number associated to the Das-Pappu class/region for each residue
+        blob_properties_array (pd.DataFrame): Returns a dataframe containing a column called "blob_daspappu_phase" containing the number associated to the Das-Pappu class/region for each residue
     """
     f_charged = blob_properties_array["blob_fraction_of_charged_residues"]
     ncpr = blob_properties_array["blob_net_charge_per_residue"].abs()
@@ -375,10 +376,10 @@ def assign_blob_predicted_dsnp_enrichment_value(blob_properties_array):
     Assigns the enrichment value (color) for each h-blob in a given sequence based on how sensitive the sequence is predicted to be to a mutation.
 
     Arguments:
-        blob_properties_array (array): An array containing the predicted mutation sensitivity value for each residue for each h-blob
+        blob_properties_array (pd.DataFrame): A dataframe containing the predicted mutation sensitivity value for each residue for each h-blob
 
     Returns:
-        blob_properties_array (df): A dataframe containing the predicted mutation sensitivity value for each residue for each h-blob in a column called "blob_predicted_enrichment_of_dsnps"
+        blob_properties_array (pd.DataFrame): A dataframe containing the predicted mutation sensitivity value for each residue for each h-blob in a column called "blob_predicted_enrichment_of_dsnps"
     """
     lookup_keys = list(zip(blob_properties_array["blob_minimum_hydrophobicity"].round(2), blob_properties_array["blob_length"]))
     blob_properties_array["blob_predicted_enrichment_of_dsnps"] = (enrich_df["Enrichment"].reindex(lookup_keys).fillna(0).values)
@@ -391,10 +392,10 @@ def assign_blob_uversky_value(blob_properties_array):
     Calculates the distance (uversky value)from the disorder/order boundary for each blob on the uversky diagram
 
     Arguments:
-        blob_properties_array (array): An array containing the fraction of positive and negative residues per blob
+        blob_properties_array (pd.DataFrame): A dataframe containing the fraction of positive and negative residues per blob
 
     Returns:
-        blob_properties_array (df): A dataframe containing a column called "blob_distance_from_uversky_boundary_line" containing the distance of each blob from the from the disorder/order boundary on the uversky diagram
+        blob_properties_array (pd.DataFrame): A dataframe containing a column called "blob_distance_from_uversky_boundary_line" containing the distance of each blob from the from the disorder/order boundary on the uversky diagram
     """
     hydrophobicity = blob_properties_array["blob_hydrophobicity"]
     ncpr = blob_properties_array["blob_net_charge_per_residue"].abs()
@@ -458,10 +459,10 @@ def assign_blob_color_by_type(blob_properties_array):
     Determines the color for blobs based on their blob types
 
     Arguments:
-        blob_properties_array (array): An array containing the the type of blob that each residue falls into
+        blob_properties_array (pd.DataFrame): A dataframe containing the type of blob (h, p, or s) that each residue falls into
 
     Returns:
-        blob_properties_array (array): Returns a dataframe containing a column called "color_for_blobtype_track" containing the blob color that a residue is assigned.
+        blob_properties_array (pd.DataFrame): Returns a dataframe containing a column called "color_for_blobtype_track" which holds the blob color that a residue is assigned
     """
     residue_blob_type = blob_properties_array["residue_blob_type"]
 
@@ -481,10 +482,10 @@ def assign_blob_ncpr_color(blob_properties_array):
     Assigns the color for each blob based on its NCPR
 
     Arguments:
-        blob_properties_array (array): An array containing the fraction of positive and negative residues per blob
+        blob_properties_array (pd.DataFrame): A dataframe containing the fraction of positive and negative residues per blob
 
     Returns:
-        blob_properties_array (df): A dataframe containing a column called "color_for_NCPR_track" containing the color associated to the NCPR value for each residue based on the blob that it is contained in
+        blob_properties_array (pd.DataFrame): A dataframe containing a column called "color_for_NCPR_track" containing the color associated to the NCPR value for each residue based on the blob that it is contained in
     """
     ncpr = blob_properties_array["blob_net_charge_per_residue"].values
     ncpr = np.round(ncpr, 2)
@@ -504,10 +505,10 @@ def assign_blob_das_pappu_color(blob_properties_array):
     Assigns colors to blobs based on where they lie in the Das-Pappu phase diagram: (Fig 7) https://www.pnas.org/doi/10.1073/pnas.1304749110
 
     Arguments:
-        blob_properties_array (array): An array containing the fraction of positive and negative residues per blob
+        blob_properties_array (pd.DataFrame): A dataframe containing the fraction of positive and negative residues per blob
 
     Returns:
-        blob_properties_array (df): Returns a dataframe containing a column called "color_for_daspappu_track" containing the color associated to the Das-Pappu class/region for each residue.
+        blob_properties_array (pd.DataFrame): Returns a dataframe containing a column called "color_for_daspappu_track" containing the color associated to the Das-Pappu class/region for each residue.
     """
     fraction_of_charged_residues = blob_properties_array["blob_fraction_of_charged_residues"]
     ncpr = blob_properties_array["blob_net_charge_per_residue"].abs()
@@ -545,10 +546,10 @@ def assign_blob_predicted_dsnp_enrichment_color(blob_properties_array):
         given length is still considered an h-blob as this threshold is increased.
     
     Arguments:
-        blob_properties_array (array): An array containing the number of residues in the blob, the minimum smoothed hydropathy, and the type of blob it is
+        blob_properties_array (pd.DataFrame): A dataframe containing the number of residues in the blob, the minimum smoothed hydropathy, and the type of blob it is
 
     Returns:
-        blob_properties_array (array): An array containing the color value for each residue based on how sensitive to a mutation the blob that contains the residue is predicted to be
+        blob_properties_array (pd.DataFrame): A dataframe containing the color value for each residue based on how sensitive to a mutation the blob that contains the residue is predicted to be
     """
 
     lookup_keys = list(zip(blob_properties_array["blob_minimum_hydrophobicity"].round(2), blob_properties_array["blob_length"]))
@@ -574,10 +575,10 @@ def assign_blob_uversky_color(blob_properties_array):
     Assigns the color for each blob based on its distance from the disorder/order boundary on the Uversky diagram
 
     Arguments:
-        blob_properties_array (array): An array containing the uversky distances for each residue by blob
+        blob_properties_array (pd.DataFrame): A dataframe containing the uversky distances for each residue by blob
 
     Returns:
-        blob_properties_array (df): A dataframe containing a column called "color_for_uversky_track" containing the color associated to the distance from the disorder/order boundary on the Uversky diagram for each residue based on the blob that it is contained in
+        blob_properties_array (pd.DataFrame): A dataframe containing a column called "color_for_uversky_track" containing the color associated to the distance from the disorder/order boundary on the Uversky diagram for each residue based on the blob that it is contained in
     """
     distances = blob_properties_array["blob_distance_from_uversky_boundary_line"].round(2)
 
@@ -590,10 +591,10 @@ def assign_blob_disorder_color(blob_properties_array):
     Assigns the color value for each blob based on how disordered it is which is determined by the Uniprot accession
 
     Arguments:
-        blob_properties_array (array): An array containing the disorder value for each residue by blob
+        blob_properties_array (pd.DataFrame): A dataframe containing the disorder value for each residue by blob
 
     Returns:
-        blob_properties_array (df): A dataframe containing a column called "color_for_disorder_predictor_track" containing the color associated to the disorder value for each residue based on the blob that it is contained in.
+        blob_properties_array (pd.DataFrame): A dataframe containing a column called "color_for_disorder_predictor_track" containing the color associated to the disorder value for each residue based on the blob that it is contained in.
     """
     blob_disorder = blob_properties_array["blob_disorder"].round(2)
 
