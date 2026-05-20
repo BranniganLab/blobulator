@@ -496,7 +496,7 @@ def assign_blob_ncpr_color(blob_properties_df):
     g = (rgba_array[:, 1] * 255).astype(int).astype(str)
     b = (rgba_array[:, 2] * 255).astype(int).astype(str)
     
-    blob_properties_df["color_for_NCPR_track"] = ("rgb(" + str(r) + "," + str(g) + "," + str(b) + ")")
+    blob_properties_df["color_for_NCPR_track"] = [f"rgb({ri},{gi},{bi})" for ri, gi, bi in zip(r, g, b)]
 
     return blob_properties_df
 
