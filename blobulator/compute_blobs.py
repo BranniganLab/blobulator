@@ -103,18 +103,18 @@ def to_base26(num):
         chars.append(ascii_lowercase[d - 1])
     return "".join(reversed(chars)) 
 
-def count_var(blob_properties_array, v):
+def count_var(blob_properties_df, v):
     """
     Counts the number of times v appears in an array
 
     Arguments:
-        blob_properties_array (array): An array containing various properties organized by blob
+        blob_properties_df (array): An array containing various properties organized by blob
         v (int): How many to count
 
     Returns:
         int: The total count for each value
     """
-    return blob_properties_array.values.tolist().count(v) / (blob_properties_array.shape[0] * 1.0)
+    return blob_properties_df.values.tolist().count(v) / (blob_properties_df.shape[0] * 1.0)
 
 def get_hydrophobicity(residue, hydropathy_scale):
     """
@@ -155,22 +155,22 @@ def build_sequence_df(seq, disorder_residues=[], hydropathy_scale="kyte_doolittl
         hydropathy_scale (str, optional): Name of the hydropathy scale to use (e.g., "kyte_doolittle"). Defaults to "kyte_doolittle".
 
     Returns:
-        df (pd.DataFrame): A dataframe with the above columns.
+        blob_properties_df (pd.DataFrame): A dataframe with the above columns.
     """
     residue_number = list(range(1, len(seq)+1))
     residue_name = list(seq)
 
-    df = pd.DataFrame({
+    blob_properties_df = pd.DataFrame({
         "residue_number": residue_number,
         "residue_name": residue_name
     })
 
-    df["residue_disorder"] = df["residue_number"].isin(disorder_residues).astype(int)
-    df["residue_hydropathy"] = [get_hydrophobicity(r, hydropathy_scale) for r in df["residue_name"]]
-    df["residue_charge"] = [properties_charge[r] for r in df["residue_name"]]
-    df["residue_charge"] = df["residue_charge"].astype(int)
+    blob_properties_df["residue_disorder"] = blob_properties_df["residue_number"].isin(disorder_residues).astype(int)
+    blob_properties_df["residue_hydropathy"] = [get_hydrophobicity(r, hydropathy_scale) for r in blob_properties_df["residue_name"]]
+    blob_properties_df["residue_charge"] = [properties_charge[r] for r in blob_properties_df["residue_name"]]
+    blob_properties_df["residue_charge"] = blob_properties_df["residue_charge"].astype(int)
 
-    return df
+    return blob_properties_df
 
 def calculate_smoothed_hydropathy(residue, smoothing_window_length):
     """
@@ -194,7 +194,7 @@ def calculate_smoothed_hydropathy(residue, smoothing_window_length):
 
     return residue_smoothed_hydropathy
 
-def smooth_and_digitize(df, hydropathy_cutoff, smoothing_window_length=3):
+def smooth_and_digitize(blob_properties_df, hydropathy_cutoff, smoothing_window_length=3):
     """
     Compute smoothed hydropathy and digitized hydropathy for blob assignment.
 
@@ -206,7 +206,7 @@ def smooth_and_digitize(df, hydropathy_cutoff, smoothing_window_length=3):
         - hydrophilic: -1 if smoothed hydropathy < `hydropathy_cutoff`
 
     Arguments:
-        df (pd.DataFrame): DataFrame containing at least a column 'residue_hydropathy'.
+        blob_properties_df (pd.DataFrame): DataFrame containing at least a column 'residue_hydropathy'.
         hydropathy_cutoff (float): Threshold for classifying residues as hydrophobic (>cutoff), neutral (NaN), or hydrophilic (<cutoff).
         smoothing_window_length (int, optional): Window length for smoothing hydropathy values. Default is 3.
 
@@ -215,22 +215,22 @@ def smooth_and_digitize(df, hydropathy_cutoff, smoothing_window_length=3):
                         - 'residue_smoothed_hydropathy': hydropathy values smoothed over the window.
                         - 'hydropathy_digitized': residues coded as 1 (hydrophobic), 0 (neutral/NaN), or -1 (hydrophilic) based on smoothed hydropathy.
     """
-    df["residue_smoothed_hydropathy"] = calculate_smoothed_hydropathy(df["residue_hydropathy"], smoothing_window_length)
-    df["hydropathy_digitized"] = [1 if x > hydropathy_cutoff else 0 if np.isnan(x) else -1 
-                                  for x in df["residue_smoothed_hydropathy"]]
-    return df
+    blob_properties_df["residue_smoothed_hydropathy"] = calculate_smoothed_hydropathy(blob_properties_df["residue_hydropathy"], smoothing_window_length)
+    blob_properties_df["hydropathy_digitized"] = [1 if x > hydropathy_cutoff else 0 if np.isnan(x) else -1 
+                                                     for x in blob_properties_df["residue_smoothed_hydropathy"]]
+    return blob_properties_df
 
-def assign_residue_track_bar_height(blob_properties_array):
+def assign_residue_track_bar_height(blob_properties_df):
     """
     Assigns bar heights to each residue for output tracks based on what the blob type (p, h, or s)
 
     Arguments:
-        blob_properties_array (pd.DataFrame): A dataframe containing the type of blob (h, p, or s) that each residue falls into
+        blob_properties_df (pd.DataFrame): A dataframe containing the type of blob (h, p, or s) that each residue falls into
 
     Returns:
         int: bar height for each residue
     """
-    blob_types = blob_properties_array["residue_blob_type"].values.astype(str)
+    blob_types = blob_properties_df["residue_blob_type"].values.astype(str)
     
     # Get the first character of the blob type (e.g. 'p' for 'p1', 'h' for 'h1a', 's' for 's1'
     first_character = np.char.add(blob_types, "")
@@ -300,7 +300,7 @@ def name_blobs(res_types):
     
     return grouped_names
 
-def assign_blob_types(df, blob_length_minimum):
+def assign_blob_types(blob_properties_df, blob_length_minimum):
     """
     Assign preliminary blob types ('h','p','t','s') and name blobs.
 
@@ -318,40 +318,40 @@ def assign_blob_types(df, blob_length_minimum):
     is determined by the order of the blobs in the sequence.
 
     Arguments:
-        df (pd.DataFrame): DataFrame containing a column 'hydropathy_digitized' with the digitized hydropathy values.
+        blob_properties_df (pd.DataFrame): DataFrame containing a column 'hydropathy_digitized' with the digitized hydropathy values.
         blob_length_minimum (int): Minimum length of a blob to be considered a blob.
 
     Returns:
-        df (pd.DataFrame): The original DataFrame with the following new columns:
-                            - 'residue_blob_type': blob type ('h', 'p', 't', 's')
+        blob_properties_df (pd.DataFrame): The original DataFrame with the following new columns:
+                                            - 'residue_blob_type': blob type ('h', 'p', 't', 's')
                             - 'residue_blob_groups': blob number (1, 2, 3, etc.)
     """
-    df["residue_blob_type_pre"] = (df["hydropathy_digitized"].groupby(df["hydropathy_digitized"].ne(df["hydropathy_digitized"].shift()).cumsum()).transform("count"))
-    df["residue_blob_type"] = ["h" if (x >= blob_length_minimum and y == 1) else "t" if y==0 else "p"
-                               for x, y in zip(df["residue_blob_type_pre"], df["hydropathy_digitized"].astype(int))]
-    df["residue_blob_type_pre"] = (df["residue_blob_type"].groupby(df["residue_blob_type"].ne(df["residue_blob_type"].shift()).cumsum()).transform("count"))
-    df["residue_blob_type"] = ["t" if y=="t" else y if (x >= blob_length_minimum) else "s"
-                               for x, y in zip(df["residue_blob_type_pre"], df["residue_blob_type"])]
-    df["assign_residue_track_bar_height"] = assign_residue_track_bar_height(df)
-    df["residue_blob_groups"] = pd.Series(name_blobs(df["residue_blob_type"].to_list()))
-    df.fillna({"residue_blob_groups": "s"}, inplace=True)
+    blob_properties_df["residue_blob_type_pre"] = (blob_properties_df["hydropathy_digitized"].groupby(blob_properties_df["hydropathy_digitized"].ne(blob_properties_df["hydropathy_digitized"].shift()).cumsum()).transform("count"))
+    blob_properties_df["residue_blob_type"] = ["h" if (x >= blob_length_minimum and y == 1) else "t" if y==0 else "p"
+                                               for x, y in zip(blob_properties_df["residue_blob_type_pre"], blob_properties_df["hydropathy_digitized"].astype(int))]
+    blob_properties_df["residue_blob_type_pre"] = (blob_properties_df["residue_blob_type"].groupby(blob_properties_df["residue_blob_type"].ne(blob_properties_df["residue_blob_type"].shift()).cumsum()).transform("count"))
+    blob_properties_df["residue_blob_type"] = ["t" if y=="t" else y if (x >= blob_length_minimum) else "s"
+                                               for x, y in zip(blob_properties_df["residue_blob_type_pre"], blob_properties_df["residue_blob_type"])]
+    blob_properties_df["assign_residue_track_bar_height"] = assign_residue_track_bar_height(blob_properties_df)
+    blob_properties_df["residue_blob_groups"] = pd.Series(name_blobs(blob_properties_df["residue_blob_type"].to_list()))
+    blob_properties_df.fillna({"residue_blob_groups": "s"}, inplace=True)
 
-    return df
+    return blob_properties_df
 
-def assign_blob_das_pappu_value(blob_properties_array):
+def assign_blob_das_pappu_value(blob_properties_df):
     """
     Assigns numerical values to blobs based on where they lie in the Das-Pappu phase diagram: (Fig 7) https://www.pnas.org/doi/10.1073/pnas.1304749110
 
     Arguments:
-        blob_properties_array (pd.DataFrame): A dataframe containing the fraction of positive and negative residues per blob
+        blob_properties_df (pd.DataFrame): A dataframe containing the fraction of positive and negative residues per blob
 
     Returns:
-        blob_properties_array (pd.DataFrame): Returns a dataframe containing a column called "blob_daspappu_phase" containing the number associated to the Das-Pappu class/region for each residue
+        blob_properties_df (pd.DataFrame): Returns a dataframe containing a column called "blob_daspappu_phase" containing the number associated to the Das-Pappu class/region for each residue
     """
-    f_charged = blob_properties_array["blob_fraction_of_charged_residues"]
-    ncpr = blob_properties_array["blob_net_charge_per_residue"].abs()
-    f_pos = blob_properties_array["blob_fraction_of_positively_charged_residues"]
-    f_neg = blob_properties_array["blob_fraction_of_negatively_charged_residues"]
+    f_charged = blob_properties_df["blob_fraction_of_charged_residues"]
+    ncpr = blob_properties_df["blob_net_charge_per_residue"].abs()
+    f_pos = blob_properties_df["blob_fraction_of_positively_charged_residues"]
+    f_neg = blob_properties_df["blob_fraction_of_negatively_charged_residues"]
 
     conditions = [
         (f_charged < 0.25),                                # Region 1
@@ -363,42 +363,42 @@ def assign_blob_das_pappu_value(blob_properties_array):
 
     regions = ["1", "2", "3", "5", "4"]
 
-    blob_properties_array["blob_daspappu_phase"] = np.select(conditions, regions, default="Error")
+    blob_properties_df["blob_daspappu_phase"] = np.select(conditions, regions, default="Error")
 
     # This case is impossible but here for completeness
-    if (blob_properties_array["blob_daspappu_phase"] == "Error").any():
+    if (blob_properties_df["blob_daspappu_phase"] == "Error").any():
          raise Exception("Found inaccessible region of phase diagram. Numerical error")
 
-    return blob_properties_array
+    return blob_properties_df
 
-def assign_blob_predicted_dsnp_enrichment_value(blob_properties_array):
+def assign_blob_predicted_dsnp_enrichment_value(blob_properties_df):
     """
     Assigns the enrichment value (color) for each h-blob in a given sequence based on how sensitive the sequence is predicted to be to a mutation.
 
     Arguments:
-        blob_properties_array (pd.DataFrame): A dataframe containing the predicted mutation sensitivity value for each residue for each h-blob
+        blob_properties_df (pd.DataFrame): A dataframe containing the predicted mutation sensitivity value for each residue for each h-blob
 
     Returns:
-        blob_properties_array (pd.DataFrame): A dataframe containing the predicted mutation sensitivity value for each residue for each h-blob in a column called "blob_predicted_enrichment_of_dsnps"
+        blob_properties_df (pd.DataFrame): A dataframe containing the predicted mutation sensitivity value for each residue for each h-blob in a column called "blob_predicted_enrichment_of_dsnps"
     """
-    lookup_keys = list(zip(blob_properties_array["blob_minimum_hydrophobicity"].round(2), blob_properties_array["blob_length"]))
-    blob_properties_array["blob_predicted_enrichment_of_dsnps"] = (enrich_df["Enrichment"].reindex(lookup_keys).fillna(0).values)
-    blob_properties_array.loc[blob_properties_array["residue_blob_type"] != "h", "blob_predicted_enrichment_of_dsnps"] = 0
+    lookup_keys = list(zip(blob_properties_df["blob_minimum_hydrophobicity"].round(2), blob_properties_df["blob_length"]))
+    blob_properties_df["blob_predicted_enrichment_of_dsnps"] = (enrich_df["Enrichment"].reindex(lookup_keys).fillna(0).values)
+    blob_properties_df.loc[blob_properties_df["residue_blob_type"] != "h", "blob_predicted_enrichment_of_dsnps"] = 0
     
-    return blob_properties_array
+    return blob_properties_df
 
-def assign_blob_uversky_value(blob_properties_array):
+def assign_blob_uversky_value(blob_properties_df):
     """
     Calculates the distance (uversky value)from the disorder/order boundary for each blob on the uversky diagram
 
     Arguments:
-        blob_properties_array (pd.DataFrame): A dataframe containing the fraction of positive and negative residues per blob
+        blob_properties_df (pd.DataFrame): A dataframe containing the fraction of positive and negative residues per blob
 
     Returns:
-        blob_properties_array (pd.DataFrame): A dataframe containing a column called "blob_distance_from_uversky_boundary_line" containing the distance of each blob from the from the disorder/order boundary on the uversky diagram
+        blob_properties_df (pd.DataFrame): A dataframe containing a column called "blob_distance_from_uversky_boundary_line" containing the distance of each blob from the from the disorder/order boundary on the uversky diagram
     """
-    hydrophobicity = blob_properties_array["blob_hydrophobicity"]
-    ncpr = blob_properties_array["blob_net_charge_per_residue"].abs()
+    hydrophobicity = blob_properties_df["blob_hydrophobicity"]
+    ncpr = blob_properties_df["blob_net_charge_per_residue"].abs()
     
     # CONSTANTS
     c = 0.413 # intercept of diagram
@@ -408,11 +408,11 @@ def assign_blob_uversky_value(blob_properties_array):
     distance = abs(a * ncpr + b * hydrophobicity + c) / math.sqrt(a**2 + b**2)
     rel_line = hydrophobicity - (ncpr * a) - c
 
-    blob_properties_array["blob_distance_from_uversky_boundary_line"] = np.where(rel_line >= 0, distance * -1.0, distance)
+    blob_properties_df["blob_distance_from_uversky_boundary_line"] = np.where(rel_line >= 0, distance * -1.0, distance)
     
-    return blob_properties_array 
+    return blob_properties_df 
 
-def compute_blob_properties(df):
+def compute_blob_properties(blob_properties_df):
     """
     Compute blob-level properties like length, hydropathy, NCPR, fraction charged, enrichment, etc.
 
@@ -435,36 +435,36 @@ def compute_blob_properties(df):
     and applying the corresponding functions to the groups.
 
     Arguments:
-        df (pd.DataFrame): DataFrame containing a column 'residue_blob_groups'
+        blob_properties_df (pd.DataFrame): DataFrame containing a column 'residue_blob_groups'
 
     Returns:
-        df (pd.DataFrame): The original DataFrame with the additional columns
+        blob_properties_df (pd.DataFrame): The original DataFrame with the additional columns
     """
-    blobs = df.groupby(["residue_blob_groups"])
-    df["blob_length"] = blobs["residue_number"].transform("count")
-    df["blob_hydrophobicity"] = blobs["residue_hydropathy"].transform("mean")
-    df["blob_minimum_hydrophobicity"] = blobs["residue_smoothed_hydropathy"].transform("min")
-    df["blob_net_charge_per_residue"] = blobs["residue_charge"].transform("mean")
-    df["blob_disorder"] = blobs["residue_disorder"].transform("mean")
-    df["blob_fraction_of_positively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, 1))
-    df["blob_fraction_of_negatively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, -1))
-    df["blob_fraction_of_charged_residues"] = df["blob_fraction_of_positively_charged_residues"] + df["blob_fraction_of_negatively_charged_residues"]
-    df = assign_blob_das_pappu_value(df)
-    df = assign_blob_predicted_dsnp_enrichment_value(df)
-    df = assign_blob_uversky_value(df)
-    return df
+    blobs = blob_properties_df.groupby(["residue_blob_groups"])
+    blob_properties_df["blob_length"] = blobs["residue_number"].transform("count")
+    blob_properties_df["blob_hydrophobicity"] = blobs["residue_hydropathy"].transform("mean")
+    blob_properties_df["blob_minimum_hydrophobicity"] = blobs["residue_smoothed_hydropathy"].transform("min")
+    blob_properties_df["blob_net_charge_per_residue"] = blobs["residue_charge"].transform("mean")
+    blob_properties_df["blob_disorder"] = blobs["residue_disorder"].transform("mean")
+    blob_properties_df["blob_fraction_of_positively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, 1))
+    blob_properties_df["blob_fraction_of_negatively_charged_residues"] = blobs["residue_charge"].transform(lambda x: count_var(x, -1))
+    blob_properties_df["blob_fraction_of_charged_residues"] = blob_properties_df["blob_fraction_of_positively_charged_residues"] + blob_properties_df["blob_fraction_of_negatively_charged_residues"]
+    blob_properties_df = assign_blob_das_pappu_value(blob_properties_df)
+    blob_properties_df = assign_blob_predicted_dsnp_enrichment_value(blob_properties_df)
+    blob_properties_df = assign_blob_uversky_value(blob_properties_df)
+    return blob_properties_df
 
-def assign_blob_color_by_type(blob_properties_array):
+def assign_blob_color_by_type(blob_properties_df):
     """
     Determines the color for blobs based on their blob types
 
     Arguments:
-        blob_properties_array (pd.DataFrame): A dataframe containing the type of blob (h, p, or s) that each residue falls into
+        blob_properties_df (pd.DataFrame): A dataframe containing the type of blob (h, p, or s) that each residue falls into
 
     Returns:
-        blob_properties_array (pd.DataFrame): Returns a dataframe containing a column called "color_for_blobtype_track" which holds the blob color that a residue is assigned
+        blob_properties_df (pd.DataFrame): Returns a dataframe containing a column called "color_for_blobtype_track" which holds the blob color that a residue is assigned
     """
-    residue_blob_type = blob_properties_array["residue_blob_type"]
+    residue_blob_type = blob_properties_df["residue_blob_type"]
 
     conditions = [
         (residue_blob_type == "p"),
@@ -473,21 +473,21 @@ def assign_blob_color_by_type(blob_properties_array):
 
     color_choices = ["#F7931E", "#0071BC"]
 
-    blob_properties_array["color_for_blobtype_track"] = np.select(conditions, color_choices, default="#2DB11A")
+    blob_properties_df["color_for_blobtype_track"] = np.select(conditions, color_choices, default="#2DB11A")
 
-    return blob_properties_array
+    return blob_properties_df
 
-def assign_blob_ncpr_color(blob_properties_array):
+def assign_blob_ncpr_color(blob_properties_df):
     """
     Assigns the color for each blob based on its NCPR
 
     Arguments:
-        blob_properties_array (pd.DataFrame): A dataframe containing the fraction of positive and negative residues per blob
+        blob_properties_df (pd.DataFrame): A dataframe containing the fraction of positive and negative residues per blob
 
     Returns:
-        blob_properties_array (pd.DataFrame): A dataframe containing a column called "color_for_NCPR_track" containing the color associated to the NCPR value for each residue based on the blob that it is contained in
+        blob_properties_df (pd.DataFrame): A dataframe containing a column called "color_for_NCPR_track" containing the color associated to the NCPR value for each residue based on the blob that it is contained in
     """
-    ncpr = blob_properties_array["blob_net_charge_per_residue"].values
+    ncpr = blob_properties_df["blob_net_charge_per_residue"].values
     ncpr = np.round(ncpr, 2)
     
     rgba_array = cmap_ncpr(norm(ncpr))
@@ -496,24 +496,24 @@ def assign_blob_ncpr_color(blob_properties_array):
     g = (rgba_array[:, 1] * 255).astype(int).astype(str)
     b = (rgba_array[:, 2] * 255).astype(int).astype(str)
     
-    blob_properties_array["color_for_NCPR_track"] = ("rgb(" + str(r) + "," + str(g) + "," + str(b) + ")")
+    blob_properties_df["color_for_NCPR_track"] = ("rgb(" + str(r) + "," + str(g) + "," + str(b) + ")")
 
-    return blob_properties_array
+    return blob_properties_df
 
-def assign_blob_das_pappu_color(blob_properties_array):
+def assign_blob_das_pappu_color(blob_properties_df):
     """
     Assigns colors to blobs based on where they lie in the Das-Pappu phase diagram: (Fig 7) https://www.pnas.org/doi/10.1073/pnas.1304749110
 
     Arguments:
-        blob_properties_array (pd.DataFrame): A dataframe containing the fraction of positive and negative residues per blob
+        blob_properties_df (pd.DataFrame): A dataframe containing the fraction of positive and negative residues per blob
 
     Returns:
-        blob_properties_array (pd.DataFrame): Returns a dataframe containing a column called "color_for_daspappu_track" containing the color associated to the Das-Pappu class/region for each residue.
+        blob_properties_df (pd.DataFrame): Returns a dataframe containing a column called "color_for_daspappu_track" containing the color associated to the Das-Pappu class/region for each residue.
     """
-    fraction_of_charged_residues = blob_properties_array["blob_fraction_of_charged_residues"]
-    ncpr = blob_properties_array["blob_net_charge_per_residue"].abs()
-    fraction_of_positively_charged_residues = blob_properties_array["blob_fraction_of_positively_charged_residues"]
-    fraction_of_negatively_charged_residues = blob_properties_array["blob_fraction_of_negatively_charged_residues"]
+    fraction_of_charged_residues = blob_properties_df["blob_fraction_of_charged_residues"]
+    ncpr = blob_properties_df["blob_net_charge_per_residue"].abs()
+    fraction_of_positively_charged_residues = blob_properties_df["blob_fraction_of_positively_charged_residues"]
+    fraction_of_negatively_charged_residues = blob_properties_df["blob_fraction_of_negatively_charged_residues"]
 
     conditions = [
         (fraction_of_charged_residues < 0.25),                                # Region 1
@@ -529,15 +529,15 @@ def assign_blob_das_pappu_color(blob_properties_array):
                      "blue", 
                      "red"]
 
-    blob_properties_array["color_for_daspappu_track"] = np.select(conditions, color_choices, default="Error")
+    blob_properties_df["color_for_daspappu_track"] = np.select(conditions, color_choices, default="Error")
 
     # This case is impossible but here for completeness
-    if (blob_properties_array["color_for_daspappu_track"] == "Error").any():
+    if (blob_properties_df["color_for_daspappu_track"] == "Error").any():
          raise Exception("Found inaccessible region of Das-Pappu phase diagram.")
 
-    return blob_properties_array
+    return blob_properties_df
 
-def assign_blob_predicted_dsnp_enrichment_color(blob_properties_array):
+def assign_blob_predicted_dsnp_enrichment_color(blob_properties_df):
     """
     Assigns the color for each blob based on how sensitive to mutation it is predicted to be.
     Note: This function requires the minimum smoothed hydropathy for each blob. The analysis from 
@@ -546,63 +546,63 @@ def assign_blob_predicted_dsnp_enrichment_color(blob_properties_array):
         given length is still considered an h-blob as this threshold is increased.
     
     Arguments:
-        blob_properties_array (pd.DataFrame): A dataframe containing the number of residues in the blob, the minimum smoothed hydropathy, and the type of blob it is
+        blob_properties_df (pd.DataFrame): A dataframe containing the number of residues in the blob, the minimum smoothed hydropathy, and the type of blob it is
 
     Returns:
-        blob_properties_array (pd.DataFrame): A dataframe containing the color value for each residue based on how sensitive to a mutation the blob that contains the residue is predicted to be
+        blob_properties_df (pd.DataFrame): A dataframe containing the color value for each residue based on how sensitive to a mutation the blob that contains the residue is predicted to be
     """
 
-    lookup_keys = list(zip(blob_properties_array["blob_minimum_hydrophobicity"].round(2), blob_properties_array["blob_length"]))
+    lookup_keys = list(zip(blob_properties_df["blob_minimum_hydrophobicity"].round(2), blob_properties_df["blob_length"]))
 
     h_colors = enrich_df["color"].reindex(lookup_keys).fillna("grey").values
     p_colors = enrich_df_p["color"].reindex(lookup_keys).fillna("grey").values
     s_colors = enrich_df_s["color"].reindex(lookup_keys).fillna("grey").values
 
     conditions = [
-        (blob_properties_array["residue_blob_type"] == "h"),
-        (blob_properties_array["residue_blob_type"] == "p"),
-        (blob_properties_array["residue_blob_type"] == "s")
+        (blob_properties_df["residue_blob_type"] == "h"),
+        (blob_properties_df["residue_blob_type"] == "p"),
+        (blob_properties_df["residue_blob_type"] == "s")
     ]
     
     choices = [h_colors, p_colors, s_colors]
 
-    blob_properties_array["color_for_dsnp_enrichment_track"] = np.select(conditions, choices, default="grey")
+    blob_properties_df["color_for_dsnp_enrichment_track"] = np.select(conditions, choices, default="grey")
 
-    return blob_properties_array
+    return blob_properties_df
 
-def assign_blob_uversky_color(blob_properties_array):
+def assign_blob_uversky_color(blob_properties_df):
     """
     Assigns the color for each blob based on its distance from the disorder/order boundary on the Uversky diagram
 
     Arguments:
-        blob_properties_array (pd.DataFrame): A dataframe containing the uversky distances for each residue by blob
+        blob_properties_df (pd.DataFrame): A dataframe containing the uversky distances for each residue by blob
 
     Returns:
-        blob_properties_array (pd.DataFrame): A dataframe containing a column called "color_for_uversky_track" containing the color associated to the distance from the disorder/order boundary on the Uversky diagram for each residue based on the blob that it is contained in
+        blob_properties_df (pd.DataFrame): A dataframe containing a column called "color_for_uversky_track" containing the color associated to the distance from the disorder/order boundary on the Uversky diagram for each residue based on the blob that it is contained in
     """
-    distances = blob_properties_array["blob_distance_from_uversky_boundary_line"].round(2)
+    distances = blob_properties_df["blob_distance_from_uversky_boundary_line"].round(2)
 
-    blob_properties_array["color_for_uversky_track"] = distances.map(uverskyDict).fillna("grey")
+    blob_properties_df["color_for_uversky_track"] = distances.map(uverskyDict).fillna("grey")
     
-    return blob_properties_array
+    return blob_properties_df
 
-def assign_blob_disorder_color(blob_properties_array):
+def assign_blob_disorder_color(blob_properties_df):
     """
     Assigns the color value for each blob based on how disordered it is which is determined by the Uniprot accession
 
     Arguments:
-        blob_properties_array (pd.DataFrame): A dataframe containing the disorder value for each residue by blob
+        blob_properties_df (pd.DataFrame): A dataframe containing the disorder value for each residue by blob
 
     Returns:
-        blob_properties_array (pd.DataFrame): A dataframe containing a column called "color_for_disorder_predictor_track" containing the color associated to the disorder value for each residue based on the blob that it is contained in.
+        blob_properties_df (pd.DataFrame): A dataframe containing a column called "color_for_disorder_predictor_track" containing the color associated to the disorder value for each residue based on the blob that it is contained in.
     """
-    blob_disorder = blob_properties_array["blob_disorder"].round(2)
+    blob_disorder = blob_properties_df["blob_disorder"].round(2)
 
-    blob_properties_array["color_for_disorder_predictor_track"] = blob_disorder.map(disorderDict).fillna("grey")
+    blob_properties_df["color_for_disorder_predictor_track"] = blob_disorder.map(disorderDict).fillna("grey")
 
-    return blob_properties_array
+    return blob_properties_df
 
-def assign_colors(df, color_types=None):
+def assign_colors(blob_properties_df, color_types=None):
     """
     Assign colors for each track. color_types is a list of which color tracks to compute.
 
@@ -626,54 +626,52 @@ def assign_colors(df, color_types=None):
     - color_for_disorder_predictor_track
 
     Arguments:
-        df (pandas.DataFrame): The dataframe to assign colors to.
+        blob_properties_df (pandas.DataFrame): The dataframe to assign colors to.
         color_types (list of str, optional): A list of which color tracks to compute. Defaults to all tracks.
 
     Returns:
-        df (pandas.DataFrame): The dataframe with the assigned colors.
+        blob_properties_df (pandas.DataFrame): The dataframe with the assigned colors.
     """
     if color_types is None:
         color_types = ["blobtype", "dsnp_enrichment", "daspappu", "NCPR", "uversky", "disorder"]
     if "blobtype" in color_types:
-        df = assign_blob_color_by_type(df)
+        blob_properties_df = assign_blob_color_by_type(blob_properties_df)
     if "NCPR" in color_types:
-        df = assign_blob_ncpr_color(df)
+        blob_properties_df = assign_blob_ncpr_color(blob_properties_df)
     if "daspappu" in color_types:
-        df = assign_blob_das_pappu_color(df)
+        blob_properties_df = assign_blob_das_pappu_color(blob_properties_df)
     if "dsnp_enrichment" in color_types:
-        df = assign_blob_predicted_dsnp_enrichment_color(df)
+        blob_properties_df = assign_blob_predicted_dsnp_enrichment_color(blob_properties_df)
     if "uversky" in color_types:
-        df = assign_blob_uversky_color(df)
+        blob_properties_df = assign_blob_uversky_color(blob_properties_df)
     if "disorder" in color_types:
-        df = assign_blob_disorder_color(df)
+        blob_properties_df = assign_blob_disorder_color(blob_properties_df)
 
-    return df
+    return blob_properties_df
 
-def clean_df(df):
+def clean_df(blob_properties_df):
     """
     Removes unnecessary columns from a given dataframe
 
     Arguments:
-        df (dataframe): A pandas dataframe
+        blob_properties_df (dataframe): A pandas dataframe
 
     Returns:
-        df (dataframe): A cleaned pandas dataframe
+        blob_properties_df (dataframe): A cleaned pandas dataframe
     """
-    #print (df.head)
-    #df = df.drop(range(0, 1))
-    del df["residue_blob_type_pre"]
-    del df["color_for_NCPR_track"]
-    del df["color_for_blobtype_track"]
-    del df["color_for_daspappu_track"]
-    del df["color_for_uversky_track"]
-    del df["color_for_disorder_predictor_track"]
-    del df["hydropathy_digitized"]
-    del df["residue_charge"]
-    # del df["assign_residue_track_bar_height"]
-    del df["residue_disorder"]
-    df["residue_number"] = df["residue_number"].astype(int)
+    del blob_properties_df["residue_blob_type_pre"]
+    del blob_properties_df["color_for_NCPR_track"]
+    del blob_properties_df["color_for_blobtype_track"]
+    del blob_properties_df["color_for_daspappu_track"]
+    del blob_properties_df["color_for_uversky_track"]
+    del blob_properties_df["color_for_disorder_predictor_track"]
+    del blob_properties_df["hydropathy_digitized"]
+    del blob_properties_df["residue_charge"]
+    # del blob_properties_df["assign_residue_track_bar_height"]
+    del blob_properties_df["residue_disorder"]
+    blob_properties_df["residue_number"] = blob_properties_df["residue_number"].astype(int)
     
-    df = df[[ "residue_number",
+    blob_properties_df = blob_properties_df[[ "residue_number",
              "residue_name",
              "smoothing_window_length",
              "hydropathy_cutoff",
@@ -694,7 +692,7 @@ def clean_df(df):
              "residue_hydropathy",
              "residue_smoothed_hydropathy"]]
     
-    df = df.rename(columns={"residue_name": "Residue",
+    blob_properties_df = blob_properties_df.rename(columns={"residue_name": "Residue",
                             "residue_number": "Residue_Position", 
                             "blob_disorder": "Blob_Disorder_Score", 
                             "smoothing_window_length": "Window_Length", 
@@ -714,9 +712,9 @@ def clean_df(df):
                             "residue_hydropathy": "Normalized_Hydropathy",
                             "residue_smoothed_hydropathy": "Smoothed_Hydropathy",
                             "blob_length": "Blob_Length"})
-    #df["Kyte-Doolittle_hydropathy"] = df["Normalized_Kyte-Doolittle_hydropathy"]*9-4.5
+    #blob_properties_df["Kyte-Doolittle_hydropathy"] = blob_properties_df["Normalized_Kyte-Doolittle_hydropathy"]*9-4.5
 
-    return df
+    return blob_properties_df
 
 # Wrapper function to build entire data frame
 def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_doolittle", smoothing_window_length=3, disorder_residues=None, include_colors=True, color_types=None):
@@ -753,31 +751,31 @@ def compute(seq, hydropathy_cutoff, blob_length_minimum, hydropathy_scale="kyte_
         color_types (list of str, optional): A list of which color tracks to compute. Defaults to all tracks.
 
     Returns:
-        df (pandas.DataFrame): A dataframe with the above columns.
+        blob_properties_df (pandas.DataFrame): A dataframe with the above columns.
     """
     if disorder_residues is None:
         disorder_residues = []
 
     # Build initial dataframe
-    df = build_sequence_df(seq, disorder_residues, hydropathy_scale)
+    blob_properties_df = build_sequence_df(seq, disorder_residues, hydropathy_scale)
 
     # Smooth and digitize hydropathy
-    df = smooth_and_digitize(df, hydropathy_cutoff, smoothing_window_length)
+    blob_properties_df = smooth_and_digitize(blob_properties_df, hydropathy_cutoff, smoothing_window_length)
 
     # Assign blob types
-    df = assign_blob_types(df, blob_length_minimum)
+    blob_properties_df = assign_blob_types(blob_properties_df, blob_length_minimum)
 
     # Compute blob properties
-    df = compute_blob_properties(df)
+    blob_properties_df = compute_blob_properties(blob_properties_df)
 
     # Assign colors
     if include_colors:
-        df = assign_colors(df, color_types)
+        blob_properties_df = assign_colors(blob_properties_df, color_types)
 
     # Add data to columns
-    df["smoothing_window_length"] = smoothing_window_length
-    df["hydropathy_cutoff"] = hydropathy_cutoff
-    df["blob_length_minimum"] = blob_length_minimum
-    df["hydropathy_scale"] = hydropathy_scale
-    df["disorder_residues"] = [disorder_residues] * len(df)
-    return df
+    blob_properties_df["smoothing_window_length"] = smoothing_window_length
+    blob_properties_df["hydropathy_cutoff"] = hydropathy_cutoff
+    blob_properties_df["blob_length_minimum"] = blob_length_minimum
+    blob_properties_df["hydropathy_scale"] = hydropathy_scale
+    blob_properties_df["disorder_residues"] = [disorder_residues] * len(blob_properties_df)
+    return blob_properties_df
