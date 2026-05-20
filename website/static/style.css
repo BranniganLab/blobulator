@@ -39,7 +39,7 @@
 	background: rgba(255,255,255,0.3);
 	position: sticky;
 	align-items: center	;
-	width: 100vw;
+	width: 3000px;
 }
 
 /* Sliders and controls for result graphs ("Hydropathy cutoff" and the like) */
@@ -48,7 +48,7 @@
 	z-index: 100;
 	display: inline-block;
 	empty-cells: show;
-	width: 100vw
+	width: 1257px;
 }
 
 @media not print {
@@ -132,9 +132,43 @@ td > div {
     background-color: #FFFFFF;
 }
 
+#molstar_container {
+	width: 100%;
+}
+
+#molstar_header {
+	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: space-between; /* ← key line */
+	height: 32px;
+	padding: 0 10px;
+}
+#molstar_info_icon {
+	cursor: pointer;
+	font-family: arial;
+	font-size: 22px;
+	background: white;
+	padding: 2px 6px;
+	border-radius: 4px;
+}
+#molstar_warning_box {
+	max-width: calc(100% - 40px);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+#app {
+	position: relative;
+	width: 1000px;
+	height: 800px;
+}
+
 @media (max-width: 767px) {
-    .container {
-        transform: scale(0.45);
+    #result {
+		padding: 0;
+        transform: scale(0.5);
         transform-origin: top left;
     }
 }
