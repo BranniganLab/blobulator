@@ -21,7 +21,7 @@
 }
 
 /* Info icons styling */
-#infoIconHP, #infoIconMB {
+#infoIconHP, #infoIconMB, #infoIconHS {
 	cursor: pointer;
 	font-family: arial;
 	font-size: 18px;
@@ -130,4 +130,11 @@ td > div {
 {
     height: 10px !important; /* overwrites any other rules */
     background-color: #FFFFFF;
+}
+
+@media (max-width: 767px) {
+    .container {
+        transform: scale(0.45);
+        transform-origin: top left;
+    }
 }
