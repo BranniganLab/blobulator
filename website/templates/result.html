@@ -486,7 +486,7 @@ $(document).ready( function() {
 
 <div class="tab-pane container" id="result">
     <div class="container">
-		<div class="text-center">
+		<div class="text-center" id="text-container">
 			<p style="color: #020281">Want to see blobs in 3D? Check out our new structure viewer located under the tracks below.</p>
 			<h6>{{ my_name | safe }}</h6>
 			<h6>{{ my_length | safe }}</h6>
@@ -638,6 +638,8 @@ $(document).ready( function() {
 
 			<div id="app"></div>
 		</div>
+
+
 
 		<script type="text/javascript" src="static/molstar_plugin/node_modules/molstar/build/viewer/molstar.js"></script>
 		<script type="text/javascript" src="static/molstar_plugin/plugin/dist/main.js"></script>
