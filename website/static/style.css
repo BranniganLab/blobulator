@@ -175,7 +175,9 @@ td > div {
 @media (max-width: 767px) {
     #result {
 		padding: 0;
-		transform: scale(calc(100vw / 1300px));
+		transform:
+			translateZ(0)
+			scale(calc(100vw / 1300px));
 		transform-origin: top left;
 		will-change: transform;
     }
