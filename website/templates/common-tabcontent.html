@@ -71,25 +71,25 @@
     <p> The first thing needed to use the blobulator is either a UniProt ID for a protein of interest, or a manual sequence entry. UniProt IDs are our recommended format for retrieving the sequence required for blobulation. Above each “compute button” there is a manual text entry box, in which the you insert either your sequence or ID. Then press the “Compute” button. </p>
     
     <h4 class="mt-2">Tunable Items on the Results Page</h4>
-    <button class="accordion"> &#10133 Choosing a Hydropathy Scale</button>
+    <button class="accordion"> Choosing a Hydropathy Scale</button>
     <div class="panel">
     <p>The default scale used for the initial blobulation is the Kyte Doolittle hydropathy scale, but other scales can be selected from the dropdown menu. Changing the scale will update the clickable amino acid letters above the hydropathy cutoff slider.</p>
     </div>
-    <button class="accordion"> &#10133 Adjusting Hydropathy Cutoff</button>
+    <button class="accordion"> Adjusting Hydropathy Cutoff</button>
     <div class="panel">
     <p>The first step of blobulation is digitization. The algorithm first calculates each residue's hydrophobicity on the selected scale and then smooths this over the hydrophobicity of the adjacent residues. Residues are then digitized to hydrophobic or non-hydrophobic based on their smoothed hydropathy's relation to the hydropathy cutoff (shown as grey bars in the first track). This cutoff (shown as a blue line in the first track) can be adjusted by manual entry into the text box to the left, by adjusting the slider to the desired value, or by clicking a residue letter (found above the slider) to set the cutoff to a given amino acid's hydrophobicity on the selected scale.</p>
     </div>
-    <button class="accordion"> &#10133 Adjusting Minimum Blob Size</button>
+    <button class="accordion"> Adjusting Minimum Blob Size</button>
     <div class="panel">
     <p>This setting establishes a threshold for how many residues constitute blob. If a group of contiguous residues over the minimum blob size individually have smoothed hydrophobicities above the value for hydrophobicity cutoff, the cluster will be considered a ‘h’ (hydrophobic) blob. If not, a group will be considered a ‘p’ (non-hydrophobic) blob if the length is above the minimum blob size, or an 's' (short) blob if the length is below the minimum blob size. The hydropathy cutoff can be adjusted by manual entry into the text box to the left, or by adjusting the slider to the desired value.</p>
     </div>
-    <button class="accordion"> &#10133 Mutating Residues</button>
+    <button class="accordion"> Mutating Residues</button>
     <div class="panel">
     <p>This option is used to change a residue within the sequence, and see what potential effects it would have on the blobulation output. To mutate a residue, select which residue you would like to mutate, choose the amino acid you would like to mutate the residue into, and click the checkbox. Additionally, known disease-associated mutations are shown by black triangles below all tracks if ID Entry is used. Hovering over these mutations will display the amino acid change caused by them, as well as a clickable reference SNP cluster ID. </p>
     </div>
 
     <h4 class="mt-2">Parameters</h4>
-    <button class="accordion"> &#10133 Viewing blobs on a protein structure</button>
+    <button class="accordion"> Viewing blobs on a protein structure</button>
     <div class="panel">
     <p>To view blobs in 3D on the blobulator webtool, use either ID entry (for the alpha fold structure) or upload a PDB using PDB entry when selecting an input method. Additionally, a VMD plugin  is available to download via <a href="https://github.com/BranniganLab/blobulator/tree/main" target="_blank"> the bloblator github repository </a> to blobulate and view blobs on a structure in VMD.</p>
     </div>
@@ -99,33 +99,33 @@
     <h4 class="mt-2">Interpreting Plots</h4>
     <p>After blobulation, multiple visualizations are produced. </p>
 
-    <button class="accordion">&#10133 Smoothed hydropathy per residue</button>
+    <button class="accordion"> Smoothed hydropathy per residue</button>
     <div class="panel">
     <p>This plot shows the smoothed hydropathy per residue. The core of blobulation consists of two parameters - the first being a hydropathy threshold. This threshold is shown by the blue line on the “mean hydropathy” axis. This line shows the hydropathy threshold (shown by a blue line), which determines the boundaries of the h and p blobs. Note that this graph is the only one that shows the residues individually, and can be used as a reference to how the residues are grouped together based upon their position above or below the blue line. If a group of contiguous residues over the minimum blob size individually have smoothed hydrophobicities above the value for hydrophobicity cutoff, the cluster will be considered a ‘h’ (hydrophobic) blob. If not, a group will be considered a ‘p’ (non-hydrophobic) blob if the length is above the minimum blob size, or an 's' (short) blob if the length is below the minimum blob size.</p>
     </div>
-    <button class="accordion">&#10133 Blobs according to net charge per residue</button>
+    <button class="accordion"> Blobs according to net charge per residue</button>
     <div class="panel">
     <p>This third outputted visualization shows the blobs according to their residues’ collective average charge. Each blob is evaluated based on its fraction of both positively and negatively charged residues. The darker blue a blob is shown here, the higher the fraction of positively charged residues are present within the blob. Alternatively, the darker red a blob is shown here, the higher the fraction of negatively charged residues are present within the blob. An even fraction of positive or negatively charged residues, or a low fraction of any charged residues results in a grey color.</p>
     </div>
-    <button class="accordion">&#10133 Blobs according to globular tendency</button>
+    <button class="accordion"> Blobs according to globular tendency</button>
     <div class="panel">
     <p>This fourth outputted visualization shows the blobs colored according to their globular tendency based on their <a href="https://www.pnas.org/content/early/2013/07/29/1304749110" target="_blank"> Das-Pappu </a> classification. The Das-Pappu phase diagram was originally used to estimate how a disordered sequence might behave based on the charge content. Each blob is colored according to the region they fall in Das-Pappu phase diagram. Specifically, these are: globular, Janus/boundary, strong polyelectrolyte, strong polyanion, and strong polycation. The height of each bar corresponds to their identity of either a "p" "h" or "s" blob. </p>
     </div>
-    <button class="accordion">&#10133 Blobs colored according to dSNP enrichment</button>
+    <button class="accordion"> Blobs colored according to dSNP enrichment</button>
     <div class="panel">
     <p>This fifth outputted visualization shows the blobs according to their enrichment in documented disease associated SNPs (dSNP). This idea was investigated in the context of aggregating and non-aggregating proteins at various blob lengths and hydrophobicity cutoffs in our <a href="https://www.pnas.org/doi/10.1073/pnas.2116267119" target="blank">recent publication</a>, from which the figure below is presented (Lohia, et al 2022).</p>
     </div>
-    <button class="accordion">&#10133 Blobs colored according to Uversky diagram</button>
+    <button class="accordion"> Blobs colored according to Uversky diagram</button>
     <div class="panel">
     <p>This sixth outputted visualization shows the blobs according to their positions on the <a href="https://pubmed.ncbi.nlm.nih.gov/11025552/" target="_blank"> Uversky diagram</a>, where the line between ordered and disordered is plotted. Calculated negative values (represented in orange) are more ordered and positive values (shown in blue) are more disordered.</p>
     </div>
-    <button class="accordion">&#10133 Blobs colored according to fraction of disordered residues</button>
+    <button class="accordion"> Blobs colored according to fraction of disordered residues</button>
     <div class="panel">
     <p>This seventh and final outputted visualization shows the blobs according to their predicted fraction of disordered residues, which utilizes the <a href="https://academic.oup.com/nar/article/41/D1/D508/1069637" target="_blank">Database of Disordered protein prediction </a>. This disorder calculation is only available if the user uses the UniProt ID.</p>
     </div>
 
     <h4 class="mt-2">Saving Data</h4>
-    <button class="accordion">&#10133 Downloading Data</button>
+    <button class="accordion"> Downloading Data</button>
     <div class="panel">
     <p>After the “Download data!” button (located just below the three adjustable parameters) is pressed, the raw data used to generate the tracks will be downloaded in the form of a csv file. The columns correspond to:</p>
     <ul>
@@ -159,71 +159,71 @@
 <div class="tab-pane fade" id="FAQ">
     <h4 class="mt-2">Frequently Asked Questions:</h4>
 
-    <button class="accordion">&#10133 Why do you call them blobs?</button>
+    <button class="accordion"> Why do you call them blobs?</button>
     <div class="panel">
     <p>The nomenclature used here comes from polymer physics (<a href="https://pubs.acs.org/doi/10.1021/ma60051a002" target="_blank">Pincus, 1976</a>; de Gennes, 1979): a blob is a group of sequential monomers in a polymer chain that "clump" with a characteristic length. For more information see <i>Scaling Concepts in Polymer Physics</i> by Pierre-Gilles de Gennes. </p>
     </div>
-    <button class="accordion">&#10133 What defines a blob in a protein?</button>
+    <button class="accordion"> What defines a blob in a protein?</button>
     <div class="panel">
     <p>Blobs here are determined by defining clusters of contiguously hydrophobic residues, and the non-hydrophobic residues that span between them. A blob is a contiguous stretch of either hydrophobic or non-hydrophobic residues greater than (or below) a certain length. </p>
     </div>
-    <button class="accordion">&#10133 What is the evidence that blobulation is useful?</button>
+    <button class="accordion"> What is the evidence that blobulation is useful?</button>
     <div class="panel">
     <p>While many analyses exist that consider charge, disorder, or conformational states of proteins, the blobulator considers hydrophobicity and its role in the determination of regions of a protein. <a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1007390" target="_blank"> This has been shown already to be a powerful tool for analysis of different domains of the BDNF protein </a>, the research within which this tool was developed. Additionally, our <a href="https://www.pnas.org/doi/10.1073/pnas.2116267119" target="_blank"> recent publication </a> has demonstrated other contexts in which the blobulator has proven useful, particularly with regard to disease-associated SNPs.</p>
     </div>
-    <button class="accordion">&#10133 What does the blobulator output?</button>
+    <button class="accordion"> What does the blobulator output?</button>
     <div class="panel">
     <p>The blobulator outputs 6 tracks showing blobs overlaid with additional information. Each graph shows the sequence of the protein displayed in one of the following ways: smoothed hydropathy per residue, colored according to globular tendency, colored according to net charge per residue, colored according to the Uversky diagram, colored according to dSNP enrichment, colored according to fraction of disordered residue.</p>
     </div>
-    <button class="accordion">&#10133 Is there any way to view blobs on a protein structure?</button>
+    <button class="accordion"> Is there any way to view blobs on a protein structure?</button>
     <div class="panel">
     <p>Yes! We have two ways: either via the ID entry (alphafold) or PDB entry (provided PDB file), or using the VMD plugin (source code found in <a href="https://github.com/BranniganLab/blobulator/tree/main" target="_blank"> the blobulator github repository</a>).</p>
     </div>
-    <button class="accordion">&#10133 Do you recommend using the manual sequence entry option, the ID entry option, or the PDB entry option for input?</button>
+    <button class="accordion"> Do you recommend using the manual sequence entry option, the ID entry option, or the PDB entry option for input?</button>
     <div class="panel">
     <p>We strongly recommend using the ID entry option when available. There will be more graphs outputted, as well as SNP data available if you blobulate the protein using its UniProt ID. If you are interested in a specific variant of the protein, such as one containing a SNP, there is a mutate residue option at the top of the output page. If there's a specific structure you'd like to view in the molecular viewer, use the PDB entry option.</p>
     </div>
-    <button class="accordion">&#10133 The blobulator buffers for a long time after I press compute - is this normal?</button>
+    <button class="accordion"> The blobulator buffers for a long time after I press compute - is this normal?</button>
     <div class="panel">
     <p>For smaller proteins, we expect blobulation to take seconds. For very large proteins, the blobulator may take over a minute to produce a result.</p>
     </div>
-    <button class="accordion">&#10133 I want to focus on one portion of my protein - is there any way to zoom in?</button>
+    <button class="accordion"> I want to focus on one portion of my protein - is there any way to zoom in?</button>
     <div class="panel">
     <p>To zoom in, hover your mouse over the plot you're interested in and click and drag around the area you wish to zoom in on. To revert the plot back to it's original zoomed-out state, double click on the plot.</p>
     </div>
-    <button class="accordion">&#10133 What are the letters above the "hydropathy cutoff" slider?</button>
+    <button class="accordion"> What are the letters above the "hydropathy cutoff" slider?</button>
     <div class="panel">
     <p>These letters represent amino acids. Clicking a letter will set the hydropathy cutoff to the hydrophobicity of the selected amino acid for the chosen scale.</p>
     </div>
-    <button class="accordion">&#10133 Can I download the plots?</button>
+    <button class="accordion"> Can I download the plots?</button>
     <div class="panel">
     <p>Yes! We recommend saving the page as a .pdf file using the “print” function in your browser.</p>
     </div>
-    <button class="accordion">&#10133 How do I access the data used to generate the plots?</button>
+    <button class="accordion"> How do I access the data used to generate the plots?</button>
     <div class="panel">
     <p>The data can be downloaded using the “Download data!” button at the top of the blobulator output page. The downloaded data will be in the form of the csv file with labeled columns, which can be used to generate custom graphs or retrieve specific values.</p>
     </div>
-    <button class="accordion">&#10133 Will the downloaded data change if I change the hydropathy cutoff or blob side using the sliders?</button>
+    <button class="accordion"> Will the downloaded data change if I change the hydropathy cutoff or blob side using the sliders?</button>
     <div class="panel">
     <p>Yes. Any adjustments made after blobulation but before the “Download data!” button is clicked will be reflected in the csv file.</p>
     </div>
-    <button class="accordion">&#10133 Why am I not seeing SNP data?</button>
+    <button class="accordion"> Why am I not seeing SNP data?</button>
     <div class="panel">
     <p>It is possible that you chose the manual sequence entry option, for which there will be no SNP data, or that there is no data in EMBL-EBI for your protein of interest. It is also possible that you are not blobulating a human protein. In any of these cases, it doesn’t necessarily mean that no SNP data exists for the protein you are blobulating.</p>
     </div>
-    <button class="accordion">&#10133 Why aren’t the Blobs colored according to fraction of disordered residue graph not showing up on my output page?</button>
+    <button class="accordion"> Why aren’t the Blobs colored according to fraction of disordered residue graph not showing up on my output page?</button>
     <div class="panel">
     <p>Check and make sure you chose the UniProt ID input option.</p>
     </div>
-    <button class="accordion">&#10133 I would really like to see a certain feature in the next version.</button>
+    <button class="accordion"> I would really like to see a certain feature in the next version.</button>
     <div class="panel">
     <p>Please contact us and let us know what you’re thinking. Our goal is to maximize the blobulator’s usefulness, and any suggestions are greatly appreciated. In the meantime, the local version of the blobulator, which can be found on our <a href="https://github.com/BranniganLab/blobulator" target="_blank"> github</a>, can be modified to your liking.</p>
     </div>
-    <button class="accordion">&#10133 Is there back end code available for this tool?</button>
+    <button class="accordion"> Is there back end code available for this tool?</button>
     <div class="panel">
     <p> Yes! It can be found on our <a href="https://github.com/BranniganLab/blobulator" target="_blank"> github</a>.</p>
     </div>
-    <button class="accordion">&#10133 I would like to customize something specific within the blobulator.</button>
+    <button class="accordion"> I would like to customize something specific within the blobulator.</button>
     <div class="panel">
     <p> We recommend using our back end code found on our <a href="https://github.com/BranniganLab/blobulator" target="_blank"> GitHub</a>. If you think a specific feature would be generally useful, please email us at connor.pitman@rutgers.edu or grace.brannigan@rutgers.edu.</p>
     </div>
@@ -281,5 +281,22 @@
     .row {
         margin: auto;
         width: 75% 
+    }
+
+    .accordion {
+        position: relative;
+        padding-left: 35px;
+    }
+
+    .accordion::before {
+        content: "\2795"; 
+        position: absolute;
+        left: 10px;
+        top: 50%; 
+        transform: translateY(-50%);
+    }
+
+    .accordion.active::before {
+        content: "\2796" !important;
     }
 </style>
