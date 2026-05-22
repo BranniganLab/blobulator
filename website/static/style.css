@@ -171,3 +171,8 @@ td > div {
 	height: 750px;
 }
 
+@media (max-width: 767px) {
+    #result {
+        -webkit-overflow-scrolling: auto;
+    }
+}
