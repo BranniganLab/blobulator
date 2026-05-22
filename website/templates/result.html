@@ -468,6 +468,19 @@ $(document).ready( function() {
 				});
 		}
 	}
+
+	function applyScale() {
+		const resultContainer = document.getElementById('result');
+		if (window.innerWidth <= 767) {
+			const scale = window.innerWidth / 1300;
+			resultContainer.style.transform = `scale(${scale})`;
+			resultContainer.style.transformOrigin = 'top left';
+		} else {
+			resultContainer.style.transform = '';
+		}
+		console.log(window.innerWidth)
+	}
+	applyScale();
 });
 
 </script>

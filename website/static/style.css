@@ -171,15 +171,3 @@ td > div {
 	height: 750px;
 }
 
-
-@media (max-width: 767px) {
-    #result {
-		padding: 0;
-		--scale: calc(100dvw / 1300px);
-		transform: scale(var(--scale));
-		transform-origin: top left;
-		will-change: transform;
-        -webkit-transform: scale(var(--scale));
-        -webkit-transform-origin: top left;
-    }
-}
