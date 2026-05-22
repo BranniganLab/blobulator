@@ -171,3 +171,11 @@ td > div {
 	height: 750px;
 }
 
+@media (max-width: 767px) {
+    #result {
+        padding: 0;
+        transform-origin: top left;
+        overflow: hidden;
+        -webkit-overflow-scrolling: auto;
+    }
+}
