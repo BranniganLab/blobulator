@@ -239,12 +239,13 @@
 </div>
 
 <script>   
+    // If a PDB file has already been uploaded, delete it
     function deletePDB() {
         if (localStorage.getItem("pdb_file") !== null) {
             localStorage.clear()
         }
     }
-
+    // If a PDB file is being uploaded, accept it
     function acceptPDB(pdbAcceptingElement) {
         var formData = new FormData(pdbAcceptingElement);
         const file = formData.get('pdb_file');
@@ -279,13 +280,15 @@
             fileReader.readAsText(file);
         }
     }
+    // When the user uploads a new pdb file, delete the old one and accept the new one 
     document.getElementById("pdb_file").onchange = function() {
         deletePDB();
         const form = document.getElementById("pdb_entry_block");
         acceptPDB(form);
     }
 
-
+    // Uniprot autofill functionality
+    // The first unnamed function triggers automatically and begins listening for the user's input
     ;(function () {
         const input = document.querySelector('[name="uniprot_id"]');
         const list  = document.getElementById('uniprot-suggestions');
@@ -293,7 +296,7 @@
 
         let timer, activeIdx = -1, results = [];
 
-
+        // Make the uniprot API call
         async function queryUniprot(q) {
             const url = `https://rest.uniprot.org/uniprotkb/search`
                     + `?query=${encodeURIComponent(q)}`
@@ -304,7 +307,7 @@
             return r.ok ? (await r.json()).results || [] : [];
             } catch { return []; }
         }
-
+        // Once the API call is returned, collect the results and display them
         function showAutofillOptions(hits) {
             results = hits;
             activeIdx = -1;
@@ -332,19 +335,20 @@
                     <span style="font-size:12px; color:#6c757d;">${organism}</span>
                     </span>`;
                 listItem.addEventListener('mousedown', e => { e.preventDefault(); pick(i); });
-                listItem.addEventListener('mouseover', () => setActive(i));
+                listItem.addEventListener('mouseover', () => setHighlight(i));
                 list.appendChild(listItem);
             });
             list.style.display = 'block';
         }
-
-        function setActive(i) {
+        // Highlight items when the mouse is hovering over them
+        function setHighlight(i) {
             list.querySelectorAll('li').forEach((el, j) => {
             el.style.background = j === i ? '#f0f4ff' : '';
             });
             activeIdx = i;
         }
 
+        // Select an item and close the list when the user picks one
         function pick(i) {
             const protein = results[i];
             if (!protein) return;
@@ -363,8 +367,8 @@
         input.addEventListener('keydown', e => {
             const items = list.querySelectorAll('li');
             if (!items.length) return;
-            if      (e.key === 'ArrowDown')  { e.preventDefault(); setActive(Math.min(activeIdx + 1, items.length - 1)); }
-            else if (e.key === 'ArrowUp')    { e.preventDefault(); setActive(Math.max(activeIdx - 1, 0)); }
+            if      (e.key === 'ArrowDown')  { e.preventDefault(); setHighlight(Math.min(activeIdx + 1, items.length - 1)); }
+            else if (e.key === 'ArrowUp')    { e.preventDefault(); setHighlight(Math.max(activeIdx - 1, 0)); }
             else if (e.key === 'Enter' && activeIdx >= 0) { e.preventDefault(); pick(activeIdx); }
             else if (e.key === 'Escape')     { list.style.display = 'none'; }
         });
