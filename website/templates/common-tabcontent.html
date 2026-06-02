@@ -358,6 +358,10 @@
         }
 
         input.addEventListener('input', () => {
+            // Only display if Uniprot is the selected ID type
+            const inputType = document.getElementById('input_type').value;
+            if (inputType !== 'uniprot_id') { list.style.display = 'none'; return; }
+
             const q = input.value.trim();
             clearTimeout(timer);
             if (q.length < 2) { list.style.display = 'none'; return; }
