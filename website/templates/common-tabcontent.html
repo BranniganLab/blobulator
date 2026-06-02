@@ -23,6 +23,15 @@
                         <option value="ensembl_id">Ensembl ID</option></select>
                     <!--form.uniprot_id calls the UniProt ID field in model_2.py -->
                     <p> {{ form.uniprot_id(class_="form-control", rows="1")}}</p>
+                    <div style="position: relative;">
+                    <ul id="uniprot-suggestions"
+                        role="listbox"
+                        style="display:none; position:absolute; top:0; left:0; right:0;
+                                background:#fff; border:1px solid #ced4da; border-radius:4px;
+                                list-style:none; margin:0; padding:4px 0; z-index:1000;
+                                max-height:280px; overflow-y:auto; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+                    </ul>
+                    </div>
                     <p><input type=submit name="action_u" class="btn btn-primary" value="Blobulate!"></p>
                 </form>
                 </div>
@@ -121,7 +130,7 @@
     </div>
     <button class="accordion"> Blobs colored according to fraction of disordered residues</button>
     <div class="panel">
-    <p>This seventh and final outputted visualization shows the blobs according to their predicted fraction of disordered residues, which utilizes the <a href="https://academic.oup.com/nar/article/41/D1/D508/1069637" target="_blank">Database of Disordered protein prediction </a>. This disorder calculation is only available if the user uses the UniProt ID.</p>
+    <p>This seventh and final outputted visualization shows the blobs according to their predicted fraction of disordered residues, which utilizes the <a href="https://academic.ouprotein.com/nar/article/41/D1/D508/1069637" target="_blank">Database of Disordered protein prediction </a>. This disorder calculation is only available if the user uses the UniProt ID.</p>
     </div>
 
     <h4 class="mt-2">Saving Data</h4>
@@ -275,6 +284,95 @@
         const form = document.getElementById("pdb_entry_block");
         acceptPDB(form);
     }
+
+
+    ;(function () {
+        const input = document.querySelector('[name="uniprot_id"]');
+        const list  = document.getElementById('uniprot-suggestions');
+        if (!input || !list) return;
+
+        let timer, activeIdx = -1, results = [];
+
+
+        async function queryUniprot(q) {
+            const url = `https://rest.uniprot.org/uniprotkb/search`
+                    + `?query=${encodeURIComponent(q)}`
+                    + `&fields=accession,protein_name,gene_names,organism_name,reviewed`
+                    + `&format=json&size=8`;
+            try {
+            const r = await fetch(url);
+            return r.ok ? (await r.json()).results || [] : [];
+            } catch { return []; }
+        }
+
+        function showAutofillOptions(hits) {
+            results = hits;
+            activeIdx = -1;
+            list.innerHTML = '';
+            if (!hits.length) { list.style.display = 'none'; return; }
+
+            hits.forEach((protein, i) => {
+                const acc  = protein.primaryAccession || '';
+                const proteinInfo = protein.proteinDescription?.recommendedName?.fullName?.value
+                            || protein.proteinDescription?.submissionNames?.[0]?.fullName?.value
+                            || '';
+                const gene = protein.genes?.[0]?.geneName?.value || '';
+                const organism  = protein.organism?.scientificName || '';
+                const reviewed  = protein.entryType?.includes('Swiss-Prot');
+
+                const listItem = document.createElement('li');
+                listItem.setAttribute('role', 'option');
+                listItem.style.cssText = 'padding:8px 12px; cursor:pointer; display:flex; gap:10px; align-items:flex-start;';
+                listItem.innerHTML = `
+                    <span style="font-family:monospace; font-size:14px; color:#0d6efd; min-width:72px; padding-top:1px;">
+                    ${acc}${reviewed ? ' ✓' : ''}
+                    </span>
+                    <span>
+                    <span style="font-size:14px; font-weight:500;">${proteinInfo}${gene ? ' <em style="font-weight:400;">(' + gene + ')</em>' : ''}</span><br>
+                    <span style="font-size:12px; color:#6c757d;">${organism}</span>
+                    </span>`;
+                listItem.addEventListener('mousedown', e => { e.preventDefault(); pick(i); });
+                listItem.addEventListener('mouseover', () => setActive(i));
+                list.appendChild(listItem);
+            });
+            list.style.display = 'block';
+        }
+
+        function setActive(i) {
+            list.querySelectorAll('li').forEach((el, j) => {
+            el.style.background = j === i ? '#f0f4ff' : '';
+            });
+            activeIdx = i;
+        }
+
+        function pick(i) {
+            const protein = results[i];
+            if (!protein) return;
+            input.value = protein.primaryAccession || '';
+            list.style.display = 'none';
+            input.dispatchEvent(new Event('change'));   // notify WTForms / any listeners
+        }
+
+        input.addEventListener('input', () => {
+            const q = input.value.trim();
+            clearTimeout(timer);
+            if (q.length < 2) { list.style.display = 'none'; return; }
+            timer = setTimeout(async () => showAutofillOptions(await queryUniprot(q)), 300);
+        });
+
+        input.addEventListener('keydown', e => {
+            const items = list.querySelectorAll('li');
+            if (!items.length) return;
+            if      (e.key === 'ArrowDown')  { e.preventDefault(); setActive(Math.min(activeIdx + 1, items.length - 1)); }
+            else if (e.key === 'ArrowUp')    { e.preventDefault(); setActive(Math.max(activeIdx - 1, 0)); }
+            else if (e.key === 'Enter' && activeIdx >= 0) { e.preventDefault(); pick(activeIdx); }
+            else if (e.key === 'Escape')     { list.style.display = 'none'; }
+        });
+
+        document.addEventListener('click', e => {
+            if (!input.contains(e.target) && !list.contains(e.target)) list.style.display = 'none';
+        });
+    })();
 </script>
 
 <style>
