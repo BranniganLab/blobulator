@@ -471,16 +471,16 @@ $(document).ready( function() {
 
 	function applyScale() {
 		const resultContainer = document.getElementById('result');
-		// Don't apply if already scaled
-		if (resultContainer.dataset.scaled === 'true') return;
-		
+
+		if (resultContainer.getAttribute('data-scaled') === 'true') return;
+
 		if (window.innerWidth <= 767) {
 			const scale = window.innerWidth / 1300;
 			resultContainer.style.transform = `scale(${scale})`;
 			resultContainer.style.transformOrigin = 'top left';
-			resultContainer.dataset.scaled = 'true'; // mark as done
+			resultContainer.setAttribute('data-scaled', 'true');
 		}
-	};
+	}
 	applyScale();
 });
 
