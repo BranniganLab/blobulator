@@ -476,7 +476,7 @@ $(document).ready( function() {
 
 		if (window.innerWidth <= 767) {
 			const scale = window.innerWidth / 1300;
-			resultContainer.style.transform = `scale(${scale})`;
+			resultContainer.style.transform = 'scale(' + scale + ')';
 			resultContainer.style.transformOrigin = 'top left';
 			resultContainer.setAttribute('data-scaled', 'true');
 		}
