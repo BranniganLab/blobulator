@@ -469,19 +469,15 @@ $(document).ready( function() {
 		}
 	}
 
-	function applyScale() {
+	document.addEventListener('DOMContentLoaded', function() {
 		const resultContainer = document.getElementById('result');
-
-		if (resultContainer.getAttribute('data-scaled') === 'true') return;
 
 		if (window.innerWidth <= 767) {
 			const scale = window.innerWidth / 1300;
 			resultContainer.style.transform = 'scale(' + scale + ')';
 			resultContainer.style.transformOrigin = 'top left';
-			resultContainer.setAttribute('data-scaled', 'true');
 		}
-	}
-	applyScale();
+	});
 });
 
 </script>
