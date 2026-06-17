@@ -10,6 +10,23 @@
 <script src="https://d3js.org/d3.v6.js"></script>
 <script src="static/figure.js"></script>
 <script>
+
+window.addEventListener('load', () => {
+	const resultContainer = document.getElementById('result');
+
+	if (sessionStorage.getItem('reloaded') !== null) {
+		// Page was reloaded, prevent another loop
+		return
+	}
+	else {
+		if (window.innerWidth <= 767) {
+			const scale = window.innerWidth / 1300;
+			resultContainer.style.transform = 'scale(' + scale + ')';
+			resultContainer.style.transformOrigin = 'top left';
+		}
+	}
+});
+
 $(document).ready( function() {
 	//--------------Javascript for plotting in d3-------------
 	//tooltips
@@ -468,23 +485,6 @@ $(document).ready( function() {
 				});
 		}
 	}
-
-	window.addEventListener('load', () => {
-		const resultContainer = document.getElementById('result');
-
-		if (sessionStorage.getItem('reloaded') !== null) {
-			// Page was reloaded, prevent another loop
-			return
-		}
-		else {
-			if (window.innerWidth <= 767) {
-				const scale = window.innerWidth / 1300;
-				resultContainer.style.transform = 'scale(' + scale + ')';
-				resultContainer.style.transformOrigin = 'top left';
-			}
-		}
-	});
-	applyScale();
 });
 
 </script>
