@@ -12,7 +12,7 @@
 <script>
 
 window.addEventListener('load', () => {
-	const resultContainer = document.getElementById('my_dataviz');
+	const resultContainer = document.querySelectorAll('#text-container', '#my_dataviz', '#molstar_container');
 
 	if (sessionStorage.getItem('reloaded') !== null) {
 		// Page was reloaded, prevent another loop
@@ -29,6 +29,7 @@ window.addEventListener('load', () => {
 			const resultControls = document.getElementById('result_main_container')
 			resultControls.style.transform = 'scale(' + scale + ')';
 			resultControls.style.transformOrigin = 'top left';
+
 		}
 	}
 });
