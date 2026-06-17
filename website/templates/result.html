@@ -26,10 +26,9 @@ window.addEventListener('load', () => {
 			resultContainer.style.width = '1300px';
 			resultContainer.style.zoom = scale;
 
-			document.querySelectorAll('input, select, button').forEach(el => {
-    			el.style.transform = `scale(${scale})`;
-				el.style.transformOrigin = 'top left';
-});
+			const resultControls = document.getElementById('result_main_container')
+			resultControls.style.transform = 'scale(' + scale + ')';
+			resultControls.style.transformOrigin = 'top left';
 		}
 	}
 });
