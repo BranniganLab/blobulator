@@ -21,8 +21,10 @@ window.addEventListener('load', () => {
 	else {
 		if (window.innerWidth <= 767) {
 			const scale = window.innerWidth / 1300;
-			resultContainer.style.transform = 'scale(' + scale + ')';
-			resultContainer.style.transformOrigin = 'top left';
+			// resultContainer.style.transform = 'scale(' + scale + ')';
+			// resultContainer.style.transformOrigin = 'top left';
+			resultContainer.style.width = '1300px';
+			resultContainer.style.zoom = scale;
 		}
 	}
 });
