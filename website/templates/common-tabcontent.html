@@ -8,13 +8,33 @@
             <p style="padding: 15px 0px 15px 0px; color:gray; font-style: italic;">New here? Welcome! For more information about the blobulator, visit the <a href="#about" onclick="$('#about-tab').tab('show');">About</a> and <a href="#FAQ" onclick="$('#faq-tab').tab('show');">FAQ</a> tabs above. When you're ready to blobulate a protein, select an input method below.</p>
             <p><b>Select an input method: </b>
             <select name="sequence_type" id="sequence_type" onchange="hideDiv(this)">
+                <option value="protein_search">Protein Search</option>
                 <option value="id_entry">ID Entry</option>
                 <option value="sequence_entry">Manual Entry</option>
                 <option value="pdb_entry">PDB Entry</option></select></p></centering>
 
             <div class="form-group" align="center">
                 <br>
-                <form class="navbar-form navbar-top" method=post target="_blank" action="" id="id_entry_block">
+                <form class="navbar-form navbar-top" method=post target="_blank" action="" id="protein_search_block">
+                    <p>Enter a protein name, gene name, or uniprot ID below to begin search.</p>
+                    <p>Note: only human proteins will display disease-associated mutations, and will take longer to load. </p>
+                    <p> {{ form.uniprot_id(class_="form-control", rows="1")}}</p>
+                    <div style="position: relative;">
+                    <ul id="uniprot-suggestions"
+                        role="listbox"
+                        style="display:none; position:absolute; top:0; left:0; right:0;
+                                background:#fff; border:1px solid #ced4da; border-radius:4px;
+                                list-style:none; margin:0; padding:4px 0; z-index:1000;
+                                max-height:280px; overflow-y:auto; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
+                    </ul>
+                    </div>
+                    <p><input type=submit name="action_u" class="btn btn-primary" value="Blobulate!"></p>
+                </form>
+            </div>
+
+            <div class="form-group" align="center">
+                <br>
+                <form class="navbar-form navbar-top" method=post target="_blank" action="" id="id_entry_block" style="display: none">
                     <p>Enter an ID for your protein.</p>
                     <p>Note: only human proteins will display disease-associated mutations, and will take longer to load. </p>
                     <label for="input-types">Choose an ID type:</label>
