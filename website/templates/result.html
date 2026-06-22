@@ -12,43 +12,25 @@
 <script>
 
 window.addEventListener('load', () => {
-	const resultContainer = document.querySelectorAll('#text-container, #my_dataviz, #molstar_container');
+  const resultContainer = document.querySelectorAll('#text-container, #my_dataviz, #molstar_container');
 
-	if (sessionStorage.getItem('reloaded') !== null) {
-		// Page was reloaded, prevent another loop
-		return;
-	}
-	else {
-		if (window.innerWidth <= 767) {
-			const scale = window.innerWidth / 1300;
+  if (sessionStorage.getItem('reloaded') !== null) {
+    return;
+  } else {
+    if (window.innerWidth <= 767) {
+      const scale = window.innerWidth / 1300;
 
-			resultContainer.forEach(el => {
-				el.style.width = '1300px';
-				el.style.zoom = scale;
-			});
-			
-			waitForElement('result_main_container', (resultControls) => {
-				resultControls.style.width = '1300px';
-				resultControls.style.zoom = scale;
-			});
-		}
-	}
+	resultContainer.forEach(el => {
+	el.style.width = '1300px';
+	el.style.zoom = scale;
+	});
+
+	const resultControls = document.getElementById('result_main_container');
+	resultControls.style.width = '1300px';
+	resultControls.style.zoom = scale;
+    }
+  }
 });
-
-function waitForElement(id, callback, timeout = 5000) {
-	const interval = 50;
-	let elapsed = 0;
-	const check = setInterval(() => {
-		const el = document.getElementById(id);
-		if (el) {
-			clearInterval(check);
-			callback(el);
-		} else if ((elapsed += interval) >= timeout) {
-			clearInterval(check);
-			console.warn(`${id} never appeared`);
-		}
-	}, interval);
-}
 
 $(document).ready( function() {
 	//--------------Javascript for plotting in d3-------------
