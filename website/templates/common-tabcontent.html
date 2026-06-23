@@ -18,7 +18,7 @@
                 <form class="navbar-form navbar-top" method=post target="_blank" action="" id="protein_search_block">
                     <p>Enter a protein name, gene name, or uniprot ID below to begin search.</p>
                     <p>Note: only human proteins will display disease-associated mutations, and will take longer to load. </p>
-                    <p> {{ form.uniprot_id(class_="form-control", rows="1")}}</p>
+                    <p>{{ form.protein_search(class_="form-control", rows="1") }}</p>
                     <div style="position: relative;">
                     <ul id="uniprot-suggestions"
                         role="listbox"
@@ -310,7 +310,7 @@
     // Uniprot autofill functionality
     // The first unnamed function triggers automatically and begins listening for the user's input
     ;(function () {
-        const input = document.querySelector('[name="uniprot_id"]');
+        const input = document.querySelector('[name="protein_search"]');
         const list  = document.getElementById('uniprot-suggestions');
         if (!input || !list) return;
 
@@ -379,8 +379,8 @@
 
         input.addEventListener('input', () => {
             // Only display if Uniprot is the selected ID type
-            const inputType = document.getElementById('input_type').value;
-            if (inputType !== 'uniprot_id') { list.style.display = 'none'; return; }
+            const inputType = document.getElementById('sequence_type').value;
+            if (inputType !== 'protein_search') { list.style.display = 'none'; return; }
 
             const q = input.value.trim();
             clearTimeout(timer);
