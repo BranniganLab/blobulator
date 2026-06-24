@@ -347,7 +347,7 @@ $(document).ready( function() {
 		}
 
 		// Set up UI element change handler
-		d3.selectAll(".mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales").on("change", function(){do_update(figs, data)});
+		d3.selectAll(".mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales,#preset_dropdown").on("change", function(){do_update(figs, data)});
 		d3.selectAll("#reset_def").on("click", function(){do_update(figs, data)});
 		d3.selectAll("#app").on("drop", function(event){
 			const dt = event.dataTransfer;
@@ -483,6 +483,34 @@ $(document).ready( function() {
 	};
 	applyScale();
 });
+
+function applyPreset() {
+	const hydroScaleDropdown = document.getElementById("hydro_scales");
+	hydroScaleDropdown.value = "kyte_doolittle";
+
+	const hydropathyCutoffBox = document.getElementById("cutoff_user_box");
+	const hydropathyCutoffSlider = document.getElementById("cutoff_user_slider");
+	const lengthMinimumBox = document.getElementById("domain_threshold_user_box");
+	const lengthMinimumSlider = document.getElementById("domain_threshold_user_slider");
+
+	const selectedPreset = document.getElementById("preset_dropdown").value;
+
+	if (selectedPreset === "transmembrane_regions") {
+		hydroScaleDropdown.value = "kyte_doolittle";
+		hydropathyCutoffBox.value = "0.33";
+		hydropathyCutoffSlider.value = "0.33";
+		lengthMinimumBox.value = "19";
+		lengthMinimumSlider.value = "19";	
+	}
+	else if (selectedPreset == "hydrophobic_core") {
+		hydroScaleDropdown.value = "kyte_doolittle";
+		hydropathyCutoffBox.value = "0.5";
+		hydropathyCutoffSlider.value = "0.5";
+		lengthMinimumBox.value = "8";
+		lengthMinimumSlider.value = "8";
+	}
+	
+}
 
 </script>
 
@@ -626,6 +654,13 @@ $(document).ready( function() {
 			<table cellpadding="5">
 				<tr class="blank_row">
 					<td colspan="6"></td>
+				</tr>
+				<tr>
+					<td><label for="preset_dropdown">Use Preset:</label></td>
+					<td><select id="preset_dropdown" class="preset_dropdown" onchange="applyPreset()">
+						<option selected="selected" value=" "> </option>
+						<option value="transmembrane_regions">Transmembrane Regions</option>
+						<option value="hydrophobic_core">Hydrophobic Core</option>
 				</tr>
 				<tr>
 				<label style = "opacity: 0.0; display: none; position: relative;"> </label>
