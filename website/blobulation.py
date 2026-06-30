@@ -82,7 +82,11 @@ def index():
 
             # Takes the input form, converts it to a dictionary, and requests the input type (from the dropdown menu selection) using the input_type key
             request_dict = request.form.to_dict()
-            input_type = request_dict["input_type"]
+
+            if "protein_search" in request_dict.keys():
+                input_type = "uniprot_id"
+            else:
+                input_type = request_dict["input_type"]
 
             types = {"ensembl_id":"Ensembl"}
 
