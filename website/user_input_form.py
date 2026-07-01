@@ -12,6 +12,11 @@ def my_length_check(form, field):
         raise ValidationError('Field must be less than 50 characters')
 
 class InputForm(Form):
+    protein_search = StringField(
+        label='Protein Search:',
+        widget=TextArea(),
+        render_kw={"placeholder": "Search by protein or gene name (e.g. alpha synuclein or SNCA)"}
+    )
     uniprot_id = StringField(
         label='Uniprot ID:', widget=TextArea(), default='P37840',
         validators=[validators.InputRequired(), my_length_check])

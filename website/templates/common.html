@@ -43,19 +43,27 @@
 
         function hideDiv(elem) {
             let dropdown = document.getElementById("sequence_type")
-            if (dropdown.value == "id_entry") {
+            if (dropdown.value == "protein_search") {
+                document.getElementById("manual_entry_block").style.display = "none";
+                document.getElementById("id_entry_block").style.display = "none";
+                document.getElementById("pdb_entry_block").style.display = "none";
+                document.getElementById("protein_search_block").style.display = "block";
+            } else if (dropdown.value == "id_entry") {
                 document.getElementById("manual_entry_block").style.display = "none";
                 document.getElementById("id_entry_block").style.display = "block";
                 document.getElementById("pdb_entry_block").style.display = "none";
+                document.getElementById("protein_search_block").style.display = "none";
             } else if (dropdown.value == "sequence_entry") {
                 document.getElementById("manual_entry_block").style.display = "block";
                 document.getElementById("id_entry_block").style.display = "none";
                 document.getElementById("pdb_entry_block").style.display = "none";
+                document.getElementById("protein_search_block").style.display = "none";
             
             } else {
                 document.getElementById("manual_entry_block").style.display = "none";
                 document.getElementById("id_entry_block").style.display = "none";
                 document.getElementById("pdb_entry_block").style.display = "block";
+                document.getElementById("protein_search_block").style.display = "none";
             }
         }
     </script>
