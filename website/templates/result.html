@@ -12,29 +12,24 @@
 <script>
 
 window.addEventListener('load', () => {
-//   const resultContainer = document.querySelectorAll('#text-container, #my_dataviz, #molstar_container');
+  const resultContainer = document.querySelectorAll('#text-container, #my_dataviz, #molstar_container');
 
-//   if (sessionStorage.getItem('reloaded') !== null) {
-//     return;
-//   } else {
+  if (sessionStorage.getItem('reloaded') !== null) {
+    return;
+  } else {
     if (window.innerWidth <= 767) {
-//       const scale = window.innerWidth / 1300;
+      const scale = window.innerWidth / 1300;
 
-// 	resultContainer.forEach(el => {
-// 	el.style.width = '1300px';
-// 	el.style.zoom = scale;
-// 	});
+	resultContainer.forEach(el => {
+	el.style.width = '1300px';
+	el.style.zoom = scale;
+	});
 
-// 	const resultControls = document.querySelector('result-controls');
-// 	resultControls.style.width = '1300px';
-// 	resultControls.style.zoom = scale;
-//     }
-//   }
 	const container = document.getElementById("result_main_container");
 
 	container.style.transform = `scale(${scale})`;
 	container.style.width = `${100 / scale}%`;
-	}
+  }
 });
 
 $(document).ready( function() {
@@ -510,7 +505,7 @@ $(document).ready( function() {
 
 {% block tabcontent %}
 {% include 'common-tabcontent.html' %}
-<div id="result-wrapper">
+
 <div class="tab-pane container" id="result">
     <div class="container">
 		<div class="text-center" id="text-container">
@@ -523,6 +518,7 @@ $(document).ready( function() {
 			<h6>{{ my_uni_id_linked | safe}}</h6>
 			<h6>{{ my_uni_id_stripped | safe}}</h6>
 		</div>
+		<div id="controls-wrapper">
 		<div class="result-controls" id="result_main_container">
 			<table id="results_table">
 				<div class="white-box">
@@ -560,6 +556,7 @@ $(document).ready( function() {
 					</td>
 					<td style="width: 600px"><input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ blob_length_minimum_max | safe }} value={{ blob_length_minimum | safe }} class="myslider1" step=1> </td>
 				</tr>
+				</div>
 				</div>
 
 				<script type="text/javascript">
@@ -694,7 +691,6 @@ $(document).ready( function() {
 	</div>
 
 	</div>
-</div>
 </div>
 
 {% endblock %}

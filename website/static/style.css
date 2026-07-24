@@ -172,11 +172,9 @@ td > div {
 }
 
 #result-wrapper {
-    width: 100%;
-  	overflow: auto;      /* allow scrolling if needed */
-  	position: relative;
+    overflow: auto;
 }
 
-#result {
+#result_main_container {
     transform-origin: top left;
 }
