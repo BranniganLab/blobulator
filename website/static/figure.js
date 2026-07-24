@@ -225,7 +225,7 @@ class ZFigure {
 		this.container.appendChild(this.infoIcon);
 
 		const isMobile = window.innerWidth <= 767;
-		this.infoIcon.style.fontSize = "xx-large";
+		this.infoIcon.style.fontSize = "small";
 
 		return this;
 	}
@@ -255,7 +255,7 @@ class ZFigure {
 		this.container.appendChild(this.infoIcon);
 
 		const isMobile = window.innerWidth <= 767;
-		this.infoIcon.style.fontSize = "xx-large";
+		this.infoIcon.style.fontSize = "small";
 
 		return this;
 	}
