@@ -170,11 +170,3 @@ td > div {
 	width: 1050px;
 	height: 750px;
 }
-
-#controls-wrapper {
-    overflow: auto;
-}
-
-#result_main_container {
-    transform-origin: top left;
-}

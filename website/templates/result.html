@@ -25,10 +25,10 @@ window.addEventListener('load', () => {
 	el.style.zoom = scale;
 	});
 
-	const container = document.getElementById("controls-wrapper");
-
-	container.style.transform = `scale(${scale})`;
-	container.style.width = `${100 / scale}%`;
+	const resultControls = document.getElementById('result_main_container');
+	resultControls.style.width = '1300px';
+	resultControls.style.zoom = scale;
+    }
   }
 });
 
@@ -518,7 +518,6 @@ $(document).ready( function() {
 			<h6>{{ my_uni_id_linked | safe}}</h6>
 			<h6>{{ my_uni_id_stripped | safe}}</h6>
 		</div>
-		<div id="controls-wrapper">
 		<div class="result-controls" id="result_main_container">
 			<table id="results_table">
 				<div class="white-box">
@@ -556,7 +555,6 @@ $(document).ready( function() {
 					</td>
 					<td style="width: 600px"><input type="range" name="mySlider" id="domain_threshold_user_slider" min="1" max={{ blob_length_minimum_max | safe }} value={{ blob_length_minimum | safe }} class="myslider1" step=1> </td>
 				</tr>
-				</div>
 				</div>
 
 				<script type="text/javascript">
