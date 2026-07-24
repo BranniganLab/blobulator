@@ -47,6 +47,10 @@ class ZFigure {
 		var top_container = document.getElementById("reset_zoom_button");
 		top_container.appendChild(btn);
 
+		if (window.innerWidth <= 767) {
+    		btn.style.display = "none";
+		}
+
 		return this;
 	}
 
@@ -85,6 +89,10 @@ class ZFigure {
 		var top_container = document.getElementById("clear_mutation_button");
 		top_container.appendChild(btn);
 
+		if (window.innerWidth <= 767) {
+    		btn.style.display = "none";
+		}
+
 		return this;
 		}
 
@@ -108,6 +116,10 @@ class ZFigure {
 		}
 		var top_container = document.getElementById("lock_controls_button");
 		top_container.appendChild(btn);
+
+		if (window.innerWidth <= 767) {
+    		btn.style.display = "none";
+		}
 
 		return this;
 	}
@@ -135,6 +147,9 @@ class ZFigure {
 		}
 		var top_container = document.getElementById("reset_settings_button");
 		top_container.appendChild(btn);
+		if (window.innerWidth <= 767) {
+    		btn.style.display = "none";
+		}
 
 		return this;
 	}

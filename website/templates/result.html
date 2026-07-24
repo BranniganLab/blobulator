@@ -82,13 +82,6 @@ window.addEventListener('load', () => {
         const resultControls = document.getElementById("result_main_container");
         resultControls.style.width = "1300px";
         resultControls.style.zoom = scale;
-
-		setTimeout(() => {
-			console.log("Buttons after delay:",
-				[...document.querySelectorAll("#result_main_container button")]
-				.map(b => b.innerText)
-			);
-		}, 2000);
     }
 });
 
