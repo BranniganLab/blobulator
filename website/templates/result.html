@@ -38,6 +38,28 @@ window.addEventListener('load', () => {
             if (el) el.style.display = "none";
         });
 
+		// Hide mutation controls
+		const mutationRow = document.getElementById("mutations_container");
+		if (mutationRow) mutationRow.style.display = "none";
+
+		// Hide all sliders (keep the number boxes)
+		[
+			"cutoff_user_slider",
+			"domain_threshold_user_slider"
+		].forEach(id => {
+			const el = document.getElementById(id);
+			if (el) el.style.display = "none";
+		});
+
+		// Hide all buttons in the controls section
+		document.querySelectorAll("#result_main_container button").forEach(btn => {
+			btn.style.display = "none";
+		});
+
+		// Hide the empty button table as well (optional)
+		const buttonTable = document.querySelector("#result_main_container table + table");
+		if (buttonTable) buttonTable.style.display = "none";
+
         // Shorten row labels
         const rows = document.querySelectorAll("#results_table tr");
 
