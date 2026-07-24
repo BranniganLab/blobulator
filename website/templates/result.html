@@ -198,6 +198,7 @@ $(document).ready( function() {
 
 	// Update the output when parameters are changed
 	function do_update(figs, data) {
+
         let my_seq = {{ my_seq | safe }};
 		// If the box is checked, I mutate the amino acid
 		if(d3.selectAll(".mutatebox").property("checked")){
@@ -348,6 +349,10 @@ $(document).ready( function() {
 
 		// Set up UI element change handler
 		d3.selectAll(".mutatebox,#snp_id,#residue_type,#domain_threshold_user_box,#domain_threshold_user_slider,#cutoff_user_box,#cutoff_user_slider,.checkbox,#hydro_scales").on("change", function(){do_update(figs, data)});
+		d3.select("#preset_dropdown").on("change", function () {
+			applyPreset();
+			do_update(figs, data);
+		});
 		d3.selectAll("#reset_def").on("click", function(){do_update(figs, data)});
 		d3.selectAll("#app").on("drop", function(event){
 			const dt = event.dataTransfer;
@@ -483,6 +488,44 @@ $(document).ready( function() {
 	};
 	applyScale();
 });
+
+function applyPreset() {
+    const hydroScaleDropdown = document.getElementById("hydro_scales");
+
+    const hydropathyCutoffBox = document.getElementById("cutoff_user_box");
+    const hydropathyCutoffSlider = document.getElementById("cutoff_user_slider");
+    const hydropathyCutoffText = document.getElementById("cutoff_user");
+
+    const lengthMinimumBox = document.getElementById("domain_threshold_user_box");
+    const lengthMinimumSlider = document.getElementById("domain_threshold_user_slider");
+    const lengthMinimumText = document.getElementById("domain_threshold_user");
+
+    const selectedPreset = document.getElementById("preset_dropdown").value;
+
+    let cutoff, minLength;
+
+    if (selectedPreset === "transmembrane_regions") {
+        cutoff = "0.33";
+        minLength = "19";
+    }
+    else if (selectedPreset === "hydrophobic_core") {
+        cutoff = "0.5";
+        minLength = "8";
+    }
+    else {
+        return;
+    }
+
+    hydroScaleDropdown.value = "kyte_doolittle";
+
+    hydropathyCutoffBox.value = cutoff;
+    hydropathyCutoffSlider.value = cutoff;
+    hydropathyCutoffText.innerHTML = cutoff;
+
+    lengthMinimumBox.value = minLength;
+    lengthMinimumSlider.value = minLength;
+    lengthMinimumText.innerHTML = minLength;
+}
 
 </script>
 
@@ -626,6 +669,13 @@ $(document).ready( function() {
 			<table cellpadding="5">
 				<tr class="blank_row">
 					<td colspan="6"></td>
+				</tr>
+				<tr>
+					<td><label for="preset_dropdown">Use Preset:</label></td>
+					<td><select id="preset_dropdown" class="preset_dropdown"">
+						<option selected="selected" value=" "> </option>
+						<option value="transmembrane_regions">Transmembrane Regions</option>
+						<option value="hydrophobic_core">Hydrophobic Core</option>
 				</tr>
 				<tr>
 				<label style = "opacity: 0.0; display: none; position: relative;"> </label>
