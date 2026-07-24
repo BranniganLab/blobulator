@@ -12,24 +12,59 @@
 <script>
 
 window.addEventListener('load', () => {
-  const resultContainer = document.querySelectorAll('#text-container, #my_dataviz, #molstar_container');
+    const resultContainer = document.querySelectorAll(
+        '#text-container, #my_dataviz, #molstar_container'
+    );
 
-  if (sessionStorage.getItem('reloaded') !== null) {
-    return;
-  } else {
-    if (window.innerWidth <= 767) {
-      const scale = window.innerWidth / 1300;
-
-	resultContainer.forEach(el => {
-	el.style.width = '1300px';
-	el.style.zoom = scale;
-	});
-
-	const resultControls = document.getElementById('result_main_container');
-	resultControls.style.width = '1300px';
-	resultControls.style.zoom = scale;
+    if (sessionStorage.getItem('reloaded') !== null) {
+        return;
     }
-  }
+
+    if (window.innerWidth <= 767) {
+
+        // ---------- Simplify controls ----------
+
+        // Hide the introductory message
+        const intro = document.querySelector("#text-container p");
+        if (intro) intro.style.display = "none";
+
+        // Hide hydropathy residue labels (huge width savings)
+        const hydroLabels = document.getElementById("hydro-labels");
+        if (hydroLabels) hydroLabels.style.display = "none";
+
+        // Hide info icons
+        ["infoIconHS", "infoIconHP", "infoIconMB"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = "none";
+        });
+
+        // Shorten row labels
+        const rows = document.querySelectorAll("#results_table tr");
+
+        if (rows.length >= 3) {
+            rows[0].children[0].childNodes[0].textContent = "Scale:";
+            rows[1].children[0].childNodes[0].textContent = "Cutoff:";
+            rows[2].children[0].childNodes[0].textContent = "Min blob:";
+        }
+
+        // Optional: hide mutation controls completely on mobile
+        // const mutationRow = document.getElementById("mutations_container");
+        // if (mutationRow) mutationRow.style.display = "none";
+
+
+        // ---------- Scale result page ----------
+
+        const scale = window.innerWidth / 1300;
+
+        resultContainer.forEach(el => {
+            el.style.width = "1300px";
+            el.style.zoom = scale;
+        });
+
+        const resultControls = document.getElementById("result_main_container");
+        resultControls.style.width = "1300px";
+        resultControls.style.zoom = scale;
+    }
 });
 
 $(document).ready( function() {
