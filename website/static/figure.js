@@ -286,6 +286,9 @@ class ZFigure {
 
 		this.container.appendChild(this.zoomIcon);
 
+		const isMobile = window.innerWidth <= 767;
+		this.zoomIcon.style.fontSize = isMobile ? "large" : "xx-large"
+
 		return this;
 	}
 
