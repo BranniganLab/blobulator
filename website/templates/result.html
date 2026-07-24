@@ -69,10 +69,6 @@ window.addEventListener('load', () => {
             rows[2].children[0].childNodes[0].textContent = "Min blob:";
         }
 
-        // Optional: hide mutation controls completely on mobile
-        // const mutationRow = document.getElementById("mutations_container");
-        // if (mutationRow) mutationRow.style.display = "none";
-
 
         // ---------- Scale result page ----------
 
@@ -86,6 +82,13 @@ window.addEventListener('load', () => {
         const resultControls = document.getElementById("result_main_container");
         resultControls.style.width = "1300px";
         resultControls.style.zoom = scale;
+
+		setTimeout(() => {
+			console.log("Buttons after delay:",
+				[...document.querySelectorAll("#result_main_container button")]
+				.map(b => b.innerText)
+			);
+		}, 2000);
     }
 });
 
