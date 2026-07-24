@@ -172,7 +172,9 @@ td > div {
 }
 
 #result-wrapper {
-    overflow: auto;
+    width: 100%;
+  	overflow: auto;      /* allow scrolling if needed */
+  	position: relative;
 }
 
 #result {
