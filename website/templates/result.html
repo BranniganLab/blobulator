@@ -12,24 +12,29 @@
 <script>
 
 window.addEventListener('load', () => {
-  const resultContainer = document.querySelectorAll('#text-container, #my_dataviz, #molstar_container');
+//   const resultContainer = document.querySelectorAll('#text-container, #my_dataviz, #molstar_container');
 
-  if (sessionStorage.getItem('reloaded') !== null) {
-    return;
-  } else {
+//   if (sessionStorage.getItem('reloaded') !== null) {
+//     return;
+//   } else {
     if (window.innerWidth <= 767) {
-      const scale = window.innerWidth / 1300;
+//       const scale = window.innerWidth / 1300;
 
-	resultContainer.forEach(el => {
-	el.style.width = '1300px';
-	el.style.zoom = scale;
-	});
+// 	resultContainer.forEach(el => {
+// 	el.style.width = '1300px';
+// 	el.style.zoom = scale;
+// 	});
 
-	const resultControls = document.querySelector('#result_main_container.result-controls');
-	resultControls.style.width = '1300px';
-	resultControls.style.zoom = scale;
-    }
-  }
+// 	const resultControls = document.querySelector('result-controls');
+// 	resultControls.style.width = '1300px';
+// 	resultControls.style.zoom = scale;
+//     }
+//   }
+	const container = document.getElementById("result_main_container");
+
+	container.style.transform = `scale(${scale})`;
+	container.style.width = `${100 / scale}%`;
+	}
 });
 
 $(document).ready( function() {
@@ -505,7 +510,7 @@ $(document).ready( function() {
 
 {% block tabcontent %}
 {% include 'common-tabcontent.html' %}
-
+<div id="result-wrapper">
 <div class="tab-pane container" id="result">
     <div class="container">
 		<div class="text-center" id="text-container">
@@ -689,6 +694,7 @@ $(document).ready( function() {
 	</div>
 
 	</div>
+</div>
 </div>
 
 {% endblock %}
