@@ -84,6 +84,7 @@ def index():
             request_dict = request.form.to_dict()
 
             if "protein_search" in request_dict.keys():
+                user_uniprot_id = form.protein_search.data.strip()
                 input_type = "uniprot_id"
             else:
                 input_type = request_dict["input_type"]
