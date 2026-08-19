@@ -375,7 +375,7 @@ proc ::blobulator::hydropathyScores { hydropathyDict Sequence } {
 		if {[lsearch $hydropathyDict $amino] == -1} {
 			
 			if {$amino == "HID" || $amino == "HIE"} {
-				set value [dict get $hydropathyDict "HIS"]
+				set hydroScore [dict get $hydropathyDict "HIS"]
 			} else {
 				set unknownResidueList {}
 				foreach aa $Sequence {
@@ -451,7 +451,7 @@ proc ::blobulator::digitize { H smoothHydroMean } {
 	
 	set digList {}
 	foreach smoothedHydroValue $smoothHydroMean {
-		if {$smoothedHydroValue < $H } {
+		if {$smoothedHydroValue <= $H } {
 			lappend digList 0
 		} else {
 			lappend digList 1 
