@@ -22,7 +22,7 @@ reviews:
   path_instructions:
     - path: "**/*.py"
       instructions: |
-        Review the Python code with emphasis on:
+        Review the code with emphasis on:
         - correctness and potential bugs
         - whether the implementation matches the apparent intent of the code
         - readability and maintainability
@@ -42,6 +42,46 @@ reviews:
         Do not flag trivial formatting, naming, or style issues unless they materially affect readability or maintainability.
 
         When suggesting a change, explain the specific problem it addresses and why the change is useful.
+
+    - path: "**/*.js"
+      instructions: |
+        Review JavaScript code with emphasis on:
+          - correctness and potential bugs
+          - unintended behavior
+          - readability and maintainability
+          - clear naming
+          - consistency with the existing codebase
+          - appropriate error handling
+          - safe handling of user input and browser interactions
+
+        Prioritize substantive issues over stylistic preferences.
+        Do not suggest unnecessary rewrites or stylistic refactoring.
+        Do not flag trivial formatting issues.
+
+    - path: "**/*.html"
+      instructions: |
+        Review HTML with emphasis on:
+          - correctness and valid structure
+          - accessibility
+          - semantic HTML
+          - consistency with the existing site
+          - broken links, references, or functionality
+          - unintended changes to page behavior
+
+        Prioritize substantive issues over minor stylistic preferences.
+
+    - path: "**/*.css"
+      instructions: |
+        Review CSS with emphasis on:
+          - correctness
+          - unintended visual or behavioral changes
+          - consistency with existing styles
+          - selector conflicts
+          - maintainability
+          - responsive behavior where relevant
+
+        Prioritize substantive issues over minor stylistic preferences.
+
 
 chat:
   auto_reply: false
