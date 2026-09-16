@@ -1,0 +1,87 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+language: "en-US"
+early_access: false
+
+reviews:
+  profile: "chill"
+  request_changes_workflow: false
+  high_level_summary: true
+  poem: false
+  review_status: true
+  collapse_walkthrough: true
+
+  path_filters:
+    - "website/**"
+    - "blobulator/**"
+    - "VMD_scripts/**"
+
+  auto_review:
+    enabled: false
+    drafts: false
+
+  path_instructions:
+    - path: "**/*.py"
+      instructions: |
+        Review the code with emphasis on:
+        - correctness and potential bugs
+        - whether the implementation matches the apparent intent of the code
+        - readability and maintainability
+        - clear and descriptive variable, function, and class names
+        - logical function and module boundaries
+        - consistency with existing code and project conventions
+        - unintended side effects or changes in behavior
+        - appropriate handling of edge cases
+        - efficient use of computation and memory where relevant
+        - clear, useful docstrings and comments where appropriate
+        - potential issues that could affect scientific correctness or reproducibility
+        - whether changes could alter numerical results or analysis outcomes unexpectedly
+
+        Do not suggest adding type annotations unless they would directly prevent a concrete bug or improve correctness.
+        Do not suggest generic exception handling unless there is a concrete failure mode that should be handled.
+        Do not suggest refactoring working code solely to follow a different programming style.
+        Do not flag trivial formatting, naming, or style issues unless they materially affect readability or maintainability.
+
+        When suggesting a change, explain the specific problem it addresses and why the change is useful.
+
+    - path: "**/*.js"
+      instructions: |
+        Review JavaScript code with emphasis on:
+          - correctness and potential bugs
+          - unintended behavior
+          - readability and maintainability
+          - clear naming
+          - consistency with the existing codebase
+          - appropriate error handling
+          - safe handling of user input and browser interactions
+
+        Prioritize substantive issues over stylistic preferences.
+        Do not suggest unnecessary rewrites or stylistic refactoring.
+        Do not flag trivial formatting issues.
+
+    - path: "**/*.html"
+      instructions: |
+        Review HTML with emphasis on:
+          - correctness and valid structure
+          - accessibility
+          - semantic HTML
+          - consistency with the existing site
+          - broken links, references, or functionality
+          - unintended changes to page behavior
+
+        Prioritize substantive issues over minor stylistic preferences.
+
+    - path: "**/*.css"
+      instructions: |
+        Review CSS with emphasis on:
+          - correctness
+          - unintended visual or behavioral changes
+          - consistency with existing styles
+          - selector conflicts
+          - maintainability
+          - responsive behavior where relevant
+
+        Prioritize substantive issues over minor stylistic preferences.
+
+
+chat:
+  auto_reply: false
