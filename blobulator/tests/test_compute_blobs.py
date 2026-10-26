@@ -1,6 +1,7 @@
 import pytest
 import blobulator
 import pandas as pd
+from pathlib import Path
 
 @pytest.fixture
 def current_blobulation():
@@ -14,9 +15,14 @@ def current_blobulation():
     current_blobulation = blobulator.clean_df(blobDF)
     
     return current_blobulation
+
+
+
+
 @pytest.fixture
 def previous_blobulator_output():
-    previous_blobulator_output = pd.read_csv("blobulator/tests/test_blob.csv")
+    TEST_DIR = Path(__file__).resolve().parent
+    previous_blobulator_output = pd.read_csv(TEST_DIR / "test_blob.csv")
     return previous_blobulator_output
 
 def test_CI():
