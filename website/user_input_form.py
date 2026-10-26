@@ -15,7 +15,7 @@ class InputForm(Form):
     protein_search = StringField(
         label='Protein Search:',
         widget=TextArea(),
-        render_kw={"placeholder": "Search by protein or gene name (e.g. alpha synuclein or SNCA)"}
+        render_kw={"placeholder": "Enter a protein name or gene symbol (e.g. alpha synuclein or SNCA)"}
     )
     uniprot_id = StringField(
         label='Uniprot ID:', widget=TextArea(), default='P37840',
