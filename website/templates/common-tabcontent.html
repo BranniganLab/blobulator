@@ -4,8 +4,7 @@
     <div class="container-fluid">
         <div class="row">
             <!--form-->
-            <br>
-            <p style="padding: 15px 0px 15px 0px; color:gray; font-style: italic;">New here? Welcome! For more information about the blobulator, visit the <a href="#about" onclick="$('#about-tab').tab('show');">About</a> and <a href="#FAQ" onclick="$('#faq-tab').tab('show');">FAQ</a> tabs above. When you're ready to blobulate a protein, select an input method below.</p>
+            <p style="padding: 15px 0px 15px 0px; color:black; font-style: italic;">New here? Welcome! For more information about the blobulator, visit the <a href="#about" onclick="$('#about-tab').tab('show');">About</a> and <a href="#FAQ" onclick="$('#faq-tab').tab('show');">FAQ</a> tabs above. When you're ready to blobulate a protein, select an input method below.</p>
             <p><b>Select an input method: </b>
             <select name="sequence_type" id="sequence_type" onchange="hideDiv(this)">
                 <option value="protein_search">Name Search</option>
@@ -14,10 +13,8 @@
                 <option value="pdb_entry">PDB Entry</option></select></p></centering>
 
             <div class="form-group" align="center">
-                <br>
                 <form class="navbar-form navbar-top" method=post target="_blank" action="" id="protein_search_block">
-                    <p>Enter a protein name or gene symbol below to begin search.</p>
-                    <p>Note: only human proteins will display disease-associated mutations, and will take longer to load. </p>
+                    <br>
                     <p>{{ form.protein_search(class_="form-control", rows="1") }}</p>
                     <div style="position: relative;">
                     <ul id="uniprot-suggestions"
@@ -33,10 +30,7 @@
             </div>
 
             <div class="form-group" align="center">
-                <br>
                 <form class="navbar-form navbar-top" method=post target="_blank" action="" id="id_entry_block" style="display: none">
-                    <p>Enter an ID for your protein.</p>
-                    <p>Note: only human proteins will display disease-associated mutations, and will take longer to load. </p>
                     <label for="input-types">Choose an ID type:</label>
                     <select name="input_type" id="input_type">
                         <option value="uniprot_id">UniProt ID</option>
@@ -51,31 +45,26 @@
                                 list-style:none; margin:0; padding:4px 0; z-index:1000;
                                 max-height:280px; overflow-y:auto; box-shadow:0 4px 12px rgba(0,0,0,0.1);">
                     </ul>
+                    <p style="color:gray; font-style: italic;">Note: Disease-associated SNPs and disorder prediction are based on UniProt annotation and will be displayed with this option. </p>
                     </div>
                     <p><input type=submit name="action_u" class="btn btn-primary" value="Blobulate!"></p>
                 </form>
-                </div>
+            </div>
+
             <div class="form-group" align="center">
                 <form class="navbar-form navbar-top" method=post target="_blank" action="" id="manual_entry_block" style="display: none">
-                    <!--Creating box for protein sequence input, and placing explanation text above-->
-                    <p> Input the protein sequence directly. </p>
-                    <p> Note: Disease-associated SNPs and disorder prediction are based on UniProt annotation and will not be displayed with this option. </p>
                     <p class="text-monospace"> {{ form.aa_sequence(class_="form-control", rows="4")}}</p>
                     <p> Enter a name for this sequence (optional):</p>
                     <p> {{ form.seq_name(class_="form-control", rows="1")}} </p>
                     <p><input type=submit name="action_s" class="btn btn-primary" value="Blobulate!"></p>
                 </form>
             </div>
-             <div class="form-group" align="center">
+
+            <div class="form-group" align="center">
                 <form class="navbar-form navbar-top" method="post" target="_blank" enctype="multipart/form-data" action="" id="pdb_entry_block" style="display: none">
-                    <h5 class="text-center"> <b>Option 3: PDB Entry</b> </h5>
-                    <br>
-                    <!--Creating box for protein sequence input, and placing explanation text above-->
-                    <p> Upload a PDB File. </p>
-                    <p>Warning: Blobulation of PDB files containing multiple chains with disparate sequences is not currently supported.</p>
-                    <p> Note: Disease-associated SNPs and disorder prediction are based on UniProt annotation and will not be displayed with this option. </p>
                     <p> <input id="pdb_file" name="pdb_file" type="file" accept=".pdb"> </p>
                     <p id="chain_name"></p>
+                    <p style="color:gray; font-style: italic;">Note: Blobulation of PDB files containing multiple chains with disparate sequences is not currently supported.</p>
                     <p><input type=submit name="action_p" class="btn btn-primary" value="Blobulate!"></p></br>
                 </form>
             </div>
