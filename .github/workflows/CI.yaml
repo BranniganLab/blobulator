@@ -27,6 +27,7 @@ jobs:
           pip install pandas
           pip install numpy
           pip install matplotlib
+	  pip install pytest-cov
       
       - name: Run tests
         run: |
