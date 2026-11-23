@@ -27,7 +27,8 @@ jobs:
           pip install pandas
           pip install numpy
           pip install matplotlib
+	  pip install pytest-cov
       
       - name: Run tests
         run: |
-          pytest -v -cov-report=xml --color=yes blobulator/tests/
+          pytest -v --cov-report=xml --color=yes blobulator/tests/
